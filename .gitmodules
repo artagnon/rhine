@@ -1,0 +1,4 @@
+[submodule "llvm"]
+	path = llvm
+	url = https://github.com/artagnon/llvm
+	ignore = untracked

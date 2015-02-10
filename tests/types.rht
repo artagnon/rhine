@@ -1,0 +1,27 @@
+5
+2.7
+2e-5
+.2
+2.
+'c'
+"foomar"
+nil
+true
+false
+[]
+[9 6 4]
+['a' false "boo" nil 3]
+---
+Evaluated to 5
+Evaluated to 2.7
+Evaluated to 2e-05
+Evaluated to 0.2
+Evaluated to 2.
+Evaluated to c
+Evaluated to foomar
+Evaluated to (nil)
+Evaluated to true
+Evaluated to false
+Evaluated to []
+Evaluated to [9;6;4;]
+Evaluated to [a;false;boo;(nil);3;]
