@@ -92,7 +92,12 @@ llvm::Constant *LLVisitor::visit(ConstantFloat *F) {
 
 llvm::Constant *LLVisitor::visit(Function *RhF, llvm::Module *M) {
   auto RType = RhF->getVal()->getType()->toLL(M);
-  auto F = llvm::Function::Create(llvm::FunctionType::get(RType, false),
+  std::vector<llvm::Type *> ArgTys;
+  for (auto El: RhF->getArgumentList())
+    // Pretend everything passed was an integer until we get type inference
+    ArgTys.push_back(RhBuilder.getInt32Ty());
+  auto ArgTyAr = makeArrayRef(ArgTys);
+  auto F = llvm::Function::Create(llvm::FunctionType::get(RType, ArgTyAr, false),
                                   GlobalValue::ExternalLinkage,
                                   RhF->getName(), M);
   BasicBlock *BB = BasicBlock::Create(rhine::RhContext, "entry", F);

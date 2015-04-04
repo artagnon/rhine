@@ -212,6 +212,9 @@ public:
   void setArgumentList(std::vector<Variable *> L) {
     ArgumentList = L;
   }
+  std::vector<Variable *> getArgumentList() {
+    return ArgumentList;
+  }
   void setBody(std::vector<Value *> Body) {
     Val = Body;
   }
