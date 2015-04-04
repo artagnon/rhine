@@ -43,7 +43,7 @@ TEST(CodeGen, DefunStm)
 {
   std::string SourcePrg = "defun foo [bar] 3 + 2;";
   std::string ExpectedPP =
-    "define i32 @foo() {\n"
+    "define i32 @foo(i32) {\n"
     "entry:\n"
     "  ret i32 5\n"
     "}\n";
@@ -59,7 +59,7 @@ TEST(CodeGen, DefunCompoundStm)
     "  4 + 5;\n"
     "}";
   std::string ExpectedPP =
-    "define i32 @foo() {\n"
+    "define i32 @foo(i32) {\n"
     "entry:\n"
     "  ret i32 9\n"
     "}\n";
