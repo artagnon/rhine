@@ -1,13 +1,13 @@
-#include "rhine/Ast.h"
+#include "rhine/IR.h"
 #include "rhine/Support.h"
 #include "rhine/Toplevel.h"
 #include "gtest/gtest.h"
 
 #ifdef _MSC_VER
 #include <io.h>
-#define popen _popen 
+#define popen _popen
 #define pclose _pclose
-#define stat _stat 
+#define stat _stat
 #define dup _dup
 #define dup2 _dup2
 #define fileno _fileno
@@ -30,8 +30,8 @@ public:
     {
         // make stdout & stderr streams unbuffered
         // so that we don't need to flush the streams
-        // before capture and after capture 
-        // (fflush can cause a deadlock if the stream is currently being 
+        // before capture and after capture
+        // (fflush can cause a deadlock if the stream is currently being
         setvbuf(stdout,NULL,_IONBF,0);
         setvbuf(stderr,NULL,_IONBF,0);
     }

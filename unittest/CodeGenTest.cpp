@@ -1,4 +1,4 @@
-#include "rhine/Ast.h"
+#include "rhine/IR.h"
 #include "rhine/Support.h"
 #include "gtest/gtest.h"
 
@@ -11,25 +11,17 @@ void EXPECT_PARSE_PP(std::string SourcePrg, std::string *ExpectedErr = nullptr,
   std::ostringstream Scratch;
   auto Source = rhine::parseCodeGenString(SourcePrg, Scratch);
   auto Actual = Scratch.str();
-  auto CleanedActual = std::regex_replace(Actual, AnsiColorRe, "");
+  auto CleanActualErr = std::regex_replace(Actual, AnsiColorRe, "");
   if (ExpectedErr) {
     ASSERT_EQ(ExpectedPP, nullptr);
     EXPECT_PRED_FORMAT2(::testing::IsSubstring, ExpectedErr->c_str(),
-                        CleanedActual.c_str());
+                        CleanActualErr.c_str());
   } else {
     ASSERT_NE(ExpectedPP, nullptr);
-    ASSERT_STREQ("", CleanedActual.c_str());
-    auto PP = rhine::LLToPP(Source);
+    ASSERT_STREQ("", CleanActualErr.c_str());
     EXPECT_PRED_FORMAT2(::testing::IsSubstring, ExpectedPP->c_str(),
-                        PP.c_str());
+                        Source.c_str());
   }
-}
-
-TEST(CodeGen, ConstantIntAddition)
-{
-  std::string SourcePrg = "2 + 3;";
-  std::string ExpectedPP = "i32 5";
-  EXPECT_PARSE_PP(SourcePrg, nullptr, &ExpectedPP);
 }
 
 TEST(Parse, BareDefun)
@@ -66,9 +58,26 @@ TEST(CodeGen, DefunCompoundStm)
   EXPECT_PARSE_PP(SourcePrg, nullptr, &ExpectedPP);
 }
 
+TEST(CodeGen, MultipleDefun)
+{
+  std::string SourcePrg =
+    "defun foo [] 2;\n"
+    "defun bar [] 3;\n";
+  std::string ExpectedPP =
+    "define i32 @foo() {\n"
+    "entry:\n"
+    "  ret i32 2\n"
+    "}\n\n"
+    "define i32 @bar() {\n"
+    "entry:\n"
+    "  ret i32 3\n"
+    "}\n";
+  EXPECT_PARSE_PP(SourcePrg, nullptr, &ExpectedPP);
+}
+
 TEST(CodeGen, FunctionCall)
 {
-  std::string SourcePrg = "printf \"43\";";
+  std::string SourcePrg = "defun foom [] printf \"43\";";
   std::string ExpectedPP =
     "call i32 (i8*, ...)* @printf";
   EXPECT_PARSE_PP(SourcePrg, nullptr, &ExpectedPP);

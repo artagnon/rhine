@@ -7,7 +7,7 @@ add_library(CodeGen
   "${CMAKE_CURRENT_SOURCE_DIR}/IR.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Externals.cpp"
   "${PROJECT_SOURCE_DIR}/include/rhine/Externals.h"
-  "${PROJECT_SOURCE_DIR}/include/rhine/Ast.h")
+  "${PROJECT_SOURCE_DIR}/include/rhine/IR.h")
 set_target_properties(CodeGen PROPERTIES
   LINKER_LANGUAGE CXX
   COMPILE_FLAGS ${LLVM_CXXFLAGS})

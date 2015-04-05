@@ -1,4 +1,4 @@
-#include "rhine/Ast.h"
+#include "rhine/IR.h"
 #include "rhine/Externals.h"
 
 #include "llvm/IR/Type.h"

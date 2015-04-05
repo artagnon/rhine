@@ -110,19 +110,14 @@ public:
 
 class Variable : public Value {
   std::string Name;
-  Value *Binding;
 public:
-  Variable(std::string N, Value *B = nullptr) :
-      Value(Type::get()), Name(N), Binding(B) {}
+  Variable(std::string N) : Value(Type::get()), Name(N) {}
 
-  static Variable *get(std::string N, Value *B = nullptr) {
-    return new Variable(N, B);
+  static Variable *get(std::string N) {
+    return new Variable(N);
   }
   std::string getName() {
     return Name;
-  }
-  Value *getVal() {
-    return Binding;
   }
   llvm::Value *toLL(llvm::Module *M = nullptr);
 };
@@ -274,6 +269,27 @@ private:
   std::string Name;
 };
 
+class Module {
+  std::vector<Function *> ContainedFs;
+public:
+  Module() {}
+  ~Module() {
+    for (auto i : ContainedFs)
+      delete i;
+    ContainedFs.clear();
+  }
+  Module *get() {
+    return new Module;
+  }
+  void appendFunction(Function *F) {
+    ContainedFs.push_back(F);
+  }
+  std::vector<Function *> getVal() {
+    return ContainedFs;
+  }
+  void toLL(llvm::Module *M);
+};
+
 class LLVisitor
 {
 public:
@@ -289,6 +305,13 @@ public:
   static llvm::Constant *visit(Function *RhF, llvm::Module *M);
   static llvm::Value *visit(AddInst *A);
   static llvm::Value *visit(CallInst *C, llvm::Module *M);
+  static void visit(Module *RhM, llvm::Module *M);
+};
+
+class TypeVisitor
+{
+public:
+  static llvm::Value *visit(AddInst *A);
 };
 }
 
