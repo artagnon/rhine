@@ -3,16 +3,15 @@
 #ifndef PARSETREE_H
 #define PARSETREE_H
 
-#include "rhine/Ast.h"
+#include "rhine/IR.h"
 #include <vector>
 
 using namespace std;
 
 namespace rhine {
-class SExpr {
+class PTree {
 public:
-  std::vector<Value *> Body;
-  std::vector<Function *> Defuns;
+  Module M;
 };
 }
 

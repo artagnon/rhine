@@ -26,6 +26,7 @@
   class ConstantBool *Boolean;
   class ConstantFloat *Float;
   class GlobalString *String;
+  class Value *Value;
   class Instruction *Inst;
   class Function *Fcn;
   std::vector<class Variable *> *VarList;
@@ -45,15 +46,15 @@
 %token  <Boolean>       BOOLEAN
 %token  <String>        STRING
 %type   <VarList>       argument_list
-%type   <Inst>          expression
 %type   <StmList>       compound_stm stm_list single_stm
 %type   <Fcn>           fn_decl defun
+%type   <Value>         expression
+%type   <Value>         rvalue
 
-%destructor { delete $$; } SYMBOL INTEGER
-%destructor { delete $$; } argument_list
-%destructor { delete $$; } expression
-%destructor { delete $$; } stm_list
+%destructor { delete $$; } SYMBOL INTEGER STRING
+%destructor { delete $$; } argument_list stm_list
 %destructor { delete $$; } fn_decl defun
+%destructor { delete $$; } expression rvalue
 
 %{
 #include "rhine/ParseDriver.h"
@@ -66,19 +67,14 @@
 %%
 
 start:
-                tlexpr END
-        |       start tlexpr END
+        |       tlexpr start END
                 ;
 
 
 tlexpr:
-                stm_list[L]
+                defun[D]
                 {
-                  Driver->Root.Body = *$L;
-                }
-        |       defun[D]
-                {
-                  Driver->Root.Defuns.push_back($D);
+                  Driver->Root.M.appendFunction($D);
                 }
                 ;
 
@@ -151,7 +147,11 @@ argument_list:
                 }
                 ;
 expression:
-                INTEGER[L] '+' INTEGER[R]
+                rvalue[V]
+                {
+                  $$ = $V;
+                }
+        |       rvalue[L] '+' rvalue[R]
                 {
                   auto Op = AddInst::get(IntegerType::get());
                   Op->addOperand($L);
@@ -168,7 +168,17 @@ expression:
                 {
                   $$ = nullptr;
                 }
-
+                ;
+rvalue:
+                INTEGER[I]
+                {
+                  $$ = $I;
+                }
+        |       SYMBOL[S]
+                {
+                  $$ = Variable::get(*$S);
+                }
+                ;
 %%
 
 void rhine::Parser::error(const rhine::location &l,

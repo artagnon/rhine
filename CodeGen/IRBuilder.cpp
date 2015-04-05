@@ -1,4 +1,4 @@
-#include "rhine/Ast.h"
+#include "rhine/IR.h"
 
 using namespace rhine;
 

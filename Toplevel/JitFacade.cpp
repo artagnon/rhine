@@ -30,7 +30,8 @@ MainFTy jitFacade(std::string InStr, bool Debug, bool IsStringStream) {
   LLVMInitializeNativeTarget();
   LLVMInitializeNativeAsmPrinter();
 
-  std::unique_ptr<Module> Owner = make_unique<Module>("main", rhine::RhContext);
+  std::unique_ptr<llvm::Module> Owner =
+    make_unique<llvm::Module>("main", rhine::RhContext);
   if (IsStringStream)
     parseCodeGenString(InStr, Owner.get(), std::cerr, Debug);
   else

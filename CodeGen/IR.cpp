@@ -1,4 +1,4 @@
-#include "rhine/Ast.h"
+#include "rhine/IR.h"
 #include "rhine/Externals.h"
 
 namespace rhine {
@@ -49,6 +49,11 @@ llvm::Value *AddInst::toLL(llvm::Module *M) {
 llvm::Value *CallInst::toLL(llvm::Module *M) {
   return LLVisitor::visit(this, M);
 }
+
+void Module::toLL(llvm::Module *M) {
+  return LLVisitor::visit(this, M);
+}
+
 
 //===--------------------------------------------------------------------===//
 // LLVisitor visits.
@@ -117,5 +122,10 @@ llvm::Value *LLVisitor::visit(CallInst *C, llvm::Module *M) {
   auto Callee = Externals::printf(M);
   auto StrPtr = C->getOperand(0)->toLL(M);
   return RhBuilder.CreateCall(Callee, StrPtr, C->getName());
+}
+
+void LLVisitor::visit(Module *RhM, llvm::Module *M) {
+  for (auto F: RhM->getVal())
+    F->toLL(M);
 }
 }

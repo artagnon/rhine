@@ -17,11 +17,11 @@ class ParseDriver
 public:
 
   /// construct a new parser driver context
-  ParseDriver(class SExpr& Expr, std::ostream &ErrStream = std::cerr,
+  ParseDriver(class PTree& Tree, std::ostream &ErrStream = std::cerr,
               bool Debug = false) : TraceScanning(Debug),
                                     TraceParsing(Debug),
                                     ErrorStream(&ErrStream),
-                                    Root(Expr)
+                                    Root(Tree)
   {}
 
   bool parseStream(std::istream &in,
@@ -38,7 +38,7 @@ public:
   std::string StreamName;
   std::ostream *ErrorStream;
   class Lexer *Lexx;
-  class SExpr &Root;
+  class PTree &Root;
 };
 }
 

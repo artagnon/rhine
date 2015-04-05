@@ -21,4 +21,5 @@ target_link_libraries(rhine
 add_custom_target(check
   COMMAND "${PROJECT_BINARY_DIR}/unittest/UnitTest"
   COMMENT "Running unittests ..."
-  DEPENDS rhine)
+  DEPENDS rhine
+  DEPENDS UnitTest)
