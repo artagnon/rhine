@@ -38,7 +38,7 @@ llvm::Constant *Function::toLL(llvm::Module *M) {
   return LLVisitor::visit(this, M);
 }
 
-llvm::Value *Variable::toLL(llvm::Module *M) {
+llvm::Value *Symbol::toLL(llvm::Module *M) {
   return LLVisitor::visit(this);
 }
 
@@ -74,8 +74,8 @@ llvm::Type *LLVisitor::visit(StringType *V) {
   return RhBuilder.getInt8PtrTy();
 }
 
-llvm::Value *LLVisitor::visit(Variable *V) {
-  assert(0 && "Cannot lower variable");
+llvm::Value *LLVisitor::visit(Symbol *V) {
+  assert (0 && "Unbound symbol");
 }
 
 llvm::Value *LLVisitor::visit(GlobalString *S) {
@@ -98,7 +98,7 @@ llvm::Constant *LLVisitor::visit(ConstantFloat *F) {
 llvm::Constant *LLVisitor::visit(Function *RhF, llvm::Module *M) {
   auto RType = RhF->getVal()->getType()->toLL(M);
   std::vector<llvm::Type *> ArgTys;
-  for (auto El: RhF->getArgumentList())
+  for (auto El: RhF->getArgumentTys())
     // Pretend everything passed was an integer until we get type inference
     ArgTys.push_back(RhBuilder.getInt32Ty());
   auto ArgTyAr = makeArrayRef(ArgTys);
