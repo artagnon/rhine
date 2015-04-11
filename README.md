@@ -1,16 +1,24 @@
 # Rhine
 
-Rhine is a Clojure-inspired Lisp on LLVM JIT featuring variable-length
-untyped arrays, first-class functions, closures, and macros. While
-Clojure hides the lower-level details by running atop the JVM, Rhine
-aims to expose how common Lisp constructs map to hardware.
+Rhine is designed to be a fast language utilizing the LLVM JIT
+featuring first-class functions, optional typing supported by a
+combination of type inference and speculative type inference, and a
+strong FFI.
 
 ## Building
 
-First, `opam switch 4.02.1` to make sure that you're running a
-custom-built ocaml (for camlp4). Then, run `opam install ocamlfind
-menhir core textutils ctypes`, open a new shell to refresh env, and
-invoke `make`.
+```
+$ git clone --recursive https://github.com/artagnon/rhine
+$ mkdir llvm-build
+$ cd llvm-build
+$ cmake ../rhine/llvm
+$ make -j8
+$ mkdir ../rhine-build
+$ cd ../rhine-build
+$ cmake ../rhine
+$ make -j8
+```
+
 
 ## Troubleshooting the build
 

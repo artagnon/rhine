@@ -108,13 +108,13 @@ public:
   virtual llvm::Value *toLL(llvm::Module *M = nullptr) = 0;
 };
 
-class Variable : public Value {
+class Symbol : public Value {
   std::string Name;
 public:
-  Variable(std::string N) : Value(Type::get()), Name(N) {}
+  Symbol(std::string N, Type *T = Type::get()) : Value(T), Name(N) {}
 
-  static Variable *get(std::string N) {
-    return new Variable(N);
+  static Symbol *get(std::string N, Type *T = Type::get()) {
+    return new Symbol(N, T);
   }
   std::string getName() {
     return Name;
@@ -184,16 +184,16 @@ public:
 };
 
 class Function : public Constant {
-  std::vector<Variable *> ArgumentList;
+  std::vector<Type *> ArgumentTys;
   std::string Name;
   std::vector<Value *> Val;
 public:
   Function(FunctionType *FTy) :
       Constant(FTy) {}
   ~Function() {
-    for (auto i : ArgumentList)
+    for (auto i : ArgumentTys)
       delete i;
-    ArgumentList.clear();
+    ArgumentTys.clear();
     for (auto i : Val)
       delete i;
     Val.clear();
@@ -204,11 +204,11 @@ public:
   void setName(std::string N) {
     Name = N;
   }
-  void setArgumentList(std::vector<Variable *> L) {
-    ArgumentList = L;
+  void setArgumentTys(std::vector<Type *> L) {
+    ArgumentTys = L;
   }
-  std::vector<Variable *> getArgumentList() {
-    return ArgumentList;
+  std::vector<Type *> getArgumentTys() {
+    return ArgumentTys;
   }
   void setBody(std::vector<Value *> Body) {
     Val = Body;
@@ -297,7 +297,7 @@ public:
   static llvm::Type *visit(BoolType *V);
   static llvm::Type *visit(FloatType *V);
   static llvm::Type *visit(StringType *V);
-  static llvm::Value *visit(Variable *V);
+  static llvm::Value *visit(Symbol *V);
   static llvm::Value *visit(GlobalString *S);
   static llvm::Constant *visit(ConstantInt *I);
   static llvm::Constant *visit(ConstantBool *B);

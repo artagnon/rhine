@@ -65,6 +65,9 @@ SPTAB   [ \t]+
 "&&" { return T::AND; }
 "||" { return T::OR; }
 
+"Int" { return T::TINT; }
+"Bool" { return T::TBOOL; }
+
 "true" {
   auto B = ConstantBool::get(true);
   yylval->Boolean = B;
@@ -78,11 +81,11 @@ SPTAB   [ \t]+
 }
 
 {SYMBOL} {
-  yylval->RawSymbol = new std::string(yytext, yyleng);
+  yylval->RawSymbol = new std::string(yytext);
   return T::SYMBOL;
 }
 
-[\[ \] \( \) + * ; { } $] {
+[\[ \] \( \) + * ; { } $ ~] {
   return static_cast<P::token_type>(*yytext);
 }
 

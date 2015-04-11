@@ -22,14 +22,15 @@
 
 %union {
   std::string *RawSymbol;
+  class Symbol *Symbol;
   class ConstantInt *Integer;
   class ConstantBool *Boolean;
   class ConstantFloat *Float;
   class GlobalString *String;
-  class Value *Value;
-  class Instruction *Inst;
   class Function *Fcn;
-  std::vector<class Variable *> *VarList;
+  class Value *Value;
+  class Type *Type;
+  std::vector<class Symbol *> *VarList;
   std::vector<class Value *> *StmList;
 }
 
@@ -40,6 +41,8 @@
 %token                  THEN
 %token                  AND
 %token                  OR
+%token                  TBOOL
+%token                  TINT
 %token                  END       0
 %token  <RawSymbol>     SYMBOL
 %token  <Integer>       INTEGER
@@ -50,6 +53,8 @@
 %type   <Fcn>           fn_decl defun
 %type   <Value>         expression
 %type   <Value>         rvalue
+%type   <Type>          type_annotation
+%type   <Symbol>        typed_symbol
 
 %destructor { delete $$; } SYMBOL INTEGER STRING
 %destructor { delete $$; } argument_list stm_list
@@ -79,21 +84,24 @@ tlexpr:
                 ;
 
 fn_decl:
-                DEFUN SYMBOL[N] '[' argument_list[A] ']'
+                DEFUN typed_symbol[N] '[' argument_list[A] ']'
                 {
-                  auto ITy = IntegerType::get();
-                  auto FTy = FunctionType::get(ITy);
+                  auto FTy = FunctionType::get($N->getType());
                   auto Fn = Function::get(FTy);
-                  Fn->setName(*$N);
-                  Fn->setArgumentList(*$A);
+                  Fn->setName($N->getName());
+                  std::vector<Type *> ArgumentTys;
+                  for (auto Arg : *$A) {
+                    ArgumentTys.push_back(Arg->getType());
+                  }
+                  Fn->setArgumentTys(ArgumentTys);
                   $$ = Fn;
                 }
-        |       DEFUN SYMBOL[N] '[' ']'
+        |       DEFUN typed_symbol[N] '[' ']'
                 {
                   auto ITy = IntegerType::get();
                   auto FTy = FunctionType::get(ITy);
                   auto Fn = Function::get(FTy);
-                  Fn->setName(*$N);
+                  Fn->setName($N->getName());
                   $$ = Fn;
                 }
                 ;
@@ -132,18 +140,35 @@ single_stm:
                   $$ = StatementList;
                 }
 argument_list:
-                SYMBOL[S]
+                typed_symbol[S]
                 {
-                  auto SymbolList = new std::vector<Variable *>;
-                  auto Sym = Variable::get(*$S);
-                  SymbolList->push_back(Sym);
+                  auto SymbolList = new std::vector<Symbol *>;
+                  SymbolList->push_back($S);
                   $$ = SymbolList;
                 }
-        |       argument_list[L] SYMBOL[S]
+        |       argument_list[L] typed_symbol[S]
                 {
-                  auto Sym = Variable::get(*$S);
-                  $L->push_back(Sym);
+                  $L->push_back($S);
                   $$ = $L;
+                }
+                ;
+typed_symbol:
+                SYMBOL[S] type_annotation[T]
+                {
+                  $$ = Symbol::get(*$S, $T);
+                }
+        ;
+type_annotation:
+                {
+                  $$ = Type::get();
+                }
+        |       '~' TINT
+                {
+                  $$ = IntegerType::get();
+                }
+        |       '~' TBOOL
+                {
+                  $$ = BoolType::get();
                 }
                 ;
 expression:
@@ -158,9 +183,9 @@ expression:
                   Op->addOperand($R);
                   $$ = Op;
                 }
-        |       SYMBOL[S] STRING[P]
+        |       typed_symbol[S] STRING[P]
                 {
-                  auto Op = CallInst::get(*$S);
+                  auto Op = CallInst::get($S->getName());
                   Op->addOperand($P);
                   $$ = Op;
                 }
@@ -174,9 +199,9 @@ rvalue:
                 {
                   $$ = $I;
                 }
-        |       SYMBOL[S]
+        |       typed_symbol[S]
                 {
-                  $$ = Variable::get(*$S);
+                  $$ = $S;
                 }
                 ;
 %%
