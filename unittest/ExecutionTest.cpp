@@ -161,7 +161,7 @@ void EXPECT_OUTPUT(std::string SourcePrg, std::string ExpectedOut)
 
 TEST(Execution, PrintfConstantInt) {
   std::string SourcePrg =
-    "defun main [bar] {"
+    "defun main [] {"
     "  printf \"43\";"
     "}";
   std::string ExpectedOut = "43";

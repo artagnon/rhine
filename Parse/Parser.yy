@@ -84,24 +84,20 @@ tlexpr:
                 ;
 
 fn_decl:
-                DEFUN typed_symbol[N] '[' argument_list[A] ']'
+                DEFUN SYMBOL[N] '[' argument_list[A] ']' type_annotation[T]
                 {
-                  auto FTy = FunctionType::get($N->getType());
+                  auto FTy = FunctionType::get($T);
                   auto Fn = Function::get(FTy);
-                  Fn->setName($N->getName());
-                  std::vector<Type *> ArgumentTys;
-                  for (auto Arg : *$A) {
-                    ArgumentTys.push_back(Arg->getType());
-                  }
-                  Fn->setArgumentTys(ArgumentTys);
+                  Fn->setName(*$N);
+                  Fn->setArgumentList(*$A);
                   $$ = Fn;
                 }
-        |       DEFUN typed_symbol[N] '[' ']'
+        |       DEFUN SYMBOL[N] '[' ']'
                 {
                   auto ITy = IntegerType::get();
                   auto FTy = FunctionType::get(ITy);
                   auto Fn = Function::get(FTy);
-                  Fn->setName($N->getName());
+                  Fn->setName(*$N);
                   $$ = Fn;
                 }
                 ;

@@ -14,6 +14,8 @@
 #include <string>
 #include <vector>
 
+#include "rhine/SymbolTable.h"
+
 using namespace std;
 
 namespace rhine {
@@ -22,13 +24,14 @@ using namespace llvm;
 static LLVMContext &RhContext = getGlobalContext();
 static IRBuilder<> RhBuilder(RhContext);
 
-class Type {
+class Type : public FoldingSetNode {
 public:
   static Type *get() {
-    return new Type();
+    static Type UniqueType;
+    return &UniqueType;
   }
   virtual ~Type() { };
-  virtual llvm::Type *toLL(llvm::Module *M = nullptr) {
+  virtual llvm::Type *toLL(llvm::Module *M = nullptr, SymbolTable *K = nullptr) {
     assert(false && "Cannot toLL() without inferring type");
   }
 };
@@ -36,33 +39,37 @@ public:
 class IntegerType : public Type {
 public:
   static IntegerType *get() {
-    return new IntegerType();
+    static IntegerType UniqueIntegerType;
+    return &UniqueIntegerType;
   }
-  llvm::Type *toLL(llvm::Module *M = nullptr);
+  llvm::Type *toLL(llvm::Module *M = nullptr, SymbolTable *K = nullptr);
 };
 
 class BoolType : public Type {
 public:
   static BoolType *get() {
-    return new BoolType();
+    static BoolType UniqueBoolType;
+    return &UniqueBoolType;
   }
-  llvm::Type *toLL(llvm::Module *M = nullptr);
+  llvm::Type *toLL(llvm::Module *M = nullptr, SymbolTable *K = nullptr);
 };
 
 class FloatType : public Type {
 public:
   static FloatType *get() {
-    return new FloatType();
+    static FloatType UniqueFloatType;
+    return &UniqueFloatType;
   }
-  llvm::Type *toLL(llvm::Module *M = nullptr);
+  llvm::Type *toLL(llvm::Module *M = nullptr, SymbolTable *K = nullptr);
 };
 
 class StringType : public Type {
 public:
   static StringType *get() {
-    return new StringType();
+    static StringType UniqueStringType;
+    return &UniqueStringType;
   }
-  llvm::Type *toLL(llvm::Module *M = nullptr);
+  llvm::Type *toLL(llvm::Module *M = nullptr, SymbolTable *K = nullptr);
 };
 
 class FunctionType : public Type {
@@ -74,38 +81,33 @@ public:
     ReturnType = RTy;
     ArgumentTypes = {ATys...};
   }
-  ~FunctionType() {
-    delete ReturnType;
-    for (auto i : ArgumentTypes)
-      delete i;
-    ArgumentTypes.clear();
-  }
   template <typename R, typename... As>
   static FunctionType *get(R RTy, As... ATys) {
-    return new FunctionType(RTy, ATys...);
+    static auto UniqueFunctionType = FunctionType(RTy, ATys...);
+    return &UniqueFunctionType;
   }
   Type *getATy(unsigned i) {
     return ArgumentTypes[i];
   }
-  llvm::Type *toLL(llvm::Module *M = nullptr);
+  llvm::Type *toLL(llvm::Module *M = nullptr, SymbolTable *K = nullptr);
 };
 
 template <typename T> class ArrayType : public Type {
 public:
   T *elTy;
-  llvm::Type *toLL(llvm::Module *M = nullptr);
+  llvm::Type *toLL(llvm::Module *M = nullptr, SymbolTable *K = nullptr);
 };
 
-class Value {
+class Value : public FoldingSetNode {
   Type *VTy;
 public:
   Value(Type *VTy) : VTy(VTy) {}
-  virtual ~Value() { delete VTy; };
+  virtual ~Value() { };
   Value *get() = delete;
   Type *getType() {
     return VTy;
   }
-  virtual llvm::Value *toLL(llvm::Module *M = nullptr) = 0;
+  virtual llvm::Value *toLL(llvm::Module *M = nullptr, SymbolTable *K = nullptr) = 0;
 };
 
 class Symbol : public Value {
@@ -119,7 +121,7 @@ public:
   std::string getName() {
     return Name;
   }
-  llvm::Value *toLL(llvm::Module *M = nullptr);
+  llvm::Value *toLL(llvm::Module *M = nullptr, SymbolTable *K = nullptr);
 };
 
 class GlobalString : public Value {
@@ -134,14 +136,14 @@ public:
   }
   // Returns GEP to GlobalStringPtr, which is a Value; data itself is in
   // constant storage.
-  llvm::Value *toLL(llvm::Module *M = nullptr);
+  llvm::Value *toLL(llvm::Module *M = nullptr, SymbolTable *K = nullptr);
 };
 
 class Constant : public Value {
 public:
   Constant(Type *Ty) : Value(Ty) {}
 private:
-  llvm::Constant *toLL(llvm::Module *M = nullptr) { return nullptr; }
+  llvm::Constant *toLL(llvm::Module *M = nullptr, SymbolTable *K = nullptr) { return nullptr; }
 };
 
 class ConstantInt : public Constant {
@@ -154,7 +156,7 @@ public:
   int getVal() {
     return Val;
   }
-  llvm::Constant *toLL(llvm::Module *M = nullptr);
+  llvm::Constant *toLL(llvm::Module *M = nullptr, SymbolTable *K = nullptr);
 };
 
 class ConstantBool : public Constant {
@@ -167,7 +169,7 @@ public:
   float getVal() {
     return Val;
   }
-  llvm::Constant *toLL(llvm::Module *M = nullptr);
+  llvm::Constant *toLL(llvm::Module *M = nullptr, SymbolTable *K = nullptr);
 };
 
 class ConstantFloat : public Constant {
@@ -180,20 +182,20 @@ public:
   float getVal() {
     return Val;
   }
-  llvm::Constant *toLL(llvm::Module *M = nullptr);
+  llvm::Constant *toLL(llvm::Module *M = nullptr, SymbolTable *K = nullptr);
 };
 
 class Function : public Constant {
-  std::vector<Type *> ArgumentTys;
+  std::vector<Symbol *> ArgumentList;
   std::string Name;
   std::vector<Value *> Val;
 public:
   Function(FunctionType *FTy) :
       Constant(FTy) {}
   ~Function() {
-    for (auto i : ArgumentTys)
+    for (auto i : ArgumentList)
       delete i;
-    ArgumentTys.clear();
+    ArgumentList.clear();
     for (auto i : Val)
       delete i;
     Val.clear();
@@ -204,11 +206,11 @@ public:
   void setName(std::string N) {
     Name = N;
   }
-  void setArgumentTys(std::vector<Type *> L) {
-    ArgumentTys = L;
+  void setArgumentList(std::vector<Symbol *> L) {
+    ArgumentList = L;
   }
-  std::vector<Type *> getArgumentTys() {
-    return ArgumentTys;
+  std::vector<Symbol *> getArgumentList() {
+    return ArgumentList;
   }
   void setBody(std::vector<Value *> Body) {
     Val = Body;
@@ -219,7 +221,7 @@ public:
   Value *getVal() {
     return Val.back();
   }
-  llvm::Constant *toLL(llvm::Module *M = nullptr);
+  llvm::Constant *toLL(llvm::Module *M = nullptr, SymbolTable *K = nullptr);
 };
 
 class Instruction : public Value {
@@ -241,7 +243,7 @@ public:
     return OperandList[i];
   }
 private:
-  llvm::Value *toLL(llvm::Module *M = nullptr) { return nullptr; }
+  llvm::Value *toLL(llvm::Module *M = nullptr, SymbolTable *K = nullptr) { return nullptr; }
 };
 
 class AddInst : public Instruction {
@@ -250,7 +252,7 @@ public:
   static AddInst *get(Type *Ty) {
     return new AddInst(Ty);
   }
-  llvm::Value *toLL(llvm::Module *M = nullptr);
+  llvm::Value *toLL(llvm::Module *M = nullptr, SymbolTable *K = nullptr);
 };
 
 class CallInst : public Instruction {
@@ -264,7 +266,7 @@ public:
   std::string getName() {
     return Name;
   }
-  llvm::Value *toLL(llvm::Module *M = nullptr);
+  llvm::Value *toLL(llvm::Module *M = nullptr, SymbolTable *K = nullptr);
 private:
   std::string Name;
 };
@@ -287,25 +289,7 @@ public:
   std::vector<Function *> getVal() {
     return ContainedFs;
   }
-  void toLL(llvm::Module *M);
-};
-
-class LLVisitor
-{
-public:
-  static llvm::Type *visit(IntegerType *V);
-  static llvm::Type *visit(BoolType *V);
-  static llvm::Type *visit(FloatType *V);
-  static llvm::Type *visit(StringType *V);
-  static llvm::Value *visit(Symbol *V);
-  static llvm::Value *visit(GlobalString *S);
-  static llvm::Constant *visit(ConstantInt *I);
-  static llvm::Constant *visit(ConstantBool *B);
-  static llvm::Constant *visit(ConstantFloat *F);
-  static llvm::Constant *visit(Function *RhF, llvm::Module *M);
-  static llvm::Value *visit(AddInst *A);
-  static llvm::Value *visit(CallInst *C, llvm::Module *M);
-  static void visit(Module *RhM, llvm::Module *M);
+  void toLL(llvm::Module *M, SymbolTable *K);
 };
 
 class TypeVisitor
