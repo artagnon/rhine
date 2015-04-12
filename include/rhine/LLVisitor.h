@@ -13,15 +13,15 @@ public:
   static llvm::Type *visit(BoolType *V);
   static llvm::Type *visit(FloatType *V);
   static llvm::Type *visit(StringType *V);
-  static llvm::Value *visit(Symbol *V, SymbolTable *K);
+  static llvm::Value *visit(Symbol *V, Context *K);
   static llvm::Value *visit(GlobalString *S);
   static llvm::Constant *visit(ConstantInt *I);
   static llvm::Constant *visit(ConstantBool *B);
   static llvm::Constant *visit(ConstantFloat *F);
-  static llvm::Constant *visit(Function *RhF, llvm::Module *M, SymbolTable *K);
+  static llvm::Constant *visit(Function *RhF, llvm::Module *M, Context *K);
   static llvm::Value *visit(AddInst *A);
   static llvm::Value *visit(CallInst *C, llvm::Module *M);
-  static void visit(Module *RhM, llvm::Module *M, SymbolTable *K);
+  static void visit(Module *RhM, llvm::Module *M, Context *K);
 };
 }
 

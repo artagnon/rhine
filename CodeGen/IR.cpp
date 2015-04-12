@@ -1,4 +1,5 @@
 #include "rhine/IR.h"
+#include "rhine/Context.h"
 #include "rhine/LLVisitor.h"
 #include "rhine/Externals.h"
 
@@ -6,64 +7,64 @@ namespace rhine {
 //===--------------------------------------------------------------------===//
 // ToLL() stubs.
 //===--------------------------------------------------------------------===//
-llvm::Type *IntegerType::toLL(llvm::Module *M, SymbolTable *K) {
+llvm::Type *IntegerType::toLL(llvm::Module *M, Context *K) {
   return LLVisitor::visit(this);
 }
 
-llvm::Type *BoolType::toLL(llvm::Module *M, SymbolTable *K) {
+llvm::Type *BoolType::toLL(llvm::Module *M, Context *K) {
   return LLVisitor::visit(this);
 }
 
-llvm::Type *FloatType::toLL(llvm::Module *M, SymbolTable *K) {
+llvm::Type *FloatType::toLL(llvm::Module *M, Context *K) {
   return LLVisitor::visit(this);
 }
 
-llvm::Type *StringType::toLL(llvm::Module *M, SymbolTable *K) {
+llvm::Type *StringType::toLL(llvm::Module *M, Context *K) {
   return LLVisitor::visit(this);
 }
 
-llvm::Type *FunctionType::toLL(llvm::Module *M, SymbolTable *K) {
+llvm::Type *FunctionType::toLL(llvm::Module *M, Context *K) {
   return nullptr;
 }
 
 template <typename T>
-llvm::Type *ArrayType<T>::toLL(llvm::Module *M, SymbolTable *K) {
+llvm::Type *ArrayType<T>::toLL(llvm::Module *M, Context *K) {
   return nullptr;
 }
 
-llvm::Constant *rhine::ConstantInt::toLL(llvm::Module *M, SymbolTable *K) {
+llvm::Constant *rhine::ConstantInt::toLL(llvm::Module *M, Context *K) {
   return LLVisitor::visit(this);
 }
 
-llvm::Constant *ConstantBool::toLL(llvm::Module *M, SymbolTable *K) {
+llvm::Constant *ConstantBool::toLL(llvm::Module *M, Context *K) {
   return LLVisitor::visit(this);
 }
 
-llvm::Constant *ConstantFloat::toLL(llvm::Module *M, SymbolTable *K) {
+llvm::Constant *ConstantFloat::toLL(llvm::Module *M, Context *K) {
   return LLVisitor::visit(this);
 }
 
-llvm::Value *GlobalString::toLL(llvm::Module *M, SymbolTable *K) {
+llvm::Value *GlobalString::toLL(llvm::Module *M, Context *K) {
   return LLVisitor::visit(this);
 }
 
-llvm::Constant *Function::toLL(llvm::Module *M, SymbolTable *K) {
+llvm::Constant *Function::toLL(llvm::Module *M, Context *K) {
   return LLVisitor::visit(this, M, K);
 }
 
-llvm::Value *Symbol::toLL(llvm::Module *M, SymbolTable *K) {
+llvm::Value *Symbol::toLL(llvm::Module *M, Context *K) {
   return LLVisitor::visit(this, K);
 }
 
-llvm::Value *AddInst::toLL(llvm::Module *M, SymbolTable *K) {
+llvm::Value *AddInst::toLL(llvm::Module *M, Context *K) {
   return LLVisitor::visit(this);
 }
 
-llvm::Value *CallInst::toLL(llvm::Module *M, SymbolTable *K) {
+llvm::Value *CallInst::toLL(llvm::Module *M, Context *K) {
   return LLVisitor::visit(this, M);
 }
 
-void Module::toLL(llvm::Module *M, SymbolTable *K) {
+void Module::toLL(llvm::Module *M, Context *K) {
   return LLVisitor::visit(this, M, K);
 }
 
@@ -87,7 +88,7 @@ llvm::Type *LLVisitor::visit(StringType *V) {
   return RhBuilder.getInt8PtrTy();
 }
 
-llvm::Value *LLVisitor::visit(Symbol *V, SymbolTable *K) {
+llvm::Value *LLVisitor::visit(Symbol *V, Context *K) {
   assert(K && "null Symbol Table");
   auto Val = K->getMapping(V);
   assert(Val && "Unbound symbol");
@@ -111,7 +112,7 @@ llvm::Constant *LLVisitor::visit(ConstantFloat *F) {
   return llvm::ConstantFP::get(RhContext, APFloat(F->getVal()));
 }
 
-llvm::Constant *LLVisitor::visit(Function *RhF, llvm::Module *M, SymbolTable *K) {
+llvm::Constant *LLVisitor::visit(Function *RhF, llvm::Module *M, Context *K) {
   auto RType = RhF->getVal()->getType()->toLL(M, K);
   std::vector<llvm::Type *> ArgTys;
   for (auto El: RhF->getArgumentList())
@@ -147,7 +148,7 @@ llvm::Value *LLVisitor::visit(CallInst *C, llvm::Module *M) {
   return RhBuilder.CreateCall(Callee, StrPtr, C->getName());
 }
 
-void LLVisitor::visit(Module *RhM, llvm::Module *M, SymbolTable *K) {
+void LLVisitor::visit(Module *RhM, llvm::Module *M, Context *K) {
   for (auto F: RhM->getVal())
     F->toLL(M, K);
 }

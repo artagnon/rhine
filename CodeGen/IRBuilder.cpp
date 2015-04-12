@@ -1,4 +1,5 @@
 #include "rhine/IR.h"
+#include "rhine/Context.h"
 
 using namespace rhine;
 
@@ -17,10 +18,11 @@ Function *emitAdd2Const() {
 }
 
 Function *untypedAdd() {
+  auto Ctx = Context();
   auto FTy = FunctionType::get(IntegerType::get(), Type::get(), Type::get());
   auto F = Function::get(FTy);
   auto Op = AddInst::get(Type::get());
-  auto I1 = Symbol::get("untypedvar");
+  auto I1 = Symbol::get("untypedvar", Type::get(), &Ctx);
   auto I2 = ConstantInt::get(4);
   Op->addOperand(I1);
   Op->addOperand(I2);
