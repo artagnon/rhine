@@ -30,10 +30,10 @@ std::string parseCodeGenString(std::string PrgString,
                                bool Debug)
 {
   auto Root = rhine::PTree();
-  auto Driver = rhine::ParseDriver(Root, ErrStream, Debug);
-  auto SymTab = rhine::SymbolTable();
+  auto Ctx = rhine::Context();
+  auto Driver = rhine::ParseDriver(Root, &Ctx, ErrStream, Debug);
   Driver.parseString(PrgString);
-  Root.M.toLL(M, &SymTab);
+  Root.M.toLL(M, &Ctx);
   return llToPP(M);
 }
 
@@ -47,10 +47,10 @@ std::string parseCodeGenString(std::string PrgString,
 
 void parseCodeGenFile(std::string Filename, llvm::Module *M, bool Debug) {
   auto Root = rhine::PTree();
-  auto Driver = rhine::ParseDriver(Root, std::cerr, Debug);
-  auto SymTab = rhine::SymbolTable();
+  auto Ctx = rhine::Context();
+  auto Driver = rhine::ParseDriver(Root, &Ctx, std::cerr, Debug);
   assert(Driver.parseFile(Filename) && "Could not parse file");
-  Root.M.toLL(M, &SymTab);
+  Root.M.toLL(M, &Ctx);
   M->dump();
 }
 }

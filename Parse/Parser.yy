@@ -151,7 +151,7 @@ argument_list:
 typed_symbol:
                 SYMBOL[S] type_annotation[T]
                 {
-                  $$ = Symbol::get(*$S, $T);
+                  $$ = Symbol::get(*$S, $T, Driver->Ctx);
                 }
         ;
 type_annotation:
