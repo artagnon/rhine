@@ -26,16 +26,16 @@ void EXPECT_PARSE_PP(std::string SourcePrg, std::string *ExpectedErr = nullptr,
 
 TEST(Parse, BareDefun)
 {
-  std::string SourcePrg = "defun foo [bar]";
-  std::string ExpectedErr = "string stream:1:16: error: syntax error";
+  std::string SourcePrg = "defun foo []";
+  std::string ExpectedErr = "string stream:1:13: error: syntax error";
   EXPECT_PARSE_PP(SourcePrg, &ExpectedErr);
 }
 
 TEST(CodeGen, DefunStm)
 {
-  std::string SourcePrg = "defun foo [bar] 3 + 2;";
+  std::string SourcePrg = "defun foo [] 3 + 2;";
   std::string ExpectedPP =
-    "define i32 @foo(i32) {\n"
+    "define i32 @foo() {\n"
     "entry:\n"
     "  ret i32 5\n"
     "}\n";
@@ -45,13 +45,13 @@ TEST(CodeGen, DefunStm)
 TEST(CodeGen, DefunCompoundStm)
 {
   std::string SourcePrg =
-    "defun foo [bar]\n"
+    "defun foo []\n"
     "{\n"
     "  3 + 2;\n"
     "  4 + 5;\n"
     "}";
   std::string ExpectedPP =
-    "define i32 @foo(i32) {\n"
+    "define i32 @foo() {\n"
     "entry:\n"
     "  ret i32 9\n"
     "}\n";
@@ -80,5 +80,29 @@ TEST(CodeGen, FunctionCall)
   std::string SourcePrg = "defun foom [] printf \"43\";";
   std::string ExpectedPP =
     "call i32 (i8*, ...)* @printf";
+  EXPECT_PARSE_PP(SourcePrg, nullptr, &ExpectedPP);
+}
+
+TEST(CodeGen, TypeAnnotation)
+{
+  std::string SourcePrg =
+    "defun id [var ~ Int] 0;\n";
+  std::string ExpectedPP =
+    "define i32 @id(i32) {\n"
+    "entry:\n"
+    "  ret i32 0\n"
+    "}\n";
+  EXPECT_PARSE_PP(SourcePrg, nullptr, &ExpectedPP);
+}
+
+TEST(CodeGen, DISABLED_FunctionArgBinding)
+{
+  std::string SourcePrg =
+    "defun id [var ~ Int] var ~ Int;\n";
+  std::string ExpectedPP =
+    "define i32 @id(i32 %var) {\n"
+    "entry:\n"
+    "  ret i32 %var\n"
+    "}\n";
   EXPECT_PARSE_PP(SourcePrg, nullptr, &ExpectedPP);
 }
