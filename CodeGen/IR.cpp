@@ -61,7 +61,7 @@ llvm::Value *AddInst::toLL(llvm::Module *M, Context *K) {
 }
 
 llvm::Value *CallInst::toLL(llvm::Module *M, Context *K) {
-  return LLVisitor::visit(this, M);
+  return LLVisitor::visit(this, M, K);
 }
 
 void Module::toLL(llvm::Module *M, Context *K) {
@@ -90,9 +90,7 @@ llvm::Type *LLVisitor::visit(StringType *V) {
 
 llvm::Value *LLVisitor::visit(Symbol *V, Context *K) {
   assert(K && "null Symbol Table");
-  auto Val = K->getMapping(V);
-  assert(Val && "Unbound symbol");
-  return Val;
+  return K->getMappingOrDie(V->getName());
 }
 
 llvm::Value *LLVisitor::visit(GlobalString *S) {
@@ -113,7 +111,8 @@ llvm::Constant *LLVisitor::visit(ConstantFloat *F) {
 }
 
 llvm::Constant *LLVisitor::visit(Function *RhF, llvm::Module *M, Context *K) {
-  auto RType = RhF->getVal()->getType()->toLL(M, K);
+  auto RhRType = RhF->getVal()->getType();
+  auto RType = RhRType->toLL(M, K);
   std::vector<llvm::Type *> ArgTys;
   for (auto El: RhF->getArgumentList())
     ArgTys.push_back(El->getType()->toLL());
@@ -122,12 +121,15 @@ llvm::Constant *LLVisitor::visit(Function *RhF, llvm::Module *M, Context *K) {
                                   GlobalValue::ExternalLinkage,
                                   RhF->getName(), M);
 
-  // Bind argument symbols to function argument values
+  // Bind argument symbols to function argument values in symbol table
   auto S = RhF->getArgumentList().begin();
   auto V = F->arg_begin();
   auto End = RhF->getArgumentList().end();
   for (; S != End; ++S, ++V)
-    K->addMapping(*S, V);
+    K->addMapping((*S)->getName(), V);
+
+  // Add function symbol to symbol table
+  K->addMapping(RhF->getName(), F);
 
   BasicBlock *BB = BasicBlock::Create(rhine::RhContext, "entry", F);
   RhBuilder.SetInsertPoint(BB);
@@ -142,9 +144,20 @@ llvm::Value *LLVisitor::visit(AddInst *A) {
   return RhBuilder.CreateAdd(Op0, Op1);
 }
 
-llvm::Value *LLVisitor::visit(CallInst *C, llvm::Module *M) {
-  auto Callee = Externals::printf(M);
-  auto StrPtr = C->getOperand(0)->toLL(M);
+llvm::Value *LLVisitor::visit(CallInst *C, llvm::Module *M, Context *K) {
+  llvm::Function *Callee;
+  if (auto Result = K->getMapping(C->getName()))
+    Callee = dyn_cast<llvm::Function>(Result);
+  else
+    Callee = Externals::printf(M);
+
+  auto Arg = C->getOperand(0);
+  llvm::Value *StrPtr;
+  if (auto Sym = dynamic_cast<Symbol *>(Arg))
+    StrPtr = K->getMappingOrDie(Sym->getName());
+  else
+    StrPtr = Arg->toLL(M);
+
   return RhBuilder.CreateCall(Callee, StrPtr, C->getName());
 }
 

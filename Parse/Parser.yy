@@ -41,8 +41,9 @@
 %token                  THEN
 %token                  AND
 %token                  OR
-%token                  TBOOL
 %token                  TINT
+%token                  TBOOL
+%token                  TSTRING
 %token                  END       0
 %token  <RawSymbol>     SYMBOL
 %token  <Integer>       INTEGER
@@ -167,6 +168,11 @@ type_annotation:
                   $$ = BoolType::get();
                 }
                 ;
+        |       '~' TSTRING
+                {
+                  $$ = StringType::get();
+                }
+                ;
 expression:
                 rvalue[V]
                 {
@@ -179,10 +185,10 @@ expression:
                   Op->addOperand($R);
                   $$ = Op;
                 }
-        |       typed_symbol[S] STRING[P]
+        |       typed_symbol[S] rvalue[R]
                 {
                   auto Op = CallInst::get($S->getName());
-                  Op->addOperand($P);
+                  Op->addOperand($R);
                   $$ = Op;
                 }
         |       IF expression[C] THEN compound_stm[T] compound_stm[F]
@@ -194,6 +200,10 @@ rvalue:
                 INTEGER[I]
                 {
                   $$ = $I;
+                }
+        |       STRING[P]
+                {
+                  $$ = $P;
                 }
         |       typed_symbol[S]
                 {

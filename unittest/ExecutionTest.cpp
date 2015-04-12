@@ -168,9 +168,9 @@ TEST(Execution, ConstantInt) {
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
 
-TEST(Execution, DISABLED_FunctionArgument) {
+TEST(Execution, FunctionArgument) {
   std::string SourcePrg =
-    "defun printid [var] {"
+    "defun printid [var ~ String] {"
     "  printf var;"
     "}"
     "defun main [] {"

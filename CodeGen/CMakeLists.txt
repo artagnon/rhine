@@ -8,11 +8,11 @@ add_library(CodeGen
   "${CMAKE_CURRENT_SOURCE_DIR}/Externals.cpp"
   "${PROJECT_SOURCE_DIR}/include/rhine/Externals.h"
   "${PROJECT_SOURCE_DIR}/include/rhine/LLVisitor.h"
-  "${PROJECT_SOURCE_DIR}/include/rhine/SymbolTable.h"
+  "${PROJECT_SOURCE_DIR}/include/rhine/Context.h"
   "${PROJECT_SOURCE_DIR}/include/rhine/IR.h")
 set_target_properties(CodeGen PROPERTIES
   LINKER_LANGUAGE CXX
-  COMPILE_FLAGS ${LLVM_CXXFLAGS})
+  COMPILE_FLAGS "${LLVM_CXXFLAGS} -frtti")
 target_link_libraries(CodeGen
   ${LLVM_LDFLAGS}
   ${LLVM_LIBRARIES})

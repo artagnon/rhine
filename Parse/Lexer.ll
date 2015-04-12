@@ -67,6 +67,7 @@ SPTAB   [ \t]+
 
 "Int" { return T::TINT; }
 "Bool" { return T::TBOOL; }
+"String" { return T::TSTRING; }
 
 "true" {
   auto B = ConstantBool::get(true);
