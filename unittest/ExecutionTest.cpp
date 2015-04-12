@@ -159,11 +159,23 @@ void EXPECT_OUTPUT(std::string SourcePrg, std::string ExpectedOut)
   EXPECT_STREQ(ExpectedOut.c_str(), ActualOut.c_str());
 }
 
-TEST(Execution, PrintfConstantInt) {
+TEST(Execution, ConstantInt) {
   std::string SourcePrg =
     "defun main [] {"
     "  printf \"43\";"
     "}";
   std::string ExpectedOut = "43";
+  EXPECT_OUTPUT(SourcePrg, ExpectedOut);
+}
+
+TEST(Execution, DISABLED_FunctionArgument) {
+  std::string SourcePrg =
+    "defun printid [var] {"
+    "  printf var;"
+    "}"
+    "defun main [] {"
+    "  printid \"21\";"
+    "}";
+  std::string ExpectedOut = "21";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }

@@ -95,14 +95,14 @@ TEST(CodeGen, TypeAnnotation)
   EXPECT_PARSE_PP(SourcePrg, nullptr, &ExpectedPP);
 }
 
-TEST(CodeGen, DISABLED_FunctionArgBinding)
+TEST(CodeGen, FunctionArgBinding)
 {
   std::string SourcePrg =
     "defun id [var ~ Int] var ~ Int;\n";
   std::string ExpectedPP =
-    "define i32 @id(i32 %var) {\n"
+    "define i32 @id(i32) {\n"
     "entry:\n"
-    "  ret i32 %var\n"
+    "  ret i32 %0\n"
     "}\n";
   EXPECT_PARSE_PP(SourcePrg, nullptr, &ExpectedPP);
 }

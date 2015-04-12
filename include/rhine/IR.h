@@ -23,6 +23,7 @@ using namespace llvm;
 
 static LLVMContext &RhContext = getGlobalContext();
 static IRBuilder<> RhBuilder(RhContext);
+static FoldingSet<Symbol> SymbolCache;
 
 class Type : public FoldingSetNode {
 public:
@@ -99,6 +100,7 @@ public:
 };
 
 class Value : public FoldingSetNode {
+protected:
   Type *VTy;
 public:
   Value(Type *VTy) : VTy(VTy) {}
@@ -116,7 +118,23 @@ public:
   Symbol(std::string N, Type *T = Type::get()) : Value(T), Name(N) {}
 
   static Symbol *get(std::string N, Type *T = Type::get()) {
-    return new Symbol(N, T);
+    FoldingSetNodeID ID;
+    void *InsertPos;
+    Symbol::Profile(ID, N, T);
+    Symbol *S = SymbolCache.FindNodeOrInsertPos(ID, InsertPos);
+    if (!S) {
+      S = new Symbol(N, T);
+      SymbolCache.InsertNode(S, InsertPos);
+    }
+    return S;
+  }
+  static inline void Profile(FoldingSetNodeID &ID, const std::string &N,
+                             const Type *T){
+    ID.AddString(N);
+    ID.AddPointer(T);
+  }
+  void Profile(FoldingSetNodeID &ID) {
+    Profile(ID, Name, VTy);
   }
   std::string getName() {
     return Name;
@@ -193,9 +211,6 @@ public:
   Function(FunctionType *FTy) :
       Constant(FTy) {}
   ~Function() {
-    for (auto i : ArgumentList)
-      delete i;
-    ArgumentList.clear();
     for (auto i : Val)
       delete i;
     Val.clear();
