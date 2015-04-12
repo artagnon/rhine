@@ -138,7 +138,7 @@ public:
   std::string getName() {
     return Name;
   }
-  llvm::Value *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
+  virtual llvm::Value *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
 };
 
 class GlobalString : public Value {
@@ -153,7 +153,7 @@ public:
   }
   // Returns GEP to GlobalStringPtr, which is a Value; data itself is in
   // constant storage.
-  llvm::Value *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
+  virtual llvm::Value *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
 };
 
 class Constant : public Value {

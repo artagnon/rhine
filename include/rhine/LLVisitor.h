@@ -20,7 +20,7 @@ public:
   static llvm::Constant *visit(ConstantFloat *F);
   static llvm::Constant *visit(Function *RhF, llvm::Module *M, Context *K);
   static llvm::Value *visit(AddInst *A);
-  static llvm::Value *visit(CallInst *C, llvm::Module *M);
+  static llvm::Value *visit(CallInst *C, llvm::Module *M, Context *K);
   static void visit(Module *RhM, llvm::Module *M, Context *K);
 };
 }
