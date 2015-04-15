@@ -299,12 +299,6 @@ public:
   }
   void toLL(llvm::Module *M, Context *K);
 };
-
-class TypeVisitor
-{
-public:
-  static llvm::Value *visit(AddInst *A);
-};
 }
 
 #endif

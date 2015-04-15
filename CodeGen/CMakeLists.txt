@@ -5,6 +5,7 @@ link_directories(${LLVM_LIBRARY_DIRS})
 add_library(CodeGen
   "${CMAKE_CURRENT_SOURCE_DIR}/IRBuilder.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/IR.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Lowering.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Externals.cpp"
   "${PROJECT_SOURCE_DIR}/include/rhine/Externals.h"
   "${PROJECT_SOURCE_DIR}/include/rhine/LLVisitor.h"
