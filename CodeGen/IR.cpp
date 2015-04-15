@@ -1,5 +1,6 @@
 #include "rhine/IR.h"
 #include "rhine/LLVisitor.h"
+#include "rhine/TypeVisitor.h"
 #include "rhine/Context.h"
 
 namespace rhine {
@@ -65,5 +66,44 @@ llvm::Value *CallInst::toLL(llvm::Module *M, Context *K) {
 
 void Module::toLL(llvm::Module *M, Context *K) {
   return LLVisitor::visit(this, M, K);
+}
+
+//===--------------------------------------------------------------------===//
+// typeInfer() stubs.
+//===--------------------------------------------------------------------===//
+void rhine::ConstantInt::typeInfer(Context *K) {
+  TypeVisitor::visit(this);
+}
+
+void ConstantBool::typeInfer(Context *K) {
+  TypeVisitor::visit(this);
+}
+
+void ConstantFloat::typeInfer(Context *K) {
+  TypeVisitor::visit(this);
+}
+
+void GlobalString::typeInfer(Context *K) {
+  TypeVisitor::visit(this);
+}
+
+void Function::typeInfer(Context *K) {
+  TypeVisitor::visit(this, K);
+}
+
+void Symbol::typeInfer(Context *K) {
+  TypeVisitor::visit(this, K);
+}
+
+void AddInst::typeInfer(Context *K) {
+  TypeVisitor::visit(this);
+}
+
+void CallInst::typeInfer(Context *K) {
+  TypeVisitor::visit(this, K);
+}
+
+void Module::typeInfer(Context *K) {
+  TypeVisitor::visit(this, K);
 }
 }
