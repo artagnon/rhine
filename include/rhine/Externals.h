@@ -1,3 +1,5 @@
+//-*- C++ -*-
+
 #ifndef EXTERNALS_H
 #define EXTERNALS_H
 
