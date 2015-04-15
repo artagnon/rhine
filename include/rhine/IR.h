@@ -108,6 +108,7 @@ public:
   Type *getType() {
     return VTy;
   }
+  virtual void typeInfer(Context *K = nullptr) = 0;
   virtual llvm::Value *toLL(llvm::Module *M = nullptr, Context *K = nullptr) = 0;
 };
 
@@ -138,7 +139,8 @@ public:
   std::string getName() {
     return Name;
   }
-  virtual llvm::Value *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
+  void typeInfer(Context *K = nullptr);
+  llvm::Value *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
 };
 
 class GlobalString : public Value {
@@ -151,15 +153,17 @@ public:
   std::string getVal() {
     return Val;
   }
+  void typeInfer(Context *K = nullptr);
   // Returns GEP to GlobalStringPtr, which is a Value; data itself is in
   // constant storage.
-  virtual llvm::Value *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
+  llvm::Value *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
 };
 
 class Constant : public Value {
 public:
   Constant(Type *Ty) : Value(Ty) {}
 private:
+  void typeInfer(Context *K = nullptr) {}
   llvm::Constant *toLL(llvm::Module *M = nullptr, Context *K = nullptr) { return nullptr; }
 };
 
@@ -173,6 +177,7 @@ public:
   int getVal() {
     return Val;
   }
+  void typeInfer(Context *K = nullptr);
   llvm::Constant *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
 };
 
@@ -186,6 +191,7 @@ public:
   float getVal() {
     return Val;
   }
+  void typeInfer(Context *K = nullptr);
   llvm::Constant *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
 };
 
@@ -199,6 +205,7 @@ public:
   float getVal() {
     return Val;
   }
+  void typeInfer(Context *K = nullptr);
   llvm::Constant *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
 };
 
@@ -233,6 +240,7 @@ public:
   Value *getVal() {
     return Val.back();
   }
+  void typeInfer(Context *K = nullptr);
   llvm::Constant *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
 };
 
@@ -253,7 +261,8 @@ public:
     return OperandList[i];
   }
 private:
-  llvm::Value *toLL(llvm::Module *M = nullptr, Context *K = nullptr) { return nullptr; }
+  virtual void typeInfer(Context *K = nullptr) {};
+  virtual llvm::Value *toLL(llvm::Module *M = nullptr, Context *K = nullptr) { return nullptr; }
 };
 
 class AddInst : public Instruction {
@@ -262,6 +271,7 @@ public:
   static AddInst *get(Type *Ty) {
     return new AddInst(Ty);
   }
+  void typeInfer(Context *K = nullptr);
   llvm::Value *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
 };
 
@@ -276,6 +286,7 @@ public:
   std::string getName() {
     return Name;
   }
+  void typeInfer(Context *K = nullptr);
   llvm::Value *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
 private:
   std::string Name;
@@ -297,6 +308,7 @@ public:
   std::vector<Function *> getVal() {
     return ContainedFs;
   }
+  void typeInfer(Context *K = nullptr);
   void toLL(llvm::Module *M, Context *K);
 };
 }
