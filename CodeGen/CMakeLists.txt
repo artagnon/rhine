@@ -13,7 +13,7 @@ add_library(CodeGen
   "${PROJECT_SOURCE_DIR}/include/rhine/IR.h")
 set_target_properties(CodeGen PROPERTIES
   LINKER_LANGUAGE CXX
-  COMPILE_FLAGS "${LLVM_CXXFLAGS} -frtti")
+  COMPILE_FLAGS ${LLVM_CXXFLAGS})
 target_link_libraries(CodeGen
   ${LLVM_LDFLAGS}
   ${LLVM_LIBRARIES})

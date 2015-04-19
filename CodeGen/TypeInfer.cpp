@@ -34,7 +34,7 @@ Type *GlobalString::typeInfer(Context *K) {
 Type *Function::typeInfer(Context *K) {
   for (auto &El: this->getArgumentList())
     El->typeInfer(K);
-  auto FType = dynamic_cast<FunctionType *>(this->getType());
+  auto FType = dyn_cast<FunctionType>(this->getType());
   FType->setRTy(this->getVal()->typeInfer(K));
   return FType;
 }

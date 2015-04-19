@@ -26,7 +26,19 @@ static LLVMContext &RhContext = getGlobalContext();
 static IRBuilder<> RhBuilder(RhContext);
 
 class Type : public FoldingSetNode {
+protected:
+  /// Discriminator for LLVM-style RTTI (dyn_cast<> et al.)
+  enum RTType {
+      RT_UnType,
+      RT_IntegerType,
+      RT_BoolType,
+      RT_FloatType,
+      RT_StringType,
+      RT_FunctionType,
+  };
 public:
+  Type(RTType ID) : TyID(ID) {}
+  RTType getTyID() const { return TyID; }
   static Type *get() = delete;
   friend ostream &operator<<(ostream &Stream, const Type &T) {
     T.print(Stream);
@@ -35,13 +47,19 @@ public:
   virtual llvm::Type *toLL(llvm::Module *M = nullptr, Context *K = nullptr) = 0;
 protected:
   virtual void print(std::ostream &Stream) const = 0;
+private:
+  const RTType TyID;
 };
 
 class UnType : public Type {
 public:
+  UnType(): Type(RT_UnType) {}
   static UnType *get() {
     static auto UniqueUnType = new UnType();
     return UniqueUnType;
+  }
+  static bool classof(const Type *T) {
+    return T->getTyID() == RT_UnType;
   }
   friend ostream &operator<<(ostream &Stream, const UnType &U) {
     U.print(Stream);
@@ -58,9 +76,13 @@ protected:
 
 class IntegerType : public Type {
 public:
+  IntegerType(): Type(RT_IntegerType) {}
   static IntegerType *get() {
     static auto UniqueIntegerType = new IntegerType();
     return UniqueIntegerType;
+  }
+  static bool classof(const Type *T) {
+    return T->getTyID() == RT_IntegerType;
   }
   friend ostream &operator<<(ostream &Stream, const IntegerType &T) {
     T.print(Stream);
@@ -75,9 +97,13 @@ protected:
 
 class BoolType : public Type {
 public:
+  BoolType(): Type(RT_BoolType) {}
   static BoolType *get() {
     static auto UniqueBoolType = new BoolType();
     return UniqueBoolType;
+  }
+  static bool classof(const Type *T) {
+    return T->getTyID() == RT_BoolType;
   }
   friend ostream &operator<<(ostream &Stream, const BoolType &T) {
     T.print(Stream);
@@ -92,9 +118,13 @@ protected:
 
 class FloatType : public Type {
 public:
+  FloatType(): Type(RT_FloatType) {}
   static FloatType *get() {
     static auto UniqueFloatType = new FloatType();
     return UniqueFloatType;
+  }
+  static bool classof(const Type *T) {
+    return T->getTyID() == RT_FloatType;
   }
   friend ostream &operator<<(ostream &Stream, const FloatType &T) {
     T.print(Stream);
@@ -109,9 +139,13 @@ protected:
 
 class StringType : public Type {
 public:
+  StringType(): Type(RT_StringType) {}
   static StringType *get() {
     static auto UniqueStringType = new StringType();
     return UniqueStringType;
+  }
+  static bool classof(const Type *T) {
+    return T->getTyID() == RT_StringType;
   }
   friend ostream &operator<<(ostream &Stream, const StringType &T) {
     T.print(Stream);
@@ -129,10 +163,9 @@ class FunctionType : public Type {
   std::vector<Type *> ArgumentTypes;
 public:
   template <typename R, typename... As>
-  FunctionType(R RTy, As... ATys) {
-    ReturnType = RTy;
-    ArgumentTypes = {ATys...};
-  }
+  FunctionType(R RTy, As... ATys) : Type(RT_FunctionType),
+                                    ReturnType(RTy),
+                                    ArgumentTypes({ATys...}) {}
   template <typename R, typename... As>
   static FunctionType *get(R RTy, As... ATys, Context *K) {
     FoldingSetNodeID ID;
@@ -144,6 +177,9 @@ public:
       K->getFTyCache()->InsertNode(FTy, InsertPos);
     }
     return FTy;
+  }
+  static bool classof(const Type *T) {
+    return T->getTyID() == RT_FunctionType;
   }
   static inline void Profile(FoldingSetNodeID &ID, const Type *RTy,
                              const std::vector<Type *> ATys) {
@@ -185,10 +221,23 @@ protected:
 class Value : public FoldingSetNode {
 protected:
   Type *VTy;
+
+  /// Discriminator for LLVM-style RTTI (dyn_cast<> et al.)
+  enum RTType {
+      RT_Symbol,
+      RT_GlobalString,
+      RT_ConstantInt,
+      RT_ConstantBool,
+      RT_ConstantFloat,
+      RT_Function,
+      RT_AddInst,
+      RT_CallInst,
+  };
 public:
-  Value(Type *VTy) : VTy(VTy) {}
+  Value(Type *VTy, RTType ID) : VTy(VTy), ValID(ID) {}
   virtual ~Value() { };
   Value *get() = delete;
+  RTType getValID() const { return ValID; }
   Type *getType() const {
     return VTy;
   }
@@ -203,12 +252,14 @@ public:
   virtual llvm::Value *toLL(llvm::Module *M = nullptr, Context *K = nullptr) = 0;
 protected:
   virtual void print(std::ostream &Stream) const = 0;
+private:
+  const RTType ValID;
 };
 
 class Symbol : public Value {
   std::string Name;
 public:
-  Symbol(std::string N, Type *T) : Value(T), Name(N) {}
+  Symbol(std::string N, Type *T) : Value(T, RT_Symbol), Name(N) {}
 
   static Symbol *get(std::string N, Type *T, Context *K) {
     FoldingSetNodeID ID;
@@ -220,6 +271,9 @@ public:
       K->getSymbolCache()->InsertNode(S, InsertPos);
     }
     return S;
+  }
+  static bool classof(const Value *V) {
+    return V->getValID() == RT_Symbol;
   }
   static inline void Profile(FoldingSetNodeID &ID, const std::string &N,
                              const Type *T) {
@@ -247,9 +301,13 @@ protected:
 class GlobalString : public Value {
   std::string Val;
 public:
-  GlobalString(std::string Val) : Value(StringType::get()), Val(Val) {}
+  GlobalString(std::string Val) :
+      Value(StringType::get(), RT_GlobalString), Val(Val) {}
   static GlobalString *get(std::string Val) {
     return new GlobalString(Val);
+  }
+  static bool classof(const Value *V) {
+    return V->getValID() == RT_GlobalString;
   }
   std::string getVal() {
     return Val;
@@ -270,7 +328,7 @@ protected:
 
 class Constant : public Value {
 public:
-  Constant(Type *Ty) : Value(Ty) {}
+  Constant(Type *Ty, RTType ID) : Value(Ty, ID) {}
   friend ostream &operator<<(ostream &Stream, const Constant &C) {
     C.print(Stream);
     return Stream;
@@ -284,9 +342,13 @@ protected:
 class ConstantInt : public Constant {
   int Val;
 public:
-  ConstantInt(int Val) : Constant(IntegerType::get()), Val(Val) {}
+  ConstantInt(int Val) : Constant(IntegerType::get(), RT_ConstantInt),
+                         Val(Val) {}
   static ConstantInt *get(int Val) {
     return new ConstantInt(Val);
+  }
+  static bool classof(const Value *V) {
+    return V->getValID() == RT_ConstantInt;
   }
   int getVal() {
     return Val;
@@ -306,9 +368,13 @@ protected:
 class ConstantBool : public Constant {
   bool Val;
 public:
-  ConstantBool(bool Val) : Constant(BoolType::get()), Val(Val) {}
+  ConstantBool(bool Val) : Constant(BoolType::get(), RT_ConstantBool),
+                           Val(Val) {}
   static ConstantBool *get(bool Val) {
     return new ConstantBool(Val);
+  }
+  static bool classof(const Value *V) {
+    return V->getValID() == RT_ConstantBool;
   }
   float getVal() {
     return Val;
@@ -328,9 +394,13 @@ protected:
 class ConstantFloat : public Constant {
 public:
   float Val;
-  ConstantFloat(float Val) : Constant(FloatType::get()), Val(Val) {}
+  ConstantFloat(float Val) : Constant(FloatType::get(), RT_ConstantFloat),
+                             Val(Val) {}
   static ConstantFloat *get(float Val) {
     return new ConstantFloat(Val);
+  }
+  static bool classof(const Value *V) {
+    return V->getValID() == RT_ConstantFloat;
   }
   float getVal() {
     return Val;
@@ -353,12 +423,15 @@ class Function : public Constant {
   std::vector<Value *> Val;
 public:
   Function(FunctionType *FTy) :
-      Constant(FTy) {}
+      Constant(FTy, RT_Function) {}
   ~Function() {
     Val.clear();
   }
   static Function *get(FunctionType *FTy) {
     return new Function(FTy);
+  }
+  static bool classof(const Value *V) {
+    return V->getValID() == RT_Function;
   }
   void setName(std::string N) {
     Name = N;
@@ -398,8 +471,8 @@ class Instruction : public Value {
 protected:
   std::vector<Value *> OperandList;
 public:
-  Instruction(Type *Ty) :
-      Value(Ty) {}
+  Instruction(Type *Ty, RTType ID) :
+      Value(Ty, ID) {}
   ~Instruction() {
     OperandList.clear();
   }
@@ -421,9 +494,12 @@ protected:
 
 class AddInst : public Instruction {
 public:
-  AddInst(Type *Ty) : Instruction(Ty) {}
+  AddInst(Type *Ty) : Instruction(Ty, RT_AddInst) {}
   static AddInst *get(Type *Ty) {
     return new AddInst(Ty);
+  }
+  static bool classof(const Value *V) {
+    return V->getValID() == RT_AddInst;
   }
   friend ostream &operator<<(ostream &Stream, const AddInst &A) {
     A.print(Stream);
@@ -444,9 +520,12 @@ class CallInst : public Instruction {
 public:
   // May be untyped
   CallInst(std::string FunctionName, Type *Ty = IntegerType::get()) :
-      Instruction(Ty), Name(FunctionName) {}
+      Instruction(Ty, RT_CallInst), Name(FunctionName) {}
   static CallInst *get(std::string FunctionName, Type *Ty = IntegerType::get()) {
     return new CallInst(FunctionName, Ty);
+  }
+  static bool classof(const Value *V) {
+    return V->getValID() == RT_CallInst;
   }
   std::string getName() {
     return Name;
