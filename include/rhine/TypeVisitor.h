@@ -3,17 +3,15 @@
 #include "rhine/IR.h"
 
 namespace rhine {
-class TypeVisitor
+struct TypeVisitor
 {
-public:
-  static Type *visit(Symbol *V, Context *K);
-  static Type *visit(GlobalString *S);
-  static Type *visit(ConstantInt *I);
-  static Type *visit(ConstantBool *B);
-  static Type *visit(ConstantFloat *F);
-  static Type *visit(Function *RhF, Context *K);
-  static Type *visit(AddInst *A);
-  static Type *visit(CallInst *C, Context *K);
-  static void visit(Module *RhM, Context *K);
+  static Symbol *visit(Symbol *V, Context *K);
+  static GlobalString *visit(GlobalString *S);
+  static ConstantInt *visit(ConstantInt *I);
+  static ConstantBool *visit(ConstantBool *B);
+  static ConstantFloat *visit(ConstantFloat *F);
+  static Function *visit(Function *RhF, Context *K);
+  static AddInst *visit(AddInst *A);
+  static CallInst *visit(CallInst *C, Context *K);
 };
 }

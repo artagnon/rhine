@@ -6,9 +6,8 @@
 #include "rhine/IR.h"
 
 namespace rhine {
-class LLVisitor
+struct LLVisitor
 {
-public:
   static llvm::Type *visit(IntegerType *V);
   static llvm::Type *visit(BoolType *V);
   static llvm::Type *visit(FloatType *V);

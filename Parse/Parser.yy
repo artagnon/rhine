@@ -87,16 +87,15 @@ tlexpr:
 fn_decl:
                 DEFUN SYMBOL[N] '[' argument_list[A] ']' type_annotation[T]
                 {
-                  auto FTy = FunctionType::get($T);
+                  auto FTy = FunctionType::get($T, Driver->Ctx);
                   auto Fn = Function::get(FTy);
                   Fn->setName(*$N);
                   Fn->setArgumentList(*$A);
                   $$ = Fn;
                 }
-        |       DEFUN SYMBOL[N] '[' ']'
+        |       DEFUN SYMBOL[N] '[' ']' type_annotation[T]
                 {
-                  auto ITy = IntegerType::get();
-                  auto FTy = FunctionType::get(ITy);
+                  auto FTy = FunctionType::get($T, Driver->Ctx);
                   auto Fn = Function::get(FTy);
                   Fn->setName(*$N);
                   $$ = Fn;
