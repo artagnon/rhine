@@ -1,6 +1,5 @@
 #include "rhine/IR.h"
 #include "rhine/LLVisitor.h"
-#include "rhine/TypeVisitor.h"
 #include "rhine/Context.h"
 
 namespace rhine {
@@ -66,49 +65,5 @@ llvm::Value *CallInst::toLL(llvm::Module *M, Context *K) {
 
 void Module::toLL(llvm::Module *M, Context *K) {
   return LLVisitor::visit(this, M, K);
-}
-
-//===--------------------------------------------------------------------===//
-// typeInfer() stubs.
-//===--------------------------------------------------------------------===//
-Type *Symbol::typeInfer(Context *K) {
-  return TypeVisitor::visit(this, K)->getType();
-}
-
-Type *rhine::ConstantInt::typeInfer(Context *K) {
-  return TypeVisitor::visit(this)->getType();
-}
-
-Type *ConstantBool::typeInfer(Context *K) {
-  return TypeVisitor::visit(this)->getType();
-}
-
-Type *ConstantFloat::typeInfer(Context *K) {
-  return TypeVisitor::visit(this)->getType();
-}
-
-Type *GlobalString::typeInfer(Context *K) {
-  return TypeVisitor::visit(this)->getType();
-}
-
-Type *Function::typeInfer(Context *K) {
-  return TypeVisitor::visit(this, K)->getType();
-}
-
-Type *AddInst::typeInfer(Context *K) {
-  return TypeVisitor::visit(this)->getType();
-}
-
-Type *CallInst::typeInfer(Context *K) {
-  return TypeVisitor::visit(this, K)->getType();
-}
-
-void Module::typeInfer(Context *K) {
-  auto V = this->getVal();
-  std::transform(V.begin(), V.end(), V.begin(),
-                 [K](Function *F) -> Function * {
-                   return TypeVisitor::visit(F, K);
-                 });
-  this->setVal(V);
 }
 }
