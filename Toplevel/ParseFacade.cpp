@@ -8,6 +8,22 @@
 #include <string>
 
 namespace rhine {
+std::string irToPP (Value *Obj)
+{
+  std::string Output;
+  std::ostringstream OutputStream(Output);
+  OutputStream << *Obj;
+  return OutputStream.str();
+}
+
+std::string irToPP (Module *M)
+{
+  std::string Output;
+  std::ostringstream OutputStream(Output);
+  OutputStream << *M;
+  return OutputStream.str();
+}
+
 std::string llToPP (llvm::Value *Obj)
 {
   std::string Output;

@@ -4,6 +4,6 @@
 
 TEST(Constant, ConstantInt) {
   auto Source = rhine::ConstantInt::get(32);
-  auto PP = rhine::llToPP(Source->toLL());
-  EXPECT_STREQ(PP.c_str(), "i32 32");
+  auto PP = rhine::irToPP(Source);
+  EXPECT_STREQ(PP.c_str(), "32 ~ IntegerType");
 }

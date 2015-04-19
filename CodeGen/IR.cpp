@@ -26,11 +26,6 @@ llvm::Type *FunctionType::toLL(llvm::Module *M, Context *K) {
   return nullptr;
 }
 
-template <typename T>
-llvm::Type *ArrayType<T>::toLL(llvm::Module *M, Context *K) {
-  return nullptr;
-}
-
 llvm::Constant *rhine::ConstantInt::toLL(llvm::Module *M, Context *K) {
   return LLVisitor::visit(this);
 }
