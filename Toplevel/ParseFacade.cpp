@@ -8,7 +8,7 @@
 #include <string>
 
 namespace rhine {
-std::string irToPP (Value *Obj)
+std::string irToPP(Value *Obj)
 {
   std::string Output;
   std::ostringstream OutputStream(Output);
@@ -16,7 +16,7 @@ std::string irToPP (Value *Obj)
   return OutputStream.str();
 }
 
-std::string irToPP (Module *M)
+std::string irToPP(Module *M)
 {
   std::string Output;
   std::ostringstream OutputStream(Output);
@@ -24,7 +24,7 @@ std::string irToPP (Module *M)
   return OutputStream.str();
 }
 
-std::string llToPP (llvm::Value *Obj)
+std::string llToPP(llvm::Value *Obj)
 {
   std::string Output;
   llvm::raw_string_ostream OutputStream(Output);
@@ -32,12 +32,24 @@ std::string llToPP (llvm::Value *Obj)
   return OutputStream.str();
 }
 
-std::string llToPP (llvm::Module *M)
+std::string llToPP(llvm::Module *M)
 {
   std::string Output;
   llvm::raw_string_ostream OutputStream(Output);
   M->print(OutputStream, nullptr);
   return OutputStream.str();
+}
+
+std::string parseTransformIR(std::string PrgString,
+                             std::ostream &ErrStream,
+                             bool Debug)
+{
+  auto Root = rhine::PTree();
+  auto Ctx = rhine::Context();
+  auto Driver = rhine::ParseDriver(Root, &Ctx, ErrStream, Debug);
+  Driver.parseString(PrgString);
+  Root.M.typeInfer(&Ctx);
+  return irToPP(&Root.M);
 }
 
 std::string parseCodeGenString(std::string PrgString,

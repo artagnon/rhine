@@ -86,7 +86,7 @@ TEST(CodeGen, FunctionCall)
 TEST(CodeGen, TypeAnnotation)
 {
   std::string SourcePrg =
-    "defun id [var ~ Int] 0;\n";
+    "defun id [var ~Int] 0;\n";
   std::string ExpectedPP =
     "define i32 @id(i32) {\n"
     "entry:\n"
@@ -98,7 +98,7 @@ TEST(CodeGen, TypeAnnotation)
 TEST(CodeGen, FunctionArgBinding)
 {
   std::string SourcePrg =
-    "defun id [var ~ Int] var ~ Int;\n";
+    "defun id [var ~Int] var ~Int;\n";
   std::string ExpectedPP =
     "define i32 @id(i32) {\n"
     "entry:\n"
@@ -110,7 +110,7 @@ TEST(CodeGen, FunctionArgBinding)
 TEST(CodeGen, TypePropagation)
 {
   std::string SourcePrg =
-    "defun id [var ~ Int] var;\n";
+    "defun id [var ~Int] var;\n";
   std::string ExpectedPP =
     "define i32 @id(i32) {\n"
     "entry:\n"

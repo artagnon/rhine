@@ -52,7 +52,7 @@ public:
   }
 protected:
   virtual void print(std::ostream &Stream) const {
-    Stream << "~ UnType";
+    Stream << "UnType";
   }
 };
 
@@ -69,7 +69,7 @@ public:
   llvm::Type *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
 protected:
   virtual void print(std::ostream &Stream) const {
-    Stream << "~ IntegerType";
+    Stream << "Int";
   }
 };
 
@@ -86,7 +86,7 @@ public:
   llvm::Type *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
 protected:
   virtual void print(std::ostream &Stream) const {
-    Stream << "~ BoolType";
+    Stream << "Bool";
   }
 };
 
@@ -103,7 +103,7 @@ public:
   llvm::Type *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
 protected:
   virtual void print(std::ostream &Stream) const {
-    Stream << "~ FloatType";
+    Stream << "Float";
   }
 };
 
@@ -120,7 +120,7 @@ public:
   llvm::Type *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
 protected:
   virtual void print(std::ostream &Stream) const {
-    Stream << "~ StringType";
+    Stream << "String";
   }
 };
 
@@ -170,14 +170,15 @@ public:
   llvm::Type *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
 protected:
   virtual void print(std::ostream &Stream) const {
-    Stream << "~ FunctionType: ";
+    Stream << "Fn(";
     if (ArgumentTypes.size()) {
       Stream << ArgumentTypes[0];
       for (auto ATy = std::next(std::begin(ArgumentTypes));
            ATy != std::end(ArgumentTypes); ++ATy)
         Stream << ", " << *ATy;
-    }
-    Stream << " -> " << ReturnType;
+    } else
+      Stream << "()";
+    Stream << " -> " << *ReturnType << ")";
   }
 };
 
@@ -239,7 +240,7 @@ public:
   llvm::Value *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
 protected:
   virtual void print(std::ostream &Stream) const {
-    Stream << Name << " " << *getType();
+    Stream << Name << " ~" << *getType();
   }
 };
 
@@ -263,7 +264,7 @@ public:
   llvm::Value *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
 protected:
   virtual void print(std::ostream &Stream) const {
-    Stream << "\"" << Val << "\" " << *getType();
+    Stream << "\"" << Val << "\" ~" << *getType();
   }
 };
 
@@ -298,7 +299,7 @@ public:
   llvm::Constant *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
 protected:
   virtual void print(std::ostream &Stream) const {
-    Stream << Val << " " << *getType();
+    Stream << Val << " ~" << *getType();
   }
 };
 
@@ -320,7 +321,7 @@ public:
   llvm::Constant *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
 protected:
   virtual void print(std::ostream &Stream) const {
-    Stream << Val << " " << *getType();
+    Stream << Val << " ~" << *getType();
   }
 };
 
@@ -342,7 +343,7 @@ public:
   llvm::Constant *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
 protected:
   virtual void print(std::ostream &Stream) const {
-    Stream << Val << " " << *getType();
+    Stream << Val << " ~" << *getType();
   }
 };
 
@@ -385,12 +386,16 @@ public:
   llvm::Constant *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
 protected:
   virtual void print(std::ostream &Stream) const {
-    Stream << Name << " " << *getType();
+    Stream << Name << " ~" << *getType() << std::endl;
+    for (auto A: ArgumentList)
+      Stream << *A << std::endl;
+    for (auto V: Val)
+      Stream << *V << std::endl;
   }
 };
 
 class Instruction : public Value {
-  unsigned NumOperands;
+protected:
   std::vector<Value *> OperandList;
 public:
   Instruction(Type *Ty) :
@@ -400,7 +405,6 @@ public:
   }
   void addOperand(Value *V) {
     OperandList.push_back(V);
-    NumOperands++;
   }
   Value *getOperand(unsigned i) {
     return OperandList[i];
@@ -429,7 +433,9 @@ public:
   llvm::Value *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
 protected:
   virtual void print(std::ostream &Stream) const {
-    Stream << *getType();
+    Stream << "+ ~" << *getType() << std::endl;
+    for (auto O: OperandList)
+      Stream << *O << std::endl;
   }
 };
 
@@ -453,7 +459,9 @@ public:
   llvm::Value *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
 protected:
   virtual void print(std::ostream &Stream) const {
-    Stream << Name << *getType();
+    Stream << Name << " ~" << *getType() << std::endl;
+    for (auto O: OperandList)
+      Stream << *O << std::endl;
   }
 };
 
@@ -485,7 +493,7 @@ public:
 protected:
   virtual void print(std::ostream &Stream) const {
     for (auto F: ContainedFs)
-      Stream << F << std::endl << std::endl;
+      Stream << *F << std::endl;
   }
 };
 }

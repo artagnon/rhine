@@ -2,8 +2,49 @@
 #include "rhine/Support.h"
 #include "gtest/gtest.h"
 
-TEST(Constant, ConstantInt) {
-  auto Source = rhine::ConstantInt::get(32);
-  auto PP = rhine::irToPP(Source);
-  EXPECT_STREQ(PP.c_str(), "32 ~ IntegerType");
+void EXPECT_PARSE_PP(std::string SourcePrg, std::string ExpectedPP)
+{
+  std::ostringstream Scratch;
+  auto Source = rhine::parseTransformIR(SourcePrg, Scratch);
+  auto Err = Scratch.str();
+  EXPECT_PRED_FORMAT2(::testing::IsSubstring, ExpectedPP.c_str(),
+                      Source.c_str());
+}
+
+TEST(IR, ConstantInt) {
+  auto SourcePrg = "defun foo [] 3;";
+  auto ExpectedPP =
+    "foo ~Fn(() -> Int)\n"
+    "3 ~Int";
+  EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
+}
+
+TEST(IR, AddTwoInt)
+{
+  std::string SourcePrg = "defun foo [] 3 + 2;";
+  std::string ExpectedPP =
+    "foo ~Fn(() -> Int)\n"
+    "+ ~Int\n"
+    "3 ~Int\n"
+    "2 ~Int";
+  EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
+}
+
+TEST(IR, ConstantString)
+{
+  std::string SourcePrg = "defun foo [] \"moo!\";";
+  std::string ExpectedPP =
+    "foo ~Fn(() -> String)\n"
+    "\"moo!\" ~String\n";
+  EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
+}
+
+TEST(IR, DISABLED_TypePropagation)
+{
+  std::string SourcePrg = "defun id [var ~Int] var;\n";
+  std::string ExpectedPP =
+    "foo ~Fn(Int -> Int)\n"
+    "var ~Int\n"
+    "var ~Int\n";
+  EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }
