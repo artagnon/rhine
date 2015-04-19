@@ -6,7 +6,10 @@ namespace rhine {
 // TypeVisitor visits.
 //===--------------------------------------------------------------------===//
 Type *TypeVisitor::visit(Symbol *V, Context *K) {
-  assert(0 && "Symbol type inference not yet supported");
+  auto ThisType = V->getType();
+  if (ThisType == Type::get())
+    assert(0 && "Symbol type inference not yet supported");
+  return ThisType;
 }
 
 Type *TypeVisitor::visit(GlobalString *S) {
@@ -26,11 +29,14 @@ Type *TypeVisitor::visit(ConstantFloat *F) {
 }
 
 Type *TypeVisitor::visit(Function *F, Context *K) {
-  return F->getType();
+  return F->getVal()->typeInfer(K);
 }
 
 Type *TypeVisitor::visit(AddInst *A) {
-  return A->getType();
+  auto LType = A->getOperand(0)->typeInfer();
+  if (A->getOperand(1)->typeInfer() != LType)
+    assert(0 && "AddInst with operands of different types");
+  return LType;
 }
 
 Type *TypeVisitor::visit(CallInst *C, Context *K) {
@@ -38,5 +44,7 @@ Type *TypeVisitor::visit(CallInst *C, Context *K) {
 }
 
 void TypeVisitor::visit(Module *M, Context *K) {
+  for (auto F: M->getVal())
+    F->typeInfer(K);
 }
 }
