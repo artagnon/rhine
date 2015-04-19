@@ -46,8 +46,8 @@ llvm::Constant *LLVisitor::visit(ConstantFloat *F) {
 }
 
 llvm::Constant *LLVisitor::visit(Function *RhF, llvm::Module *M, Context *K) {
-  auto RhRType = RhF->getVal()->getType();
-  auto RType = RhRType->toLL(M, K);
+  auto FType = dynamic_cast<FunctionType *>(RhF->getType());
+  auto RType = FType->getRTy()->toLL(M, K);
   std::vector<llvm::Type *> ArgTys;
   for (auto El: RhF->getArgumentList())
     ArgTys.push_back(El->getType()->toLL());

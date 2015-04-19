@@ -1,50 +1,53 @@
 #include "rhine/IR.h"
 #include "rhine/TypeVisitor.h"
+#include <iostream>
 
 namespace rhine {
 //===--------------------------------------------------------------------===//
 // TypeVisitor visits.
 //===--------------------------------------------------------------------===//
-Type *TypeVisitor::visit(Symbol *V, Context *K) {
-  auto ThisType = V->getType();
-  if (ThisType == Type::get())
-    assert(0 && "Symbol type inference not yet supported");
-  return ThisType;
+Symbol *TypeVisitor::visit(Symbol *V, Context *K) {
+  Symbol *NewV = V;
+  if (V->getType() == Type::get()) {
+    NewV = K->getNameMapping(V->getName());
+    assert (NewV->getType() != Type::get() && "Missing seed to infer type");
+  }
+  K->addNameMapping(NewV->getName(), NewV);
+  return NewV;
 }
 
-Type *TypeVisitor::visit(GlobalString *S) {
-  return S->getType();
+GlobalString *TypeVisitor::visit(GlobalString *S) {
+  return S;
 }
 
-Type *TypeVisitor::visit(ConstantInt *I) {
-  return I->getType();
+ConstantInt *TypeVisitor::visit(ConstantInt *I) {
+  return I;
 }
 
-Type *TypeVisitor::visit(ConstantBool *B) {
-  return B->getType();
+ConstantBool *TypeVisitor::visit(ConstantBool *B) {
+  return B;
 }
 
-Type *TypeVisitor::visit(ConstantFloat *F) {
-  return F->getType();
+ConstantFloat *TypeVisitor::visit(ConstantFloat *F) {
+  return F;
 }
 
-Type *TypeVisitor::visit(Function *F, Context *K) {
-  return F->getVal()->typeInfer(K);
+Function *TypeVisitor::visit(Function *F, Context *K) {
+  for (auto &El: F->getArgumentList())
+    El->typeInfer(K);
+  auto FType = dynamic_cast<FunctionType *>(F->getType());
+  FType->setRTy(F->getVal()->typeInfer(K));
+  return F;
 }
 
-Type *TypeVisitor::visit(AddInst *A) {
+AddInst *TypeVisitor::visit(AddInst *A) {
   auto LType = A->getOperand(0)->typeInfer();
   if (A->getOperand(1)->typeInfer() != LType)
     assert(0 && "AddInst with operands of different types");
-  return LType;
+  return A;
 }
 
-Type *TypeVisitor::visit(CallInst *C, Context *K) {
-  return C->getType();
-}
-
-void TypeVisitor::visit(Module *M, Context *K) {
-  for (auto F: M->getVal())
-    F->typeInfer(K);
+CallInst *TypeVisitor::visit(CallInst *C, Context *K) {
+  return C;
 }
 }

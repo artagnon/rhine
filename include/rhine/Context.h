@@ -10,9 +10,16 @@
 
 namespace rhine {
 class Context {
+  // For function overloading, NameMapping should map std::string to
+  // std::vector<Symbol *>
+  std::map <std::string, class Symbol *> NameMapping;
   std::map <std::string, llvm::Value *> SymbolMapping;
   llvm::FoldingSet<class Symbol> SymbolCache;
+  llvm::FoldingSet<class FunctionType> FTyCache;
 public:
+  //===--------------------------------------------------------------------===//
+  // Functions that oeprate on SymbolMapping.
+  //===--------------------------------------------------------------------===//
   bool addMapping(std::string S, llvm::Value *V) {
     if (SymbolMapping.find(S) != SymbolMapping.end())
       return false;
@@ -28,8 +35,29 @@ public:
     assert(V != SymbolMapping.end() && "Unbound symbol");
     return V->second;
   }
+  //===--------------------------------------------------------------------===//
+  // Functions that oeprate on NameMapping.
+  //===--------------------------------------------------------------------===//
+  bool addNameMapping(std::string N, class Symbol *S) {
+    if (NameMapping.find(N) != NameMapping.end())
+      return false;
+    NameMapping.insert(std::make_pair(N, S));
+    return true;
+  }
+  Symbol *getNameMapping(std::string S) {
+    auto V = NameMapping.find(S);
+    assert(V != NameMapping.end() &&
+           "internal error: NameMapping not pre-populated");
+    return V->second;
+  }
+  //===--------------------------------------------------------------------===//
+  // get____Cache() stubs.
+  //===--------------------------------------------------------------------===//
   llvm::FoldingSet<class Symbol> *getSymbolCache() {
     return &SymbolCache;
+  }
+  llvm::FoldingSet<class FunctionType> *getFTyCache() {
+    return &FTyCache;
   }
 };
 }

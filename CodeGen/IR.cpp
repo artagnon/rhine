@@ -71,39 +71,44 @@ void Module::toLL(llvm::Module *M, Context *K) {
 //===--------------------------------------------------------------------===//
 // typeInfer() stubs.
 //===--------------------------------------------------------------------===//
+Type *Symbol::typeInfer(Context *K) {
+  return TypeVisitor::visit(this, K)->getType();
+}
+
 Type *rhine::ConstantInt::typeInfer(Context *K) {
-  return TypeVisitor::visit(this);
+  return TypeVisitor::visit(this)->getType();
 }
 
 Type *ConstantBool::typeInfer(Context *K) {
-  return TypeVisitor::visit(this);
+  return TypeVisitor::visit(this)->getType();
 }
 
 Type *ConstantFloat::typeInfer(Context *K) {
-  return TypeVisitor::visit(this);
+  return TypeVisitor::visit(this)->getType();
 }
 
 Type *GlobalString::typeInfer(Context *K) {
-  return TypeVisitor::visit(this);
+  return TypeVisitor::visit(this)->getType();
 }
 
 Type *Function::typeInfer(Context *K) {
-  return TypeVisitor::visit(this, K);
-}
-
-Type *Symbol::typeInfer(Context *K) {
-  return TypeVisitor::visit(this, K);
+  return TypeVisitor::visit(this, K)->getType();
 }
 
 Type *AddInst::typeInfer(Context *K) {
-  return TypeVisitor::visit(this);
+  return TypeVisitor::visit(this)->getType();
 }
 
 Type *CallInst::typeInfer(Context *K) {
-  return TypeVisitor::visit(this, K);
+  return TypeVisitor::visit(this, K)->getType();
 }
 
 void Module::typeInfer(Context *K) {
-  TypeVisitor::visit(this, K);
+  auto V = this->getVal();
+  std::transform(V.begin(), V.end(), V.begin(),
+                 [K](Function *F) -> Function * {
+                   return TypeVisitor::visit(F, K);
+                 });
+  this->setVal(V);
 }
 }

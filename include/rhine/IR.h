@@ -13,6 +13,7 @@
 
 #include <string>
 #include <vector>
+#include <sstream>
 
 #include "rhine/Context.h"
 
@@ -27,8 +28,12 @@ static IRBuilder<> RhBuilder(RhContext);
 class Type : public FoldingSetNode {
 public:
   static Type *get() {
-    static Type UniqueType;
-    return &UniqueType;
+    static auto UniqueType = new Type();
+    return UniqueType;
+  }
+  friend ostream &operator<<(ostream &Stream, const Type &T) {
+    Stream << "~ Type";
+    return Stream;
   }
   virtual ~Type() { };
   virtual llvm::Type *toLL(llvm::Module *M = nullptr, Context *K = nullptr) {
@@ -39,8 +44,12 @@ public:
 class IntegerType : public Type {
 public:
   static IntegerType *get() {
-    static IntegerType UniqueIntegerType;
-    return &UniqueIntegerType;
+    static auto UniqueIntegerType = new IntegerType();
+    return UniqueIntegerType;
+  }
+  friend ostream &operator<<(ostream &Stream, const IntegerType &T) {
+    Stream << "~ IntegerType";
+    return Stream;
   }
   llvm::Type *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
 };
@@ -48,8 +57,12 @@ public:
 class BoolType : public Type {
 public:
   static BoolType *get() {
-    static BoolType UniqueBoolType;
-    return &UniqueBoolType;
+    static auto UniqueBoolType = new BoolType();
+    return UniqueBoolType;
+  }
+  friend ostream &operator<<(ostream &Stream, const BoolType &T) {
+    Stream << "~ BoolType";
+    return Stream;
   }
   llvm::Type *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
 };
@@ -57,8 +70,12 @@ public:
 class FloatType : public Type {
 public:
   static FloatType *get() {
-    static FloatType UniqueFloatType;
-    return &UniqueFloatType;
+    static auto UniqueFloatType = new FloatType();
+    return UniqueFloatType;
+  }
+  friend ostream &operator<<(ostream &Stream, const FloatType &T) {
+    Stream << "~ FloatType";
+    return Stream;
   }
   llvm::Type *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
 };
@@ -66,8 +83,12 @@ public:
 class StringType : public Type {
 public:
   static StringType *get() {
-    static StringType UniqueStringType;
-    return &UniqueStringType;
+    static auto UniqueStringType = new StringType();
+    return UniqueStringType;
+  }
+  friend ostream &operator<<(ostream &Stream, const StringType &T) {
+    Stream << "~ StringType";
+    return Stream;
   }
   llvm::Type *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
 };
@@ -82,12 +103,38 @@ public:
     ArgumentTypes = {ATys...};
   }
   template <typename R, typename... As>
-  static FunctionType *get(R RTy, As... ATys) {
-    static auto UniqueFunctionType = FunctionType(RTy, ATys...);
-    return &UniqueFunctionType;
+  static FunctionType *get(R RTy, As... ATys, Context *K) {
+    FoldingSetNodeID ID;
+    void *InsertPos;
+    FunctionType::Profile(ID, RTy, {ATys...});
+    FunctionType *FTy = K->getFTyCache()->FindNodeOrInsertPos(ID, InsertPos);
+    if (!FTy) {
+      FTy = new FunctionType(RTy, ATys...);
+      K->getFTyCache()->InsertNode(FTy, InsertPos);
+    }
+    return FTy;
+  }
+  static inline void Profile(FoldingSetNodeID &ID, const Type *RTy,
+                             const std::vector<Type *> ATys) {
+    ID.AddPointer(RTy);
+    for (auto &T: ATys)
+      ID.AddPointer(T);
+  }
+  void Profile(FoldingSetNodeID &ID) {
+    Profile(ID, ReturnType, ArgumentTypes);
+  }
+  friend ostream &operator<<(ostream &Stream, const FunctionType &T) {
+    Stream << "~ FunctionType";
+    return Stream;
   }
   Type *getATy(unsigned i) {
     return ArgumentTypes[i];
+  }
+  Type *getRTy() {
+    return ReturnType;
+  }
+  void setRTy(Type *T) {
+    ReturnType = T;
   }
   llvm::Type *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
 };
@@ -107,6 +154,9 @@ public:
   Value *get() = delete;
   Type *getType() {
     return VTy;
+  }
+  void setType(Type *T) {
+    VTy = T;
   }
   virtual Type *typeInfer(Context *K = nullptr) = 0;
   virtual llvm::Value *toLL(llvm::Module *M = nullptr, Context *K = nullptr) = 0;
@@ -305,6 +355,9 @@ public:
   }
   std::vector<Function *> getVal() {
     return ContainedFs;
+  }
+  void setVal(std::vector<Function *> Fs) {
+    ContainedFs = Fs;
   }
   void typeInfer(Context *K = nullptr);
   void toLL(llvm::Module *M, Context *K);
