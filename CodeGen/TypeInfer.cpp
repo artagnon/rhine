@@ -7,9 +7,9 @@ namespace rhine {
 //===--------------------------------------------------------------------===//
 Type *Symbol::typeInfer(Context *K) {
   Symbol *V = this;
-  if (this->getType() == Type::get()) {
+  if (this->getType() == UnType::get()) {
     V = K->getNameMapping(this->getName());
-    assert (V->getType() != Type::get() && "Missing seed to infer type");
+    assert (V->getType() != UnType::get() && "Missing seed to infer type");
   }
   K->addNameMapping(V->getName(), V);
   return V->getType();

@@ -156,7 +156,7 @@ typed_symbol:
         ;
 type_annotation:
                 {
-                  $$ = Type::get();
+                  $$ = UnType::get();
                 }
         |       '~' TINT
                 {

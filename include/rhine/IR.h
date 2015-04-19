@@ -27,17 +27,32 @@ static IRBuilder<> RhBuilder(RhContext);
 
 class Type : public FoldingSetNode {
 public:
-  static Type *get() {
-    static auto UniqueType = new Type();
-    return UniqueType;
-  }
+  static Type *get() = delete;
   friend ostream &operator<<(ostream &Stream, const Type &T) {
-    Stream << "~ Type";
+    T.print(Stream);
     return Stream;
   }
-  virtual ~Type() { };
+  virtual llvm::Type *toLL(llvm::Module *M = nullptr, Context *K = nullptr) = 0;
+protected:
+  virtual void print(std::ostream &Stream) const = 0;
+};
+
+class UnType : public Type {
+public:
+  static UnType *get() {
+    static auto UniqueUnType = new UnType();
+    return UniqueUnType;
+  }
+  friend ostream &operator<<(ostream &Stream, const UnType &U) {
+    U.print(Stream);
+    return Stream;
+  }
   virtual llvm::Type *toLL(llvm::Module *M = nullptr, Context *K = nullptr) {
     assert(false && "Cannot toLL() without inferring type");
+  }
+protected:
+  virtual void print(std::ostream &Stream) const {
+    Stream << "~ UnType";
   }
 };
 
@@ -48,10 +63,14 @@ public:
     return UniqueIntegerType;
   }
   friend ostream &operator<<(ostream &Stream, const IntegerType &T) {
-    Stream << "~ IntegerType";
+    T.print(Stream);
     return Stream;
   }
   llvm::Type *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
+protected:
+  virtual void print(std::ostream &Stream) const {
+    Stream << "~ IntegerType";
+  }
 };
 
 class BoolType : public Type {
@@ -61,10 +80,14 @@ public:
     return UniqueBoolType;
   }
   friend ostream &operator<<(ostream &Stream, const BoolType &T) {
-    Stream << "~ BoolType";
+    T.print(Stream);
     return Stream;
   }
   llvm::Type *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
+protected:
+  virtual void print(std::ostream &Stream) const {
+    Stream << "~ BoolType";
+  }
 };
 
 class FloatType : public Type {
@@ -74,10 +97,14 @@ public:
     return UniqueFloatType;
   }
   friend ostream &operator<<(ostream &Stream, const FloatType &T) {
-    Stream << "~ FloatType";
+    T.print(Stream);
     return Stream;
   }
   llvm::Type *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
+protected:
+  virtual void print(std::ostream &Stream) const {
+    Stream << "~ FloatType";
+  }
 };
 
 class StringType : public Type {
@@ -87,10 +114,14 @@ public:
     return UniqueStringType;
   }
   friend ostream &operator<<(ostream &Stream, const StringType &T) {
-    Stream << "~ StringType";
+    T.print(Stream);
     return Stream;
   }
   llvm::Type *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
+protected:
+  virtual void print(std::ostream &Stream) const {
+    Stream << "~ StringType";
+  }
 };
 
 class FunctionType : public Type {
@@ -123,10 +154,6 @@ public:
   void Profile(FoldingSetNodeID &ID) {
     Profile(ID, ReturnType, ArgumentTypes);
   }
-  friend ostream &operator<<(ostream &Stream, const FunctionType &T) {
-    Stream << "~ FunctionType";
-    return Stream;
-  }
   Type *getATy(unsigned i) {
     return ArgumentTypes[i];
   }
@@ -136,13 +163,22 @@ public:
   void setRTy(Type *T) {
     ReturnType = T;
   }
+  friend ostream &operator<<(ostream &Stream, const FunctionType &T) {
+    T.print(Stream);
+    return Stream;
+  }
   llvm::Type *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
-};
-
-template <typename T> class ArrayType : public Type {
-public:
-  T *elTy;
-  llvm::Type *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
+protected:
+  virtual void print(std::ostream &Stream) const {
+    Stream << "~ FunctionType: ";
+    if (ArgumentTypes.size()) {
+      Stream << ArgumentTypes[0];
+      for (auto ATy = std::next(std::begin(ArgumentTypes));
+           ATy != std::end(ArgumentTypes); ++ATy)
+        Stream << ", " << *ATy;
+    }
+    Stream << " -> " << ReturnType;
+  }
 };
 
 class Value : public FoldingSetNode {
@@ -152,14 +188,20 @@ public:
   Value(Type *VTy) : VTy(VTy) {}
   virtual ~Value() { };
   Value *get() = delete;
-  Type *getType() {
+  Type *getType() const {
     return VTy;
   }
   void setType(Type *T) {
     VTy = T;
   }
+  friend ostream &operator<<(ostream &Stream, const Value &V) {
+    V.print(Stream);
+    return Stream;
+  }
   virtual Type *typeInfer(Context *K = nullptr) = 0;
   virtual llvm::Value *toLL(llvm::Module *M = nullptr, Context *K = nullptr) = 0;
+protected:
+  virtual void print(std::ostream &Stream) const = 0;
 };
 
 class Symbol : public Value {
@@ -189,13 +231,21 @@ public:
   std::string getName() {
     return Name;
   }
+  friend ostream &operator<<(ostream &Stream, const Symbol &S) {
+    S.print(Stream);
+    return Stream;
+  }
   Type *typeInfer(Context *K = nullptr);
   llvm::Value *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
+protected:
+  virtual void print(std::ostream &Stream) const {
+    Stream << Name << " " << *getType();
+  }
 };
 
 class GlobalString : public Value {
-public:
   std::string Val;
+public:
   GlobalString(std::string Val) : Value(StringType::get()), Val(Val) {}
   static GlobalString *get(std::string Val) {
     return new GlobalString(Val);
@@ -203,22 +253,36 @@ public:
   std::string getVal() {
     return Val;
   }
+  friend ostream &operator<<(ostream &Stream, const GlobalString &S) {
+    S.print(Stream);
+    return Stream;
+  }
   Type *typeInfer(Context *K = nullptr);
   // Returns GEP to GlobalStringPtr, which is a Value; data itself is in
   // constant storage.
   llvm::Value *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
+protected:
+  virtual void print(std::ostream &Stream) const {
+    Stream << "\"" << Val << "\" " << *getType();
+  }
 };
 
 class Constant : public Value {
 public:
   Constant(Type *Ty) : Value(Ty) {}
+  friend ostream &operator<<(ostream &Stream, const Constant &C) {
+    C.print(Stream);
+    return Stream;
+  }
   Type *typeInfer(Context *K = nullptr) = 0;
   llvm::Constant *toLL(llvm::Module *M = nullptr, Context *K = nullptr) = 0;
+protected:
+  virtual void print(std::ostream &Stream) const = 0;
 };
 
 class ConstantInt : public Constant {
-public:
   int Val;
+public:
   ConstantInt(int Val) : Constant(IntegerType::get()), Val(Val) {}
   static ConstantInt *get(int Val) {
     return new ConstantInt(Val);
@@ -226,13 +290,21 @@ public:
   int getVal() {
     return Val;
   }
+  friend ostream &operator<<(ostream &Stream, const ConstantInt &I) {
+    I.print(Stream);
+    return Stream;
+  }
   Type *typeInfer(Context *K = nullptr);
   llvm::Constant *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
+protected:
+  virtual void print(std::ostream &Stream) const {
+    Stream << Val << " " << *getType();
+  }
 };
 
 class ConstantBool : public Constant {
-public:
   bool Val;
+public:
   ConstantBool(bool Val) : Constant(BoolType::get()), Val(Val) {}
   static ConstantBool *get(bool Val) {
     return new ConstantBool(Val);
@@ -240,8 +312,16 @@ public:
   float getVal() {
     return Val;
   }
+  friend ostream &operator<<(ostream &Stream, const ConstantBool &B) {
+    B.print(Stream);
+    return Stream;
+  }
   Type *typeInfer(Context *K = nullptr);
   llvm::Constant *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
+protected:
+  virtual void print(std::ostream &Stream) const {
+    Stream << Val << " " << *getType();
+  }
 };
 
 class ConstantFloat : public Constant {
@@ -254,8 +334,16 @@ public:
   float getVal() {
     return Val;
   }
+  friend ostream &operator<<(ostream &Stream, const ConstantFloat &F) {
+    F.print(Stream);
+    return Stream;
+  }
   Type *typeInfer(Context *K = nullptr);
   llvm::Constant *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
+protected:
+  virtual void print(std::ostream &Stream) const {
+    Stream << Val << " " << *getType();
+  }
 };
 
 class Function : public Constant {
@@ -289,8 +377,16 @@ public:
   Value *getVal() {
     return Val.back();
   }
+  friend ostream &operator<<(ostream &Stream, const Function &F) {
+    F.print(Stream);
+    return Stream;
+  }
   Type *typeInfer(Context *K = nullptr);
   llvm::Constant *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
+protected:
+  virtual void print(std::ostream &Stream) const {
+    Stream << Name << " " << *getType();
+  }
 };
 
 class Instruction : public Value {
@@ -309,8 +405,14 @@ public:
   Value *getOperand(unsigned i) {
     return OperandList[i];
   }
+  friend ostream &operator<<(ostream &Stream, const Instruction &I) {
+    I.print(Stream);
+    return Stream;
+  }
   virtual Type *typeInfer(Context *K = nullptr) = 0;
   virtual llvm::Value *toLL(llvm::Module *M = nullptr, Context *K = nullptr) = 0;
+protected:
+  virtual void print(std::ostream &Stream) const = 0;
 };
 
 class AddInst : public Instruction {
@@ -319,11 +421,20 @@ public:
   static AddInst *get(Type *Ty) {
     return new AddInst(Ty);
   }
+  friend ostream &operator<<(ostream &Stream, const AddInst &A) {
+    A.print(Stream);
+    return Stream;
+  }
   Type *typeInfer(Context *K = nullptr);
   llvm::Value *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
+protected:
+  virtual void print(std::ostream &Stream) const {
+    Stream << *getType();
+  }
 };
 
 class CallInst : public Instruction {
+  std::string Name;
 public:
   // May be untyped
   CallInst(std::string FunctionName, Type *Ty = IntegerType::get()) :
@@ -334,10 +445,16 @@ public:
   std::string getName() {
     return Name;
   }
+  friend ostream &operator<<(ostream &Stream, const CallInst &C) {
+    C.print(Stream);
+    return Stream;
+  }
   Type *typeInfer(Context *K = nullptr);
   llvm::Value *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
-private:
-  std::string Name;
+protected:
+  virtual void print(std::ostream &Stream) const {
+    Stream << Name << *getType();
+  }
 };
 
 class Module {
@@ -359,8 +476,17 @@ public:
   void setVal(std::vector<Function *> Fs) {
     ContainedFs = Fs;
   }
+  friend ostream &operator<<(ostream &Stream, const Module &M) {
+    M.print(Stream);
+    return Stream;
+  }
   void typeInfer(Context *K = nullptr);
   void toLL(llvm::Module *M, Context *K);
+protected:
+  virtual void print(std::ostream &Stream) const {
+    for (auto F: ContainedFs)
+      Stream << F << std::endl << std::endl;
+  }
 };
 }
 
