@@ -1,53 +1,62 @@
 #include "rhine/IR.h"
-#include "rhine/TypeVisitor.h"
 #include <iostream>
 
 namespace rhine {
 //===--------------------------------------------------------------------===//
-// TypeVisitor visits.
+// Type inference core.
 //===--------------------------------------------------------------------===//
-Symbol *TypeVisitor::visit(Symbol *V, Context *K) {
-  Symbol *NewV = V;
-  if (V->getType() == Type::get()) {
-    NewV = K->getNameMapping(V->getName());
-    assert (NewV->getType() != Type::get() && "Missing seed to infer type");
+Type *Symbol::typeInfer(Context *K) {
+  Symbol *V = this;
+  if (this->getType() == Type::get()) {
+    V = K->getNameMapping(this->getName());
+    assert (V->getType() != Type::get() && "Missing seed to infer type");
   }
-  K->addNameMapping(NewV->getName(), NewV);
-  return NewV;
+  K->addNameMapping(V->getName(), V);
+  return V->getType();
 }
 
-GlobalString *TypeVisitor::visit(GlobalString *S) {
-  return S;
+Type *rhine::ConstantInt::typeInfer(Context *K) {
+  return this->getType();
 }
 
-ConstantInt *TypeVisitor::visit(ConstantInt *I) {
-  return I;
+Type *ConstantBool::typeInfer(Context *K) {
+  return this->getType();
 }
 
-ConstantBool *TypeVisitor::visit(ConstantBool *B) {
-  return B;
+Type *ConstantFloat::typeInfer(Context *K) {
+  return this->getType();
 }
 
-ConstantFloat *TypeVisitor::visit(ConstantFloat *F) {
-  return F;
+Type *GlobalString::typeInfer(Context *K) {
+  return this->getType();
 }
 
-Function *TypeVisitor::visit(Function *F, Context *K) {
-  for (auto &El: F->getArgumentList())
+Type *Function::typeInfer(Context *K) {
+  for (auto &El: this->getArgumentList())
     El->typeInfer(K);
-  auto FType = dynamic_cast<FunctionType *>(F->getType());
-  FType->setRTy(F->getVal()->typeInfer(K));
-  return F;
+  auto FType = dynamic_cast<FunctionType *>(this->getType());
+  FType->setRTy(this->getVal()->typeInfer(K));
+  return FType;
 }
 
-AddInst *TypeVisitor::visit(AddInst *A) {
-  auto LType = A->getOperand(0)->typeInfer();
-  if (A->getOperand(1)->typeInfer() != LType)
+Type *AddInst::typeInfer(Context *K) {
+  auto LType = this->getOperand(0)->typeInfer();
+  if (this->getOperand(1)->typeInfer() != LType)
     assert(0 && "AddInst with operands of different types");
-  return A;
+  return this->getType();
 }
 
-CallInst *TypeVisitor::visit(CallInst *C, Context *K) {
-  return C;
+Type *CallInst::typeInfer(Context *K) {
+  return this->getType();
+}
+
+void Module::typeInfer(Context *K) {
+  auto V = this->getVal();
+  std::transform(V.begin(), V.end(), V.begin(),
+                 [K](Function *F) -> Function * {
+                   F->setType(F->typeInfer(K));
+                   return F;
+                 });
+  this->setVal(V);
 }
 }
