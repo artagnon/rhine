@@ -46,7 +46,7 @@ llvm::Constant *LLVisitor::visit(ConstantFloat *F) {
 }
 
 llvm::Constant *LLVisitor::visit(Function *RhF, llvm::Module *M, Context *K) {
-  auto FType = dynamic_cast<FunctionType *>(RhF->getType());
+  auto FType = dyn_cast<FunctionType>(RhF->getType());
   auto RType = FType->getRTy()->toLL(M, K);
   std::vector<llvm::Type *> ArgTys;
   for (auto El: RhF->getArgumentList())
@@ -88,7 +88,7 @@ llvm::Value *LLVisitor::visit(CallInst *C, llvm::Module *M, Context *K) {
 
   auto Arg = C->getOperand(0);
   llvm::Value *StrPtr;
-  if (auto Sym = dynamic_cast<Symbol *>(Arg))
+  if (auto Sym = dyn_cast<Symbol>(Arg))
     StrPtr = K->getMappingOrDie(Sym->getName());
   else
     StrPtr = Arg->toLL(M);
