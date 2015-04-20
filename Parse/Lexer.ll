@@ -4,6 +4,7 @@
 #include "rhine/Lexer.h"
 
 #define YY_USER_ACTION yylloc->columns(yyleng);
+#define K Driver->Ctx
 %}
 
 %option c++ noyywrap warn yylineno stack
@@ -30,7 +31,7 @@ SPTAB   [ \t]+
 {RET} { yylloc->lines(yyleng); yylloc->step(); }
 
 {INTEGER} {
-  auto C = ConstantInt::get(atoi(yytext));
+  auto C = ConstantInt::get(atoi(yytext), K);
   yylval->Integer = C;
   return T::INTEGER;
 }
@@ -40,7 +41,7 @@ SPTAB   [ \t]+
 <str>\" {
   BEGIN(INITIAL);
   *string_buf_ptr = '\0';
-  auto C = GlobalString::get(std::string(string_buf));
+  auto C = GlobalString::get(std::string(string_buf), K);
   yylval->String = C;
   return T::STRING;
 }
@@ -70,13 +71,13 @@ SPTAB   [ \t]+
 "String" { return T::TSTRING; }
 
 "true" {
-  auto B = ConstantBool::get(true);
+  auto B = ConstantBool::get(true, K);
   yylval->Boolean = B;
   return T::BOOLEAN;
 }
 
 "false" {
-  auto B = ConstantBool::get(false);
+  auto B = ConstantBool::get(false, K);
   yylval->Boolean = B;
   return T::BOOLEAN;
 }
