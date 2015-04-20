@@ -7,8 +7,8 @@ namespace rhine {
 //===--------------------------------------------------------------------===//
 Type *Symbol::typeInfer(Context *K) {
   Symbol *V = this;
-  if (this->getType() == UnType::get(K)) {
-    V = K->getNameMapping(this->getName());
+  if (V->getType() == UnType::get(K)) {
+    V = K->getNameMapping(V->getName());
     assert (V->getType() != UnType::get(K) && "Missing seed to infer type");
   }
   K->addNameMapping(V->getName(), V);
@@ -32,8 +32,12 @@ Type *GlobalString::typeInfer(Context *K) {
 }
 
 Type *Function::typeInfer(Context *K) {
-  for (auto &El: this->getArgumentList())
-    El->typeInfer(K);
+  auto V = this->getArgumentList();
+  std::transform(V.begin(), V.end(), V.begin(),
+                 [K](Symbol *S) -> Symbol * {
+                   S->setType(S->typeInfer(K));
+                   return S;
+                 });
   auto FType = dyn_cast<FunctionType>(this->getType());
   FType->setRTy(this->getVal()->typeInfer(K));
   return FType;

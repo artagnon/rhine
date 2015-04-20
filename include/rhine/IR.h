@@ -173,7 +173,7 @@ public:
     FunctionType::Profile(ID, RTy, {ATys...});
     if (FunctionType *FTy = K->FTyCache.FindNodeOrInsertPos(ID, IP))
       return FTy;
-    FunctionType *FTy = new FunctionType(RTy, ATys...);
+    FunctionType *FTy = new (K->RhAllocator) FunctionType(RTy, ATys...);
     K->FTyCache.InsertNode(FTy, IP);
     return FTy;
   }
@@ -265,7 +265,7 @@ public:
     void *IP;
     Symbol::Profile(ID, N, T);
     if (Symbol *S = K->SymbolCache.FindNodeOrInsertPos(ID, IP)) return S;
-    Symbol *S = new Symbol(N, T);
+    Symbol *S = new (K->RhAllocator) Symbol(N, T);
     K->SymbolCache.InsertNode(S, IP);
     return S;
   }
@@ -301,7 +301,7 @@ public:
   GlobalString(std::string Val, Context *K) :
       Value(StringType::get(K), RT_GlobalString), Val(Val) {}
   static GlobalString *get(std::string Val, Context *K) {
-    return new GlobalString(Val, K);
+    return new (K->RhAllocator) GlobalString(Val, K);
   }
   static bool classof(const Value *V) {
     return V->getValID() == RT_GlobalString;
@@ -342,7 +342,7 @@ public:
   ConstantInt(int Val, Context *K) :
       Constant(IntegerType::get(K), RT_ConstantInt), Val(Val) {}
   static ConstantInt *get(int Val, Context *K) {
-    return new ConstantInt(Val, K);
+    return new (K->RhAllocator) ConstantInt(Val, K);
   }
   static bool classof(const Value *V) {
     return V->getValID() == RT_ConstantInt;
@@ -368,7 +368,7 @@ public:
   ConstantBool(bool Val, Context *K) :
       Constant(BoolType::get(K), RT_ConstantBool), Val(Val) {}
   static ConstantBool *get(bool Val, Context *K) {
-    return new ConstantBool(Val, K);
+    return new (K->RhAllocator) ConstantBool(Val, K);
   }
   static bool classof(const Value *V) {
     return V->getValID() == RT_ConstantBool;
@@ -394,7 +394,7 @@ public:
   ConstantFloat(float Val, Context *K) :
       Constant(FloatType::get(K), RT_ConstantFloat), Val(Val) {}
   static ConstantFloat *get(float Val, Context *K) {
-    return new ConstantFloat(Val, K);
+    return new (K->RhAllocator) ConstantFloat(Val, K);
   }
   static bool classof(const Value *V) {
     return V->getValID() == RT_ConstantFloat;
@@ -421,11 +421,8 @@ class Function : public Constant {
 public:
   Function(FunctionType *FTy) :
       Constant(FTy, RT_Function) {}
-  ~Function() {
-    Val.clear();
-  }
   static Function *get(FunctionType *FTy, Context *K) {
-    return new Function(FTy);
+    return new (K->RhAllocator) Function(FTy);
   }
   static bool classof(const Value *V) {
     return V->getValID() == RT_Function;
@@ -470,9 +467,6 @@ protected:
 public:
   Instruction(Type *Ty, RTType ID) :
       Value(Ty, ID) {}
-  ~Instruction() {
-    OperandList.clear();
-  }
   void addOperand(Value *V) {
     OperandList.push_back(V);
   }
@@ -493,7 +487,7 @@ class AddInst : public Instruction {
 public:
   AddInst(Type *Ty) : Instruction(Ty, RT_AddInst) {}
   static AddInst *get(Type *Ty, Context *K) {
-    return new AddInst(Ty);
+    return new (K->RhAllocator) AddInst(Ty);
   }
   static bool classof(const Value *V) {
     return V->getValID() == RT_AddInst;
@@ -519,7 +513,7 @@ public:
   CallInst(std::string FunctionName, Type *Ty) :
       Instruction(Ty, RT_CallInst), Name(FunctionName) {}
   static CallInst *get(std::string FunctionName, Type *Ty, Context *K) {
-    return new CallInst(FunctionName, Ty);
+    return new (K->RhAllocator) CallInst(FunctionName, Ty);
   }
   static bool classof(const Value *V) {
     return V->getValID() == RT_CallInst;
@@ -544,10 +538,6 @@ protected:
 class Module {
   std::vector<Function *> ContainedFs;
 public:
-  Module() {}
-  ~Module() {
-    ContainedFs.clear();
-  }
   Module *get() {
     return new Module;
   }

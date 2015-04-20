@@ -57,11 +57,6 @@
 %type   <Type>          type_annotation
 %type   <Symbol>        typed_symbol
 
-%destructor { delete $$; } SYMBOL INTEGER STRING
-%destructor { delete $$; } argument_list stm_list
-%destructor { delete $$; } fn_decl defun
-%destructor { delete $$; } expression rvalue
-
 %{
 #include "rhine/ParseDriver.h"
 #include "rhine/Lexer.h"
@@ -132,14 +127,14 @@ stm_list:
 single_stm:
                 expression[E] ';'
                 {
-                  auto StatementList = new std::vector<Value *>;
+                  auto StatementList = new (K->RhAllocator) std::vector<Value *>;
                   StatementList->push_back($E);
                   $$ = StatementList;
                 }
 argument_list:
                 typed_symbol[S]
                 {
-                  auto SymbolList = new std::vector<Symbol *>;
+                  auto SymbolList = new (K->RhAllocator) std::vector<Symbol *>;
                   SymbolList->push_back($S);
                   $$ = SymbolList;
                 }
