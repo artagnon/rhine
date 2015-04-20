@@ -15,10 +15,18 @@ class Context {
   std::map <std::string, class Symbol *> NameMapping;
   std::map <std::string, llvm::Value *> SymbolMapping;
 public:
-  llvm::BumpPtrAllocator TypeAllocator;
-  llvm::BumpPtrAllocator ValueAllocator;
+  llvm::BumpPtrAllocator RhAllocator;
   llvm::FoldingSet<class Symbol> SymbolCache;
   llvm::FoldingSet<class FunctionType> FTyCache;
+
+  // The big free
+  void releaseMemory() {
+    RhAllocator.Reset();
+    SymbolCache.clear();
+    FTyCache.clear();
+    NameMapping.clear();
+    SymbolMapping.clear();
+  }
 
   //===--------------------------------------------------------------------===//
   // Functions that oeprate on SymbolMapping.

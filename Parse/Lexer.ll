@@ -83,7 +83,7 @@ SPTAB   [ \t]+
 }
 
 {SYMBOL} {
-  yylval->RawSymbol = new std::string(yytext);
+  yylval->RawSymbol = new (K->RhAllocator) std::string(yytext);
   return T::SYMBOL;
 }
 

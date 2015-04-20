@@ -43,7 +43,7 @@ TEST(IR, DISABLED_TypePropagation)
 {
   std::string SourcePrg = "defun id [var ~Int] var;\n";
   std::string ExpectedPP =
-    "foo ~Fn(Int -> Int)\n"
+    "id ~Fn(Int -> Int)\n"
     "var ~Int\n"
     "var ~Int\n";
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
