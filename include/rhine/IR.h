@@ -54,7 +54,7 @@ private:
 class UnType : public Type {
 public:
   UnType(): Type(RT_UnType) {}
-  static UnType *get() {
+  static UnType *get(Context *K) {
     static auto UniqueUnType = new UnType();
     return UniqueUnType;
   }
@@ -77,7 +77,7 @@ protected:
 class IntegerType : public Type {
 public:
   IntegerType(): Type(RT_IntegerType) {}
-  static IntegerType *get() {
+  static IntegerType *get(Context *K) {
     static auto UniqueIntegerType = new IntegerType();
     return UniqueIntegerType;
   }
@@ -98,7 +98,7 @@ protected:
 class BoolType : public Type {
 public:
   BoolType(): Type(RT_BoolType) {}
-  static BoolType *get() {
+  static BoolType *get(Context *K) {
     static auto UniqueBoolType = new BoolType();
     return UniqueBoolType;
   }
@@ -119,7 +119,7 @@ protected:
 class FloatType : public Type {
 public:
   FloatType(): Type(RT_FloatType) {}
-  static FloatType *get() {
+  static FloatType *get(Context *K) {
     static auto UniqueFloatType = new FloatType();
     return UniqueFloatType;
   }
@@ -140,7 +140,7 @@ protected:
 class StringType : public Type {
 public:
   StringType(): Type(RT_StringType) {}
-  static StringType *get() {
+  static StringType *get(Context *K) {
     static auto UniqueStringType = new StringType();
     return UniqueStringType;
   }
@@ -169,13 +169,12 @@ public:
   template <typename R, typename... As>
   static FunctionType *get(R RTy, As... ATys, Context *K) {
     FoldingSetNodeID ID;
-    void *InsertPos;
+    void *IP;
     FunctionType::Profile(ID, RTy, {ATys...});
-    FunctionType *FTy = K->getFTyCache()->FindNodeOrInsertPos(ID, InsertPos);
-    if (!FTy) {
-      FTy = new FunctionType(RTy, ATys...);
-      K->getFTyCache()->InsertNode(FTy, InsertPos);
-    }
+    if (FunctionType *FTy = K->FTyCache.FindNodeOrInsertPos(ID, IP))
+      return FTy;
+    FunctionType *FTy = new FunctionType(RTy, ATys...);
+    K->FTyCache.InsertNode(FTy, IP);
     return FTy;
   }
   static bool classof(const Type *T) {
@@ -263,13 +262,11 @@ public:
 
   static Symbol *get(std::string N, Type *T, Context *K) {
     FoldingSetNodeID ID;
-    void *InsertPos;
+    void *IP;
     Symbol::Profile(ID, N, T);
-    Symbol *S = K->getSymbolCache()->FindNodeOrInsertPos(ID, InsertPos);
-    if (!S) {
-      S = new Symbol(N, T);
-      K->getSymbolCache()->InsertNode(S, InsertPos);
-    }
+    if (Symbol *S = K->SymbolCache.FindNodeOrInsertPos(ID, IP)) return S;
+    Symbol *S = new Symbol(N, T);
+    K->SymbolCache.InsertNode(S, IP);
     return S;
   }
   static bool classof(const Value *V) {
@@ -301,10 +298,10 @@ protected:
 class GlobalString : public Value {
   std::string Val;
 public:
-  GlobalString(std::string Val) :
-      Value(StringType::get(), RT_GlobalString), Val(Val) {}
-  static GlobalString *get(std::string Val) {
-    return new GlobalString(Val);
+  GlobalString(std::string Val, Context *K) :
+      Value(StringType::get(K), RT_GlobalString), Val(Val) {}
+  static GlobalString *get(std::string Val, Context *K) {
+    return new GlobalString(Val, K);
   }
   static bool classof(const Value *V) {
     return V->getValID() == RT_GlobalString;
@@ -342,10 +339,10 @@ protected:
 class ConstantInt : public Constant {
   int Val;
 public:
-  ConstantInt(int Val) : Constant(IntegerType::get(), RT_ConstantInt),
-                         Val(Val) {}
-  static ConstantInt *get(int Val) {
-    return new ConstantInt(Val);
+  ConstantInt(int Val, Context *K) :
+      Constant(IntegerType::get(K), RT_ConstantInt), Val(Val) {}
+  static ConstantInt *get(int Val, Context *K) {
+    return new ConstantInt(Val, K);
   }
   static bool classof(const Value *V) {
     return V->getValID() == RT_ConstantInt;
@@ -368,10 +365,10 @@ protected:
 class ConstantBool : public Constant {
   bool Val;
 public:
-  ConstantBool(bool Val) : Constant(BoolType::get(), RT_ConstantBool),
-                           Val(Val) {}
-  static ConstantBool *get(bool Val) {
-    return new ConstantBool(Val);
+  ConstantBool(bool Val, Context *K) :
+      Constant(BoolType::get(K), RT_ConstantBool), Val(Val) {}
+  static ConstantBool *get(bool Val, Context *K) {
+    return new ConstantBool(Val, K);
   }
   static bool classof(const Value *V) {
     return V->getValID() == RT_ConstantBool;
@@ -394,10 +391,10 @@ protected:
 class ConstantFloat : public Constant {
 public:
   float Val;
-  ConstantFloat(float Val) : Constant(FloatType::get(), RT_ConstantFloat),
-                             Val(Val) {}
-  static ConstantFloat *get(float Val) {
-    return new ConstantFloat(Val);
+  ConstantFloat(float Val, Context *K) :
+      Constant(FloatType::get(K), RT_ConstantFloat), Val(Val) {}
+  static ConstantFloat *get(float Val, Context *K) {
+    return new ConstantFloat(Val, K);
   }
   static bool classof(const Value *V) {
     return V->getValID() == RT_ConstantFloat;
@@ -427,7 +424,7 @@ public:
   ~Function() {
     Val.clear();
   }
-  static Function *get(FunctionType *FTy) {
+  static Function *get(FunctionType *FTy, Context *K) {
     return new Function(FTy);
   }
   static bool classof(const Value *V) {
@@ -495,7 +492,7 @@ protected:
 class AddInst : public Instruction {
 public:
   AddInst(Type *Ty) : Instruction(Ty, RT_AddInst) {}
-  static AddInst *get(Type *Ty) {
+  static AddInst *get(Type *Ty, Context *K) {
     return new AddInst(Ty);
   }
   static bool classof(const Value *V) {
@@ -519,9 +516,9 @@ class CallInst : public Instruction {
   std::string Name;
 public:
   // May be untyped
-  CallInst(std::string FunctionName, Type *Ty = IntegerType::get()) :
+  CallInst(std::string FunctionName, Type *Ty) :
       Instruction(Ty, RT_CallInst), Name(FunctionName) {}
-  static CallInst *get(std::string FunctionName, Type *Ty = IntegerType::get()) {
+  static CallInst *get(std::string FunctionName, Type *Ty, Context *K) {
     return new CallInst(FunctionName, Ty);
   }
   static bool classof(const Value *V) {

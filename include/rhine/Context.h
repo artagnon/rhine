@@ -14,9 +14,12 @@ class Context {
   // std::vector<Symbol *>
   std::map <std::string, class Symbol *> NameMapping;
   std::map <std::string, llvm::Value *> SymbolMapping;
+public:
+  llvm::BumpPtrAllocator TypeAllocator;
+  llvm::BumpPtrAllocator ValueAllocator;
   llvm::FoldingSet<class Symbol> SymbolCache;
   llvm::FoldingSet<class FunctionType> FTyCache;
-public:
+
   //===--------------------------------------------------------------------===//
   // Functions that oeprate on SymbolMapping.
   //===--------------------------------------------------------------------===//
@@ -49,15 +52,6 @@ public:
     assert(V != NameMapping.end() &&
            "internal error: NameMapping not pre-populated");
     return V->second;
-  }
-  //===--------------------------------------------------------------------===//
-  // get____Cache() stubs.
-  //===--------------------------------------------------------------------===//
-  llvm::FoldingSet<class Symbol> *getSymbolCache() {
-    return &SymbolCache;
-  }
-  llvm::FoldingSet<class FunctionType> *getFTyCache() {
-    return &FTyCache;
   }
 };
 }

@@ -7,6 +7,7 @@
 // the C++ parser expects it to be declared. We can factor both as follows.
 
 #include "Parser.hpp"
+#include "rhine/ParseDriver.h"
 
 typedef rhine::Parser P;
 typedef P::token T;
@@ -16,8 +17,8 @@ typedef P::token T;
 #define	YY_DECL		       			\
     P::token_type				\
     rhine::Lexer::lex(                          \
-	P::semantic_type* yylval,		\
-	P::location_type* yylloc		\
+      P::semantic_type* yylval,                 \
+      P::location_type* yylloc                  \
     )
 
 #ifndef __FLEX_LEXER_H
@@ -32,14 +33,17 @@ typedef P::token T;
 namespace rhine {
 class Lexer : public yyFlexLexer {
 public:
-  Lexer(std::istream* arg_yyin = 0, std::ostream* arg_yyout = 0) :
-      yyFlexLexer(arg_yyin, arg_yyout) {}
+  Lexer(std::istream *arg_yyin,
+        std::ostream *arg_yyout,
+        ParseDriver *Dri) :
+      yyFlexLexer(arg_yyin, arg_yyout), Driver(Dri) {}
   void LexerError(const char msg[]) {
     *yyout << msg << std::endl;
   }
   virtual ~Lexer() {}
   virtual P::token_type lex(P::semantic_type* yylval,
                             P::location_type* yylloc);
+  ParseDriver *Driver;
 };
 }
 

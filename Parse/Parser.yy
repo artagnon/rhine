@@ -68,6 +68,7 @@
 
 #undef yylex
 #define yylex Driver->Lexx->lex
+#define K Driver->Ctx
 %}
 
 %%
@@ -87,16 +88,16 @@ tlexpr:
 fn_decl:
                 DEFUN SYMBOL[N] '[' argument_list[A] ']' type_annotation[T]
                 {
-                  auto FTy = FunctionType::get($T, Driver->Ctx);
-                  auto Fn = Function::get(FTy);
+                  auto FTy = FunctionType::get($T, K);
+                  auto Fn = Function::get(FTy, K);
                   Fn->setName(*$N);
                   Fn->setArgumentList(*$A);
                   $$ = Fn;
                 }
         |       DEFUN SYMBOL[N] '[' ']' type_annotation[T]
                 {
-                  auto FTy = FunctionType::get($T, Driver->Ctx);
-                  auto Fn = Function::get(FTy);
+                  auto FTy = FunctionType::get($T, K);
+                  auto Fn = Function::get(FTy, K);
                   Fn->setName(*$N);
                   $$ = Fn;
                 }
@@ -151,25 +152,25 @@ argument_list:
 typed_symbol:
                 SYMBOL[S] type_annotation[T]
                 {
-                  $$ = Symbol::get(*$S, $T, Driver->Ctx);
+                  $$ = Symbol::get(*$S, $T, K);
                 }
         ;
 type_annotation:
                 {
-                  $$ = UnType::get();
+                  $$ = UnType::get(K);
                 }
         |       '~' TINT
                 {
-                  $$ = IntegerType::get();
+                  $$ = IntegerType::get(K);
                 }
         |       '~' TBOOL
                 {
-                  $$ = BoolType::get();
+                  $$ = BoolType::get(K);
                 }
                 ;
         |       '~' TSTRING
                 {
-                  $$ = StringType::get();
+                  $$ = StringType::get(K);
                 }
                 ;
 expression:
@@ -179,14 +180,16 @@ expression:
                 }
         |       rvalue[L] '+' rvalue[R]
                 {
-                  auto Op = AddInst::get(IntegerType::get());
+                  auto Op = AddInst::get(IntegerType::get(K), K);
                   Op->addOperand($L);
                   Op->addOperand($R);
                   $$ = Op;
                 }
         |       typed_symbol[S] rvalue[R]
                 {
-                  auto Op = CallInst::get($S->getName());
+                  // FIXME: IntegerType should be UnType and let type inference
+                  // do its job
+                  auto Op = CallInst::get($S->getName(), IntegerType::get(K), K);
                   Op->addOperand($R);
                   $$ = Op;
                 }
