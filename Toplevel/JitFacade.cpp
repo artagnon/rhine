@@ -30,13 +30,12 @@ MainFTy jitFacade(std::string InStr, bool Debug, bool IsStringStream) {
   LLVMInitializeNativeTarget();
   LLVMInitializeNativeAsmPrinter();
 
-  std::unique_ptr<llvm::Module> Owner =
-    make_unique<llvm::Module>("main", rhine::RhContext);
+  auto Owner = make_unique<llvm::Module>("main", rhine::RhContext);
   if (IsStringStream)
     parseCodeGenString(InStr, Owner.get(), std::cerr, Debug);
   else
     parseCodeGenFile(InStr, Owner.get(), Debug);
-  ExecutionEngine *EE = EngineBuilder(std::move(Owner)).create();
+  auto EE = EngineBuilder(std::move(Owner)).create();
   assert(EE && "Error creating MCJIT with EngineBuilder");
   union {
     uint64_t raw;
