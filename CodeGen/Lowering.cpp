@@ -57,9 +57,10 @@ llvm::Constant *LLVisitor::visit(Function *RhF, llvm::Module *M, Context *K) {
                                   RhF->getName(), M);
 
   // Bind argument symbols to function argument values in symbol table
-  auto S = RhF->getArgumentList().begin();
+  auto ArgList = RhF->getArgumentList();
+  auto S = ArgList.begin();
   auto V = F->arg_begin();
-  auto SEnd = RhF->getArgumentList().end();
+  auto SEnd = ArgList.end();
   auto VEnd = F->arg_end();
   for (; S != SEnd && V != VEnd; ++S, ++V)
     K->addMapping((*S)->getName(), V);

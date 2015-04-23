@@ -47,6 +47,8 @@ int main(int argc, char *argv[]) {
   }
 
   auto FHandle = rhine::jitFacade(Parse.nonOption(0), Options[DEBUG]);
+  delete Options;
+  delete Buffer;
   FHandle();
   return 0;
 }
