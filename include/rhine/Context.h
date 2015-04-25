@@ -10,9 +10,9 @@
 
 namespace rhine {
 class Context {
-  // For function overloading, NameMapping should map std::string to
+  // For function overloading, NameTypeMapping should map std::string to
   // std::vector<Symbol *>
-  std::map <std::string, class Symbol *> NameMapping;
+  std::map <std::string, class Type *> NameTypeMapping;
   std::map <std::string, llvm::Value *> SymbolMapping;
 public:
   llvm::BumpPtrAllocator RhAllocator;
@@ -24,7 +24,7 @@ public:
     RhAllocator.Reset();
     SymbolCache.clear();
     FTyCache.clear();
-    NameMapping.clear();
+    NameTypeMapping.clear();
     SymbolMapping.clear();
   }
 
@@ -47,18 +47,18 @@ public:
     return V->second;
   }
   //===--------------------------------------------------------------------===//
-  // Functions that oeprate on NameMapping.
+  // Functions that oeprate on NameTypeMapping.
   //===--------------------------------------------------------------------===//
-  bool addNameMapping(std::string N, class Symbol *S) {
-    if (NameMapping.find(N) != NameMapping.end())
+  bool addNameTypeMapping(std::string N, class Type *T) {
+    if (NameTypeMapping.find(N) != NameTypeMapping.end())
       return false;
-    NameMapping.insert(std::make_pair(N, S));
+    NameTypeMapping.insert(std::make_pair(N, T));
     return true;
   }
-  Symbol *getNameMapping(std::string S) {
-    auto V = NameMapping.find(S);
-    assert(V != NameMapping.end() &&
-           "internal error: NameMapping not pre-populated");
+  Type *getNameTypeMapping(std::string S) {
+    auto V = NameTypeMapping.find(S);
+    assert(V != NameTypeMapping.end() &&
+           "internal error: NameTypeMapping not pre-populated");
     return V->second;
   }
 };
