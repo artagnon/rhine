@@ -49,8 +49,8 @@ llvm::Constant *LLVisitor::visit(Function *RhF, llvm::Module *M, Context *K) {
   auto FType = dyn_cast<FunctionType>(RhF->getType());
   auto RType = FType->getRTy()->toLL(M, K);
   std::vector<llvm::Type *> ArgTys;
-  for (auto El: RhF->getArgumentList())
-    ArgTys.push_back(El->getType()->toLL());
+  for (auto RhTy: FType->getATys())
+    ArgTys.push_back(RhTy->toLL());
   auto ArgTyAr = makeArrayRef(ArgTys);
   auto F = llvm::Function::Create(llvm::FunctionType::get(RType, ArgTyAr, false),
                                   GlobalValue::ExternalLinkage,

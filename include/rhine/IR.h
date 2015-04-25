@@ -201,6 +201,9 @@ public:
   void setRTy(Type *T) {
     ReturnType = T;
   }
+  std::vector<Type *> getATys() {
+    return ArgumentTypes;
+  }
   friend ostream &operator<<(ostream &Stream, const FunctionType &T) {
     T.print(Stream);
     return Stream;
