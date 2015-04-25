@@ -162,20 +162,23 @@ class FunctionType : public Type {
   Type *ReturnType;
   std::vector<Type *> ArgumentTypes;
 public:
-  template <typename R, typename... As>
-  FunctionType(R RTy, As... ATys) : Type(RT_FunctionType),
-                                    ReturnType(RTy),
-                                    ArgumentTypes({ATys...}) {}
-  template <typename R, typename... As>
-  static FunctionType *get(R RTy, As... ATys, Context *K) {
+  template <typename R>
+  FunctionType(R RTy, std::vector<Type *> ATys) :
+      Type(RT_FunctionType), ReturnType(RTy), ArgumentTypes(ATys) {}
+  template <typename R>
+  static FunctionType *get(R RTy, std::vector<Type *> ATys, Context *K) {
     FoldingSetNodeID ID;
     void *IP;
-    FunctionType::Profile(ID, RTy, {ATys...});
+    FunctionType::Profile(ID, RTy, ATys);
     if (FunctionType *FTy = K->FTyCache.FindNodeOrInsertPos(ID, IP))
       return FTy;
-    FunctionType *FTy = new (K->RhAllocator) FunctionType(RTy, ATys...);
+    FunctionType *FTy = new (K->RhAllocator) FunctionType(RTy, ATys);
     K->FTyCache.InsertNode(FTy, IP);
     return FTy;
+  }
+  template <typename R, typename... As>
+  static FunctionType *get(R RTy, As... ATys, Context *K) {
+    return FunctionType::get(RTy, {ATys...}, K);
   }
   static bool classof(const Type *T) {
     return T->getTyID() == RT_FunctionType;
@@ -207,7 +210,7 @@ protected:
   virtual void print(std::ostream &Stream) const {
     Stream << "Fn(";
     if (ArgumentTypes.size()) {
-      Stream << ArgumentTypes[0];
+      Stream << *ArgumentTypes[0];
       for (auto ATy = std::next(std::begin(ArgumentTypes));
            ATy != std::end(ArgumentTypes); ++ATy)
         Stream << ", " << *ATy;

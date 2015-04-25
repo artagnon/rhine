@@ -83,7 +83,10 @@ tlexpr:
 fn_decl:
                 DEFUN SYMBOL[N] '[' argument_list[A] ']' type_annotation[T]
                 {
-                  auto FTy = FunctionType::get($T, K);
+                  std::vector<Type *> ATys;
+                  for (auto Sym : *$A)
+                    ATys.push_back(Sym->getType());
+                  auto FTy = FunctionType::get($T, ATys, K);
                   auto Fn = Function::get(FTy, K);
                   Fn->setName(*$N);
                   Fn->setArgumentList(*$A);
