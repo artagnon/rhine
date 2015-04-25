@@ -39,7 +39,7 @@ TEST(IR, ConstantString)
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }
 
-TEST(IR, DISABLED_TypePropagation)
+TEST(IR, TypePropagation)
 {
   std::string SourcePrg = "defun id [var ~Int] var;\n";
   std::string ExpectedPP =

@@ -6,16 +6,16 @@ namespace rhine {
 // Type inference core.
 //===--------------------------------------------------------------------===//
 Type *Symbol::typeInfer(Context *K) {
-  Symbol *V = this;
-  if (V->getType() == UnType::get(K)) {
-    V = K->getNameMapping(V->getName());
-    assert (V->getType() != UnType::get(K) && "Missing seed to infer type");
+  Type *Ty = getType();
+  if (Ty == UnType::get(K)) {
+    Ty = K->getNameTypeMapping(getName());
+    assert (Ty != UnType::get(K) && "Missing seed to infer type");
   }
-  K->addNameMapping(V->getName(), V);
-  return V->getType();
+  K->addNameTypeMapping(getName(), Ty);
+  return Ty;
 }
 
-Type *rhine::ConstantInt::typeInfer(Context *K) {
+Type *ConstantInt::typeInfer(Context *K) {
   return this->getType();
 }
 
@@ -32,35 +32,38 @@ Type *GlobalString::typeInfer(Context *K) {
 }
 
 Type *Function::typeInfer(Context *K) {
-  auto V = this->getArgumentList();
+  // Argument list transform
+  auto V = getArgumentList();
   std::transform(V.begin(), V.end(), V.begin(),
                  [K](Symbol *S) -> Symbol * {
                    S->setType(S->typeInfer(K));
                    return S;
                  });
-  auto FType = dyn_cast<FunctionType>(this->getType());
-  FType->setRTy(this->getVal()->typeInfer(K));
+  // FunctionType and Body transform
+  auto FType = dyn_cast<FunctionType>(getType());
+  auto Body = getVal();
+  Body->setType(Body->typeInfer(K));
+  FType->setRTy(Body->getType());
   return FType;
 }
 
 Type *AddInst::typeInfer(Context *K) {
-  auto LType = this->getOperand(0)->typeInfer();
-  if (this->getOperand(1)->typeInfer() != LType)
+  auto LType = getOperand(0)->typeInfer();
+  if (getOperand(1)->typeInfer() != LType)
     assert(0 && "AddInst with operands of different types");
-  return this->getType();
+  return getType();
 }
 
 Type *CallInst::typeInfer(Context *K) {
-  return this->getType();
+  return getType();
 }
 
 void Module::typeInfer(Context *K) {
-  auto V = this->getVal();
+  auto V = getVal();
   std::transform(V.begin(), V.end(), V.begin(),
                  [K](Function *F) -> Function * {
                    F->setType(F->typeInfer(K));
                    return F;
                  });
-  this->setVal(V);
 }
 }
