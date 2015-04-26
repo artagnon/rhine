@@ -11,10 +11,7 @@
 		FF4E27361AED247800211969 /* RhineCo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FF4E27351AED247800211969 /* RhineCo.cpp */; };
 		FFCA29AA1AEC47310096D2D9 /* RhineCoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FFCA29A91AEC47310096D2D9 /* RhineCoTests.m */; };
 		FFCA29BC1AEC47D20096D2D9 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FFCA29B41AEC47D20096D2D9 /* AppDelegate.m */; };
-		FFCA29BD1AEC47D20096D2D9 /* CMakeLists.txt in Resources */ = {isa = PBXBuildFile; fileRef = FFCA29B61AEC47D20096D2D9 /* CMakeLists.txt */; };
-		FFCA29BE1AEC47D20096D2D9 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = FFCA29B71AEC47D20096D2D9 /* Info.plist */; };
 		FFCA29C01AEC47D20096D2D9 /* Main.xib in Resources */ = {isa = PBXBuildFile; fileRef = FFCA29B91AEC47D20096D2D9 /* Main.xib */; };
-		FFCA29C11AEC47D20096D2D9 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FFCA29BB1AEC47D20096D2D9 /* ViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -33,15 +30,12 @@
 		FF606CFF1AED25FC00C29B20 /* UIBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIBridge.h; sourceTree = SOURCE_ROOT; };
 		FFCA298D1AEC47300096D2D9 /* RhineCo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RhineCo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FFCA29A31AEC47310096D2D9 /* RhineCoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RhineCoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		FFCA29A81AEC47310096D2D9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FFCA29A91AEC47310096D2D9 /* RhineCoTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RhineCoTests.m; sourceTree = "<group>"; };
 		FFCA29B31AEC47D20096D2D9 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = SOURCE_ROOT; };
 		FFCA29B41AEC47D20096D2D9 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = SOURCE_ROOT; };
 		FFCA29B61AEC47D20096D2D9 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = SOURCE_ROOT; };
 		FFCA29B71AEC47D20096D2D9 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = SOURCE_ROOT; };
 		FFCA29B91AEC47D20096D2D9 /* Main.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Main.xib; sourceTree = SOURCE_ROOT; };
-		FFCA29BA1AEC47D20096D2D9 /* ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = SOURCE_ROOT; };
-		FFCA29BB1AEC47D20096D2D9 /* ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -91,8 +85,6 @@
 				FFCA29B61AEC47D20096D2D9 /* CMakeLists.txt */,
 				FFCA29B71AEC47D20096D2D9 /* Info.plist */,
 				FFCA29B91AEC47D20096D2D9 /* Main.xib */,
-				FFCA29BA1AEC47D20096D2D9 /* ViewController.h */,
-				FFCA29BB1AEC47D20096D2D9 /* ViewController.m */,
 			);
 			path = RhineCo;
 			sourceTree = "<group>";
@@ -101,17 +93,8 @@
 			isa = PBXGroup;
 			children = (
 				FFCA29A91AEC47310096D2D9 /* RhineCoTests.m */,
-				FFCA29A71AEC47310096D2D9 /* Supporting Files */,
 			);
 			path = RhineCoTests;
-			sourceTree = "<group>";
-		};
-		FFCA29A71AEC47310096D2D9 /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				FFCA29A81AEC47310096D2D9 /* Info.plist */,
-			);
-			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -194,9 +177,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FFCA29BE1AEC47D20096D2D9 /* Info.plist in Resources */,
 				FFCA29C01AEC47D20096D2D9 /* Main.xib in Resources */,
-				FFCA29BD1AEC47D20096D2D9 /* CMakeLists.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -216,7 +197,6 @@
 			files = (
 				FF4E27361AED247800211969 /* RhineCo.cpp in Sources */,
 				FF4E27341AED246F00211969 /* UIBridge.mm in Sources */,
-				FFCA29C11AEC47D20096D2D9 /* ViewController.m in Sources */,
 				FFCA29BC1AEC47D20096D2D9 /* AppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
