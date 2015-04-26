@@ -6,7 +6,9 @@ add_executable(RhineCo MACOSX_BUNDLE
     AppDelegate.h
     AppDelegate.m
     Main.xib
-    main.m
+    UIBridge.mm
+    UIBridge.h
+    RhineCo.cpp
     Info.plist)
 set_target_properties(RhineCo PROPERTIES
   MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/Info.plist")
