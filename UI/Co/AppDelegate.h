@@ -9,7 +9,8 @@
 #import <Cocoa/Cocoa.h>
 
 @interface AppDelegate : NSObject <NSApplicationDelegate>
-
-
+@property (strong) IBOutlet NSTextField *mainBuffer;
+@property (strong) IBOutlet NSTextField *miniBuffer;
+- (IBAction)miniBufferAction:(NSTextField *)sender;
 @end
 
