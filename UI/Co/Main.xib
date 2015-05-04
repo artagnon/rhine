@@ -23,6 +23,9 @@
                             <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
+                        <connections>
+                            <action selector="keyDownAction:" target="-1" id="RWl-Fb-otX"/>
+                        </connections>
                     </textField>
                     <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="x4S-fA-v2Y">
                         <rect key="frame" x="0.0" y="0.0" width="480" height="22"/>
@@ -32,17 +35,17 @@
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                         <connections>
-                            <action selector="miniBufferAction:" target="gP1-40-vu7" id="6cU-mf-Rzq"/>
+                            <action selector="miniBufferAction:" target="pgE-Ka-3fI" id="8iZ-IW-PWv"/>
                         </connections>
                     </textField>
                 </subviews>
             </view>
             <point key="canvasLocation" x="413" y="398"/>
         </window>
-        <customObject id="gP1-40-vu7" customClass="AppDelegate">
+        <customObject id="pgE-Ka-3fI" customClass="RhineView">
             <connections>
-                <outlet property="mainBuffer" destination="HC6-Fe-iLS" id="iNH-dc-8TN"/>
-                <outlet property="miniBuffer" destination="x4S-fA-v2Y" id="vmw-eT-btW"/>
+                <outlet property="mainBuffer" destination="HC6-Fe-iLS" id="daJ-lH-IwK"/>
+                <outlet property="miniBuffer" destination="x4S-fA-v2Y" id="wW8-Ts-DA0"/>
             </connections>
         </customObject>
     </objects>
