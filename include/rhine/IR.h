@@ -30,6 +30,7 @@ protected:
   /// Discriminator for LLVM-style RTTI (dyn_cast<> et al.)
   enum RTType {
       RT_UnType,
+      RT_VoidType,
       RT_IntegerType,
       RT_BoolType,
       RT_FloatType,
@@ -219,12 +220,16 @@ protected:
         Stream << ", " << *ATy;
     } else
       Stream << "()";
-    Stream << " -> " << *ReturnType << ")";
+    if (ReturnType)
+      Stream << " -> " << *ReturnType << ")";
+    else
+      Stream << " -> ())";
   }
 };
 
 class Value : public FoldingSetNode {
 protected:
+  /// nullptr indicates VoidType
   Type *VTy;
 
   /// Discriminator for LLVM-style RTTI (dyn_cast<> et al.)
@@ -237,6 +242,7 @@ protected:
       RT_Function,
       RT_AddInst,
       RT_CallInst,
+      RT_BindInst,
   };
 public:
   Value(Type *VTy, RTType ID) : VTy(VTy), ValID(ID) {}
@@ -538,6 +544,40 @@ protected:
     Stream << Name << " ~" << *getType() << std::endl;
     for (auto O: OperandList)
       Stream << *O << std::endl;
+  }
+};
+
+class BindInst : public Instruction {
+  std::string Name;
+  Value *Val;
+public:
+  // This instruction cannot be an rvalue, and is of type Void
+  BindInst(std::string N, Value *V) : Instruction(nullptr, RT_BindInst),
+                                      Name(N), Val(V) {}
+
+  static BindInst *get(std::string N, Value *V, Context *K) {
+    return new (K->RhAllocator) BindInst(N, V);
+  }
+  static bool classof(const Value *V) {
+    return V->getValID() == RT_BindInst;
+  }
+  Value *getVal() {
+    return Val;
+  }
+  std::string getName() {
+    return Name;
+  }
+  friend ostream &operator<<(ostream &Stream, const BindInst &S) {
+    S.print(Stream);
+    return Stream;
+  }
+  // Infers to Void, lowers to nothing
+  Type *typeInfer(Context *K = nullptr);
+  llvm::Value *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
+protected:
+  virtual void print(std::ostream &Stream) const {
+    Stream << Name << " = " << *Val << std::endl
+           << *Val << " ~" << Val->getType();
   }
 };
 

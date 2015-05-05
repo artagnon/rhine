@@ -53,9 +53,11 @@
 %type   <StmList>       compound_stm stm_list single_stm
 %type   <Fcn>           fn_decl defun
 %type   <Value>         expression
+%type   <Value>         assign_expr
 %type   <Value>         rvalue
 %type   <Type>          type_annotation
 %type   <Symbol>        typed_symbol
+%type   <Symbol>        lvalue
 
 %{
 #include "rhine/ParseDriver.h"
@@ -183,6 +185,10 @@ expression:
                   Op->addOperand($R);
                   $$ = Op;
                 }
+        |       assign_expr[A]
+                {
+                  $$ = $A;
+                }
         |       typed_symbol[S] rvalue[R]
                 {
                   // FIXME: IntegerType should be UnType and let type inference
@@ -196,6 +202,18 @@ expression:
                   $$ = nullptr;
                 }
                 ;
+assign_expr:
+                lvalue[L] '=' expression[E]
+                {
+                  auto Op = BindInst::get($L->getName(), $E, K);
+                  $$ = Op;
+                }
+                ;
+lvalue:
+                typed_symbol[S]
+                {
+                  $$ = $S;
+                }
 rvalue:
                 INTEGER[I]
                 {

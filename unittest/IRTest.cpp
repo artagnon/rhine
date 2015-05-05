@@ -48,3 +48,11 @@ TEST(IR, TypePropagation)
     "var ~Int\n";
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }
+
+TEST(IR, BindInst) {
+  auto SourcePrg = "defun bsym [] sym = 3;";
+  auto ExpectedPP =
+    "bsym ~Fn(() -> ())\n"
+    "sym = 3 ~Int";
+  EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
+}
