@@ -29,7 +29,7 @@ public:
   }
 
   //===--------------------------------------------------------------------===//
-  // Functions that oeprate on SymbolMapping.
+  // Functions that operate on SymbolMapping.
   //===--------------------------------------------------------------------===//
   bool addMapping(std::string S, llvm::Value *V) {
     if (SymbolMapping.find(S) != SymbolMapping.end())
@@ -47,7 +47,7 @@ public:
     return V->second;
   }
   //===--------------------------------------------------------------------===//
-  // Functions that oeprate on NameTypeMapping.
+  // Functions that operate on NameTypeMapping.
   //===--------------------------------------------------------------------===//
   bool addNameTypeMapping(std::string N, class Type *T) {
     if (NameTypeMapping.find(N) != NameTypeMapping.end())

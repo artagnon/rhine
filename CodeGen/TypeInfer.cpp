@@ -58,6 +58,10 @@ Type *CallInst::typeInfer(Context *K) {
   return getType();
 }
 
+Type *BindInst::typeInfer(Context *K) {
+  return nullptr; // Void
+}
+
 void Module::typeInfer(Context *K) {
   auto V = getVal();
   std::transform(V.begin(), V.end(), V.begin(),
