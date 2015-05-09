@@ -118,3 +118,31 @@ TEST(CodeGen, TypePropagation)
     "}\n";
   EXPECT_PARSE_PP(SourcePrg, nullptr, &ExpectedPP);
 }
+
+TEST(CodeGen, BindPropagation) {
+  std::string SourcePrg =
+    "defun bsym [] {"
+    "sym = 3;\n"
+    "sym;\n"
+    "}";
+  std::string ExpectedPP =
+    "define i32 @bsym() {\n"
+    "entry:\n"
+    "  ret i32 3\n"
+    "}\n";
+  EXPECT_PARSE_PP(SourcePrg, nullptr, &ExpectedPP);
+}
+
+TEST(CodeGen, DISABLED_CompoundSideEffects) {
+  std::string SourcePrg =
+    "defun compside [] {"
+    "printf \"foom\";\n"
+    "printf \"baz\";\n"
+    "}";
+  std::string ExpectedPP =
+    "%printf = call i32 (i8*, ...)* @printf"
+    "(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @0, i32 0, i32 0))\n"
+    "%printf1 = call i32 (i8*, ...)* @printf"
+    "@printf1(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @1, i32 0, i32 0))";
+  EXPECT_PARSE_PP(SourcePrg, nullptr, &ExpectedPP);
+}
