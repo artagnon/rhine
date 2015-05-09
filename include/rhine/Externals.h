@@ -8,6 +8,7 @@
 namespace rhine {
 struct Externals {
   static llvm::Function *printf(llvm::Module *M);
+  static llvm::Function *malloc(llvm::Module *M);
 };
 }
 

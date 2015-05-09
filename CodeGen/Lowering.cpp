@@ -85,19 +85,24 @@ llvm::Value *LLVisitor::visit(AddInst *A) {
 
 llvm::Value *LLVisitor::visit(CallInst *C, llvm::Module *M, Context *K) {
   llvm::Function *Callee;
-  if (auto Result = K->getMapping(C->getName()))
+  auto Name = C->getName();
+  if (auto Result = K->getMapping(Name))
     Callee = dyn_cast<llvm::Function>(Result);
-  else
+  else if (Name == "printf")
     Callee = Externals::printf(M);
+  else if (Name == "malloc")
+    Callee = Externals::malloc(M);
+  else
+    assert (0 && "Function lookup failed");
 
   auto Arg = C->getOperand(0);
-  llvm::Value *StrPtr;
+  llvm::Value *ArgLL;
   if (auto Sym = dyn_cast<Symbol>(Arg))
-    StrPtr = K->getMappingOrDie(Sym->getName());
+    ArgLL = K->getMappingOrDie(Sym->getName());
   else
-    StrPtr = Arg->toLL(M);
+    ArgLL = Arg->toLL(M);
 
-  return RhBuilder.CreateCall(Callee, StrPtr, C->getName());
+  return RhBuilder.CreateCall(Callee, ArgLL, C->getName());
 }
 
 llvm::Value *LLVisitor::visit(BindInst *B, llvm::Module *M, Context *K) {
