@@ -133,16 +133,16 @@ TEST(CodeGen, BindPropagation) {
   EXPECT_PARSE_PP(SourcePrg, nullptr, &ExpectedPP);
 }
 
-TEST(CodeGen, DISABLED_CompoundSideEffects) {
+TEST(CodeGen, ExternalsCaching) {
   std::string SourcePrg =
     "defun compside [] {"
     "printf \"foom\";\n"
     "printf \"baz\";\n"
     "}";
   std::string ExpectedPP =
-    "%printf = call i32 (i8*, ...)* @printf"
+    "  %printf = call i32 (i8*, ...)* @printf"
     "(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @0, i32 0, i32 0))\n"
-    "%printf1 = call i32 (i8*, ...)* @printf"
-    "@printf1(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @1, i32 0, i32 0))";
+    "  %printf1 = call i32 (i8*, ...)* @printf"
+    "(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @1, i32 0, i32 0))";
   EXPECT_PARSE_PP(SourcePrg, nullptr, &ExpectedPP);
 }
