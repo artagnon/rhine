@@ -159,7 +159,7 @@ void EXPECT_OUTPUT(std::string SourcePrg, std::string ExpectedOut)
   EXPECT_STREQ(ExpectedOut.c_str(), ActualOut.c_str());
 }
 
-TEST(Execution, ConstantInt) {
+TEST(Execution, PrintfBasic) {
   std::string SourcePrg =
     "defun main [] {"
     "  printf \"43\";"
@@ -177,5 +177,11 @@ TEST(Execution, FunctionArgument) {
     "  printid \"21\";"
     "}";
   std::string ExpectedOut = "21";
+  EXPECT_OUTPUT(SourcePrg, ExpectedOut);
+}
+
+TEST(Execution, DISABLED_MallocBasic) {
+  std::string SourcePrg = "defun main [] malloc 8;";
+  std::string ExpectedOut = "";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }

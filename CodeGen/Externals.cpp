@@ -26,4 +26,21 @@ llvm::Function *Externals::printf(llvm::Module *M) {
   Handle->setCallingConv(llvm::CallingConv::C);
   return Handle;
 }
+
+llvm::Function *Externals::malloc(llvm::Module *M) {
+  static llvm::Module *ThisModule = nullptr;
+  static llvm::Function *Handle = nullptr;
+  if (ThisModule == M && Handle) return Handle;
+  ThisModule = M;
+
+  auto ArgTys = llvm::ArrayRef<llvm::Type *>(RhBuilder.getInt64Ty());
+  llvm::FunctionType* malloc_type =
+    llvm::FunctionType::get(RhBuilder.getInt8PtrTy(), ArgTys, false);
+
+  Handle =
+    llvm::Function::Create(malloc_type, llvm::Function::ExternalLinkage,
+                           Twine("malloc"), M);
+  Handle->setCallingConv(llvm::CallingConv::C);
+  return Handle;
+}
 }
