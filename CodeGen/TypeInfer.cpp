@@ -7,10 +7,8 @@ namespace rhine {
 //===--------------------------------------------------------------------===//
 Type *Symbol::typeInfer(Context *K) {
   Type *Ty = getType();
-  if (Ty == UnType::get(K)) {
-    Ty = K->getNameTypeMapping(getName());
-    assert (Ty != UnType::get(K) && "Missing seed to infer type");
-  }
+  if (Ty == UnType::get(K))
+    Ty = K->getNameTypeMappingOrDie(getName());
   K->addNameTypeMapping(getName(), Ty);
   return Ty;
 }
@@ -41,9 +39,12 @@ Type *Function::typeInfer(Context *K) {
                  });
   // FunctionType and Body transform
   auto FType = dyn_cast<FunctionType>(getType());
-  auto Body = getVal();
-  Body->setType(Body->typeInfer(K));
-  FType->setRTy(Body->getType());
+  Type *LastTy;
+  for (auto I: getVal()) {
+    LastTy = I->typeInfer(K);
+    I->setType(LastTy);
+  }
+  FType->setRTy(LastTy);
   return FType;
 }
 
@@ -59,6 +60,10 @@ Type *CallInst::typeInfer(Context *K) {
 }
 
 Type *BindInst::typeInfer(Context *K) {
+  Type *Ty = getVal()->typeInfer();
+  assert (Ty != UnType::get(K) &&
+          "Unable to type infer BindInst");
+  K->addNameTypeMapping(getName(), Ty);
   return nullptr; // Void
 }
 

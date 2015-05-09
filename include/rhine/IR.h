@@ -454,8 +454,8 @@ public:
   std::string getName() {
     return Name;
   }
-  Value *getVal() {
-    return Val.back();
+  std::vector<Value *> getVal() {
+    return Val;
   }
   friend ostream &operator<<(ostream &Stream, const Function &F) {
     F.print(Stream);
@@ -576,7 +576,7 @@ public:
   llvm::Value *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
 protected:
   virtual void print(std::ostream &Stream) const {
-    Stream << Name << " = " << *Val << std::endl;
+    Stream << Name << " = " << *Val;
   }
 };
 

@@ -59,7 +59,7 @@ llvm::Value *CallInst::toLL(llvm::Module *M, Context *K) {
 }
 
 llvm::Value *BindInst::toLL(llvm::Module *M, Context *K) {
-  return nullptr;
+  return LLVisitor::visit(this, M, K);
 }
 
 void Module::toLL(llvm::Module *M, Context *K) {

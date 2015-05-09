@@ -70,8 +70,10 @@ llvm::Constant *LLVisitor::visit(Function *RhF, llvm::Module *M, Context *K) {
 
   BasicBlock *BB = BasicBlock::Create(rhine::RhContext, "entry", F);
   RhBuilder.SetInsertPoint(BB);
-  llvm::Value *RhV = RhF->getVal()->toLL(M, K);
-  RhBuilder.CreateRet(RhV);
+  llvm::Value *LastLL;
+  for (auto Val : RhF->getVal())
+    LastLL = Val->toLL(M, K);
+  RhBuilder.CreateRet(LastLL);
   return F;
 }
 
@@ -96,6 +98,12 @@ llvm::Value *LLVisitor::visit(CallInst *C, llvm::Module *M, Context *K) {
     StrPtr = Arg->toLL(M);
 
   return RhBuilder.CreateCall(Callee, StrPtr, C->getName());
+}
+
+llvm::Value *LLVisitor::visit(BindInst *B, llvm::Module *M, Context *K) {
+  auto V = B->getVal()->toLL();
+  K->addMapping(B->getName(), V);
+  return nullptr;
 }
 
 void LLVisitor::visit(Module *RhM, llvm::Module *M, Context *K) {

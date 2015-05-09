@@ -55,7 +55,7 @@ public:
     NameTypeMapping.insert(std::make_pair(N, T));
     return true;
   }
-  Type *getNameTypeMapping(std::string S) {
+  Type *getNameTypeMappingOrDie(std::string S) {
     auto V = NameTypeMapping.find(S);
     assert(V != NameTypeMapping.end() &&
            "internal error: NameTypeMapping not pre-populated");
