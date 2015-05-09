@@ -20,6 +20,7 @@ struct LLVisitor
   static llvm::Constant *visit(Function *RhF, llvm::Module *M, Context *K);
   static llvm::Value *visit(AddInst *A);
   static llvm::Value *visit(CallInst *C, llvm::Module *M, Context *K);
+  static llvm::Value *visit(BindInst *B, llvm::Module *M, Context *K);
   static void visit(Module *RhM, llvm::Module *M, Context *K);
 };
 }
