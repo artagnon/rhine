@@ -56,3 +56,15 @@ TEST(IR, BindInst) {
     "sym = 3 ~Int";
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }
+
+TEST(IR, DISABLED_BindPropagation) {
+  auto SourcePrg = "defun bsym [] {"
+    "sym = 3;\n"
+    "sym;\n"
+    "}";
+  auto ExpectedPP =
+    "bsym ~Fn(() -> Int)\n"
+    "sym = 3 ~Int\n"
+    "3 ~ Int";
+  EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
+}
