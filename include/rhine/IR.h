@@ -576,8 +576,7 @@ public:
   llvm::Value *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
 protected:
   virtual void print(std::ostream &Stream) const {
-    Stream << Name << " = " << *Val << std::endl
-           << *Val << " ~" << Val->getType();
+    Stream << Name << " = " << *Val << std::endl;
   }
 };
 
