@@ -253,11 +253,14 @@ public:
   void setSourceLocation(unsigned BeginLine, unsigned BeginCol,
                          unsigned EndLine, unsigned EndCol, Context *K)
   {
-    auto BeginLoc = K->SourceMgr.translateLineCol(K->MainFileID,
+    auto BeginLoc = K->SourceMgr->translateLineCol(K->MainFileID,
                                                   BeginLine, BeginCol);
-    auto EndLoc = K->SourceMgr.translateLineCol(K->MainFileID,
+    auto EndLoc = K->SourceMgr->translateLineCol(K->MainFileID,
                                                 EndLine, EndCol);
     SourceLoc = SourceRange(BeginLoc, EndLoc);
+  }
+  SourceRange getSourceLocation() {
+    return SourceLoc;
   }
   RTType getValID() const { return ValID; }
   Type *getType() const {

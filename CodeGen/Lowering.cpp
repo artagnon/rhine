@@ -25,7 +25,7 @@ llvm::Type *LLVisitor::visit(StringType *V) {
 
 llvm::Value *LLVisitor::visit(Symbol *V, Context *K) {
   assert(K && "null Symbol Table");
-  return K->getMappingOrDie(V->getName());
+  return K->getMappingOrDie(V->getName(), V->getSourceLocation());
 }
 
 llvm::Value *LLVisitor::visit(GlobalString *S) {
@@ -98,7 +98,7 @@ llvm::Value *LLVisitor::visit(CallInst *C, llvm::Module *M, Context *K) {
   auto Arg = C->getOperand(0);
   llvm::Value *ArgLL;
   if (auto Sym = dyn_cast<Symbol>(Arg))
-    ArgLL = K->getMappingOrDie(Sym->getName());
+    ArgLL = K->getMappingOrDie(Sym->getName(), Sym->getSourceLocation());
   else
     ArgLL = Arg->toLL(M);
 
