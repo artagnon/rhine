@@ -5,8 +5,17 @@
 
 #include "llvm/IR/Value.h"
 #include "llvm/ADT/FoldingSet.h"
+#include "clang/Basic/SourceManager.h"
+#include "clang/Basic/Diagnostic.h"
+#include "clang/Basic/DiagnosticIDs.h"
+#include "clang/Basic/DiagnosticOptions.h"
+#include "clang/Basic/FileManager.h"
+#include "clang/Basic/LangOptions.h"
+#include "clang/Frontend/TextDiagnosticPrinter.h"
 
 #include <map>
+
+using namespace clang;
 
 namespace rhine {
 class Context {
@@ -14,11 +23,29 @@ class Context {
   // std::vector<Symbol *>
   std::map <std::string, class Type *> NameTypeMapping;
   std::map <std::string, llvm::Value *> SymbolMapping;
+
+  // Diagnostic stuff
+  FileSystemOptions FileMgrOpts;
+  FileManager FileMgr;
+  DiagnosticOptions *DiagOpts;
+  TextDiagnosticPrinter *DiagClient;
+  DiagnosticsEngine Diags;
+  SourceManager SourceMgr;
 public:
   std::string Filename;
   llvm::BumpPtrAllocator RhAllocator;
   llvm::FoldingSet<class Symbol> SymbolCache;
   llvm::FoldingSet<class FunctionType> FTyCache;
+
+  Context() :
+      FileMgr(FileMgrOpts), DiagOpts(new DiagnosticOptions()),
+      DiagClient(new TextDiagnosticPrinter(llvm::errs(), DiagOpts)),
+      Diags(new DiagnosticIDs(), DiagOpts, DiagClient),
+      SourceMgr(Diags, FileMgr)
+  {
+    DiagOpts->ShowColors = true;
+    DiagClient->BeginSourceFile(LangOptions(), nullptr);
+  }
 
   // The big free
   void releaseMemory() {

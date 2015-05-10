@@ -44,12 +44,14 @@ TEST(Diagnostic, SourceManager)
   std::unique_ptr<MemoryBuffer> Buf = MemoryBuffer::getMemBuffer(source);
   FileID mainFileID = SourceMgr.createFileID(std::move(Buf));
   SourceMgr.setMainFileID(mainFileID);
-  SourceLocation FaultyLocation = SourceMgr.translateLineCol(mainFileID, 2, 1);
+  SourceLocation StartLoc = SourceMgr.translateLineCol(mainFileID, 2, 3);
+  SourceLocation EndLoc = SourceMgr.translateLineCol(mainFileID, 2, 5);
 
   // Report and check
-  Diags.Report(FaultyLocation, diag::err_target_unknown_triple) << "unknown";
+  Diags.Report(StartLoc, diag::err_target_unknown_triple)
+    << "unknown" << SourceRange(StartLoc, EndLoc);
   EXPECT_PRED_FORMAT2(::testing::IsSubstring,
                       "M(foo)\n"
-                      "^\n",
+                      "  ^~~\n",
                       Scratch.c_str());
 }

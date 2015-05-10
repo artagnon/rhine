@@ -152,7 +152,10 @@ argument_list:
 typed_symbol:
                 SYMBOL[S] type_annotation[T]
                 {
-                  $$ = Symbol::get(*$S, $T, K);
+                  auto Sym = Symbol::get(*$S, $T, K);
+                  /* Sym->setSourceLocation(yylloc.begin.line, yylloc.end.line, */
+                  /*                        yylloc.begin.column, yylloc.end.column); */
+                  $$ = Sym;
                 }
         ;
 type_annotation:

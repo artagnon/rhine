@@ -10,6 +10,7 @@
 #include "llvm/IR/Constants.h"
 #include "llvm/ADT/Optional.h"
 #include "llvm/ADT/STLExtras.h"
+#include "clang/Basic/SourceManager.h"
 
 #include <string>
 #include <vector>
@@ -18,10 +19,10 @@
 #include "rhine/Context.h"
 
 using namespace std;
+using namespace llvm;
+using namespace clang;
 
 namespace rhine {
-using namespace llvm;
-
 static LLVMContext &RhContext = getGlobalContext();
 static IRBuilder<> RhBuilder(RhContext);
 
@@ -231,6 +232,7 @@ class Value : public FoldingSetNode {
 protected:
   /// nullptr indicates VoidType
   Type *VTy;
+  SourceRange SourceLoc;
 
   /// Discriminator for LLVM-style RTTI (dyn_cast<> et al.)
   enum RTType {
@@ -248,6 +250,13 @@ public:
   Value(Type *VTy, RTType ID) : VTy(VTy), ValID(ID) {}
   virtual ~Value() { };
   Value *get() = delete;
+  void setSourceLocation(unsigned begin_line, unsigned end_line,
+                         unsigned begin_col, unsigned end_col)
+  {
+    // SourceLoc =
+    //   SourceRange(SourceLocation(begin_line, begin_col),
+    //               SourceLocation(end_line, end_col));
+  }
   RTType getValID() const { return ValID; }
   Type *getType() const {
     return VTy;
