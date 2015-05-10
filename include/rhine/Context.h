@@ -29,22 +29,31 @@ class Context {
   FileManager FileMgr;
   DiagnosticOptions *DiagOpts;
   TextDiagnosticPrinter *DiagClient;
-  DiagnosticsEngine Diags;
-  SourceManager SourceMgr;
 public:
-  std::string Filename;
   llvm::BumpPtrAllocator RhAllocator;
   llvm::FoldingSet<class Symbol> SymbolCache;
   llvm::FoldingSet<class FunctionType> FTyCache;
+  SourceManager SourceMgr;
+  DiagnosticsEngine Diags;
+  FileID MainFileID;
 
-  Context() :
-      FileMgr(FileMgrOpts), DiagOpts(new DiagnosticOptions()),
+  Context(std::string *Filename, std::string *PrgString = nullptr) :
+      FileMgr(FileMgrOpts), DiagOpts(new DiagnosticOptions),
       DiagClient(new TextDiagnosticPrinter(llvm::errs(), DiagOpts)),
-      Diags(new DiagnosticIDs(), DiagOpts, DiagClient),
-      SourceMgr(Diags, FileMgr)
+      SourceMgr(Diags, FileMgr),
+      Diags(new DiagnosticIDs, DiagOpts, DiagClient)
   {
     DiagOpts->ShowColors = true;
     DiagClient->BeginSourceFile(LangOptions(), nullptr);
+    if (Filename) {
+      const FileEntry *File = FileMgr.getFile(*Filename, /*OpenFile=*/true);
+      MainFileID = SourceMgr.createFileID(File, SourceLocation(), SrcMgr::C_System);
+    } else {
+      std::unique_ptr<llvm::MemoryBuffer> Buf =
+        llvm::MemoryBuffer::getMemBuffer(*PrgString);
+      MainFileID = SourceMgr.createFileID(std::move(Buf));
+    }
+    SourceMgr.setMainFileID(MainFileID);
   }
 
   // The big free

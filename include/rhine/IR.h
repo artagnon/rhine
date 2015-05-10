@@ -250,12 +250,14 @@ public:
   Value(Type *VTy, RTType ID) : VTy(VTy), ValID(ID) {}
   virtual ~Value() { };
   Value *get() = delete;
-  void setSourceLocation(unsigned begin_line, unsigned end_line,
-                         unsigned begin_col, unsigned end_col)
+  void setSourceLocation(unsigned BeginLine, unsigned BeginCol,
+                         unsigned EndLine, unsigned EndCol, Context *K)
   {
-    // SourceLoc =
-    //   SourceRange(SourceLocation(begin_line, begin_col),
-    //               SourceLocation(end_line, end_col));
+    auto BeginLoc = K->SourceMgr.translateLineCol(K->MainFileID,
+                                                  BeginLine, BeginCol);
+    auto EndLoc = K->SourceMgr.translateLineCol(K->MainFileID,
+                                                EndLine, EndCol);
+    SourceLoc = SourceRange(BeginLoc, EndLoc);
   }
   RTType getValID() const { return ValID; }
   Type *getType() const {
