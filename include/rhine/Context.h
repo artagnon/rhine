@@ -11,8 +11,10 @@
 #include "clang/Basic/DiagnosticOptions.h"
 #include "clang/Basic/FileManager.h"
 #include "clang/Basic/LangOptions.h"
+#include "clang/Sema/SemaDiagnostic.h"
 #include "clang/Frontend/TextDiagnosticPrinter.h"
 
+#include <cstdlib>
 #include <map>
 
 using namespace clang;
@@ -33,27 +35,27 @@ public:
   llvm::BumpPtrAllocator RhAllocator;
   llvm::FoldingSet<class Symbol> SymbolCache;
   llvm::FoldingSet<class FunctionType> FTyCache;
-  SourceManager SourceMgr;
+  SourceManager *SourceMgr;
   DiagnosticsEngine Diags;
   FileID MainFileID;
 
   Context(std::string *Filename, std::string *PrgString = nullptr) :
       FileMgr(FileMgrOpts), DiagOpts(new DiagnosticOptions),
       DiagClient(new TextDiagnosticPrinter(llvm::errs(), DiagOpts)),
-      SourceMgr(Diags, FileMgr),
       Diags(new DiagnosticIDs, DiagOpts, DiagClient)
   {
     DiagOpts->ShowColors = true;
     DiagClient->BeginSourceFile(LangOptions(), nullptr);
+    SourceMgr = new SourceManager(Diags, FileMgr);
     if (Filename) {
       const FileEntry *File = FileMgr.getFile(*Filename, /*OpenFile=*/true);
-      MainFileID = SourceMgr.createFileID(File, SourceLocation(), SrcMgr::C_System);
+      MainFileID = SourceMgr->createFileID(File, SourceLocation(), SrcMgr::C_System);
     } else {
       std::unique_ptr<llvm::MemoryBuffer> Buf =
         llvm::MemoryBuffer::getMemBuffer(*PrgString);
-      MainFileID = SourceMgr.createFileID(std::move(Buf));
+      MainFileID = SourceMgr->createFileID(std::move(Buf));
     }
-    SourceMgr.setMainFileID(MainFileID);
+    SourceMgr->setMainFileID(MainFileID);
   }
 
   // The big free
@@ -78,9 +80,13 @@ public:
     auto V = SymbolMapping.find(S);
     return V == SymbolMapping.end() ? nullptr : V->second;
   }
-  llvm::Value *getMappingOrDie(std::string S) {
+  llvm::Value *getMappingOrDie(std::string S, SourceRange SourceLoc) {
     auto V = SymbolMapping.find(S);
-    assert(V != SymbolMapping.end() && "Unbound symbol");
+    if(V == SymbolMapping.end()) {
+      Diags.Report(SourceLoc.getBegin(), diag::err_undeclared_var_use)
+        << S << SourceLoc;
+      exit(1);
+    }
     return V->second;
   }
   //===--------------------------------------------------------------------===//
