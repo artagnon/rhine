@@ -5,19 +5,11 @@
 
 #include "llvm/IR/Value.h"
 #include "llvm/ADT/FoldingSet.h"
-#include "clang/Basic/SourceManager.h"
-#include "clang/Basic/Diagnostic.h"
-#include "clang/Basic/DiagnosticIDs.h"
-#include "clang/Basic/DiagnosticOptions.h"
-#include "clang/Basic/FileManager.h"
-#include "clang/Basic/LangOptions.h"
-#include "clang/Sema/SemaDiagnostic.h"
-#include "clang/Frontend/TextDiagnosticPrinter.h"
 
 #include <cstdlib>
 #include <map>
 
-using namespace clang;
+#include "location.hh"
 
 namespace rhine {
 class Context {
@@ -26,37 +18,10 @@ class Context {
   std::map <std::string, class Type *> NameTypeMapping;
   std::map <std::string, llvm::Value *> SymbolMapping;
 
-  // Diagnostic stuff
-  FileSystemOptions FileMgrOpts;
-  FileManager FileMgr;
-  DiagnosticOptions *DiagOpts;
-  TextDiagnosticPrinter *DiagClient;
 public:
   llvm::BumpPtrAllocator RhAllocator;
   llvm::FoldingSet<class Symbol> SymbolCache;
   llvm::FoldingSet<class FunctionType> FTyCache;
-  SourceManager *SourceMgr;
-  DiagnosticsEngine Diags;
-  FileID MainFileID;
-
-  Context(std::string *Filename, std::string *PrgString = nullptr) :
-      FileMgr(FileMgrOpts), DiagOpts(new DiagnosticOptions),
-      DiagClient(new TextDiagnosticPrinter(llvm::errs(), DiagOpts)),
-      Diags(new DiagnosticIDs, DiagOpts, DiagClient)
-  {
-    DiagOpts->ShowColors = true;
-    DiagClient->BeginSourceFile(LangOptions(), nullptr);
-    SourceMgr = new SourceManager(Diags, FileMgr);
-    if (Filename) {
-      const FileEntry *File = FileMgr.getFile(*Filename, /*OpenFile=*/true);
-      MainFileID = SourceMgr->createFileID(File, SourceLocation(), SrcMgr::C_System);
-    } else {
-      std::unique_ptr<llvm::MemoryBuffer> Buf =
-        llvm::MemoryBuffer::getMemBuffer(*PrgString);
-      MainFileID = SourceMgr->createFileID(std::move(Buf));
-    }
-    SourceMgr->setMainFileID(MainFileID);
-  }
 
   // The big free
   void releaseMemory() {
@@ -80,11 +45,10 @@ public:
     auto V = SymbolMapping.find(S);
     return V == SymbolMapping.end() ? nullptr : V->second;
   }
-  llvm::Value *getMappingOrDie(std::string S, SourceRange SourceLoc) {
+  llvm::Value *getMappingOrDie(std::string S, location SourceLoc) {
     auto V = SymbolMapping.find(S);
-    if(V == SymbolMapping.end()) {
-      Diags.Report(SourceLoc.getBegin(), diag::err_undeclared_var_use)
-        << S << SourceLoc;
+    if (V == SymbolMapping.end()) {
+      // TODO
       exit(1);
     }
     return V->second;

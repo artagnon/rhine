@@ -1,9 +1,7 @@
 find_package(FLEX 2.5.39 REQUIRED)
 find_package(BISON 3.0.2 REQUIRED)
 find_package(LLVM REQUIRED)
-find_package(CLANG REQUIRED)
 include_directories("/usr/local/opt/flex/include")
-include_directories("${CLANG_INCLUDE_DIRS}")
 flex_target(Lexx
   "${CMAKE_CURRENT_SOURCE_DIR}/Lexer.ll"
   "${CMAKE_CURRENT_BINARY_DIR}/Lexer.cpp")
@@ -23,6 +21,6 @@ add_library(Parse
   "${CMAKE_CURRENT_SOURCE_DIR}/ParseDriver.cpp")
 set_target_properties(Parse PROPERTIES
   LINKER_LANGUAGE CXX
-  COMPILE_FLAGS "${CLANG_CXXFLAGS} ${LLVM_CXXFLAGS} -Wno-deprecated-register -Wno-sign-compare")
+  COMPILE_FLAGS "${LLVM_CXXFLAGS} -Wno-deprecated-register -Wno-sign-compare")
 target_link_libraries(Parse
-  ${CLANG_LIBRARIES})
+  Diagnostic)
