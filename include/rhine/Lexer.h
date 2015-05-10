@@ -17,8 +17,8 @@ typedef P::token T;
 #define	YY_DECL		       			\
     P::token_type				\
     rhine::Lexer::lex(                          \
-      P::semantic_type* yylval,                 \
-      P::location_type* yylloc                  \
+      P::semantic_type *yylval,                 \
+      P::location_type *yylloc                  \
     )
 
 #ifndef __FLEX_LEXER_H

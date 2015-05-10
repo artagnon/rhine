@@ -44,8 +44,8 @@ std::string parseTransformIR(std::string PrgString,
                              std::ostream &ErrStream,
                              bool Debug)
 {
-  auto Root = rhine::PTree();
-  auto Ctx = rhine::Context();
+  rhine::PTree Root;
+  rhine::Context Ctx;
   auto Driver = rhine::ParseDriver(Root, &Ctx, ErrStream, Debug);
   Driver.parseString(PrgString);
   Root.M.typeInfer(&Ctx);
@@ -59,8 +59,8 @@ std::string parseCodeGenString(std::string PrgString,
                                std::ostream &ErrStream,
                                bool Debug)
 {
-  auto Root = rhine::PTree();
-  auto Ctx = rhine::Context();
+  rhine::PTree Root;
+  rhine::Context Ctx;
   auto Driver = rhine::ParseDriver(Root, &Ctx, ErrStream, Debug);
   Driver.parseString(PrgString);
   Root.M.typeInfer(&Ctx);
@@ -78,8 +78,8 @@ std::string parseCodeGenString(std::string PrgString,
 }
 
 void parseCodeGenFile(std::string Filename, llvm::Module *M, bool Debug) {
-  auto Root = rhine::PTree();
-  auto Ctx = rhine::Context();
+  rhine::PTree Root;
+  rhine::Context Ctx;
   Ctx.Filename = Filename;
   auto Driver = rhine::ParseDriver(Root, &Ctx, std::cerr, Debug);
   assert(Driver.parseFile(Filename) && "Could not parse file");
