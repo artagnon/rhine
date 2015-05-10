@@ -3,22 +3,19 @@
 #ifndef DIAGNOSTIC_H
 #define DIAGNOSTIC_H
 
-#include "clang/Basic/SourceManager.h"
-#include "clang/Basic/Diagnostic.h"
-#include "clang/Basic/DiagnosticIDs.h"
-#include "clang/Basic/DiagnosticOptions.h"
-#include "clang/Basic/FileManager.h"
-#include "clang/Basic/LangOptions.h"
-#include "clang/Basic/TargetInfo.h"
-#include "clang/Basic/TargetOptions.h"
-#include "clang/Lex/HeaderSearch.h"
-#include "clang/Lex/HeaderSearchOptions.h"
-#include "clang/Lex/ModuleLoader.h"
-#include "clang/Lex/Preprocessor.h"
-#include "clang/Lex/PreprocessorOptions.h"
-#include "clang/Frontend/TextDiagnosticPrinter.h"
-#include "llvm/ADT/SmallString.h"
-#include "llvm/Config/llvm-config.h"
+#include <string>
+
+namespace rhine {
+class DiagnosticPrinter {
+  std::string StringStreamInput;
+  std::ostream *ErrorStream;
+public:
+  DiagnosticPrinter(std::ostream *ErrStream) : ErrorStream(ErrStream) {}
+  void errorReport(const class location &Location,
+                   const std::string &Message,
+                   std::string StringStreamInput = "");
+};
+}
 
 
 #endif

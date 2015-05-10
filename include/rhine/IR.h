@@ -10,17 +10,16 @@
 #include "llvm/IR/Constants.h"
 #include "llvm/ADT/Optional.h"
 #include "llvm/ADT/STLExtras.h"
-#include "clang/Basic/SourceManager.h"
 
 #include <string>
 #include <vector>
 #include <sstream>
 
+#include "location.hh"
 #include "rhine/Context.h"
 
 using namespace std;
 using namespace llvm;
-using namespace clang;
 
 namespace rhine {
 static LLVMContext &RhContext = getGlobalContext();
@@ -232,7 +231,7 @@ class Value : public FoldingSetNode {
 protected:
   /// nullptr indicates VoidType
   Type *VTy;
-  SourceRange SourceLoc;
+  location SourceLoc;
 
   /// Discriminator for LLVM-style RTTI (dyn_cast<> et al.)
   enum RTType {
@@ -250,16 +249,11 @@ public:
   Value(Type *VTy, RTType ID) : VTy(VTy), ValID(ID) {}
   virtual ~Value() { };
   Value *get() = delete;
-  void setSourceLocation(unsigned BeginLine, unsigned BeginCol,
-                         unsigned EndLine, unsigned EndCol, Context *K)
+  void setSourceLocation(location SrcLoc)
   {
-    auto BeginLoc = K->SourceMgr->translateLineCol(K->MainFileID,
-                                                  BeginLine, BeginCol);
-    auto EndLoc = K->SourceMgr->translateLineCol(K->MainFileID,
-                                                EndLine, EndCol);
-    SourceLoc = SourceRange(BeginLoc, EndLoc);
+    SourceLoc = SrcLoc;
   }
-  SourceRange getSourceLocation() {
+  location getSourceLocation() {
     return SourceLoc;
   }
   RTType getValID() const { return ValID; }

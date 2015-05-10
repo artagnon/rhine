@@ -1,4 +1,5 @@
 include_directories("${PROJECT_SOURCE_DIR}/include")
+include_directories("${PROJECT_BINARY_DIR}/Parse")
 find_package(LLVM REQUIRED native mcjit)
 find_package(CLANG REQUIRED)
 link_directories(${LLVM_LIBRARY_DIRS})

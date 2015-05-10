@@ -61,6 +61,7 @@
 
 %{
 #include "rhine/ParseDriver.h"
+#include "rhine/Diagnostic.h"
 #include "rhine/Lexer.h"
 
 #undef yylex
@@ -153,8 +154,7 @@ typed_symbol:
                 SYMBOL[S] type_annotation[T]
                 {
                   auto Sym = Symbol::get(*$S, $T, K);
-                  Sym->setSourceLocation(@1.begin.line, @1.begin.column,
-                                         @1.end.line, @1.end.column, K);
+                  Sym->setSourceLocation(@1);
                   $$ = Sym;
                 }
         ;
@@ -236,5 +236,5 @@ rvalue:
 void rhine::Parser::error(const rhine::location &l,
                           const std::string &m)
 {
-  Driver->error(l, m);
+  Driver->ErrHandler->errorReport(l, m, Driver->StringStreamInput);
 }
