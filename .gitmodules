@@ -5,3 +5,4 @@
 [submodule "clang"]
 	path = clang
 	url = http://llvm.org/git/clang.git
+	ignore = untracked

@@ -3,16 +3,15 @@
 # It defines the following variables
 # CLANG_FOUND        - True if Clang found.
 # CLANG_INCLUDE_DIRS - where to find Clang include files
-# CLANG_LIBS         - list of clang libs
+# CLANG_LIBRARIES    - list of clang libs
 
 if(NOT LLVM_INCLUDE_DIRS OR NOT LLVM_LIBRARY_DIRS)
    message(FATAL_ERROR "No LLVM and Clang support requires LLVM")
 else()
   macro(FIND_AND_ADD_CLANG_LIB _libname_)
     find_library(CLANG_${_libname_}_LIB ${_libname_} ${LLVM_LIBRARY_DIRS})
-    set(CLANG_LDFLAGS "-L${CLANG_LIBRARY_DIRS}")
     if(CLANG_${_libname_}_LIB)
-      set(CLANG_LIBS ${CLANG_LIBS} ${CLANG_${_libname_}_LIB})
+      set(CLANG_LIBRARIES ${CLANG_LIBRARIES} ${CLANG_${_libname_}_LIB})
     endif()
   endmacro()
 
@@ -36,11 +35,10 @@ else()
   set(CLANG_INCLUDE_DIRS "${CLANG_SOURCE_INCLUDE_DIRS} ${CLANG_BUILD_INCLUDE_DIRS}")
 
   if(NOT CLANG_SOURCE_INCLUDE_DIRS OR NOT CLANG_BUILD_INCLUDE_DIRS)
-    MESSAGE(FATAL_ERROR "Could not find clang include directories")
+    message(FATAL_ERROR "Could not find clang include directories")
   endif()
 
-  if(CLANG_LIBS AND CLANG_INCLUDE_DIRS)
-    message(STATUS "Found Clang: ${CLANG_INCLUDE_DIRS}")
+  if(CLANG_LIBRARIES AND CLANG_INCLUDE_DIRS)
     set(CLANG_CXXFLAGS "-I${CLANG_SOURCE_INCLUDE_DIRS} -I${CLANG_BUILD_INCLUDE_DIRS}")
   else()
     if(CLANG_FIND_REQUIRED)
