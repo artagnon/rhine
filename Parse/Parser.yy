@@ -153,8 +153,8 @@ typed_symbol:
                 SYMBOL[S] type_annotation[T]
                 {
                   auto Sym = Symbol::get(*$S, $T, K);
-                  /* Sym->setSourceLocation(yylloc.begin.line, yylloc.end.line, */
-                  /*                        yylloc.begin.column, yylloc.end.column); */
+                  Sym->setSourceLocation(@1.begin.line, @1.begin.column,
+                                         @1.end.line, @1.end.column, K);
                   $$ = Sym;
                 }
         ;
