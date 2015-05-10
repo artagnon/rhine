@@ -2,3 +2,6 @@
 	path = llvm
 	url = https://github.com/artagnon/llvm
 	ignore = untracked
+[submodule "clang"]
+	path = clang
+	url = http://llvm.org/git/clang.git

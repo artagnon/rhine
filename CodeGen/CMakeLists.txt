@@ -1,6 +1,6 @@
 include_directories("${PROJECT_SOURCE_DIR}/include")
 find_package(LLVM REQUIRED native mcjit)
-include_directories("${LLVM_INCLUDE_DIRS}")
+find_package(CLANG REQUIRED)
 link_directories(${LLVM_LIBRARY_DIRS})
 add_library(CodeGen
   "${CMAKE_CURRENT_SOURCE_DIR}/ToLL.cpp"
@@ -11,9 +11,11 @@ add_library(CodeGen
   "${PROJECT_SOURCE_DIR}/include/rhine/LLVisitor.h"
   "${PROJECT_SOURCE_DIR}/include/rhine/Context.h"
   "${PROJECT_SOURCE_DIR}/include/rhine/IR.h")
+message("${LLVM_CXXFLAGS} ${CLANG_CXXFLAGS}")
 set_target_properties(CodeGen PROPERTIES
   LINKER_LANGUAGE CXX
-  COMPILE_FLAGS ${LLVM_CXXFLAGS})
+  COMPILE_FLAGS "${LLVM_CXXFLAGS} ${CLANG_CXXFLAGS}")
 target_link_libraries(CodeGen
   ${LLVM_LDFLAGS}
+  ${CLANG_LIBRARIES}
   ${LLVM_LIBRARIES})

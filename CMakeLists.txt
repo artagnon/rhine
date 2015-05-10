@@ -2,6 +2,7 @@ cmake_minimum_required (VERSION 2.6)
 project (Rhine)
 
 set(LLVM_ROOT_DIR "${PROJECT_SOURCE_DIR}/llvm")
+set(CLANG_ROOT_DIR "${PROJECT_SOURCE_DIR}/clang")
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/Modules")
 
 include_directories("${PROJECT_SOURCE_DIR}/include")
