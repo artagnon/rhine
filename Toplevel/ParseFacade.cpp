@@ -80,6 +80,7 @@ std::string parseCodeGenString(std::string PrgString,
 void parseCodeGenFile(std::string Filename, llvm::Module *M, bool Debug) {
   auto Root = rhine::PTree();
   auto Ctx = rhine::Context();
+  Ctx.Filename = Filename;
   auto Driver = rhine::ParseDriver(Root, &Ctx, std::cerr, Debug);
   assert(Driver.parseFile(Filename) && "Could not parse file");
   Root.M.typeInfer(&Ctx);

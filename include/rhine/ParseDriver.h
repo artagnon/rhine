@@ -27,10 +27,10 @@ public:
                                     Ctx(SharedCtx)
   {}
 
-  bool parseStream(std::istream &in,
-                   const std::string &sname = "stream input");
-  bool parseString(const std::string &input,
-                   const std::string &sname = "string stream");
+  bool parseStream(std::istream &In,
+                   const std::string &StreamName = "stream input");
+  bool parseString(const std::string &Input,
+                   const std::string &StreamName = "string stream");
   bool parseFile(const std::string &filename);
   void error(const class location &l, const std::string &m);
   void error(const std::string &m);

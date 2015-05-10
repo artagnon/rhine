@@ -11,10 +11,11 @@
 #include "Parser.hpp"
 
 namespace rhine {
-bool ParseDriver::parseStream(std::istream &in, const std::string &sname) {
-  StreamName = sname;
+bool ParseDriver::parseStream(std::istream &In,
+                              const std::string &StreamName) {
+  this->StreamName = StreamName;
 
-  rhine::Lexer Lexx(&in, ErrorStream, this);
+  rhine::Lexer Lexx(&In, ErrorStream, this);
   Lexx.set_debug(TraceScanning);
   this->Lexx = &Lexx;
 
@@ -23,18 +24,18 @@ bool ParseDriver::parseStream(std::istream &in, const std::string &sname) {
   return !Parseyy.parse();
 }
 
-bool ParseDriver::parseFile(const std::string &filename) {
-  std::ifstream in(filename, std::ifstream::in);
+bool ParseDriver::parseFile(const std::string &Filename) {
+  std::ifstream in(Filename, std::ifstream::in);
   if (!in.good()) return false;
-  return parseStream(in, filename);
+  return parseStream(in, Filename);
 }
 
 bool ParseDriver::parseString(const std::string &Input,
-                              const std::string &Sname)
+                              const std::string &StreamName)
 {
   StringStreamInput = Input;
   std::istringstream Iss(Input);
-  return parseStream(Iss, Sname);
+  return parseStream(Iss, StreamName);
 }
 
 #define ANSI_COLOR_RED     "\x1b[31;1m"
