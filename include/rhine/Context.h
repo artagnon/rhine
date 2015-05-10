@@ -43,6 +43,19 @@ public:
   }
   llvm::Value *getMappingOrDie(std::string S) {
     auto V = SymbolMapping.find(S);
+
+    // Being ugliness
+    // CompilerInvocation CInvok;
+    // CInvok.reset(createInvocationForMigration(origCI));
+    // auto Diags = new DiagnosticsEngine(DiagID, &origCI.getDiagnosticOpts(),
+    //                                    DiagClient, /*ShouldOwnClient=*/false);
+    // auto Unit = ASTUnit::LoadFromCompilerInvocationAction(CInvok.release(), Diags);
+    // auto Sema = new Sema(Unit->getPreprocessor(), Unit->getASTContext(), getASTConsumer(),
+    //                      getTranslationUnitKind(), nullptr);
+    // auto FL = SourceLocation();
+    //  && Sema.Diag(FL, diag::err_undeclated_var_use));
+    // end ugliness
+
     assert(V != SymbolMapping.end() && "Unbound symbol");
     return V->second;
   }
