@@ -7,7 +7,6 @@
 #include <string>
 #include <vector>
 #include "rhine/ParseTree.h"
-#include "rhine/Diagnostic.h"
 #include "rhine/Context.h"
 
 namespace rhine {
@@ -20,11 +19,9 @@ public:
 
   /// construct a new parser driver context
   ParseDriver(class PTree &Tree, Context *SharedCtx,
-              std::ostream &ErrStream = std::cerr,
               bool Debug = false) :
       TraceScanning(Debug), TraceParsing(Debug),
-      ErrHandler(new DiagnosticPrinter(&ErrStream)),
-      ErrorStream(&ErrStream), Root(Tree), Ctx(SharedCtx)
+      Root(Tree), Ctx(SharedCtx)
   {}
 
   bool parseStream(std::istream &In,
@@ -35,10 +32,8 @@ public:
 
   bool TraceScanning;
   bool TraceParsing;
-  DiagnosticPrinter *ErrHandler;
   std::string StringStreamInput;
   std::string StreamName;
-  std::ostream *ErrorStream;
   class Lexer *Lexx;
   class PTree &Root;
   Context *Ctx;
