@@ -7,18 +7,16 @@
 void EXPECT_PARSE_PP(std::string SourcePrg, std::string *ExpectedErr = nullptr,
                      std::string *ExpectedPP = nullptr)
 {
-  std::regex AnsiColorRe("\\x1b\\[[0-9;]*m");
   std::ostringstream Scratch;
   auto Source = rhine::parseCodeGenString(SourcePrg, Scratch);
-  auto Actual = Scratch.str();
-  auto CleanActualErr = std::regex_replace(Actual, AnsiColorRe, "");
+  auto ActualErr = Scratch.str();
   if (ExpectedErr) {
     ASSERT_EQ(ExpectedPP, nullptr);
     EXPECT_PRED_FORMAT2(::testing::IsSubstring, ExpectedErr->c_str(),
-                        CleanActualErr.c_str());
+                        ActualErr.c_str());
   } else {
     ASSERT_NE(ExpectedPP, nullptr);
-    ASSERT_STREQ("", CleanActualErr.c_str());
+    ASSERT_STREQ("", ActualErr.c_str());
     EXPECT_PRED_FORMAT2(::testing::IsSubstring, ExpectedPP->c_str(),
                         Source.c_str());
   }
