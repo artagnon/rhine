@@ -50,10 +50,10 @@ public:
     auto V = SymbolMapping.find(S);
     return V == SymbolMapping.end() ? nullptr : V->second;
   }
-  llvm::Value *getMappingOrDie(std::string S, location SourceLoc) {
+  llvm::Value *getMapping(std::string S, location SourceLoc) {
     auto V = SymbolMapping.find(S);
     if (V == SymbolMapping.end()) {
-      // TODO
+      DiagPrinter->errorReport(SourceLoc, "unbound variable " + S);
       exit(1);
     }
     return V->second;
@@ -67,7 +67,7 @@ public:
     NameTypeMapping.insert(std::make_pair(N, T));
     return true;
   }
-  Type *getNameTypeMappingOrDie(std::string S) {
+  Type *getNameTypeMapping(std::string S) {
     auto V = NameTypeMapping.find(S);
     assert(V != NameTypeMapping.end() &&
            "internal error: NameTypeMapping not pre-populated");
