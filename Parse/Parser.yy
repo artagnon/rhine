@@ -236,5 +236,5 @@ rvalue:
 void rhine::Parser::error(const rhine::location &l,
                           const std::string &m)
 {
-  K->DiagPrinter->errorReport(l, m, Driver->StringStreamInput);
+  K->DiagPrinter->errorReport(l, m);
 }

@@ -32,7 +32,6 @@ public:
 
   bool TraceScanning;
   bool TraceParsing;
-  std::string StringStreamInput;
   std::string StreamName;
   class Lexer *Lexx;
   class PTree &Root;
