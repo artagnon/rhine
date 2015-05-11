@@ -33,8 +33,7 @@ public:
 };
 
 void DiagnosticPrinter::errorReport(const location &Location,
-                                    const std::string &Message,
-                                    std::string StringStreamInput) {
+                                    const std::string &Message) {
   // TODO: when are these assumptions violated?
   assert(Location.begin.filename == Location.end.filename);
   assert(Location.begin.line == Location.end.line);

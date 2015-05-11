@@ -31,9 +31,8 @@ bool ParseDriver::parseFile(const std::string &Filename) {
 }
 
 bool ParseDriver::parseString(const std::string &Input,
-                              const std::string &StreamName)
-{
-  StringStreamInput = Input;
+                              const std::string &StreamName) {
+  Ctx->DiagPrinter->StringStreamInput = Input;
   std::istringstream Iss(Input);
   return parseStream(Iss, StreamName);
 }

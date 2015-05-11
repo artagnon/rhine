@@ -6,14 +6,13 @@
 #include <string>
 
 namespace rhine {
-class DiagnosticPrinter {
-  std::string StringStreamInput;
-public:
+struct DiagnosticPrinter {
   std::ostream *ErrorStream;
+  std::string StringStreamInput;
+
   DiagnosticPrinter(std::ostream *ErrStream) : ErrorStream(ErrStream) {}
   void errorReport(const class location &Location,
-                   const std::string &Message,
-                   std::string StringStreamInput = "");
+                   const std::string &Message);
 };
 }
 
