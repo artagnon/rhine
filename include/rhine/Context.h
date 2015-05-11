@@ -10,6 +10,7 @@
 #include <map>
 
 #include "location.hh"
+#include "rhine/Diagnostic.h"
 
 namespace rhine {
 class Context {
@@ -22,6 +23,10 @@ public:
   llvm::BumpPtrAllocator RhAllocator;
   llvm::FoldingSet<class Symbol> SymbolCache;
   llvm::FoldingSet<class FunctionType> FTyCache;
+  DiagnosticPrinter *DiagPrinter;
+
+  Context(std::ostream &ErrStream = std::cerr):
+      DiagPrinter(new DiagnosticPrinter(&ErrStream)) {}
 
   // The big free
   void releaseMemory() {

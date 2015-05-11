@@ -15,7 +15,7 @@ bool ParseDriver::parseStream(std::istream &In,
                               const std::string &StreamName) {
   this->StreamName = StreamName;
 
-  rhine::Lexer Lexx(&In, ErrorStream, this);
+  rhine::Lexer Lexx(&In, Ctx->DiagPrinter->ErrorStream, this);
   Lexx.set_debug(TraceScanning);
   this->Lexx = &Lexx;
 
