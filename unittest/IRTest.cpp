@@ -2,7 +2,7 @@
 #include "rhine/Support.h"
 #include "gtest/gtest.h"
 
-void EXPECT_PARSE_PP(std::string SourcePrg, std::string ExpectedPP)
+void EXPECT_TRANSFORM_PP(std::string SourcePrg, std::string ExpectedPP)
 {
   std::ostringstream Scratch;
   auto Source = rhine::parseTransformIR(SourcePrg, Scratch);
@@ -16,7 +16,7 @@ TEST(IR, ConstantInt) {
   auto ExpectedPP =
     "foo ~Fn(() -> Int)\n"
     "3 ~Int";
-  EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
+  EXPECT_TRANSFORM_PP(SourcePrg, ExpectedPP);
 }
 
 TEST(IR, AddTwoInt)
@@ -27,7 +27,7 @@ TEST(IR, AddTwoInt)
     "+ ~Int\n"
     "3 ~Int\n"
     "2 ~Int";
-  EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
+  EXPECT_TRANSFORM_PP(SourcePrg, ExpectedPP);
 }
 
 TEST(IR, ConstantString)
@@ -36,7 +36,7 @@ TEST(IR, ConstantString)
   std::string ExpectedPP =
     "foo ~Fn(() -> String)\n"
     "\"moo!\" ~String\n";
-  EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
+  EXPECT_TRANSFORM_PP(SourcePrg, ExpectedPP);
 }
 
 TEST(IR, TypePropagation)
@@ -46,7 +46,7 @@ TEST(IR, TypePropagation)
     "id ~Fn(Int -> Int)\n"
     "var ~Int\n"
     "var ~Int\n";
-  EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
+  EXPECT_TRANSFORM_PP(SourcePrg, ExpectedPP);
 }
 
 TEST(IR, BindInst) {
@@ -54,7 +54,7 @@ TEST(IR, BindInst) {
   auto ExpectedPP =
     "bsym ~Fn(() -> ())\n"
     "sym = 3 ~Int";
-  EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
+  EXPECT_TRANSFORM_PP(SourcePrg, ExpectedPP);
 }
 
 TEST(IR, BindPropagation) {
@@ -66,5 +66,5 @@ TEST(IR, BindPropagation) {
     "bsym ~Fn(() -> Int)\n"
     "sym = 3 ~Int\n"
     "sym ~Int";
-  EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
+  EXPECT_TRANSFORM_PP(SourcePrg, ExpectedPP);
 }
