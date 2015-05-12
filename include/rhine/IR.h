@@ -37,10 +37,18 @@ protected:
       RT_StringType,
       RT_FunctionType,
   };
+  location SourceLoc;
 public:
   Type(RTType ID) : TyID(ID) {}
   RTType getTyID() const { return TyID; }
   static Type *get() = delete;
+  void setSourceLocation(location SrcLoc)
+  {
+    SourceLoc = SrcLoc;
+  }
+  location getSourceLocation() {
+    return SourceLoc;
+  }
   friend ostream &operator<<(ostream &Stream, const Type &T) {
     T.print(Stream);
     return Stream;

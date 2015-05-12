@@ -8,7 +8,7 @@ namespace rhine {
 Type *Symbol::typeInfer(Context *K) {
   Type *Ty = getType();
   if (Ty == UnType::get(K))
-    Ty = K->getNameTypeMapping(getName());
+    Ty = K->getNameTypeMapping(getName(), getSourceLocation());
   K->addNameTypeMapping(getName(), Ty);
   return Ty;
 }

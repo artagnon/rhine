@@ -90,7 +90,9 @@ fn_decl:
                   for (auto Sym : *$A)
                     ATys.push_back(Sym->getType());
                   auto FTy = FunctionType::get($T, ATys, K);
+                  FTy->setSourceLocation(@4);
                   auto Fn = Function::get(FTy, K);
+                  Fn->setSourceLocation(@1);
                   Fn->setName(*$N);
                   Fn->setArgumentList(*$A);
                   $$ = Fn;
@@ -98,7 +100,9 @@ fn_decl:
         |       DEFUN SYMBOL[N] '[' ']' type_annotation[T]
                 {
                   auto FTy = FunctionType::get($T, K);
+                  FTy->setSourceLocation(@3);
                   auto Fn = Function::get(FTy, K);
+                  Fn->setSourceLocation(@1);
                   Fn->setName(*$N);
                   $$ = Fn;
                 }
@@ -164,16 +168,22 @@ type_annotation:
                 }
         |       '~' TINT
                 {
-                  $$ = IntegerType::get(K);
+                  auto ITy = IntegerType::get(K);
+                  ITy->setSourceLocation(@2);
+                  $$ = ITy;
                 }
         |       '~' TBOOL
                 {
-                  $$ = BoolType::get(K);
+                  auto BTy = BoolType::get(K);
+                  BTy->setSourceLocation(@2);
+                  $$ = BTy;
                 }
                 ;
         |       '~' TSTRING
                 {
-                  $$ = StringType::get(K);
+                  auto STy = StringType::get(K);
+                  STy->setSourceLocation(@2);
+                  $$ = STy;
                 }
                 ;
 expression:
@@ -220,11 +230,15 @@ lvalue:
 rvalue:
                 INTEGER[I]
                 {
-                  $$ = $I;
+                  auto Int = $I;
+                  Int->setSourceLocation(@1);
+                  $$ = Int;
                 }
         |       STRING[P]
                 {
-                  $$ = $P;
+                  auto Str = $P;
+                  Str->setSourceLocation(@1);
+                  $$ = Str;
                 }
         |       typed_symbol[S]
                 {
