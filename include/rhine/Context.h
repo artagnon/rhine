@@ -67,10 +67,12 @@ public:
     NameTypeMapping.insert(std::make_pair(N, T));
     return true;
   }
-  Type *getNameTypeMapping(std::string S) {
+  Type *getNameTypeMapping(std::string S, location SourceLoc) {
     auto V = NameTypeMapping.find(S);
-    assert(V != NameTypeMapping.end() &&
-           "internal error: NameTypeMapping not pre-populated");
+    if (V == NameTypeMapping.end()) {
+      DiagPrinter->errorReport(SourceLoc, "untyped variable " + S);
+      exit(1);
+    }
     return V->second;
   }
 };
