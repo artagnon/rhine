@@ -1,24 +1,17 @@
-#include "rhine/Diagnostic.h"
-#include "rhine/StdCapture.h"
+#include "rhine/IR.h"
+#include "rhine/Support.h"
 #include "gtest/gtest.h"
 
-void EXPECT_PARSE_PP(std::string SourcePrg, std::string *ExpectedErr = nullptr,
-                     std::string *ExpectedPP = nullptr)
+TEST(Diagnostic, BareDefun)
 {
-  auto Source = rhine::parseCodeGenString(SourcePrg, Scratch);
-  auto Actual = Scratch.str();
-  EXPECT_PRED_FORMAT2(::testing::IsSubstring, ExpectedErr->c_str(),
-                      Actual.c_str());
+  std::string SourcePrg = "defun foo []";
+  std::string ExpectedErr = "string stream:1:13:.*error:.*syntax error";
+  EXPECT_DEATH(rhine::parseCodeGenString(SourcePrg, std::cerr), ExpectedErr);
 }
 
-TEST(CodeGen, FunctionArgBinding)
+TEST(Diagnostic, UnboundVariable)
 {
-  std::string SourcePrg =
-    "defun id [var ~Int] var ~Int;\n";
-  std::string ExpectedPP =
-    "define i32 @id(i32) {\n"
-    "entry:\n"
-    "  ret i32 %0\n"
-    "}\n";
-  EXPECT_PARSE_PP(SourcePrg, nullptr, &ExpectedPP);
+  std::string SourcePrg = "defun foo [] var ~Int;";
+  std::string ExpectedErr = "string stream:1:14:.*error:.*unbound variable var";
+  EXPECT_DEATH(rhine::parseCodeGenString(SourcePrg, std::cerr), ExpectedErr);
 }

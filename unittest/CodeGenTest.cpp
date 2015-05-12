@@ -2,31 +2,14 @@
 #include "rhine/Support.h"
 #include "gtest/gtest.h"
 
-#include <regex>
-
-void EXPECT_PARSE_PP(std::string SourcePrg, std::string *ExpectedErr = nullptr,
-                     std::string *ExpectedPP = nullptr)
+void EXPECT_PARSE_PP(std::string SourcePrg, std::string ExpectedPP)
 {
   std::ostringstream Scratch;
   auto Source = rhine::parseCodeGenString(SourcePrg, Scratch);
   auto ActualErr = Scratch.str();
-  if (ExpectedErr) {
-    ASSERT_EQ(ExpectedPP, nullptr);
-    EXPECT_PRED_FORMAT2(::testing::IsSubstring, ExpectedErr->c_str(),
-                        ActualErr.c_str());
-  } else {
-    ASSERT_NE(ExpectedPP, nullptr);
-    ASSERT_STREQ("", ActualErr.c_str());
-    EXPECT_PRED_FORMAT2(::testing::IsSubstring, ExpectedPP->c_str(),
-                        Source.c_str());
-  }
-}
-
-TEST(Parse, BareDefun)
-{
-  std::string SourcePrg = "defun foo []";
-  std::string ExpectedErr = "string stream:1:13: error: syntax error";
-  EXPECT_PARSE_PP(SourcePrg, &ExpectedErr);
+  ASSERT_STREQ("", ActualErr.c_str());
+  EXPECT_PRED_FORMAT2(::testing::IsSubstring, ExpectedPP.c_str(),
+                      Source.c_str());
 }
 
 TEST(CodeGen, DefunStm)
@@ -37,7 +20,7 @@ TEST(CodeGen, DefunStm)
     "entry:\n"
     "  ret i32 5\n"
     "}\n";
-  EXPECT_PARSE_PP(SourcePrg, nullptr, &ExpectedPP);
+  EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }
 
 TEST(CodeGen, DefunCompoundStm)
@@ -53,7 +36,7 @@ TEST(CodeGen, DefunCompoundStm)
     "entry:\n"
     "  ret i32 9\n"
     "}\n";
-  EXPECT_PARSE_PP(SourcePrg, nullptr, &ExpectedPP);
+  EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }
 
 TEST(CodeGen, MultipleDefun)
@@ -70,7 +53,7 @@ TEST(CodeGen, MultipleDefun)
     "entry:\n"
     "  ret i32 3\n"
     "}\n";
-  EXPECT_PARSE_PP(SourcePrg, nullptr, &ExpectedPP);
+  EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }
 
 TEST(CodeGen, FunctionCall)
@@ -78,7 +61,7 @@ TEST(CodeGen, FunctionCall)
   std::string SourcePrg = "defun foom [] printf \"43\";";
   std::string ExpectedPP =
     "call i32 (i8*, ...) @printf";
-  EXPECT_PARSE_PP(SourcePrg, nullptr, &ExpectedPP);
+  EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }
 
 TEST(CodeGen, TypeAnnotation)
@@ -90,7 +73,7 @@ TEST(CodeGen, TypeAnnotation)
     "entry:\n"
     "  ret i32 0\n"
     "}\n";
-  EXPECT_PARSE_PP(SourcePrg, nullptr, &ExpectedPP);
+  EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }
 
 TEST(CodeGen, FunctionArgBinding)
@@ -102,7 +85,7 @@ TEST(CodeGen, FunctionArgBinding)
     "entry:\n"
     "  ret i32 %0\n"
     "}\n";
-  EXPECT_PARSE_PP(SourcePrg, nullptr, &ExpectedPP);
+  EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }
 
 TEST(CodeGen, TypePropagation)
@@ -114,7 +97,7 @@ TEST(CodeGen, TypePropagation)
     "entry:\n"
     "  ret i32 %0\n"
     "}\n";
-  EXPECT_PARSE_PP(SourcePrg, nullptr, &ExpectedPP);
+  EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }
 
 TEST(CodeGen, BindPropagation) {
@@ -128,7 +111,7 @@ TEST(CodeGen, BindPropagation) {
     "entry:\n"
     "  ret i32 3\n"
     "}\n";
-  EXPECT_PARSE_PP(SourcePrg, nullptr, &ExpectedPP);
+  EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }
 
 TEST(CodeGen, ExternalsCaching) {
@@ -142,5 +125,5 @@ TEST(CodeGen, ExternalsCaching) {
     "(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @0, i32 0, i32 0))\n"
     "  %printf1 = call i32 (i8*, ...) @printf"
     "(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @1, i32 0, i32 0))";
-  EXPECT_PARSE_PP(SourcePrg, nullptr, &ExpectedPP);
+  EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }
