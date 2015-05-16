@@ -23,6 +23,7 @@ public:
   llvm::BumpPtrAllocator RhAllocator;
   llvm::FoldingSet<class Symbol> SymbolCache;
   llvm::FoldingSet<class FunctionType> FTyCache;
+  llvm::FoldingSet<class IntegerType> ITyCache;
   DiagnosticPrinter *DiagPrinter;
 
   Context(std::ostream &ErrStream = std::cerr):
@@ -33,6 +34,7 @@ public:
     RhAllocator.Reset();
     SymbolCache.clear();
     FTyCache.clear();
+    ITyCache.clear();
     NameTypeMapping.clear();
     SymbolMapping.clear();
   }

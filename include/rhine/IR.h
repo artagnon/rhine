@@ -85,17 +85,29 @@ protected:
 
 class IntegerType : public Type {
 public:
-  IntegerType(unsigned Bitwidth = 32):
+  IntegerType(unsigned Bitwidth):
       Type(RT_IntegerType), Bitwidth(Bitwidth) {}
-  static IntegerType *get(Context *K) {
-    static auto UniqueIntegerType = new IntegerType();
-    return UniqueIntegerType;
+  static IntegerType *get(unsigned Bitwidth, Context *K) {
+    FoldingSetNodeID ID;
+    void *IP;
+    IntegerType::Profile(ID, Bitwidth);
+    if (auto T = K->ITyCache.FindNodeOrInsertPos(ID, IP))
+      return T;
+    auto T = new (K->RhAllocator) IntegerType(Bitwidth);
+    K->ITyCache.InsertNode(T, IP);
+    return T;
   }
-  int getBitwidth() {
+  unsigned getBitwidth() {
     return Bitwidth;
   }
   static bool classof(const Type *T) {
     return T->getTyID() == RT_IntegerType;
+  }
+  static inline void Profile(FoldingSetNodeID &ID, const unsigned &W) {
+    ID.AddInteger(W);
+  }
+  void Profile(FoldingSetNodeID &ID) {
+    Profile(ID, Bitwidth);
   }
   friend ostream &operator<<(ostream &Stream, const IntegerType &T) {
     T.print(Stream);
@@ -184,7 +196,7 @@ public:
     FoldingSetNodeID ID;
     void *IP;
     FunctionType::Profile(ID, RTy, ATys);
-    if (FunctionType *FTy = K->FTyCache.FindNodeOrInsertPos(ID, IP))
+    if (auto FTy = K->FTyCache.FindNodeOrInsertPos(ID, IP))
       return FTy;
     FunctionType *FTy = new (K->RhAllocator) FunctionType(RTy, ATys);
     K->FTyCache.InsertNode(FTy, IP);
@@ -372,10 +384,10 @@ protected:
 class ConstantInt : public Constant {
   int Val;
 public:
-  ConstantInt(int Val, Context *K) :
-      Constant(IntegerType::get(K), RT_ConstantInt), Val(Val) {}
-  static ConstantInt *get(int Val, Context *K) {
-    return new (K->RhAllocator) ConstantInt(Val, K);
+  ConstantInt(int Val, unsigned Bitwidth, Context *K) :
+      Constant(IntegerType::get(Bitwidth, K), RT_ConstantInt), Val(Val) {}
+  static ConstantInt *get(int Val, unsigned Bitwidth, Context *K) {
+    return new (K->RhAllocator) ConstantInt(Val, Bitwidth, K);
   }
   static bool classof(const Value *V) {
     return V->getValID() == RT_ConstantInt;
