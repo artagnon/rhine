@@ -1,7 +1,7 @@
 //-*- C++ -*-
 
-#ifndef AST_H
-#define AST_H
+#ifndef IR_H
+#define IR_H
 
 #include "llvm/IR/Module.h"
 #include "llvm/IR/DerivedTypes.h"
@@ -17,6 +17,7 @@
 
 #include "location.hh"
 #include "rhine/Context.h"
+#include "rhine/Type.h"
 
 using namespace std;
 using namespace llvm;
@@ -27,16 +28,6 @@ static IRBuilder<> RhBuilder(RhContext);
 
 class Type : public FoldingSetNode {
 protected:
-  /// Discriminator for LLVM-style RTTI (dyn_cast<> et al.)
-  enum RTType {
-      RT_UnType,
-      RT_VoidType,
-      RT_IntegerType,
-      RT_BoolType,
-      RT_FloatType,
-      RT_StringType,
-      RT_FunctionType,
-  };
   location SourceLoc;
 public:
   Type(RTType ID) : TyID(ID) {}
@@ -85,8 +76,8 @@ protected:
 
 class IntegerType : public Type {
 public:
-  IntegerType(unsigned Bitwidth):
-      Type(RT_IntegerType), Bitwidth(Bitwidth) {}
+  IntegerType(unsigned Width):
+      Type(RT_IntegerType), Bitwidth(Width) {}
   static IntegerType *get(unsigned Bitwidth, Context *K) {
     FoldingSetNodeID ID;
     void *IP;
@@ -257,21 +248,8 @@ protected:
   /// nullptr indicates VoidType
   Type *VTy;
   location SourceLoc;
-
-  /// Discriminator for LLVM-style RTTI (dyn_cast<> et al.)
-  enum RTType {
-      RT_Symbol,
-      RT_GlobalString,
-      RT_ConstantInt,
-      RT_ConstantBool,
-      RT_ConstantFloat,
-      RT_Function,
-      RT_AddInst,
-      RT_CallInst,
-      RT_BindInst,
-  };
 public:
-  Value(Type *VTy, RTType ID) : VTy(VTy), ValID(ID) {}
+  Value(Type *VTy, RTValue ID) : VTy(VTy), ValID(ID) {}
   virtual ~Value() { };
   Value *get() = delete;
   void setSourceLocation(location SrcLoc)
@@ -281,7 +259,7 @@ public:
   location getSourceLocation() {
     return SourceLoc;
   }
-  RTType getValID() const { return ValID; }
+  RTValue getValID() const { return ValID; }
   Type *getType() const {
     return VTy;
   }
@@ -297,7 +275,7 @@ public:
 protected:
   virtual void print(std::ostream &Stream) const = 0;
 private:
-  const RTType ValID;
+  const RTValue ValID;
 };
 
 class Symbol : public Value {
@@ -370,7 +348,7 @@ protected:
 
 class Constant : public Value {
 public:
-  Constant(Type *Ty, RTType ID) : Value(Ty, ID) {}
+  Constant(Type *Ty, RTValue ID) : Value(Ty, ID) {}
   friend ostream &operator<<(ostream &Stream, const Constant &C) {
     C.print(Stream);
     return Stream;
@@ -395,6 +373,12 @@ public:
   int getVal() {
     return Val;
   }
+  unsigned getBitwidth() {
+    if (auto ITy = dyn_cast<IntegerType>(VTy))
+      return ITy->getBitwidth();
+    assert(0 && "ConstantInt of non IntegerType type");
+  }
+
   friend ostream &operator<<(ostream &Stream, const ConstantInt &I) {
     I.print(Stream);
     return Stream;
@@ -510,7 +494,7 @@ class Instruction : public Value {
 protected:
   std::vector<Value *> OperandList;
 public:
-  Instruction(Type *Ty, RTType ID) :
+  Instruction(Type *Ty, RTValue ID) :
       Value(Ty, ID) {}
   void addOperand(Value *V) {
     OperandList.push_back(V);
