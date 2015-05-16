@@ -4,7 +4,14 @@
 
 namespace rhine {
 llvm::Type *IntegerType::toLL(llvm::Module *M, Context *K) {
-  return RhBuilder.getInt32Ty();
+  switch (Bitwidth) {
+  case 32:
+    return RhBuilder.getInt32Ty();
+  case 64:
+    return RhBuilder.getInt64Ty();
+  default:
+    assert (0 && "int bitwidths other than 32 and 64 are unimplemented");
+  }
 }
 
 llvm::Type *BoolType::toLL(llvm::Module *M, Context *K) {
@@ -20,7 +27,7 @@ llvm::Type *StringType::toLL(llvm::Module *M, Context *K) {
 }
 
 llvm::Type *FunctionType::toLL(llvm::Module *M, Context *K) {
-  assert(0 && "not yet implemented");
+  assert(0 && "first-class functions not yet implemented");
 }
 
 llvm::Value *Symbol::toLL(llvm::Module *M, Context *K) {
@@ -34,15 +41,18 @@ llvm::Value *GlobalString::toLL(llvm::Module *M, Context *K) {
 }
 
 llvm::Constant *ConstantInt::toLL(llvm::Module *M, Context *K) {
-  return llvm::ConstantInt::get(RhContext, APInt(32, getVal()));
+  auto LLTy = getType()->toLL();
+  return llvm::ConstantInt::get(LLTy, getVal());
 }
 
 llvm::Constant *ConstantBool::toLL(llvm::Module *M, Context *K) {
-  return llvm::ConstantInt::get(RhContext, APInt(1, getVal()));
+  auto LLTy = getType()->toLL();
+  return llvm::ConstantInt::get(LLTy, getVal());
 }
 
 llvm::Constant *ConstantFloat::toLL(llvm::Module *M, Context *K) {
-  return llvm::ConstantFP::get(RhContext, APFloat(getVal()));
+  auto LLTy = getType()->toLL();
+  return llvm::ConstantFP::get(LLTy, getVal());
 }
 
 llvm::Constant *Function::toLL(llvm::Module *M, Context *K) {
@@ -83,6 +93,13 @@ llvm::Value *AddInst::toLL(llvm::Module *M, Context *K) {
   return RhBuilder.CreateAdd(Op0, Op1);
 }
 
+llvm::Value *lookupOrLower(Value *V, llvm::Module *M, Context *K) {
+  if (auto Sym = dyn_cast<Symbol>(V))
+    return K->getMapping(Sym->getName(), Sym->getSourceLocation());
+  else
+    return V->toLL(M);
+}
+
 llvm::Value *CallInst::toLL(llvm::Module *M, Context *K) {
   location SourceLoc = getSourceLocation();
   llvm::Function *Callee;
@@ -110,13 +127,22 @@ llvm::Value *CallInst::toLL(llvm::Module *M, Context *K) {
       exit(1);
   }
 
-  auto Arg = getOperand(0);
-  llvm::Value *ArgLL;
-  if (auto Sym = dyn_cast<Symbol>(Arg))
-    ArgLL = K->getMapping(Sym->getName(), Sym->getSourceLocation());
-  else
-    ArgLL = Arg->toLL(M);
+  // Extract Callee's argument types
+  auto TargetFnTy = dyn_cast<llvm::FunctionType>(
+      Callee->getType()->getElementType());
+  std::vector<llvm::Type *> TargetArgumentTys;
+  for (auto I = TargetFnTy->param_begin(); I != TargetFnTy->param_end(); ++I)
+    TargetArgumentTys.push_back(*I);
 
+  // Integer bitwidth refinement
+  auto Arg = getOperand(0);
+  if (Arg->getType()->getTyID() == RT_IntegerType) {
+    auto W = dyn_cast<llvm::IntegerType>(TargetArgumentTys[0])->getBitWidth();
+    Arg->setType(IntegerType::get(W, K));
+  }
+
+  // Lowering argument
+  auto ArgLL = lookupOrLower(Arg, M, K);
   return RhBuilder.CreateCall(Callee, ArgLL, getName());
 }
 
