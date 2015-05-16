@@ -85,10 +85,14 @@ protected:
 
 class IntegerType : public Type {
 public:
-  IntegerType(): Type(RT_IntegerType) {}
+  IntegerType(unsigned Bitwidth = 32):
+      Type(RT_IntegerType), Bitwidth(Bitwidth) {}
   static IntegerType *get(Context *K) {
     static auto UniqueIntegerType = new IntegerType();
     return UniqueIntegerType;
+  }
+  int getBitwidth() {
+    return Bitwidth;
   }
   static bool classof(const Type *T) {
     return T->getTyID() == RT_IntegerType;
@@ -99,6 +103,7 @@ public:
   }
   llvm::Type *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
 protected:
+  unsigned Bitwidth;
   virtual void print(std::ostream &Stream) const {
     Stream << "Int";
   }

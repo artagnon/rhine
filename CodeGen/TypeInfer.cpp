@@ -14,19 +14,19 @@ Type *Symbol::typeInfer(Context *K) {
 }
 
 Type *ConstantInt::typeInfer(Context *K) {
-  return this->getType();
+  return getType();
 }
 
 Type *ConstantBool::typeInfer(Context *K) {
-  return this->getType();
+  return getType();
 }
 
 Type *ConstantFloat::typeInfer(Context *K) {
-  return this->getType();
+  return getType();
 }
 
 Type *GlobalString::typeInfer(Context *K) {
-  return this->getType();
+  return getType();
 }
 
 Type *Function::typeInfer(Context *K) {
