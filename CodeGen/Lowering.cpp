@@ -84,16 +84,32 @@ llvm::Value *LLVisitor::visit(AddInst *A) {
 }
 
 llvm::Value *LLVisitor::visit(CallInst *C, llvm::Module *M, Context *K) {
+  location SourceLoc = C->getSourceLocation();
   llvm::Function *Callee;
   auto Name = C->getName();
   if (auto Result = K->getMapping(Name))
-    Callee = dyn_cast<llvm::Function>(Result);
-  else if (Name == "printf")
-    Callee = Externals::printf(M);
-  else if (Name == "malloc")
-    Callee = Externals::malloc(M);
-  else
-    assert (0 && "Function lookup failed");
+    if (auto CalleeCandidate = dyn_cast<llvm::Function>(Result))
+      Callee = CalleeCandidate;
+    else {
+      K->DiagPrinter->errorReport(
+          SourceLoc, Name + " was not declared as a function");
+      exit(1);
+    }
+
+  else if (auto FPtr = Externals::getMapping(Name))
+    if (auto CalleeCandidate = dyn_cast<llvm::Function>(FPtr(M, K, SourceLoc)))
+      Callee = CalleeCandidate;
+    else {
+      // Polymorphic externals?
+      K->DiagPrinter->errorReport(
+          SourceLoc, Name + " was declared with different signature earlier");
+      exit(1);
+    }
+  else {
+      K->DiagPrinter->errorReport(
+          SourceLoc, "unable to look up function " + Name);
+      exit(1);
+  }
 
   auto Arg = C->getOperand(0);
   llvm::Value *ArgLL;

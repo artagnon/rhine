@@ -207,6 +207,7 @@ expression:
                   // FIXME: IntegerType should be UnType and let type inference
                   // do its job
                   auto Op = CallInst::get($S->getName(), IntegerType::get(K), K);
+                  Op->setSourceLocation(@1);
                   Op->addOperand($R);
                   $$ = Op;
                 }
@@ -219,6 +220,7 @@ assign_expr:
                 lvalue[L] '=' expression[E]
                 {
                   auto Op = BindInst::get($L->getName(), $E, K);
+                  Op->setSourceLocation(@1);
                   $$ = Op;
                 }
                 ;
