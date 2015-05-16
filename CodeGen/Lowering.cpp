@@ -1,52 +1,52 @@
 #include "rhine/IR.h"
 #include "rhine/Context.h"
-#include "rhine/LLVisitor.h"
 #include "rhine/Externals.h"
 
 namespace rhine {
-//===--------------------------------------------------------------------===//
-// LLVisitor visits.
-//===--------------------------------------------------------------------===//
-llvm::Type *LLVisitor::visit(IntegerType *V) {
+llvm::Type *IntegerType::toLL(llvm::Module *M, Context *K) {
   return RhBuilder.getInt32Ty();
 }
 
-llvm::Type *LLVisitor::visit(BoolType *V) {
+llvm::Type *BoolType::toLL(llvm::Module *M, Context *K) {
   return RhBuilder.getInt1Ty();
 }
 
-llvm::Type *LLVisitor::visit(FloatType *V) {
+llvm::Type *FloatType::toLL(llvm::Module *M, Context *K) {
   return RhBuilder.getFloatTy();
 }
 
-llvm::Type *LLVisitor::visit(StringType *V) {
+llvm::Type *StringType::toLL(llvm::Module *M, Context *K) {
   return RhBuilder.getInt8PtrTy();
 }
 
-llvm::Value *LLVisitor::visit(Symbol *V, Context *K) {
-  assert(K && "null Symbol Table");
-  return K->getMapping(V->getName(), V->getSourceLocation());
+llvm::Type *FunctionType::toLL(llvm::Module *M, Context *K) {
+  assert(0 && "not yet implemented");
 }
 
-llvm::Value *LLVisitor::visit(GlobalString *S) {
-  auto SRef = llvm::StringRef(S->getVal());
+llvm::Value *Symbol::toLL(llvm::Module *M, Context *K) {
+  assert(K && "null Symbol Table");
+  return K->getMapping(getName(), getSourceLocation());
+}
+
+llvm::Value *GlobalString::toLL(llvm::Module *M, Context *K) {
+  auto SRef = llvm::StringRef(getVal());
   return RhBuilder.CreateGlobalStringPtr(SRef);
 }
 
-llvm::Constant *LLVisitor::visit(ConstantInt *I) {
-  return llvm::ConstantInt::get(RhContext, APInt(32, I->getVal()));
+llvm::Constant *ConstantInt::toLL(llvm::Module *M, Context *K) {
+  return llvm::ConstantInt::get(RhContext, APInt(32, getVal()));
 }
 
-llvm::Constant *LLVisitor::visit(ConstantBool *B) {
-  return llvm::ConstantInt::get(RhContext, APInt(1, B->getVal()));
+llvm::Constant *ConstantBool::toLL(llvm::Module *M, Context *K) {
+  return llvm::ConstantInt::get(RhContext, APInt(1, getVal()));
 }
 
-llvm::Constant *LLVisitor::visit(ConstantFloat *F) {
-  return llvm::ConstantFP::get(RhContext, APFloat(F->getVal()));
+llvm::Constant *ConstantFloat::toLL(llvm::Module *M, Context *K) {
+  return llvm::ConstantFP::get(RhContext, APFloat(getVal()));
 }
 
-llvm::Constant *LLVisitor::visit(Function *RhF, llvm::Module *M, Context *K) {
-  auto FType = dyn_cast<FunctionType>(RhF->getType());
+llvm::Constant *Function::toLL(llvm::Module *M, Context *K) {
+  auto FType = dyn_cast<FunctionType>(getType());
   auto RType = FType->getRTy()->toLL(M, K);
   std::vector<llvm::Type *> ArgTys;
   for (auto RhTy: FType->getATys())
@@ -54,10 +54,10 @@ llvm::Constant *LLVisitor::visit(Function *RhF, llvm::Module *M, Context *K) {
   auto ArgTyAr = makeArrayRef(ArgTys);
   auto F = llvm::Function::Create(llvm::FunctionType::get(RType, ArgTyAr, false),
                                   GlobalValue::ExternalLinkage,
-                                  RhF->getName(), M);
+                                  getName(), M);
 
   // Bind argument symbols to function argument values in symbol table
-  auto ArgList = RhF->getArgumentList();
+  auto ArgList = getArgumentList();
   auto S = ArgList.begin();
   auto V = F->arg_begin();
   auto SEnd = ArgList.end();
@@ -66,28 +66,28 @@ llvm::Constant *LLVisitor::visit(Function *RhF, llvm::Module *M, Context *K) {
     K->addMapping((*S)->getName(), V);
 
   // Add function symbol to symbol table
-  K->addMapping(RhF->getName(), F);
+  K->addMapping(getName(), F);
 
   BasicBlock *BB = BasicBlock::Create(rhine::RhContext, "entry", F);
   RhBuilder.SetInsertPoint(BB);
   llvm::Value *LastLL;
-  for (auto Val : RhF->getVal())
+  for (auto Val : getVal())
     LastLL = Val->toLL(M, K);
   RhBuilder.CreateRet(LastLL);
   return F;
 }
 
-llvm::Value *LLVisitor::visit(AddInst *A) {
-  auto Op0 = A->getOperand(0)->toLL();
-  auto Op1 = A->getOperand(1)->toLL();
+llvm::Value *AddInst::toLL(llvm::Module *M, Context *K) {
+  auto Op0 = getOperand(0)->toLL();
+  auto Op1 = getOperand(1)->toLL();
   return RhBuilder.CreateAdd(Op0, Op1);
 }
 
-llvm::Value *LLVisitor::visit(CallInst *C, llvm::Module *M, Context *K) {
-  location SourceLoc = C->getSourceLocation();
+llvm::Value *CallInst::toLL(llvm::Module *M, Context *K) {
+  location SourceLoc = getSourceLocation();
   llvm::Function *Callee;
-  auto Name = C->getName();
-  if (auto Result = K->getMapping(Name))
+  auto Name = getName();
+  if (auto Result = K->getMapping(Name)) {
     if (auto CalleeCandidate = dyn_cast<llvm::Function>(Result))
       Callee = CalleeCandidate;
     else {
@@ -95,8 +95,7 @@ llvm::Value *LLVisitor::visit(CallInst *C, llvm::Module *M, Context *K) {
           SourceLoc, Name + " was not declared as a function");
       exit(1);
     }
-
-  else if (auto FPtr = Externals::getMapping(Name))
+  } else if (auto FPtr = Externals::getMapping(Name)) {
     if (auto CalleeCandidate = dyn_cast<llvm::Function>(FPtr(M, K, SourceLoc)))
       Callee = CalleeCandidate;
     else {
@@ -105,30 +104,30 @@ llvm::Value *LLVisitor::visit(CallInst *C, llvm::Module *M, Context *K) {
           SourceLoc, Name + " was declared with different signature earlier");
       exit(1);
     }
-  else {
+  } else {
       K->DiagPrinter->errorReport(
           SourceLoc, "unable to look up function " + Name);
       exit(1);
   }
 
-  auto Arg = C->getOperand(0);
+  auto Arg = getOperand(0);
   llvm::Value *ArgLL;
   if (auto Sym = dyn_cast<Symbol>(Arg))
     ArgLL = K->getMapping(Sym->getName(), Sym->getSourceLocation());
   else
     ArgLL = Arg->toLL(M);
 
-  return RhBuilder.CreateCall(Callee, ArgLL, C->getName());
+  return RhBuilder.CreateCall(Callee, ArgLL, getName());
 }
 
-llvm::Value *LLVisitor::visit(BindInst *B, llvm::Module *M, Context *K) {
-  auto V = B->getVal()->toLL();
-  K->addMapping(B->getName(), V);
+llvm::Value *BindInst::toLL(llvm::Module *M, Context *K) {
+  auto V = getVal()->toLL();
+  K->addMapping(getName(), V);
   return nullptr;
 }
 
-void LLVisitor::visit(Module *RhM, llvm::Module *M, Context *K) {
-  for (auto F: RhM->getVal())
+void Module::toLL(llvm::Module *M, Context *K) {
+  for (auto F: getVal())
     F->toLL(M, K);
 }
 }
