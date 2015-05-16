@@ -168,7 +168,7 @@ type_annotation:
                 }
         |       '~' TINT
                 {
-                  auto ITy = IntegerType::get(K);
+                  auto ITy = IntegerType::get(32, K);
                   ITy->setSourceLocation(@2);
                   $$ = ITy;
                 }
@@ -193,7 +193,7 @@ expression:
                 }
         |       rvalue[L] '+' rvalue[R]
                 {
-                  auto Op = AddInst::get(IntegerType::get(K), K);
+                  auto Op = AddInst::get(IntegerType::get(32, K), K);
                   Op->addOperand($L);
                   Op->addOperand($R);
                   $$ = Op;
@@ -206,7 +206,7 @@ expression:
                 {
                   // FIXME: IntegerType should be UnType and let type inference
                   // do its job
-                  auto Op = CallInst::get($S->getName(), IntegerType::get(K), K);
+                  auto Op = CallInst::get($S->getName(), IntegerType::get(32, K), K);
                   Op->setSourceLocation(@1);
                   Op->addOperand($R);
                   $$ = Op;

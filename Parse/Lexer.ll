@@ -31,7 +31,7 @@ SPTAB   [ \t]+
 {RET} { yylloc->lines(yyleng); yylloc->step(); }
 
 {INTEGER} {
-  auto C = ConstantInt::get(atoi(yytext), K);
+  auto C = ConstantInt::get(atoi(yytext), 64, K);
   yylval->Integer = C;
   return T::INTEGER;
 }
