@@ -127,3 +127,15 @@ TEST(CodeGen, ExternalsCaching) {
     "(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @1, i32 0, i32 0))";
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }
+
+TEST(CodeGen, VoidRepresentation)
+{
+  std::string SourcePrg =
+    "defun id [] var = 3;\n";
+  std::string ExpectedPP =
+    "define void @id() {\n"
+    "entry:\n"
+    "  ret void\n"
+    "}\n";
+  EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
+}

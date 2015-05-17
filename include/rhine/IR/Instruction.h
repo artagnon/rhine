@@ -10,6 +10,7 @@
 #include <sstream>
 
 #include "rhine/Context.h"
+#include "rhine/IR/Type.h"
 #include "rhine/IR/Value.h"
 
 namespace rhine {
@@ -91,11 +92,11 @@ class BindInst : public Instruction {
   Value *Val;
 public:
   // This instruction cannot be an rvalue, and is of type Void
-  BindInst(std::string N, Value *V) : Instruction(nullptr, RT_BindInst),
-                                      Name(N), Val(V) {}
+  BindInst(std::string N, Type *Ty, Value *V) :
+      Instruction(Ty, RT_BindInst), Name(N), Val(V) {}
 
   static BindInst *get(std::string N, Value *V, Context *K) {
-    return new (K->RhAllocator) BindInst(N, V);
+    return new (K->RhAllocator) BindInst(N, VoidType::get(K), V);
   }
   static bool classof(const Value *V) {
     return V->getValID() == RT_BindInst;
@@ -110,7 +111,6 @@ public:
     S.print(Stream);
     return Stream;
   }
-  // Infers to Void, lowers to nothing
   Type *typeInfer(Context *K = nullptr);
   llvm::Value *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
 protected:

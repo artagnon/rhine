@@ -36,8 +36,12 @@ TEST(Execution, FunctionArgument) {
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
 
-TEST(Execution, DISABLED_MallocBasic) {
-  std::string SourcePrg = "defun main [] malloc 8;";
+TEST(Execution, MallocBasic) {
+  std::string SourcePrg =
+    "defun main [] {\n"
+    "  malloc 8;\n"
+    "  3;\n"
+    "}";
   std::string ExpectedOut = "";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }

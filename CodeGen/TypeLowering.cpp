@@ -2,6 +2,14 @@
 #include "rhine/IR/Value.h"
 
 namespace rhine {
+llvm::Type *UnType::toLL(llvm::Module *M, Context *K) {
+  assert(0 && "Cannot toLL() without inferring type");
+}
+
+llvm::Type *VoidType::toLL(llvm::Module *M, Context *K) {
+  return K->Builder->getVoidTy();
+}
+
 llvm::Type *IntegerType::toLL(llvm::Module *M, Context *K) {
   switch (Bitwidth) {
   case 32:
