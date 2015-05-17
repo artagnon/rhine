@@ -60,7 +60,7 @@ Type *BindInst::typeInfer(Context *K) {
   assert (Ty != UnType::get(K) &&
           "Unable to type infer BindInst");
   K->addNameTypeMapping(getName(), Ty);
-  return nullptr; // Void
+  return getType();
 }
 
 void Module::typeInfer(Context *K) {

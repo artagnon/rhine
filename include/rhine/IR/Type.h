@@ -71,12 +71,31 @@ public:
     U.print(Stream);
     return Stream;
   }
-  virtual llvm::Type *toLL(llvm::Module *M = nullptr, Context *K = nullptr) {
-    assert(false && "Cannot toLL() without inferring type");
-  }
+  virtual llvm::Type *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
 protected:
   virtual void print(std::ostream &Stream) const {
     Stream << "UnType";
+  }
+};
+
+class VoidType : public Type {
+public:
+  VoidType(): Type(RT_VoidType) {}
+  static VoidType *get(Context *K) {
+    static auto UniqueVoidType = new VoidType();
+    return UniqueVoidType;
+  }
+  static bool classof(const Type *T) {
+    return T->getTyID() == RT_VoidType;
+  }
+  friend ostream &operator<<(ostream &Stream, const VoidType &V) {
+    V.print(Stream);
+    return Stream;
+  }
+  virtual llvm::Type *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
+protected:
+  virtual void print(std::ostream &Stream) const {
+    Stream << "VoidType";
   }
 };
 
@@ -241,7 +260,7 @@ protected:
            ATy != std::end(ArgumentTypes); ++ATy)
         Stream << ", " << *ATy;
     } else
-      Stream << "()";
+      Stream << "VoidType";
     if (ReturnType)
       Stream << " -> " << *ReturnType << ")";
     else
