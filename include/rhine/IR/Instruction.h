@@ -61,11 +61,11 @@ protected:
 class CallInst : public Instruction {
   std::string Name;
 public:
-  // May be untyped
+  // We never know the type before looking up the symbol
   CallInst(std::string FunctionName, Type *Ty) :
       Instruction(Ty, RT_CallInst), Name(FunctionName) {}
-  static CallInst *get(std::string FunctionName, Type *Ty, Context *K) {
-    return new (K->RhAllocator) CallInst(FunctionName, Ty);
+  static CallInst *get(std::string FunctionName, Context *K) {
+    return new (K->RhAllocator) CallInst(FunctionName, UnType::get(K));
   }
   static bool classof(const Value *V) {
     return V->getValID() == RT_CallInst;

@@ -204,9 +204,7 @@ expression:
                 }
         |       typed_symbol[S] rvalue[R]
                 {
-                  // FIXME: IntegerType should be UnType and let type inference
-                  // do its job
-                  auto Op = CallInst::get($S->getName(), IntegerType::get(32, K), K);
+                  auto Op = CallInst::get($S->getName(), K);
                   Op->setSourceLocation(@1);
                   Op->addOperand($R);
                   $$ = Op;
