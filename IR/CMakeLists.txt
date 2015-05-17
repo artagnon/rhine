@@ -2,24 +2,18 @@ include_directories("${PROJECT_SOURCE_DIR}/include")
 include_directories("${PROJECT_BINARY_DIR}/Parse")
 find_package(LLVM REQUIRED native mcjit)
 link_directories(${LLVM_LIBRARY_DIRS})
-add_library(CodeGen
-  "${CMAKE_CURRENT_SOURCE_DIR}/TypeLowering.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ValueLowering.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ConstLowering.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/InstLowering.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ModuleLowering.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/Externals.cpp"
-  "${PROJECT_SOURCE_DIR}/include/rhine/Externals.h"
+add_library(IR
+  "${CMAKE_CURRENT_SOURCE_DIR}/Value.cpp"
+  "${PROJECT_SOURCE_DIR}/include/rhine/Context.h"
   "${PROJECT_SOURCE_DIR}/include/rhine/IR/Type.h"
   "${PROJECT_SOURCE_DIR}/include/rhine/IR/Value.h"
   "${PROJECT_SOURCE_DIR}/include/rhine/IR/Constant.h"
   "${PROJECT_SOURCE_DIR}/include/rhine/IR/Instruction.h"
   "${PROJECT_SOURCE_DIR}/include/rhine/IR/Module.h"
   "${PROJECT_SOURCE_DIR}/include/rhine/IR.h")
-set_target_properties(CodeGen PROPERTIES
+set_target_properties(IR PROPERTIES
   LINKER_LANGUAGE CXX
   COMPILE_FLAGS "${LLVM_CXXFLAGS}")
-target_link_libraries(CodeGen
-  IR
+target_link_libraries(IR
   ${LLVM_LDFLAGS}
   ${LLVM_LIBRARIES})

@@ -1,10 +1,6 @@
 #include "rhine/IR.h"
-#include <iostream>
 
 namespace rhine {
-//===--------------------------------------------------------------------===//
-// Type inference core.
-//===--------------------------------------------------------------------===//
 Type *Symbol::typeInfer(Context *K) {
   Type *Ty = getType();
   if (Ty == UnType::get(K))

@@ -1,5 +1,5 @@
 #include "rhine/Context.h"
-#include "rhine/IR.h"
+#include "rhine/IR/Module.h"
 #include "rhine/Externals.h"
 
 namespace rhine {
