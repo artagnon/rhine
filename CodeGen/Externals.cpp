@@ -21,8 +21,7 @@ ExternalsFTy *Externals::getMapping(std::string S) {
   return V == ExternalsMapping.end() ? nullptr : V->second;
 }
 
-llvm::Constant *Externals::printf(llvm::Module *M, Context *K,
-                                  location &SourceLoc) {
+llvm::Constant *Externals::printf(llvm::Module *M, Context *K) {
   auto ArgTys = llvm::ArrayRef<llvm::Type *>(K->Builder->getInt8PtrTy());
   llvm::FunctionType *printf_type =
     llvm::FunctionType::get(K->Builder->getInt32Ty(), ArgTys, true);
@@ -39,8 +38,7 @@ llvm::Constant *Externals::printf(llvm::Module *M, Context *K,
   return M->getOrInsertFunction("printf", printf_type);
 }
 
-llvm::Constant *Externals::malloc(llvm::Module *M, Context *K,
-                                  location &SourceLoc) {
+llvm::Constant *Externals::malloc(llvm::Module *M, Context *K) {
   auto ArgTys = llvm::ArrayRef<llvm::Type *>(K->Builder->getInt64Ty());
   llvm::FunctionType *malloc_type =
     llvm::FunctionType::get(K->Builder->getInt8PtrTy(), ArgTys, false);

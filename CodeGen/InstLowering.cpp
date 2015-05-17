@@ -23,7 +23,7 @@ llvm::Value *CallInst::toLL(llvm::Module *M, Context *K) {
       exit(1);
     }
   } else if (auto FPtr = Externals::get()->getMapping(Name)) {
-    if (auto CalleeCandidate = dyn_cast<llvm::Function>(FPtr(M, K, SourceLoc)))
+    if (auto CalleeCandidate = dyn_cast<llvm::Function>(FPtr(M, K)))
       Callee = CalleeCandidate;
     else {
       // Polymorphic externals?

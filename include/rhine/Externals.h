@@ -6,8 +6,7 @@
 #include "llvm/IR/Module.h"
 
 namespace rhine {
-typedef llvm::Constant *ExternalsFTy(llvm::Module *M, Context *K,
-                                     location &SourceLoc);
+typedef llvm::Constant *ExternalsFTy(llvm::Module *M, Context *K);
 
 struct Externals {
   static ExternalsFTy printf;
