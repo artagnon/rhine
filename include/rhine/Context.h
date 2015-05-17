@@ -4,6 +4,7 @@
 #define SYMBOLTABLE_H
 
 #include "llvm/IR/Value.h"
+#include "llvm/IR/IRBuilder.h"
 #include "llvm/ADT/FoldingSet.h"
 
 #include <cstdlib>
@@ -24,9 +25,11 @@ public:
   llvm::FoldingSet<class Symbol> SymbolCache;
   llvm::FoldingSet<class FunctionType> FTyCache;
   llvm::FoldingSet<class IntegerType> ITyCache;
+  llvm::IRBuilder<> *Builder;
   DiagnosticPrinter *DiagPrinter;
 
   Context(std::ostream &ErrStream = std::cerr):
+      Builder(new llvm::IRBuilder<>(llvm::getGlobalContext())),
       DiagPrinter(new DiagnosticPrinter(&ErrStream)) {}
 
   // The big free

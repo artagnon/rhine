@@ -15,9 +15,9 @@ std::map<std::string, ExternalsFTy *> Externals::ExternalsMapping = {
 
 llvm::Constant *Externals::printf(llvm::Module *M, Context *K,
                                   location &SourceLoc) {
-  auto ArgTys = llvm::ArrayRef<llvm::Type *>(RhBuilder.getInt8PtrTy());
+  auto ArgTys = llvm::ArrayRef<llvm::Type *>(K->Builder->getInt8PtrTy());
   llvm::FunctionType *printf_type =
-    llvm::FunctionType::get(RhBuilder.getInt32Ty(), ArgTys, true);
+    llvm::FunctionType::get(K->Builder->getInt32Ty(), ArgTys, true);
 
   // getOrInsertFunction::
   //
@@ -33,9 +33,9 @@ llvm::Constant *Externals::printf(llvm::Module *M, Context *K,
 
 llvm::Constant *Externals::malloc(llvm::Module *M, Context *K,
                                   location &SourceLoc) {
-  auto ArgTys = llvm::ArrayRef<llvm::Type *>(RhBuilder.getInt64Ty());
+  auto ArgTys = llvm::ArrayRef<llvm::Type *>(K->Builder->getInt64Ty());
   llvm::FunctionType *malloc_type =
-    llvm::FunctionType::get(RhBuilder.getInt8PtrTy(), ArgTys, false);
+    llvm::FunctionType::get(K->Builder->getInt8PtrTy(), ArgTys, false);
   return M->getOrInsertFunction("malloc", malloc_type);
 }
 }

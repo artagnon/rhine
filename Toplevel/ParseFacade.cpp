@@ -75,7 +75,7 @@ std::string parseCodeGenString(std::string PrgString,
                                std::ostream &ErrStream,
                                bool Debug)
 {
-  auto M = new llvm::Module("main", RhContext);
+  auto M = new llvm::Module("main", llvm::getGlobalContext());
   return parseCodeGenString(PrgString, M, ErrStream, Debug);
 }
 
