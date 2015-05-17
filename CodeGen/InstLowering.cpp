@@ -5,7 +5,7 @@
 namespace rhine {
 llvm::Value *lookupOrLower(Value *V, llvm::Module *M, Context *K) {
   if (auto Sym = dyn_cast<Symbol>(V))
-    return K->getMapping(Sym->getName(), Sym->getSourceLocation());
+    return K->getMappingVal(Sym->getName(), Sym->getSourceLocation());
   else
     return V->toLL(M, K);
 }
@@ -14,7 +14,7 @@ llvm::Value *CallInst::toLL(llvm::Module *M, Context *K) {
   location SourceLoc = getSourceLocation();
   llvm::Function *Callee;
   auto Name = getName();
-  if (auto Result = K->getMapping(Name)) {
+  if (auto Result = K->getMappingVal(Name)) {
     if (auto CalleeCandidate = dyn_cast<llvm::Function>(Result))
       Callee = CalleeCandidate;
     else {
@@ -64,7 +64,7 @@ llvm::Value *AddInst::toLL(llvm::Module *M, Context *K) {
 
 llvm::Value *BindInst::toLL(llvm::Module *M, Context *K) {
   auto V = getVal()->toLL(M, K);
-  K->addMapping(getName(), V);
+  K->addMapping(getName(), nullptr, V);
   return nullptr;
 }
 }

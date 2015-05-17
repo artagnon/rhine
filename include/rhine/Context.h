@@ -14,11 +14,14 @@
 #include "rhine/Diagnostic.h"
 
 namespace rhine {
+struct SymbolRef {
+  class Type *Ty;
+  llvm::Value *LLVal;
+  SymbolRef(Type *Typ, llvm::Value *Val) : Ty(Typ), LLVal(Val) {}
+};
+
 class Context {
-  // For function overloading, NameTypeMapping should map std::string to
-  // std::vector<Symbol *>
-  std::map <std::string, class Type *> NameTypeMapping;
-  std::map <std::string, llvm::Value *> SymbolMapping;
+  std::map <std::string, SymbolRef> SymbolMapping;
 
 public:
   llvm::BumpPtrAllocator RhAllocator;
@@ -38,47 +41,35 @@ public:
     SymbolCache.clear();
     FTyCache.clear();
     ITyCache.clear();
-    NameTypeMapping.clear();
     SymbolMapping.clear();
   }
 
-  //===--------------------------------------------------------------------===//
-  // Functions that operate on SymbolMapping.
-  //===--------------------------------------------------------------------===//
-  bool addMapping(std::string S, llvm::Value *V) {
-    if (SymbolMapping.find(S) != SymbolMapping.end())
-      return false;
-    SymbolMapping.insert(std::make_pair(S, V));
-    return true;
-  }
-  llvm::Value *getMapping(std::string S) {
-    auto V = SymbolMapping.find(S);
-    return V == SymbolMapping.end() ? nullptr : V->second;
-  }
-  llvm::Value *getMapping(std::string S, location SourceLoc) {
-    auto V = SymbolMapping.find(S);
-    if (V == SymbolMapping.end()) {
-      DiagPrinter->errorReport(SourceLoc, "unbound variable " + S);
-      exit(1);
+  void addMapping(std::string S, class Type *Ty, llvm::Value *V = nullptr) {
+    auto Ret = SymbolMapping.insert(std::make_pair(S, SymbolRef(Ty, V)));
+    if (!Ret.second) {
+      if (Ty) Ret.first->second.Ty = Ty;
+      if (V) Ret.first->second.LLVal = V;
     }
-    return V->second;
   }
-  //===--------------------------------------------------------------------===//
-  // Functions that operate on NameTypeMapping.
-  //===--------------------------------------------------------------------===//
-  bool addNameTypeMapping(std::string N, class Type *T) {
-    if (NameTypeMapping.find(N) != NameTypeMapping.end())
-      return false;
-    NameTypeMapping.insert(std::make_pair(N, T));
-    return true;
-  }
-  Type *getNameTypeMapping(std::string S, location SourceLoc) {
-    auto V = NameTypeMapping.find(S);
-    if (V == NameTypeMapping.end()) {
+  class Type *getMappingTy(std::string S, location SourceLoc) {
+    auto R = SymbolMapping.find(S);
+    if (R == SymbolMapping.end() || !R->second.Ty) {
       DiagPrinter->errorReport(SourceLoc, "untyped variable " + S);
       exit(1);
     }
-    return V->second;
+    return R->second.Ty;
+  }
+  llvm::Value *getMappingVal(std::string S) {
+    auto R = SymbolMapping.find(S);
+    return R == SymbolMapping.end() ? nullptr : R->second.LLVal;
+  }
+  llvm::Value *getMappingVal(std::string S, location SourceLoc) {
+    auto R = SymbolMapping.find(S);
+    if (R == SymbolMapping.end() || !R->second.LLVal) {
+      DiagPrinter->errorReport(SourceLoc, "unbound variable " + S);
+      exit(1);
+    }
+    return R->second.LLVal;
   }
 };
 }

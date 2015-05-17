@@ -44,10 +44,10 @@ llvm::Constant *Function::toLL(llvm::Module *M, Context *K) {
   auto SEnd = ArgList.end();
   auto VEnd = TheFunction->arg_end();
   for (; S != SEnd && V != VEnd; ++S, ++V)
-    K->addMapping((*S)->getName(), V);
+    K->addMapping((*S)->getName(), nullptr, V);
 
   // Add function symbol to symbol table
-  K->addMapping(Name, TheFunction);
+  K->addMapping(Name, nullptr, TheFunction);
 
   BasicBlock *BB = BasicBlock::Create(K->Builder->getContext(), "entry", TheFunction);
   K->Builder->SetInsertPoint(BB);
