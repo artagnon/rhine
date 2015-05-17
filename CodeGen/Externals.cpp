@@ -8,10 +8,18 @@
 using namespace llvm;
 
 namespace rhine {
-std::map<std::string, ExternalsFTy *> Externals::ExternalsMapping = {
-  {"printf", printf},
-  {"malloc", malloc}
-};
+Externals::Externals() : ExternalsMapping({
+    {"printf", printf}, {"malloc", malloc}}) {}
+
+Externals *Externals::get() {
+  static auto UniqueExternals = new Externals;
+  return UniqueExternals;
+}
+
+ExternalsFTy *Externals::getMapping(std::string S) {
+  auto V = ExternalsMapping.find(S);
+  return V == ExternalsMapping.end() ? nullptr : V->second;
+}
 
 llvm::Constant *Externals::printf(llvm::Module *M, Context *K,
                                   location &SourceLoc) {

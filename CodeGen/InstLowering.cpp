@@ -22,7 +22,7 @@ llvm::Value *CallInst::toLL(llvm::Module *M, Context *K) {
           SourceLoc, Name + " was not declared as a function");
       exit(1);
     }
-  } else if (auto FPtr = Externals::getMapping(Name)) {
+  } else if (auto FPtr = Externals::get()->getMapping(Name)) {
     if (auto CalleeCandidate = dyn_cast<llvm::Function>(FPtr(M, K, SourceLoc)))
       Callee = CalleeCandidate;
     else {
