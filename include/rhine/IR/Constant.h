@@ -3,18 +3,12 @@
 #ifndef CONSTANT_H
 #define CONSTANT_H
 
-#include "llvm/IR/Module.h"
-#include "llvm/IR/DerivedTypes.h"
-#include "llvm/IR/TypeBuilder.h"
 #include "llvm/IR/Constants.h"
-#include "llvm/ADT/Optional.h"
-#include "llvm/ADT/STLExtras.h"
 
 #include <string>
 #include <vector>
 #include <sstream>
 
-#include "location.hh"
 #include "rhine/Context.h"
 #include "rhine/IR/Value.h"
 
