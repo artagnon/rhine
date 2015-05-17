@@ -4,8 +4,8 @@ namespace rhine {
 Type *Symbol::typeInfer(Context *K) {
   Type *Ty = getType();
   if (Ty == UnType::get(K))
-    Ty = K->getNameTypeMapping(getName(), getSourceLocation());
-  K->addNameTypeMapping(getName(), Ty);
+    Ty = K->getMappingTy(getName(), getSourceLocation());
+  K->addMapping(getName(), Ty);
   return Ty;
 }
 
@@ -52,14 +52,22 @@ Type *AddInst::typeInfer(Context *K) {
 }
 
 Type *CallInst::typeInfer(Context *K) {
-  return getType();
+  Type *Ty = getType();
+  auto Name = getName();
+
+  if (Ty == UnType::get(K)) {
+      K->DiagPrinter->errorReport(
+          SourceLoc, "unable to look up function " + Name);
+      exit(1);
+  }
+  return Ty;
 }
 
 Type *BindInst::typeInfer(Context *K) {
   Type *Ty = getVal()->typeInfer();
   assert (Ty != UnType::get(K) &&
           "Unable to type infer BindInst");
-  K->addNameTypeMapping(getName(), Ty);
+  K->addMapping(getName(), Ty);
   return getType();
 }
 

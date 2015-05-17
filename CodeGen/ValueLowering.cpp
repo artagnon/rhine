@@ -4,7 +4,7 @@
 namespace rhine {
 llvm::Value *Symbol::toLL(llvm::Module *M, Context *K) {
   assert(K && "null Symbol Table");
-  return K->getMapping(getName(), getSourceLocation());
+  return K->getMappingVal(getName(), getSourceLocation());
 }
 
 llvm::Value *GlobalString::toLL(llvm::Module *M, Context *K) {
