@@ -17,8 +17,8 @@ void EXPECT_OUTPUT(std::string SourcePrg, std::string ExpectedOut)
 
 TEST(Execution, PrintfBasic) {
   std::string SourcePrg =
-    "defun main [] {"
-    "  printf \"43\";"
+    "defun main [] {\n"
+    "  printf \"43\";\n"
     "}";
   std::string ExpectedOut = "43";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
@@ -26,11 +26,11 @@ TEST(Execution, PrintfBasic) {
 
 TEST(Execution, FunctionArgument) {
   std::string SourcePrg =
-    "defun printid [var ~ String] {"
-    "  printf var;"
-    "}"
-    "defun main [] {"
-    "  printid \"21\";"
+    "defun printid [var ~ String] {\n"
+    "  printf var;\n"
+    "}\n"
+    "defun main [] {\n"
+    "  printid \"21\";\n"
     "}";
   std::string ExpectedOut = "21";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);

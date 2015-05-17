@@ -12,14 +12,14 @@ TEST(Diagnostic, BareDefun)
 TEST(Diagnostic, UnboundVariable)
 {
   std::string SourcePrg = "defun foo [] var ~Int;";
-  std::string ExpectedErr = "string stream:1:14:.*error:.*unbound variable var";
+  std::string ExpectedErr = "string stream:1:14:.*error:.*unbound symbol var";
   EXPECT_DEATH(rhine::parseCodeGenString(SourcePrg), ExpectedErr);
 }
 
 TEST(Diagnostic, UntypedVariable)
 {
   std::string SourcePrg = "defun foo [var] var;";
-  std::string ExpectedErr = "string stream:1:17:.*error:.*untyped variable var";
+  std::string ExpectedErr = "string stream:1:17:.*error:.*untyped symbol var";
   EXPECT_DEATH(rhine::parseCodeGenString(SourcePrg), ExpectedErr);
 }
 
@@ -42,6 +42,6 @@ TEST(Diagnostic, FunctionNotFound)
     "  bar 4;\n"
     "}\n";
   std::string ExpectedErr =
-    "string stream:2:3:.*error:.*unable to look up function bar";
+    "string stream:2:3:.*error:.*unable to infer type of function bar";
   EXPECT_DEATH(rhine::parseCodeGenString(SourcePrg), ExpectedErr);
 }

@@ -1,4 +1,5 @@
 #include "rhine/IR.h"
+#include "rhine/Externals.h"
 
 namespace rhine {
 Type *Symbol::typeInfer(Context *K) {
@@ -41,6 +42,7 @@ Type *Function::typeInfer(Context *K) {
     I->setType(LastTy);
   }
   FType->setRTy(LastTy);
+  K->addMapping(getName(), LastTy);
   return FType;
 }
 
@@ -54,11 +56,17 @@ Type *AddInst::typeInfer(Context *K) {
 Type *CallInst::typeInfer(Context *K) {
   Type *Ty = getType();
   auto Name = getName();
-
-  if (Ty == UnType::get(K)) {
-      K->DiagPrinter->errorReport(
-          SourceLoc, "unable to look up function " + Name);
-      exit(1);
+  if (Ty != UnType::get(K))
+    return Ty;
+  if (auto Result = K->getMappingTy(Name)) {
+    return Result;
+  } else if (Externals::getMapping(Name)) {
+    // TODO: True type lookup
+    return IntegerType::get(32, K);
+  } else {
+    K->DiagPrinter->errorReport(
+        SourceLoc, "unable to infer type of function " + Name);
+    exit(1);
   }
   return Ty;
 }

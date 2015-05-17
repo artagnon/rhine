@@ -51,10 +51,14 @@ public:
       if (V) Ret.first->second.LLVal = V;
     }
   }
+  class Type *getMappingTy(std::string S) {
+    auto R = SymbolMapping.find(S);
+    return R == SymbolMapping.end() ? nullptr : R->second.Ty;
+  }
   class Type *getMappingTy(std::string S, location SourceLoc) {
     auto R = SymbolMapping.find(S);
     if (R == SymbolMapping.end() || !R->second.Ty) {
-      DiagPrinter->errorReport(SourceLoc, "untyped variable " + S);
+      DiagPrinter->errorReport(SourceLoc, "untyped symbol " + S);
       exit(1);
     }
     return R->second.Ty;
@@ -66,7 +70,7 @@ public:
   llvm::Value *getMappingVal(std::string S, location SourceLoc) {
     auto R = SymbolMapping.find(S);
     if (R == SymbolMapping.end() || !R->second.LLVal) {
-      DiagPrinter->errorReport(SourceLoc, "unbound variable " + S);
+      DiagPrinter->errorReport(SourceLoc, "unbound symbol " + S);
       exit(1);
     }
     return R->second.LLVal;
