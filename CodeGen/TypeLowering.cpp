@@ -1,5 +1,5 @@
-#include "rhine/IR.h"
 #include "rhine/Context.h"
+#include "rhine/IR/Value.h"
 
 namespace rhine {
 llvm::Type *IntegerType::toLL(llvm::Module *M, Context *K) {
@@ -27,30 +27,5 @@ llvm::Type *StringType::toLL(llvm::Module *M, Context *K) {
 
 llvm::Type *FunctionType::toLL(llvm::Module *M, Context *K) {
   assert(0 && "first-class functions not yet implemented");
-}
-
-llvm::Value *Symbol::toLL(llvm::Module *M, Context *K) {
-  assert(K && "null Symbol Table");
-  return K->getMapping(getName(), getSourceLocation());
-}
-
-llvm::Value *GlobalString::toLL(llvm::Module *M, Context *K) {
-  auto SRef = llvm::StringRef(getVal());
-  return K->Builder->CreateGlobalStringPtr(SRef);
-}
-
-llvm::Constant *ConstantInt::toLL(llvm::Module *M, Context *K) {
-  auto LLTy = getType()->toLL(M, K);
-  return llvm::ConstantInt::get(LLTy, getVal());
-}
-
-llvm::Constant *ConstantBool::toLL(llvm::Module *M, Context *K) {
-  auto LLTy = getType()->toLL(M, K);
-  return llvm::ConstantInt::get(LLTy, getVal());
-}
-
-llvm::Constant *ConstantFloat::toLL(llvm::Module *M, Context *K) {
-  auto LLTy = getType()->toLL(M, K);
-  return llvm::ConstantFP::get(LLTy, getVal());
 }
 }
