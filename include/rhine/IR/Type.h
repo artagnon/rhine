@@ -61,7 +61,7 @@ class UnType : public Type {
 public:
   UnType(): Type(RT_UnType) {}
   static UnType *get(Context *K) {
-    static auto UniqueUnType = new UnType();
+    static auto UniqueUnType = new UnType;
     return UniqueUnType;
   }
   static bool classof(const Type *T) {
@@ -82,7 +82,7 @@ class VoidType : public Type {
 public:
   VoidType(): Type(RT_VoidType) {}
   static VoidType *get(Context *K) {
-    static auto UniqueVoidType = new VoidType();
+    static auto UniqueVoidType = new VoidType;
     return UniqueVoidType;
   }
   static bool classof(const Type *T) {
@@ -141,7 +141,7 @@ class BoolType : public Type {
 public:
   BoolType(): Type(RT_BoolType) {}
   static BoolType *get(Context *K) {
-    static auto UniqueBoolType = new BoolType();
+    static auto UniqueBoolType = new BoolType;
     return UniqueBoolType;
   }
   static bool classof(const Type *T) {
@@ -162,7 +162,7 @@ class FloatType : public Type {
 public:
   FloatType(): Type(RT_FloatType) {}
   static FloatType *get(Context *K) {
-    static auto UniqueFloatType = new FloatType();
+    static auto UniqueFloatType = new FloatType;
     return UniqueFloatType;
   }
   static bool classof(const Type *T) {
@@ -183,7 +183,7 @@ class StringType : public Type {
 public:
   StringType(): Type(RT_StringType) {}
   static StringType *get(Context *K) {
-    static auto UniqueStringType = new StringType();
+    static auto UniqueStringType = new StringType;
     return UniqueStringType;
   }
   static bool classof(const Type *T) {
@@ -204,11 +204,9 @@ class FunctionType : public Type {
   Type *ReturnType;
   std::vector<Type *> ArgumentTypes;
 public:
-  template <typename R>
-  FunctionType(R RTy, std::vector<Type *> ATys) :
+  FunctionType(Type *RTy, std::vector<Type *> ATys) :
       Type(RT_FunctionType), ReturnType(RTy), ArgumentTypes(ATys) {}
-  template <typename R>
-  static FunctionType *get(R RTy, std::vector<Type *> ATys, Context *K) {
+  static FunctionType *get(Type *RTy, std::vector<Type *> ATys, Context *K) {
     FoldingSetNodeID ID;
     void *IP;
     FunctionType::Profile(ID, RTy, ATys);
@@ -218,9 +216,8 @@ public:
     K->FTyCache.InsertNode(FTy, IP);
     return FTy;
   }
-  template <typename R, typename... As>
-  static FunctionType *get(R RTy, As... ATys, Context *K) {
-    return FunctionType::get(RTy, {ATys...}, K);
+  static FunctionType *get(Type *RTy, Context *K) {
+    return FunctionType::get(RTy, {}, K);
   }
   static bool classof(const Type *T) {
     return T->getTyID() == RT_FunctionType;

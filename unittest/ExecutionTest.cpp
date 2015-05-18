@@ -4,7 +4,7 @@
 #include "rhine/StdCapture.h"
 #include "gtest/gtest.h"
 
-void EXPECT_OUTPUT(std::string SourcePrg, std::string ExpectedOut)
+void EXPECT_OUTPUT(std::string SourcePrg, std::string &ExpectedOut)
 {
   auto Handle = rhine::jitFacade(SourcePrg, false, true);
   auto CaptureH = StdCapture();

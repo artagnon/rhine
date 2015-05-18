@@ -30,8 +30,8 @@ public:
         // so that we don't need to flush the streams
         // before capture and after capture
         // (fflush can cause a deadlock if the stream is currently being
-        setvbuf(stdout,NULL,_IONBF,0);
-        setvbuf(stderr,NULL,_IONBF,0);
+        setvbuf(stdout, NULL, _IONBF, 0);
+        setvbuf(stderr, NULL, _IONBF, 0);
     }
 
     void BeginCapture()
@@ -42,8 +42,8 @@ public:
         secure_pipe(m_pipe);
         m_oldStdOut = secure_dup(fileno(stdout));
         m_oldStdErr = secure_dup(fileno(stderr));
-        secure_dup2(m_pipe[WRITE],fileno(stdout));
-        secure_dup2(m_pipe[WRITE],fileno(stderr));
+        secure_dup2(m_pipe[WRITE], fileno(stdout));
+        secure_dup2(m_pipe[WRITE], fileno(stderr));
         m_capturing = true;
 #ifndef _MSC_VER
         secure_close(m_pipe[WRITE]);
@@ -61,8 +61,8 @@ public:
             return;
 
         m_captured.clear();
-        secure_dup2(m_oldStdOut, fileno(stdout));
-        secure_dup2(m_oldStdErr, fileno(stderr));
+        secure_dup2(m_oldStdOut,  fileno(stdout));
+        secure_dup2(m_oldStdErr,  fileno(stderr));
 
         const int bufSize = 1025;
         char buf[bufSize];
@@ -72,9 +72,9 @@ public:
             bytesRead = 0;
 #ifdef _MSC_VER
             if (!eof(m_pipe[READ]))
-                bytesRead = read(m_pipe[READ], buf, bufSize-1);
+                bytesRead = read(m_pipe[READ],  buf,  bufSize-1);
 #else
-            bytesRead = read(m_pipe[READ], buf, bufSize-1);
+            bytesRead = read(m_pipe[READ],  buf,  bufSize-1);
 #endif
             if (bytesRead > 0)
             {
@@ -96,7 +96,7 @@ public:
         return m_captured;
     }
 private:
-    enum PIPES { READ, WRITE };
+    enum PIPES { READ,  WRITE };
 
     int secure_dup(int src)
     {
@@ -113,18 +113,18 @@ private:
         do
         {
 #ifdef _MSC_VER
-            ret = pipe(pipes, 65536, O_BINARY);
+            ret = pipe(pipes,  65536,  O_BINARY);
 #else
             ret = pipe(pipes) == -1;
 #endif
         } while (ret < 0);
     }
-    void secure_dup2(int src, int dest)
+    void secure_dup2(int src,  int dest)
     {
         int ret = -1;
         do
         {
-             ret = dup2(src,dest);
+             ret = dup2(src, dest);
         } while (ret < 0);
     }
 

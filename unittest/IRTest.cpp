@@ -2,7 +2,7 @@
 #include "rhine/Support.h"
 #include "gtest/gtest.h"
 
-void EXPECT_TRANSFORM_PP(std::string SourcePrg, std::string ExpectedPP)
+void EXPECT_TRANSFORM_PP(std::string &SourcePrg, std::string &ExpectedPP)
 {
   std::ostringstream Scratch;
   auto Source = rhine::parseTransformIR(SourcePrg, Scratch);
@@ -12,8 +12,8 @@ void EXPECT_TRANSFORM_PP(std::string SourcePrg, std::string ExpectedPP)
 }
 
 TEST(IR, ConstantInt) {
-  auto SourcePrg = "defun foo [] 3;";
-  auto ExpectedPP =
+  std::string SourcePrg = "defun foo [] 3;";
+  std::string ExpectedPP =
     "foo ~Fn(VoidType -> Int)\n"
     "3 ~Int";
   EXPECT_TRANSFORM_PP(SourcePrg, ExpectedPP);
@@ -50,19 +50,19 @@ TEST(IR, TypePropagation)
 }
 
 TEST(IR, BindInst) {
-  auto SourcePrg = "defun bsym [] sym = 3;";
-  auto ExpectedPP =
+  std::string SourcePrg = "defun bsym [] sym = 3;";
+  std::string ExpectedPP =
     "bsym ~Fn(VoidType -> VoidType)\n"
     "sym = 3 ~Int";
   EXPECT_TRANSFORM_PP(SourcePrg, ExpectedPP);
 }
 
 TEST(IR, BindPropagation) {
-  auto SourcePrg = "defun bsym [] {"
+  std::string SourcePrg = "defun bsym [] {"
     "sym = 3;\n"
     "sym;\n"
     "}";
-  auto ExpectedPP =
+  std::string ExpectedPP =
     "bsym ~Fn(VoidType -> Int)\n"
     "sym = 3 ~Int\n"
     "sym ~Int";
