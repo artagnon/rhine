@@ -8,17 +8,31 @@
 using namespace llvm;
 
 namespace rhine {
-Externals::Externals() : ExternalsMapping({
-    {"printf", printf}, {"malloc", malloc}}) {}
+Externals::Externals(Context *K) : K(K) {
+  auto PrintfTy =
+    FunctionType::get(IntegerType::get(32, K), {StringType::get(K)}, K);
+  auto MallocTy =
+    FunctionType::get(StringType::get(K), {IntegerType::get(64, K)}, K);
 
-Externals *Externals::get() {
-  static auto UniqueExternals = new Externals;
+  ExternalsMapping.insert(
+      std::make_pair("printf", ExternalsRef(PrintfTy, printf)));
+  ExternalsMapping.insert(
+      std::make_pair("malloc", ExternalsRef(MallocTy, malloc)));
+}
+
+Externals *Externals::get(Context *K) {
+  static auto UniqueExternals = new Externals(K);
   return UniqueExternals;
 }
 
-ExternalsFTy *Externals::getMapping(std::string S) {
+FunctionType *Externals::getMappingTy(std::string S) {
   auto V = ExternalsMapping.find(S);
-  return V == ExternalsMapping.end() ? nullptr : V->second;
+  return V == ExternalsMapping.end() ? nullptr : V->second.FTy;
+}
+
+ExternalsFTy *Externals::getMappingVal(std::string S) {
+  auto V = ExternalsMapping.find(S);
+  return V == ExternalsMapping.end() ? nullptr : V->second.FGenerator;
 }
 
 llvm::Constant *Externals::printf(llvm::Module *M, Context *K) {

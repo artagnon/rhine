@@ -60,7 +60,7 @@ Type *CallInst::typeInfer(Context *K) {
     return Ty;
   if (auto Result = K->getMappingTy(Name)) {
     return Result;
-  } else if (Externals::get()->getMapping(Name)) {
+  } else if (auto Result = Externals::get(K)->getMappingTy(Name)) {
     // TODO: True type lookup
     return IntegerType::get(32, K);
   } else {
