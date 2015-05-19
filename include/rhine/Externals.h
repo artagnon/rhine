@@ -16,7 +16,6 @@ struct ExternalsRef {
 };
 
 struct Externals {
-  Context *K;
   static ExternalsFTy printf;
   static ExternalsFTy malloc;
   std::map<std::string, ExternalsRef> ExternalsMapping;

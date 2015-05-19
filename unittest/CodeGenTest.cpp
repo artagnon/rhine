@@ -140,7 +140,7 @@ TEST(CodeGen, VoidRepresentation)
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }
 
-TEST(Execution, DISABLED_CallInstTyInfer) {
+TEST(Execution, CallInstTyInfer) {
   std::string SourcePrg =
     "defun mallocCall [] {\n"
     "  malloc 8;\n"

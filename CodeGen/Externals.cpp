@@ -8,7 +8,7 @@
 using namespace llvm;
 
 namespace rhine {
-Externals::Externals(Context *K) : K(K) {
+Externals::Externals(Context *K) {
   auto PrintfTy =
     FunctionType::get(IntegerType::get(32, K), {StringType::get(K)}, K);
   auto MallocTy =
@@ -21,8 +21,9 @@ Externals::Externals(Context *K) : K(K) {
 }
 
 Externals *Externals::get(Context *K) {
-  static auto UniqueExternals = new Externals(K);
-  return UniqueExternals;
+  if (!K->ExternalsCache)
+    K->ExternalsCache = new (K->RhAllocator) Externals(K);
+  return K->ExternalsCache;
 }
 
 FunctionType *Externals::getMappingTy(std::string S) {
