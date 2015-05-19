@@ -30,6 +30,7 @@ public:
   llvm::FoldingSet<class IntegerType> ITyCache;
   llvm::IRBuilder<> *Builder;
   DiagnosticPrinter *DiagPrinter;
+  struct Externals *ExternalsCache;
 
   Context(std::ostream &ErrStream = std::cerr):
       Builder(new llvm::IRBuilder<>(llvm::getGlobalContext())),

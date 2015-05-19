@@ -62,7 +62,7 @@ Type *CallInst::typeInfer(Context *K) {
     return Result;
   } else if (auto Result = Externals::get(K)->getMappingTy(Name)) {
     // TODO: True type lookup
-    return IntegerType::get(32, K);
+    return Result->getRTy();
   } else {
     K->DiagPrinter->errorReport(
         SourceLoc, "unable to infer type of function " + Name);
