@@ -1,17 +1,15 @@
 #include "rhine/IR.h"
 #include "rhine/Support.h"
 #include "rhine/Toplevel.h"
-#include "rhine/StdCapture.h"
 #include "gtest/gtest.h"
+#include "gtest/internal/gtest-port.h"
 
-void EXPECT_OUTPUT(std::string SourcePrg, std::string &ExpectedOut)
+void EXPECT_OUTPUT(std::string &SourcePrg, std::string &ExpectedOut)
 {
   auto Handle = rhine::jitFacade(SourcePrg, false, true);
-  auto CaptureH = StdCapture();
-  CaptureH.BeginCapture();
+  testing::internal::CaptureStdout();
   Handle();
-  CaptureH.EndCapture();
-  std::string ActualOut = CaptureH.GetCapture();
+  std::string ActualOut = testing::internal::GetCapturedStdout();
   EXPECT_STREQ(ExpectedOut.c_str(), ActualOut.c_str());
 }
 
