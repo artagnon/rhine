@@ -29,7 +29,6 @@ enum RTValue {
 
 class Value : public FoldingSetNode {
 protected:
-  /// nullptr indicates VoidType
   Type *VTy;
   location SourceLoc;
 public:
