@@ -25,8 +25,8 @@ public:
   // Necessary to prevent color codes from messing up setw
   friend std::ostream& operator<<(std::ostream& Dest, ColorCode const& Code)
   {
-    auto OsBuf = Dest.rdbuf();
-    if (OsBuf == std::cout.rdbuf() || OsBuf == std::cerr.rdbuf())
+    if ((&Dest == &std::cerr && isatty(fileno(stderr))) ||
+        (&Dest == &std::cout && isatty(fileno(stdout))))
       for (char ch : Code.ColorF) {
         Dest.put(ch);
       }
