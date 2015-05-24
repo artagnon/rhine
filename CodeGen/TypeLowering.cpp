@@ -34,7 +34,10 @@ llvm::Type *StringType::toLL(llvm::Module *M, Context *K) {
 }
 
 llvm::Type *FunctionType::toLL(llvm::Module *M, Context *K) {
-  // TODO: Extend to more than one argument
-  return llvm::FunctionType::get(getRTy()->toLL(M, K), getATy(0)->toLL(M, K));
+  // TODO: Support variadic functiontype
+  std::vector<llvm::Type *> ATyAr;
+  for (auto Ty: getATys())
+    ATyAr.push_back(Ty->toLL(M, K));
+  return llvm::FunctionType::get(getRTy()->toLL(M, K), ATyAr, false);
 }
 }
