@@ -56,14 +56,6 @@ public:
     auto R = SymbolMapping.find(S);
     return R == SymbolMapping.end() ? nullptr : R->second.Ty;
   }
-  class Type *getMappingTy(std::string S, location SourceLoc) {
-    auto R = SymbolMapping.find(S);
-    if (R == SymbolMapping.end() || !R->second.Ty) {
-      DiagPrinter->errorReport(SourceLoc, "untyped symbol " + S);
-      exit(1);
-    }
-    return R->second.Ty;
-  }
   llvm::Value *getMappingVal(std::string S) {
     auto R = SymbolMapping.find(S);
     return R == SymbolMapping.end() ? nullptr : R->second.LLVal;

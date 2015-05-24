@@ -2,14 +2,6 @@
 #include "rhine/Externals.h"
 
 namespace rhine {
-Type *Symbol::typeInfer(Context *K) {
-  Type *Ty = getType();
-  if (Ty == UnType::get(K))
-    Ty = K->getMappingTy(getName(), getSourceLocation());
-  K->addMapping(getName(), Ty);
-  return Ty;
-}
-
 Type *ConstantInt::typeInfer(Context *K) {
   return getType();
 }
@@ -53,6 +45,24 @@ Type *AddInst::typeInfer(Context *K) {
   return getType();
 }
 
+Type *Symbol::typeInfer(Context *K) {
+  auto Ty = getType();
+  auto Name = getName();
+  if (Ty != UnType::get(K)) {
+    ;
+  } else if (auto Result = K->getMappingTy(Name)) {
+    Ty = Result;
+  } else if (auto Result = Externals::get(K)->getMappingTy(Name)) {
+    Ty = Result->getRTy();
+  } else {
+    K->DiagPrinter->errorReport(
+        SourceLoc, "untyped symbol " + Name);
+    exit(1);
+  }
+  K->addMapping(Name, Ty);
+  return Ty;
+}
+
 Type *CallInst::typeInfer(Context *K) {
   Type *Ty = getType();
   auto Name = getName();
@@ -61,14 +71,11 @@ Type *CallInst::typeInfer(Context *K) {
   if (auto Result = K->getMappingTy(Name)) {
     return Result;
   } else if (auto Result = Externals::get(K)->getMappingTy(Name)) {
-    // TODO: True type lookup
     return Result->getRTy();
-  } else {
-    K->DiagPrinter->errorReport(
-        SourceLoc, "unable to infer type of function " + Name);
-    exit(1);
   }
-  return Ty;
+  K->DiagPrinter->errorReport(
+      SourceLoc, "untyped function " + Name);
+  exit(1);
 }
 
 Type *BindInst::typeInfer(Context *K) {
