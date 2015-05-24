@@ -140,7 +140,7 @@ TEST(CodeGen, VoidRepresentation)
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }
 
-TEST(Execution, CallInstTyInfer) {
+TEST(CodeGen, CallInstTyInfer) {
   std::string SourcePrg =
     "defun mallocCall [] {\n"
     "  malloc 8;\n"
@@ -150,6 +150,35 @@ TEST(Execution, CallInstTyInfer) {
     "entry:\n"
     "  %malloc = call i8* @malloc(i64 8)\n"
     "  ret i8* %malloc\n"
+    "}\n";
+  EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
+}
+
+TEST(CodeGen, FnPtr) {
+  std::string SourcePrg =
+    "defun callee [] {\n"
+    "  3;\n"
+    "}\n"
+    "defun caller [] {\n"
+    "  callee;\n"
+    "}";
+  std::string ExpectedPP =
+    "define i32 @caller() {\n"
+    "entry:\n"
+    "  ret i32 ()* @callee\n"
+    "}\n";
+  EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
+}
+
+TEST(CodeGen, DISABLED_ExternalsFnPtr) {
+  std::string SourcePrg =
+    "defun mallocRet [] {\n"
+    "  malloc;\n"
+    "}";
+  std::string ExpectedPP =
+    "define i32 @mallocRet() {\n"
+    "entry:\n"
+    "  ret i8 (i64)* @malloc\n"
     "}\n";
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }
