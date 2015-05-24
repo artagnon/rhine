@@ -19,16 +19,11 @@ llvm::Constant *ConstantFloat::toLL(llvm::Module *M, Context *K) {
 
 llvm::Constant *Function::toLL(llvm::Module *M, Context *K) {
   auto Name = getName();
-  auto FType = dyn_cast<FunctionType>(getType());
-  auto RType = FType->getRTy()->toLL(M, K);
-  std::vector<llvm::Type *> ArgTys;
-  for (auto RhTy: FType->getATys())
-    ArgTys.push_back(RhTy->toLL(M, K));
-  auto ArgTyAr = makeArrayRef(ArgTys);
-  auto TheFunctionTy = llvm::FunctionType::get(RType, ArgTyAr, false);
+  auto RhFnTy = cast<FunctionType>(getType());
+  auto FnTy = cast<llvm::FunctionType>(RhFnTy->toLL(M, K));
   llvm::Function *TheFunction;
   if (auto FunctionCandidate =
-      dyn_cast<llvm::Function>(M->getOrInsertFunction(Name, TheFunctionTy)))
+      dyn_cast<llvm::Function>(M->getOrInsertFunction(Name, FnTy)))
     TheFunction = FunctionCandidate;
   else {
     // TODO: Polymorphic functions
