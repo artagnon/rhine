@@ -30,6 +30,7 @@ enum RTType {
   RT_FloatType,
   RT_StringType,
   RT_FunctionType,
+  RT_PointerType,
 };
 
 class Type : public FoldingSetNode {
@@ -50,7 +51,7 @@ public:
     T.print(Stream);
     return Stream;
   }
-  virtual llvm::Type *toLL(llvm::Module *M = nullptr, Context *K = nullptr) = 0;
+  virtual llvm::Type *toLL(llvm::Module *M, Context *K) = 0;
 protected:
   virtual void print(std::ostream &Stream) const = 0;
 private:
@@ -71,7 +72,7 @@ public:
     U.print(Stream);
     return Stream;
   }
-  virtual llvm::Type *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
+  virtual llvm::Type *toLL(llvm::Module *M, Context *K);
 protected:
   virtual void print(std::ostream &Stream) const {
     Stream << "UnType";
@@ -92,7 +93,7 @@ public:
     V.print(Stream);
     return Stream;
   }
-  virtual llvm::Type *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
+  virtual llvm::Type *toLL(llvm::Module *M, Context *K);
 protected:
   virtual void print(std::ostream &Stream) const {
     Stream << "VoidType";
@@ -129,7 +130,7 @@ public:
     T.print(Stream);
     return Stream;
   }
-  llvm::Type *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
+  llvm::Type *toLL(llvm::Module *M, Context *K);
 protected:
   unsigned Bitwidth;
   virtual void print(std::ostream &Stream) const {
@@ -151,7 +152,7 @@ public:
     T.print(Stream);
     return Stream;
   }
-  llvm::Type *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
+  llvm::Type *toLL(llvm::Module *M, Context *K);
 protected:
   virtual void print(std::ostream &Stream) const {
     Stream << "Bool";
@@ -172,7 +173,7 @@ public:
     T.print(Stream);
     return Stream;
   }
-  llvm::Type *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
+  llvm::Type *toLL(llvm::Module *M, Context *K);
 protected:
   virtual void print(std::ostream &Stream) const {
     Stream << "Float";
@@ -193,7 +194,7 @@ public:
     T.print(Stream);
     return Stream;
   }
-  llvm::Type *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
+  llvm::Type *toLL(llvm::Module *M, Context *K);
 protected:
   virtual void print(std::ostream &Stream) const {
     Stream << "String";
@@ -232,22 +233,20 @@ public:
     Profile(ID, ReturnType, ArgumentTypes);
   }
   Type *getATy(unsigned i) {
+    assert(i < ArgumentTypes.size() && "getATy() out of bounds");
     return ArgumentTypes[i];
-  }
-  Type *getRTy() {
-    return ReturnType;
-  }
-  void setRTy(Type *T) {
-    ReturnType = T;
   }
   std::vector<Type *> getATys() {
     return ArgumentTypes;
+  }
+  Type *getRTy() {
+    return ReturnType;
   }
   friend ostream &operator<<(ostream &Stream, const FunctionType &T) {
     T.print(Stream);
     return Stream;
   }
-  llvm::Type *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
+  llvm::Type *toLL(llvm::Module *M, Context *K);
 protected:
   virtual void print(std::ostream &Stream) const {
     Stream << "Fn(";
@@ -262,6 +261,43 @@ protected:
       Stream << " -> " << *ReturnType << ")";
     else
       Stream << " -> ())";
+  }
+};
+
+class PointerType : public Type {
+  Type *ContainedType;
+public:
+  PointerType(Type *CTy) : Type(RT_PointerType), ContainedType(CTy) {}
+  static PointerType *get(Type *CTy, Context *K) {
+    FoldingSetNodeID ID;
+    void *IP;
+    PointerType::Profile(ID, CTy);
+    if (auto PTy = K->PTyCache.FindNodeOrInsertPos(ID, IP))
+      return PTy;
+    PointerType *PTy = new (K->RhAllocator) PointerType(CTy);
+    K->PTyCache.InsertNode(PTy, IP);
+    return PTy;
+  }
+  static bool classof(const Type *T) {
+    return T->getTyID() == RT_PointerType;
+  }
+  static inline void Profile(FoldingSetNodeID &ID, const Type *CTy) {
+    ID.AddPointer(CTy);
+  }
+  void Profile(FoldingSetNodeID &ID) {
+    Profile(ID, ContainedType);
+  }
+  Type *getCTy() {
+    return ContainedType;
+  }
+  friend ostream &operator<<(ostream &Stream, const PointerType &T) {
+    T.print(Stream);
+    return Stream;
+  }
+  llvm::Type *toLL(llvm::Module *M, Context *K);
+protected:
+  virtual void print(std::ostream &Stream) const {
+    Stream << "Pointer(" << *ContainedType << ")";
   }
 };
 }

@@ -27,6 +27,7 @@ public:
   llvm::BumpPtrAllocator RhAllocator;
   llvm::FoldingSet<class Symbol> SymbolCache;
   llvm::FoldingSet<class FunctionType> FTyCache;
+  llvm::FoldingSet<class PointerType> PTyCache;
   llvm::FoldingSet<class IntegerType> ITyCache;
   llvm::IRBuilder<> *Builder;
   DiagnosticPrinter *DiagPrinter;

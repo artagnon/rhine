@@ -40,4 +40,8 @@ llvm::Type *FunctionType::toLL(llvm::Module *M, Context *K) {
     ATyAr.push_back(Ty->toLL(M, K));
   return llvm::FunctionType::get(getRTy()->toLL(M, K), ATyAr, false);
 }
+
+llvm::Type *PointerType::toLL(llvm::Module *M, Context *K) {
+  return llvm::PointerType::get(getCTy()->toLL(M, K), 0);
+}
 }

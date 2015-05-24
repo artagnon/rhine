@@ -27,15 +27,16 @@ Type *Function::typeInfer(Context *K) {
                    return S;
                  });
   // FunctionType and Body transform
-  auto FType = dyn_cast<FunctionType>(getType());
+  auto ATys = cast<FunctionType>(getType())->getATys();
   Type *LastTy;
   for (auto I: getVal()) {
     LastTy = I->typeInfer(K);
     I->setType(LastTy);
   }
-  FType->setRTy(LastTy);
-  K->addMapping(getName(), FType);
-  return FType;
+  auto FnTy = FunctionType::get(LastTy, ATys, K);
+  setType(FnTy);
+  K->addMapping(getName(), FnTy);
+  return FnTy;
 }
 
 Type *AddInst::typeInfer(Context *K) {
@@ -58,8 +59,16 @@ Type *generalizedSymbolType(Type *Ty, std::string Name, Context *K) {
 
 Type *Symbol::typeInfer(Context *K) {
   if (auto Ty = generalizedSymbolType(getType(), getName(), K)) {
-    K->addMapping(Name, Ty);
-    return Ty;
+    if (FunctionType::classof(Ty)) {
+      // First-class function (pointers)
+      auto PTy = PointerType::get(Ty, K);
+      K->addMapping(Name, PTy);
+      return PTy;
+    }
+    else {
+      K->addMapping(Name, Ty);
+      return Ty;
+    }
   }
   K->DiagPrinter->errorReport(
       SourceLoc, "untyped symbol " + Name);

@@ -24,7 +24,7 @@ public:
     return Stream;
   }
   Type *typeInfer(Context *K = nullptr) = 0;
-  llvm::Constant *toLL(llvm::Module *M = nullptr, Context *K = nullptr) = 0;
+  llvm::Constant *toLL(llvm::Module *M, Context *K) = 0;
 protected:
   virtual void print(std::ostream &Stream) const = 0;
 };
@@ -54,7 +54,7 @@ public:
     return Stream;
   }
   Type *typeInfer(Context *K = nullptr);
-  llvm::Constant *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
+  llvm::Constant *toLL(llvm::Module *M, Context *K);
 protected:
   virtual void print(std::ostream &Stream) const {
     Stream << Val << " ~" << *getType();
@@ -80,7 +80,7 @@ public:
     return Stream;
   }
   Type *typeInfer(Context *K = nullptr);
-  llvm::Constant *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
+  llvm::Constant *toLL(llvm::Module *M, Context *K);
 protected:
   virtual void print(std::ostream &Stream) const {
     Stream << Val << " ~" << *getType();
@@ -106,7 +106,7 @@ public:
     return Stream;
   }
   Type *typeInfer(Context *K = nullptr);
-  llvm::Constant *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
+  llvm::Constant *toLL(llvm::Module *M, Context *K);
 protected:
   virtual void print(std::ostream &Stream) const {
     Stream << Val << " ~" << *getType();
@@ -149,7 +149,7 @@ public:
     return Stream;
   }
   Type *typeInfer(Context *K = nullptr);
-  llvm::Constant *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
+  llvm::Constant *toLL(llvm::Module *M, Context *K);
 protected:
   virtual void print(std::ostream &Stream) const {
     Stream << Name << " ~" << *getType() << std::endl;
