@@ -154,7 +154,7 @@ TEST(CodeGen, CallInstTyInfer) {
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }
 
-TEST(CodeGen, DISABLED_FunctionPointer) {
+TEST(CodeGen, FunctionPointer) {
   std::string SourcePrg =
     "defun callee [] {\n"
     "  3;\n"
@@ -170,7 +170,7 @@ TEST(CodeGen, DISABLED_FunctionPointer) {
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }
 
-TEST(CodeGen, DISABLED_ExternalsFunctionPointer) {
+TEST(CodeGen, ExternalsFunctionPointer) {
   std::string SourcePrg =
     "defun mallocRet [] {\n"
     "  malloc;\n"

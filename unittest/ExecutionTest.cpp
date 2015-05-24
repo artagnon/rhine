@@ -44,7 +44,7 @@ TEST(Execution, MallocBasic) {
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
 
-TEST(Execution, DISABLED_FunctionPointer) {
+TEST(Execution, FunctionPointer) {
   std::string SourcePrg =
     "defun callee [] {\n"
     "  3;\n"
@@ -56,7 +56,7 @@ TEST(Execution, DISABLED_FunctionPointer) {
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
 
-TEST(Execution, DISABLED_ExternalsFunctionPointer) {
+TEST(Execution, ExternalsFunctionPointer) {
   std::string SourcePrg =
     "defun main [] {\n"
     "  malloc;\n"

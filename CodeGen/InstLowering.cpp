@@ -32,11 +32,13 @@ llvm::Value *CallInst::toLL(llvm::Module *M, Context *K) {
   auto Callee = getCalleeFunction(getName(), getSourceLocation(), M, K);
 
   // Extract Callee's argument types
-  auto TargetFnTy = dyn_cast<llvm::FunctionType>(
-      Callee->getType()->getElementType());
+  auto TargetFnTy = cast<llvm::FunctionType>(Callee->getType()->getElementType());
   std::vector<llvm::Type *> TargetArgumentTys;
   for (auto I = TargetFnTy->param_begin(); I != TargetFnTy->param_end(); ++I)
     TargetArgumentTys.push_back(*I);
+
+  if (!getOperands().size())
+    return K->Builder->CreateCall(Callee, getName());
 
   // HACK: Integer bitwidth refinement
   auto Arg = getOperand(0);
@@ -44,7 +46,6 @@ llvm::Value *CallInst::toLL(llvm::Module *M, Context *K) {
     auto W = dyn_cast<llvm::IntegerType>(TargetArgumentTys[0])->getBitWidth();
     Arg->setType(IntegerType::get(W, K));
   }
-
   return K->Builder->CreateCall(Callee, Arg->toLL(M, K), getName());
 }
 

@@ -23,14 +23,18 @@ public:
     OperandList.push_back(V);
   }
   Value *getOperand(unsigned i) {
+    assert(i < OperandList.size() && "getOperand() out of range");
     return OperandList[i];
+  }
+  std::vector<Value *> getOperands() {
+    return OperandList;
   }
   friend ostream &operator<<(ostream &Stream, const Instruction &I) {
     I.print(Stream);
     return Stream;
   }
   virtual Type *typeInfer(Context *K = nullptr) = 0;
-  virtual llvm::Value *toLL(llvm::Module *M = nullptr, Context *K = nullptr) = 0;
+  virtual llvm::Value *toLL(llvm::Module *M, Context *K) = 0;
 protected:
   virtual void print(std::ostream &Stream) const = 0;
 };
@@ -49,7 +53,7 @@ public:
     return Stream;
   }
   Type *typeInfer(Context *K = nullptr);
-  llvm::Value *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
+  llvm::Value *toLL(llvm::Module *M, Context *K);
 protected:
   virtual void print(std::ostream &Stream) const {
     Stream << "+ ~" << *getType() << std::endl;
@@ -78,7 +82,7 @@ public:
     return Stream;
   }
   Type *typeInfer(Context *K = nullptr);
-  llvm::Value *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
+  llvm::Value *toLL(llvm::Module *M, Context *K);
 protected:
   virtual void print(std::ostream &Stream) const {
     Stream << Name << " ~" << *getType() << std::endl;
@@ -112,7 +116,7 @@ public:
     return Stream;
   }
   Type *typeInfer(Context *K = nullptr);
-  llvm::Value *toLL(llvm::Module *M = nullptr, Context *K = nullptr);
+  llvm::Value *toLL(llvm::Module *M, Context *K);
 protected:
   virtual void print(std::ostream &Stream) const {
     Stream << Name << " = " << *Val;
