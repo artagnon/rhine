@@ -34,7 +34,7 @@ Type *Function::typeInfer(Context *K) {
     I->setType(LastTy);
   }
   FType->setRTy(LastTy);
-  K->addMapping(getName(), LastTy);
+  K->addMapping(getName(), FType);
   return FType;
 }
 
@@ -51,7 +51,7 @@ Type *generalizedSymbolType(Type *Ty, std::string Name, Context *K) {
   if (auto Result = K->getMappingTy(Name)) {
     return Result;
   } else if (auto Result = Externals::get(K)->getMappingTy(Name)) {
-    return Result->getRTy();
+    return Result;
   }
   return nullptr;
 }
@@ -67,8 +67,15 @@ Type *Symbol::typeInfer(Context *K) {
 }
 
 Type *CallInst::typeInfer(Context *K) {
-  if (auto Ty = generalizedSymbolType(getType(), getName(), K))
-    return Ty;
+  if (auto GSymTy = generalizedSymbolType(getType(), getName(), K)) {
+    if (auto Ty = dyn_cast<FunctionType>(GSymTy))
+      return Ty->getRTy();
+    else {
+      K->DiagPrinter->errorReport(
+          SourceLoc, Name + " was not typed as a function");
+      exit(1);
+    }
+  }
   K->DiagPrinter->errorReport(
       SourceLoc, "untyped function " + Name);
   exit(1);

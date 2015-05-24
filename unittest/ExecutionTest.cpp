@@ -44,7 +44,6 @@ TEST(Execution, MallocBasic) {
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
 
-
 TEST(Execution, DISABLED_FunctionPointer) {
   std::string SourcePrg =
     "defun callee [] {\n"
