@@ -1,10 +1,20 @@
 #include "rhine/Context.h"
 #include "rhine/IR/Value.h"
+#include "rhine/Externals.h"
 
 namespace rhine {
 llvm::Value *Symbol::toLL(llvm::Module *M, Context *K) {
-  assert(K && "null Symbol Table");
-  return K->getMappingVal(getName(), getSourceLocation());
+  auto Name = getName();
+  if (auto Result = K->getMappingVal(Name)) {
+    return Result;
+  } else if (auto FPtr = Externals::get(K)->getMappingVal(Name)) {
+    if (auto Result = FPtr(M, K)) {
+      return Result;
+    }
+  }
+  K->DiagPrinter->errorReport(
+      SourceLoc, "unbound symbol " + Name);
+  exit(1);
 }
 
 llvm::Value *GlobalString::toLL(llvm::Module *M, Context *K) {

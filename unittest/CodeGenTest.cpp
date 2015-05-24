@@ -176,9 +176,9 @@ TEST(CodeGen, DISABLED_ExternalsFnPtr) {
     "  malloc;\n"
     "}";
   std::string ExpectedPP =
-    "define i32 @mallocRet() {\n"
+    "define i8* @mallocRet() {\n"
     "entry:\n"
-    "  ret i8 (i64)* @malloc\n"
+    "  ret i8* (i64)* @malloc\n"
     "}\n";
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }
