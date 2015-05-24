@@ -38,7 +38,29 @@ TEST(Execution, MallocBasic) {
   std::string SourcePrg =
     "defun main [] {\n"
     "  malloc 8;\n"
+    "  printf \"3\";\n"
+    "}";
+  std::string ExpectedOut = "3";
+  EXPECT_OUTPUT(SourcePrg, ExpectedOut);
+}
+
+
+TEST(Execution, DISABLED_FunctionPointer) {
+  std::string SourcePrg =
+    "defun callee [] {\n"
     "  3;\n"
+    "}\n"
+    "defun main [] {\n"
+    "  callee;\n"
+    "}";
+  std::string ExpectedOut = "";
+  EXPECT_OUTPUT(SourcePrg, ExpectedOut);
+}
+
+TEST(Execution, DISABLED_ExternalsFunctionPointer) {
+  std::string SourcePrg =
+    "defun main [] {\n"
+    "  malloc;\n"
     "}";
   std::string ExpectedOut = "";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);

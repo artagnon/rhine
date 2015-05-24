@@ -154,7 +154,7 @@ TEST(CodeGen, CallInstTyInfer) {
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }
 
-TEST(CodeGen, FnPtr) {
+TEST(CodeGen, DISABLED_FunctionPointer) {
   std::string SourcePrg =
     "defun callee [] {\n"
     "  3;\n"
@@ -163,20 +163,20 @@ TEST(CodeGen, FnPtr) {
     "  callee;\n"
     "}";
   std::string ExpectedPP =
-    "define i32 @caller() {\n"
+    "define i32 ()* @caller() {\n"
     "entry:\n"
     "  ret i32 ()* @callee\n"
     "}\n";
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }
 
-TEST(CodeGen, DISABLED_ExternalsFnPtr) {
+TEST(CodeGen, DISABLED_ExternalsFunctionPointer) {
   std::string SourcePrg =
     "defun mallocRet [] {\n"
     "  malloc;\n"
     "}";
   std::string ExpectedPP =
-    "define i8* @mallocRet() {\n"
+    "define i8* (i64)* @mallocRet() {\n"
     "entry:\n"
     "  ret i8* (i64)* @malloc\n"
     "}\n";
