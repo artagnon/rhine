@@ -34,7 +34,7 @@ TEST(Diagnostic, NotAFunction)
     "  foo 4;\n"
     "}\n";
   std::string ExpectedErr =
-    "string stream:3:3: error: foo was not declared as a function";
+    "string stream:3:3: error: foo was not typed as a function";
   EXPECT_DEATH(parseCodeGenString(SourcePrg), ExpectedErr);
 }
 

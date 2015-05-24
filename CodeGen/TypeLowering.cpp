@@ -34,6 +34,7 @@ llvm::Type *StringType::toLL(llvm::Module *M, Context *K) {
 }
 
 llvm::Type *FunctionType::toLL(llvm::Module *M, Context *K) {
-  assert(0 && "first-class functions not yet implemented");
+  // TODO: Extend to more than one argument
+  return llvm::FunctionType::get(getRTy()->toLL(M, K), getATy(0)->toLL(M, K));
 }
 }
