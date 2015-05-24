@@ -3,13 +3,6 @@
 #include "rhine/Externals.h"
 
 namespace rhine {
-llvm::Value *lookupOrLower(Value *V, llvm::Module *M, Context *K) {
-  if (auto Sym = dyn_cast<Symbol>(V))
-    return K->getMappingVal(Sym->getName(), Sym->getSourceLocation());
-  else
-    return V->toLL(M, K);
-}
-
 llvm::Function *getCalleeFunctionOrDie(std::string Name, location SourceLoc,
                                        llvm::Module *M, Context *K) {
   if (auto Result = K->getMappingVal(Name)) {
@@ -52,9 +45,7 @@ llvm::Value *CallInst::toLL(llvm::Module *M, Context *K) {
     Arg->setType(IntegerType::get(W, K));
   }
 
-  // Lowering argument
-  auto ArgLL = lookupOrLower(Arg, M, K);
-  return K->Builder->CreateCall(Callee, ArgLL, getName());
+  return K->Builder->CreateCall(Callee, Arg->toLL(M, K), getName());
 }
 
 llvm::Value *AddInst::toLL(llvm::Module *M, Context *K) {
