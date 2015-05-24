@@ -45,27 +45,7 @@ Type *AddInst::typeInfer(Context *K) {
   return getType();
 }
 
-Type *Symbol::typeInfer(Context *K) {
-  auto Ty = getType();
-  auto Name = getName();
-  if (Ty != UnType::get(K)) {
-    ;
-  } else if (auto Result = K->getMappingTy(Name)) {
-    Ty = Result;
-  } else if (auto Result = Externals::get(K)->getMappingTy(Name)) {
-    Ty = Result->getRTy();
-  } else {
-    K->DiagPrinter->errorReport(
-        SourceLoc, "untyped symbol " + Name);
-    exit(1);
-  }
-  K->addMapping(Name, Ty);
-  return Ty;
-}
-
-Type *CallInst::typeInfer(Context *K) {
-  Type *Ty = getType();
-  auto Name = getName();
+Type *generalizedSymbolType(Type *Ty, std::string Name, Context *K) {
   if (Ty != UnType::get(K))
     return Ty;
   if (auto Result = K->getMappingTy(Name)) {
@@ -73,6 +53,22 @@ Type *CallInst::typeInfer(Context *K) {
   } else if (auto Result = Externals::get(K)->getMappingTy(Name)) {
     return Result->getRTy();
   }
+  return nullptr;
+}
+
+Type *Symbol::typeInfer(Context *K) {
+  if (auto Ty = generalizedSymbolType(getType(), getName(), K)) {
+    K->addMapping(Name, Ty);
+    return Ty;
+  }
+  K->DiagPrinter->errorReport(
+      SourceLoc, "untyped symbol " + Name);
+  exit(1);
+}
+
+Type *CallInst::typeInfer(Context *K) {
+  if (auto Ty = generalizedSymbolType(getType(), getName(), K))
+    return Ty;
   K->DiagPrinter->errorReport(
       SourceLoc, "untyped function " + Name);
   exit(1);
