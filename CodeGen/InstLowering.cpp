@@ -3,7 +3,7 @@
 #include "rhine/Externals.h"
 
 namespace rhine {
-llvm::Function *getCalleeFunctionOrDie(std::string Name, location SourceLoc,
+llvm::Function *getCalleeFunction(std::string Name, location SourceLoc,
                                        llvm::Module *M, Context *K) {
   if (auto Result = K->getMappingVal(Name)) {
     if (auto CalleeCandidate = dyn_cast<llvm::Function>(Result))
@@ -29,7 +29,7 @@ llvm::Function *getCalleeFunctionOrDie(std::string Name, location SourceLoc,
 }
 
 llvm::Value *CallInst::toLL(llvm::Module *M, Context *K) {
-  auto Callee = getCalleeFunctionOrDie(getName(), getSourceLocation(), M, K);
+  auto Callee = getCalleeFunction(getName(), getSourceLocation(), M, K);
 
   // Extract Callee's argument types
   auto TargetFnTy = dyn_cast<llvm::FunctionType>(
