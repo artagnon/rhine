@@ -10,13 +10,11 @@ llvm::Value *lookupOrLower(Value *V, llvm::Module *M, Context *K) {
     return V->toLL(M, K);
 }
 
-llvm::Value *CallInst::toLL(llvm::Module *M, Context *K) {
-  location SourceLoc = getSourceLocation();
-  llvm::Function *Callee;
-  auto Name = getName();
+llvm::Function *getCalleeFunctionOrDie(std::string Name, location SourceLoc,
+                                       llvm::Module *M, Context *K) {
   if (auto Result = K->getMappingVal(Name)) {
     if (auto CalleeCandidate = dyn_cast<llvm::Function>(Result))
-      Callee = CalleeCandidate;
+      return CalleeCandidate;
     else {
       K->DiagPrinter->errorReport(
           SourceLoc, Name + " was not declared as a function");
@@ -24,18 +22,21 @@ llvm::Value *CallInst::toLL(llvm::Module *M, Context *K) {
     }
   } else if (auto FPtr = Externals::get(K)->getMappingVal(Name)) {
     if (auto CalleeCandidate = dyn_cast<llvm::Function>(FPtr(M, K)))
-      Callee = CalleeCandidate;
+      return CalleeCandidate;
     else {
       // Polymorphic externals?
       K->DiagPrinter->errorReport(
           SourceLoc, Name + " was declared with different signature earlier");
       exit(1);
     }
-  } else {
-      K->DiagPrinter->errorReport(
-          SourceLoc, "unable to look up function " + Name);
-      exit(1);
   }
+  K->DiagPrinter->errorReport(
+      SourceLoc, "unable to look up function " + Name);
+  exit(1);
+}
+
+llvm::Value *CallInst::toLL(llvm::Module *M, Context *K) {
+  auto Callee = getCalleeFunctionOrDie(getName(), getSourceLocation(), M, K);
 
   // Extract Callee's argument types
   auto TargetFnTy = dyn_cast<llvm::FunctionType>(
@@ -44,7 +45,7 @@ llvm::Value *CallInst::toLL(llvm::Module *M, Context *K) {
   for (auto I = TargetFnTy->param_begin(); I != TargetFnTy->param_end(); ++I)
     TargetArgumentTys.push_back(*I);
 
-  // Integer bitwidth refinement
+  // HACK: Integer bitwidth refinement
   auto Arg = getOperand(0);
   if (Arg->getType()->getTyID() == RT_IntegerType) {
     auto W = dyn_cast<llvm::IntegerType>(TargetArgumentTys[0])->getBitWidth();
