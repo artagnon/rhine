@@ -47,7 +47,6 @@ void DiagnosticPrinter::errorReport(const location &Location,
 
   if (!StringStreamInput.empty()) {
     InStream = &Iss;
-    ScriptPath = *Location.begin.filename;
   } else {
     if (!InFile)
       *ErrorStream << ColorCode(ANSI_COLOR_RED) << "fatal: "
@@ -55,26 +54,8 @@ void DiagnosticPrinter::errorReport(const location &Location,
                    << "Unable to open file" << *Location.begin.filename
                    << ColorCode(ANSI_COLOR_RESET) << std::endl;
     InStream = &InFile;
-    ScriptPath = *Location.begin.filename;
-    char Buffer[PATH_MAX];
-    char *CwdP = getcwd(Buffer, PATH_MAX);
-    std::string Cwd(CwdP);
-    Cwd += "/"; // Cwd is guaranteed to be a directory
-    auto MisPair = std::mismatch(Cwd.begin(),
-                                 Cwd.end(), ScriptPath.begin());
-    auto CommonAnchor = Cwd.rfind('/', MisPair.first - Cwd.begin());
-    std::string StripString = "";
-    if (MisPair.first != Cwd.end()) {
-      auto StripComponents = std::count(MisPair.first, Cwd.end(), '/');
-      for (int i = 0; i < StripComponents; i++)
-        StripString += "../";
-    }
-    ScriptPath.erase(ScriptPath.begin(),
-                     ScriptPath.begin() + CommonAnchor + 1);
-    // +1 for the '/'
-    ScriptPath = StripString + ScriptPath;
   }
-  *ErrorStream << ColorCode(ANSI_COLOR_WHITE) << ScriptPath << ":"
+  *ErrorStream << ColorCode(ANSI_COLOR_WHITE) << *Location.begin.filename << ":"
                << Location.begin.line << ":" << Location.begin.column << ": "
                << ColorCode(ANSI_COLOR_RED) << "error: "
                << ColorCode(ANSI_COLOR_WHITE) << Message
