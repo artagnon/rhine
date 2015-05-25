@@ -66,6 +66,8 @@ SPTAB   [ \t]+
 "then" { return T::THEN; }
 "&&" { return T::AND; }
 "||" { return T::OR; }
+"->" { return T::ARROW; }
+
 
 "Int" { return T::TINT; }
 "Bool" { return T::TBOOL; }
@@ -88,7 +90,7 @@ SPTAB   [ \t]+
   return T::SYMBOL;
 }
 
-[\[ \] \( \) + * ; { } $ ~ =] {
+[\[ \] \( \) + * ; { } $ ~ = \\] {
   return static_cast<P::token_type>(*yytext);
 }
 

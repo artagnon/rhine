@@ -41,6 +41,7 @@
 %token                  THEN
 %token                  AND
 %token                  OR
+%token                  ARROW
 %token                  TINT
 %token                  TBOOL
 %token                  TSTRING
@@ -91,7 +92,7 @@ fn_decl:
                   auto Fn = Function::get(FTy, K);
                   Fn->setSourceLocation(@1);
                   Fn->setName(*$N);
-                  Fn->setArgumentList(*$A);
+                  Fn->setArguments(*$A);
                   $$ = Fn;
                 }
         |       DEF SYMBOL[N] '[' ']' type_annotation[T]
@@ -228,9 +229,17 @@ value_expr:
                   Op->addOperand($E);
                   $$ = Op;
                 }
+        |       '\\' argument_list ARROW compound_stm[C]
+                {
+                  auto FTy = FunctionType::get(UnType::get(K), K);
+                  FTy->setSourceLocation(@4);
+                  auto Fn = Function::get(FTy, K);
+                  Fn->setSourceLocation(@1);
+                  $$ = Fn;
+                }
                 ;
 assign_expr:
-                lvalue[L] '=' expression[E]
+                lvalue[L] '=' value_expr[E]
                 {
                   auto Op = BindInst::get($L->getName(), $E, K);
                   Op->setSourceLocation(@1);

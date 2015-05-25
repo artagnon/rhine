@@ -33,7 +33,7 @@ llvm::Constant *Function::toLL(llvm::Module *M, Context *K) {
   }
 
   // Bind argument symbols to function argument values in symbol table
-  auto ArgList = getArgumentList();
+  auto ArgList = getArguments();
   auto S = ArgList.begin();
   auto V = TheFunction->arg_begin();
   auto SEnd = ArgList.end();
@@ -51,5 +51,9 @@ llvm::Constant *Function::toLL(llvm::Module *M, Context *K) {
     LastLL = Val->toLL(M, K);
   K->Builder->CreateRet(LastLL);
   return TheFunction;
+}
+
+llvm::Constant *Lambda::toLL(llvm::Module *M, Context *K) {
+  assert(0 && "Lambdas should not be present after LambdaLifting");
 }
 }
