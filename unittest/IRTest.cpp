@@ -14,7 +14,7 @@ void EXPECT_TRANSFORM_PP(std::string &SourcePrg, std::string &ExpectedPP)
 TEST(IR, ConstantInt) {
   std::string SourcePrg = "def foo [] 3;";
   std::string ExpectedPP =
-    "foo ~Fn(VoidType -> Int)\n"
+    "foo ~Fn(() -> Int)\n"
     "3 ~Int";
   EXPECT_TRANSFORM_PP(SourcePrg, ExpectedPP);
 }
@@ -23,7 +23,7 @@ TEST(IR, AddTwoInt)
 {
   std::string SourcePrg = "def foo [] 3 + 2;";
   std::string ExpectedPP =
-    "foo ~Fn(VoidType -> Int)\n"
+    "foo ~Fn(() -> Int)\n"
     "+ ~Int\n"
     "3 ~Int\n"
     "2 ~Int";
@@ -34,7 +34,7 @@ TEST(IR, ConstantString)
 {
   std::string SourcePrg = "def foo [] \"moo!\";";
   std::string ExpectedPP =
-    "foo ~Fn(VoidType -> String)\n"
+    "foo ~Fn(() -> String)\n"
     "\"moo!\" ~String\n";
   EXPECT_TRANSFORM_PP(SourcePrg, ExpectedPP);
 }
@@ -52,7 +52,7 @@ TEST(IR, TypePropagation)
 TEST(IR, BindInst) {
   std::string SourcePrg = "def bsym [] sym = 3;";
   std::string ExpectedPP =
-    "bsym ~Fn(VoidType -> VoidType)\n"
+    "bsym ~Fn(() -> ())\n"
     "sym = 3 ~Int";
   EXPECT_TRANSFORM_PP(SourcePrg, ExpectedPP);
 }
@@ -63,7 +63,7 @@ TEST(IR, BindPropagation) {
     "sym;\n"
     "}";
   std::string ExpectedPP =
-    "bsym ~Fn(VoidType -> Int)\n"
+    "bsym ~Fn(() -> Int)\n"
     "sym = 3 ~Int\n"
     "sym ~Int";
   EXPECT_TRANSFORM_PP(SourcePrg, ExpectedPP);
@@ -74,7 +74,18 @@ TEST(IR, Comment) {
     "// Strip this out\n"
     "3;";
   std::string ExpectedPP =
-    "foo ~Fn(VoidType -> Int)\n"
+    "foo ~Fn(() -> Int)\n"
     "3 ~Int";
+  EXPECT_TRANSFORM_PP(SourcePrg, ExpectedPP);
+}
+
+TEST(IR, DISABLED_TwoArguments)
+{
+  std::string SourcePrg = "def foo [a ~Int b ~Int] a + b;";
+  std::string ExpectedPP =
+    "foo ~Fn(Int -> Int -> Int)\n"
+    "+ ~Int\n"
+    "a ~Int\n"
+    "b ~Int";
   EXPECT_TRANSFORM_PP(SourcePrg, ExpectedPP);
 }

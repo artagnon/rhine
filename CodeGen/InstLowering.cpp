@@ -42,11 +42,17 @@ llvm::Value *CallInst::toLL(llvm::Module *M, Context *K) {
 
   // HACK: Integer bitwidth refinement
   auto Arg = getOperand(0);
-  if (Arg->getType()->getTyID() == RT_IntegerType) {
+  if (IntegerType::classof(Arg->getType())) {
     auto W = dyn_cast<llvm::IntegerType>(TargetArgumentTys[0])->getBitWidth();
     Arg->setType(IntegerType::get(W, K));
   }
-  return K->Builder->CreateCall(Callee, Arg->toLL(M, K), getName());
+
+  // Prepare arguments to call
+  std::vector<llvm::Value *> LLOps;
+  for (auto Op: getOperands()) {
+    LLOps.push_back(Op->toLL(M, K));
+  }
+  return K->Builder->CreateCall(Callee, LLOps, getName());
 }
 
 llvm::Value *AddInst::toLL(llvm::Module *M, Context *K) {

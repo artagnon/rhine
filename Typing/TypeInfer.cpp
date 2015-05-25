@@ -40,14 +40,14 @@ Type *Function::typeInfer(Context *K) {
 }
 
 Type *AddInst::typeInfer(Context *K) {
-  auto LType = getOperand(0)->typeInfer();
-  if (getOperand(1)->typeInfer() != LType)
+  auto LType = getOperand(0)->typeInfer(K);
+  if (getOperand(1)->typeInfer(K) != LType)
     assert(0 && "AddInst with operands of different types");
   return getType();
 }
 
 Type *generalizedSymbolType(Type *Ty, std::string Name, Context *K) {
-  if (Ty != UnType::get(K))
+  if (!UnType::classof(Ty))
     return Ty;
   if (auto Result = K->getMappingTy(Name)) {
     return Result;
@@ -91,9 +91,8 @@ Type *CallInst::typeInfer(Context *K) {
 }
 
 Type *BindInst::typeInfer(Context *K) {
-  Type *Ty = getVal()->typeInfer();
-  assert (Ty != UnType::get(K) &&
-          "Unable to type infer BindInst");
+  Type *Ty = getVal()->typeInfer(K);
+  assert (!UnType::classof(Ty) && "Unable to type infer BindInst");
   K->addMapping(getName(), Ty);
   return getType();
 }

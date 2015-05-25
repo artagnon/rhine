@@ -33,7 +33,7 @@ public:
     I.print(Stream);
     return Stream;
   }
-  virtual Type *typeInfer(Context *K = nullptr) = 0;
+  virtual Type *typeInfer(Context *K) = 0;
   virtual llvm::Value *toLL(llvm::Module *M, Context *K) = 0;
 protected:
   virtual void print(std::ostream &Stream) const = 0;
@@ -52,7 +52,7 @@ public:
     A.print(Stream);
     return Stream;
   }
-  Type *typeInfer(Context *K = nullptr);
+  Type *typeInfer(Context *K);
   llvm::Value *toLL(llvm::Module *M, Context *K);
 protected:
   virtual void print(std::ostream &Stream) const {
@@ -81,7 +81,7 @@ public:
     C.print(Stream);
     return Stream;
   }
-  Type *typeInfer(Context *K = nullptr);
+  Type *typeInfer(Context *K);
   llvm::Value *toLL(llvm::Module *M, Context *K);
 protected:
   virtual void print(std::ostream &Stream) const {
@@ -115,7 +115,7 @@ public:
     S.print(Stream);
     return Stream;
   }
-  Type *typeInfer(Context *K = nullptr);
+  Type *typeInfer(Context *K);
   llvm::Value *toLL(llvm::Module *M, Context *K);
 protected:
   virtual void print(std::ostream &Stream) const {
