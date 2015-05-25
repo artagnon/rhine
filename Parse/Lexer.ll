@@ -9,7 +9,7 @@
 
 %option c++ noyywrap warn yylineno stack
 
-SYMBOL  [[:alpha:]][[:alnum:]]+
+SYMBOL  [[:alpha:]][[:alnum:]]*
 EXP     [Ee][- +]?[[:digit:]]+
 INTEGER [- +]?[[:digit:]]+
 RET     [\r\n]+
