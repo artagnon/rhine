@@ -64,3 +64,11 @@ TEST(Execution, ExternalsFunctionPointer) {
   std::string ExpectedOut = "";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
+
+TEST(CodeGen, DollarOperator) {
+  std::string SourcePrg =
+    "def foo [x ~Int] \"2\";\n"
+    "def main [] printf $ foo 3;";
+  std::string ExpectedOut = "2";
+  EXPECT_OUTPUT(SourcePrg, ExpectedOut);
+}

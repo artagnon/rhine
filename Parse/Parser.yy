@@ -52,12 +52,9 @@
 %type   <VarList>       argument_list
 %type   <StmList>       compound_stm stm_list single_stm
 %type   <Fcn>           fn_decl def
-%type   <Value>         expression
-%type   <Value>         assign_expr
-%type   <Value>         rvalue
+%type   <Value>         expression assign_expr value_expr rvalue
 %type   <Type>          type_annotation
-%type   <Symbol>        typed_symbol
-%type   <Symbol>        lvalue
+%type   <Symbol>        typed_symbol lvalue
 
 %{
 #include "rhine/ParseDriver.h"
@@ -187,6 +184,24 @@ type_annotation:
                 }
                 ;
 expression:
+                value_expr[V]
+                {
+                  $$ = $V;
+                }
+        |       assign_expr[A]
+                {
+                  $$ = $A;
+                }
+        |       IF value_expr[V] THEN compound_stm[T] compound_stm[F]
+                {
+                  $$ = nullptr;
+                }
+        |       IF assign_expr[A] THEN compound_stm[T] compound_stm[F]
+                {
+                  $$ = nullptr;
+                }
+                ;
+value_expr:
                 rvalue[V]
                 {
                   $$ = $V;
@@ -198,20 +213,19 @@ expression:
                   Op->addOperand($R);
                   $$ = Op;
                 }
-        |       assign_expr[A]
-                {
-                  $$ = $A;
-                }
-        |       typed_symbol[S] rvalue[R]
+        |       typed_symbol[S] value_expr[E]
                 {
                   auto Op = CallInst::get($S->getName(), K);
                   Op->setSourceLocation(@1);
-                  Op->addOperand($R);
+                  Op->addOperand($E);
                   $$ = Op;
                 }
-        |       IF expression[C] THEN compound_stm[T] compound_stm[F]
+        |       typed_symbol[S] '$' value_expr[E]
                 {
-                  $$ = nullptr;
+                  auto Op = CallInst::get($S->getName(), K);
+                  Op->setSourceLocation(@1);
+                  Op->addOperand($E);
+                  $$ = Op;
                 }
                 ;
 assign_expr:

@@ -1,10 +1,10 @@
-def test1 [b] b
-def test2 [a b] a + b
-// def test3 [a b c] (if true (* a b c) [])
-def test4 [] 8
+def test1 [b] b;
+def test2 [a b] a + b;
+// def test3 [a b c] (if true (* a b c) []);
+def test4 [] 8;
 def main [] {
   println $ test1 55;
   println $ test2 55 66;
-  // (println (test3 55 66 22))
+  // (println (test3 55 66 22));
   println $ test4;
 }
