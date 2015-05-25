@@ -8,8 +8,7 @@ add_executable(UnitTest
   "${CMAKE_CURRENT_SOURCE_DIR}/IRTest.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/CodeGenTest.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ExecutionTest.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/DiagnosticTest.cpp"
-  "${PROJECT_SOURCE_DIR}/include/rhine/StdCapture.h")
+  "${CMAKE_CURRENT_SOURCE_DIR}/DiagnosticTest.cpp")
 set_target_properties(UnitTest PROPERTIES
   LINKER_LANGUAGE CXX
   COMPILE_FLAGS "${LLVM_CXXFLAGS}")
