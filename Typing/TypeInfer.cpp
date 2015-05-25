@@ -18,25 +18,40 @@ Type *GlobalString::typeInfer(Context *K) {
   return getType();
 }
 
-Type *Function::typeInfer(Context *K) {
-  // Argument list transform
-  auto V = getArgumentList();
+void typeInferSymbolList(std::vector<Symbol *> V, Context *K) {
   std::transform(V.begin(), V.end(), V.begin(),
                  [K](Symbol *S) -> Symbol * {
                    S->setType(S->typeInfer(K));
                    return S;
                  });
-  // FunctionType and Body transform
-  auto ATys = cast<FunctionType>(getType())->getATys();
+}
+
+Type *typeInferValueList(std::vector<Value *> Val, Context *K) {
   Type *LastTy;
-  for (auto I: getVal()) {
-    LastTy = I->typeInfer(K);
-    I->setType(LastTy);
+  for (auto V: Val) {
+    LastTy = V->typeInfer(K);
+    V->setType(LastTy);
   }
-  auto FnTy = FunctionType::get(LastTy, ATys, K);
-  setType(FnTy);
-  K->addMapping(getName(), FnTy);
-  return FnTy;
+  return LastTy;
+}
+
+Type *Lambda::typeInfer(Context *K) {
+  typeInferSymbolList(getArguments(), K);
+  auto LastTy = typeInferValueList(getVal(), K);
+  auto FTy = FunctionType::get(
+      LastTy, cast<FunctionType>(getType())->getATys(), K);
+  setType(FTy);
+  return FTy;
+}
+
+Type *Function::typeInfer(Context *K) {
+  typeInferSymbolList(getArguments(), K);
+  auto LastTy = typeInferValueList(getVal(), K);
+  auto FTy = FunctionType::get(
+      LastTy, cast<FunctionType>(getType())->getATys(), K);
+  setType(FTy);
+  K->addMapping(getName(), FTy);
+  return FTy;
 }
 
 Type *AddInst::typeInfer(Context *K) {
@@ -50,7 +65,7 @@ Type *AddInst::typeInfer(Context *K) {
   return LType;
 }
 
-Type *generalizedSymbolType(Type *Ty, std::string Name, Context *K) {
+Type *resolveSymbolTy(Type *Ty, std::string Name, Context *K) {
   if (!UnType::classof(Ty))
     return Ty;
   if (auto Result = K->getMappingTy(Name)) {
@@ -62,7 +77,7 @@ Type *generalizedSymbolType(Type *Ty, std::string Name, Context *K) {
 }
 
 Type *Symbol::typeInfer(Context *K) {
-  if (auto Ty = generalizedSymbolType(getType(), getName(), K)) {
+  if (auto Ty = resolveSymbolTy(getType(), getName(), K)) {
     if (FunctionType::classof(Ty)) {
       // First-class function (pointers)
       auto PTy = PointerType::get(Ty, K);
@@ -80,7 +95,7 @@ Type *Symbol::typeInfer(Context *K) {
 }
 
 Type *CallInst::typeInfer(Context *K) {
-  if (auto GSymTy = generalizedSymbolType(getType(), getName(), K)) {
+  if (auto GSymTy = resolveSymbolTy(getType(), getName(), K)) {
     if (auto Ty = dyn_cast<FunctionType>(GSymTy))
       return Ty->getRTy();
     else {
