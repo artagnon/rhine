@@ -68,3 +68,13 @@ TEST(IR, BindPropagation) {
     "sym ~Int";
   EXPECT_TRANSFORM_PP(SourcePrg, ExpectedPP);
 }
+
+TEST(IR, Comment) {
+  std::string SourcePrg = "def foo []\n"
+    "// Strip this out\n"
+    "3;";
+  std::string ExpectedPP =
+    "foo ~Fn(VoidType -> Int)\n"
+    "3 ~Int";
+  EXPECT_TRANSFORM_PP(SourcePrg, ExpectedPP);
+}
