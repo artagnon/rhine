@@ -36,9 +36,9 @@ SPTAB   [ \t]+
   return T::INTEGER;
 }
 
-\"	string_buf_ptr = string_buf; BEGIN(str);
+(\"|\')	string_buf_ptr = string_buf; BEGIN(str);
 
-<str>\" {
+<str>(\"|\') {
   BEGIN(INITIAL);
   *string_buf_ptr = '\0';
   auto C = GlobalString::get(std::string(string_buf), K);
@@ -46,15 +46,15 @@ SPTAB   [ \t]+
   return T::STRING;
 }
 
-<str>\\n  *string_buf_ptr++ = '\n';
-<str>\\t  *string_buf_ptr++ = '\t';
-<str>\\r  *string_buf_ptr++ = '\r';
-<str>\\b  *string_buf_ptr++ = '\b';
-<str>\\f  *string_buf_ptr++ = '\f';
+<str>\\n *string_buf_ptr++ = '\n';
+<str>\\t *string_buf_ptr++ = '\t';
+<str>\\r *string_buf_ptr++ = '\r';
+<str>\\b *string_buf_ptr++ = '\b';
+<str>\\f *string_buf_ptr++ = '\f';
 
-<str>\\(.|\n)	*string_buf_ptr++ = yytext[1];
+<str>\\(.|\n) *string_buf_ptr++ = yytext[1];
 
-<str>[^\\\n\"]+	{
+<str>[^\\\n\"\']+ {
   char *yptr = yytext;
   while (*yptr)
     *string_buf_ptr++ = *yptr++;
