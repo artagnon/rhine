@@ -16,7 +16,7 @@ void EXPECT_OUTPUT(std::string &SourcePrg, std::string &ExpectedOut)
 TEST(Execution, PrintfBasic) {
   std::string SourcePrg =
     "def main [] {\n"
-    "  printf \"43\";\n"
+    "  println \"43\";\n"
     "}";
   std::string ExpectedOut = "43";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
@@ -25,7 +25,7 @@ TEST(Execution, PrintfBasic) {
 TEST(Execution, FunctionArgument) {
   std::string SourcePrg =
     "def printid [var ~ String] {\n"
-    "  printf var;\n"
+    "  println var;\n"
     "}\n"
     "def main [] {\n"
     "  printid \"21\";\n"
@@ -38,7 +38,7 @@ TEST(Execution, MallocBasic) {
   std::string SourcePrg =
     "def main [] {\n"
     "  malloc 8;\n"
-    "  printf \"3\";\n"
+    "  println \"3\";\n"
     "}";
   std::string ExpectedOut = "3";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
@@ -68,7 +68,7 @@ TEST(Execution, ExternalsFunctionPointer) {
 TEST(CodeGen, DollarOperator) {
   std::string SourcePrg =
     "def foo [x ~Int] '2';\n"
-    "def main [] printf $ foo 3;";
+    "def main [] println $ foo 3;";
   std::string ExpectedOut = "2";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }

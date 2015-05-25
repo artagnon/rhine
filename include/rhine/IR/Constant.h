@@ -176,6 +176,13 @@ public:
   }
   Type *typeInfer(Context *K);
   llvm::Constant *toLL(llvm::Module *M, Context *K);
+  typedef std::vector<Value *>::iterator iterator;
+  iterator begin() {
+    return Val.begin();
+  }
+  iterator end() {
+    return Val.end();
+  }
 protected:
   virtual void print(std::ostream &Stream) const {
     Stream << Name << " ~" << *getType() << std::endl;

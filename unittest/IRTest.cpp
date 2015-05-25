@@ -24,7 +24,7 @@ TEST(IR, AddTwoInt)
   std::string SourcePrg = "def foo [] 3 + 2;";
   std::string ExpectedPP =
     "foo ~Fn(() -> Int)\n"
-    "+ ~Int\n"
+    "+ ~Fn(Int -> Int -> Int)\n"
     "3 ~Int\n"
     "2 ~Int";
   EXPECT_TRANSFORM_PP(SourcePrg, ExpectedPP);
@@ -86,7 +86,7 @@ TEST(IR, TwoArguments)
     "foo ~Fn(Int -> Int -> Int)\n"
     "a ~Int\n"
     "b ~Int\n"
-    "+ ~Int\n"
+    "+ ~Fn(Int -> Int -> Int)\n"
     "a ~Int\n"
     "b ~Int";
   EXPECT_TRANSFORM_PP(SourcePrg, ExpectedPP);
