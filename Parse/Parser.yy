@@ -31,7 +31,7 @@
   class Value *Value;
   class Type *Type;
   std::vector<class Symbol *> *VarList;
-  std::vector<class Value *> *StmList;
+  std::vector<class Value *> *ValueList;
 }
 
 %start start
@@ -50,7 +50,7 @@
 %token  <Boolean>       BOOLEAN
 %token  <String>        STRING
 %type   <VarList>       argument_list
-%type   <StmList>       compound_stm stm_list single_stm
+%type   <ValueList>     compound_stm stm_list single_stm rvalue_list
 %type   <Fcn>           fn_decl def
 %type   <Value>         expression assign_expr value_expr rvalue
 %type   <Type>          type_annotation
@@ -213,12 +213,13 @@ value_expr:
                   Op->addOperand($R);
                   $$ = Op;
                 }
-        |       typed_symbol[S] value_expr[E]
+        |       typed_symbol[S] rvalue_list[L]
                 {
-                  auto Op = CallInst::get($S->getName(), K);
-                  Op->setSourceLocation(@1);
-                  Op->addOperand($E);
-                  $$ = Op;
+                  auto CInst = CallInst::get($S->getName(), K);
+                  CInst->setSourceLocation(@1);
+                  for (auto Op: *$L)
+                    CInst->addOperand(Op);
+                  $$ = CInst;
                 }
         |       typed_symbol[S] '$' value_expr[E]
                 {
@@ -241,6 +242,21 @@ lvalue:
                 {
                   $$ = $S;
                 }
+                ;
+rvalue_list:
+                rvalue[R]
+                {
+                  auto RValueList = new (K->RhAllocator) std::vector<Value *>;
+                  RValueList->push_back($R);
+                  $$ = RValueList;
+                }
+        |       rvalue_list[L] rvalue[R]
+                {
+                  $L->push_back($R);
+                  $$ = $L;
+                }
+                ;
+
 rvalue:
                 INTEGER[I]
                 {

@@ -182,3 +182,16 @@ TEST(CodeGen, ExternalsFunctionPointer) {
     "}\n";
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }
+
+TEST(CodeGen, DISABLED_MultipleArguments)
+{
+  std::string SourcePrg =
+    "def foo [a b] a + b;\n"
+    "def main [] foo 3 2;";
+  std::string ExpectedPP =
+    "define i32 @foo() {\n"
+    "entry:\n"
+    "  ret i32 5\n"
+    "}\n";
+  EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
+}
