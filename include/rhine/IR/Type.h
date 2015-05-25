@@ -1,7 +1,7 @@
 //-*- C++ -*-
 
-#ifndef TYPE_H
-#define TYPE_H
+#ifndef RHINE_TYPE_H
+#define RHINE_TYPE_H
 
 #include "llvm/IR/Module.h"
 #include "llvm/IR/DerivedTypes.h"

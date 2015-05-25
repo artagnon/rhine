@@ -1,5 +1,5 @@
 #include "rhine/IR.h"
-#include "rhine/Externals.h"
+#include "rhine/Resolve.h"
 
 namespace rhine {
 Type *ConstantInt::typeInfer(Context *K) {
@@ -21,7 +21,7 @@ Type *GlobalString::typeInfer(Context *K) {
 void typeInferSymbolList(std::vector<Symbol *> V, Context *K) {
   std::transform(V.begin(), V.end(), V.begin(),
                  [K](Symbol *S) -> Symbol * {
-                   S->setType(S->typeInfer(K));
+                   S->typeInfer(K);
                    return S;
                  });
 }
@@ -30,7 +30,6 @@ Type *typeInferValueList(std::vector<Value *> Val, Context *K) {
   Type *LastTy;
   for (auto V: Val) {
     LastTy = V->typeInfer(K);
-    V->setType(LastTy);
   }
   return LastTy;
 }
@@ -62,24 +61,14 @@ Type *AddInst::typeInfer(Context *K) {
     assert(0 && "AddInst with operands of different types");
   Operand0->setType(LType);
   Operand1->setType(LType);
+  setType(LType);
   return LType;
 }
 
-Type *resolveSymbolTy(Type *Ty, std::string Name, Context *K) {
-  if (!UnType::classof(Ty))
-    return Ty;
-  if (auto Result = K->getMappingTy(Name)) {
-    return Result;
-  } else if (auto Result = Externals::get(K)->getMappingTy(Name)) {
-    return Result;
-  }
-  return nullptr;
-}
-
 Type *Symbol::typeInfer(Context *K) {
-  if (auto Ty = resolveSymbolTy(getType(), getName(), K)) {
+  if (auto Ty = Resolve::resolveSymbolTy(getName(), getType(), K)) {
+    setType(Ty);
     if (FunctionType::classof(Ty)) {
-      // First-class function (pointers)
       auto PTy = PointerType::get(Ty, K);
       K->addMapping(Name, PTy);
       return PTy;
@@ -95,10 +84,10 @@ Type *Symbol::typeInfer(Context *K) {
 }
 
 Type *CallInst::typeInfer(Context *K) {
-  if (auto GSymTy = resolveSymbolTy(getType(), getName(), K)) {
-    if (auto Ty = dyn_cast<FunctionType>(GSymTy))
+  if (auto GSymTy = Resolve::resolveSymbolTy(getName(), getType(), K)) {
+    if (auto Ty = dyn_cast<FunctionType>(GSymTy)) {
       return Ty->getRTy();
-    else {
+    } else {
       K->DiagPrinter->errorReport(
           SourceLoc, Name + " was not typed as a function");
       exit(1);
@@ -120,7 +109,7 @@ void Module::typeInfer(Context *K) {
   auto V = getVal();
   std::transform(V.begin(), V.end(), V.begin(),
                  [K](Function *F) -> Function * {
-                   F->setType(F->typeInfer(K));
+                   F->typeInfer(K);
                    return F;
                  });
 }

@@ -1,7 +1,7 @@
 //-*- C++ -*-
 
-#ifndef EXTERNALS_H
-#define EXTERNALS_H
+#ifndef RHINE_EXTERNALS_H
+#define RHINE_EXTERNALS_H
 
 #include "llvm/IR/Module.h"
 #include "rhine/IR/Type.h"

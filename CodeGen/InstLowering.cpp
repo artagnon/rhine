@@ -1,4 +1,5 @@
 #include "rhine/Context.h"
+#include "rhine/Resolve.h"
 #include "rhine/IR/Instruction.h"
 #include "rhine/Externals.h"
 
@@ -30,12 +31,8 @@ llvm::Function *getCalleeFunction(std::string Name, location SourceLoc,
 
 llvm::Value *CallInst::toLL(llvm::Module *M, Context *K) {
   auto Callee = getCalleeFunction(getName(), getSourceLocation(), M, K);
-
-  // Extract Callee's argument types
-  auto TargetFnTy = cast<llvm::FunctionType>(Callee->getType()->getElementType());
-  std::vector<llvm::Type *> TargetArgumentTys;
-  for (auto I = TargetFnTy->param_begin(); I != TargetFnTy->param_end(); ++I)
-    TargetArgumentTys.push_back(*I);
+  auto Resolved = Resolve::resolveSymbolTy(getName(), getType(), K);
+  auto CalleeTy = cast<FunctionType>(Resolved);
 
   if (!getOperands().size())
     return K->Builder->CreateCall(Callee, getName());
@@ -43,8 +40,8 @@ llvm::Value *CallInst::toLL(llvm::Module *M, Context *K) {
   // HACK: Integer bitwidth refinement
   auto Arg = getOperand(0);
   if (IntegerType::classof(Arg->getType())) {
-    auto W = dyn_cast<llvm::IntegerType>(TargetArgumentTys[0])->getBitWidth();
-    Arg->setType(IntegerType::get(W, K));
+    if (auto Ty = dyn_cast<IntegerType>(CalleeTy->getATy(0)))
+      Arg->setType(IntegerType::get(Ty->getBitwidth(), K));
   }
 
   // Prepare arguments to call
