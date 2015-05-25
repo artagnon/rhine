@@ -183,15 +183,21 @@ TEST(CodeGen, ExternalsFunctionPointer) {
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }
 
-TEST(CodeGen, DISABLED_MultipleArguments)
+TEST(CodeGen, MultipleArguments)
 {
   std::string SourcePrg =
-    "def foo [a b] a + b;\n"
+    "def foo [a ~Int b ~Int] a + b;\n"
     "def main [] foo 3 2;";
   std::string ExpectedPP =
-    "define i32 @foo() {\n"
+    "define i32 @foo(i32, i32) {\n"
     "entry:\n"
-    "  ret i32 5\n"
-    "}\n";
+    "  %2 = add i32 %0, %1\n"
+    "  ret i32 %2\n"
+    "}\n\n"
+    "define i32 @main() {\n"
+    "entry:\n"
+    "  %foo = call i32 @foo(i32 3, i32 2)\n"
+    "  ret i32 %foo\n"
+    "}";
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }

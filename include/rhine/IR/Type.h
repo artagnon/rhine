@@ -96,7 +96,7 @@ public:
   virtual llvm::Type *toLL(llvm::Module *M, Context *K);
 protected:
   virtual void print(std::ostream &Stream) const {
-    Stream << "VoidType";
+    Stream << "()";
   }
 };
 
@@ -218,7 +218,7 @@ public:
     return FTy;
   }
   static FunctionType *get(Type *RTy, Context *K) {
-    return FunctionType::get(RTy, {}, K);
+    return FunctionType::get(RTy, { VoidType::get(K) }, K);
   }
   static bool classof(const Type *T) {
     return T->getTyID() == RT_FunctionType;
@@ -249,18 +249,11 @@ public:
   llvm::Type *toLL(llvm::Module *M, Context *K);
 protected:
   virtual void print(std::ostream &Stream) const {
-    Stream << "Fn(";
-    if (ArgumentTypes.size()) {
-      Stream << *ArgumentTypes[0];
-      for (auto ATy = std::next(std::begin(ArgumentTypes));
-           ATy != std::end(ArgumentTypes); ++ATy)
-        Stream << ", " << *ATy;
-    } else
-      Stream << "VoidType";
-    if (ReturnType)
-      Stream << " -> " << *ReturnType << ")";
-    else
-      Stream << " -> ())";
+    Stream << "Fn(" << *ArgumentTypes[0];
+    for (auto ATy = std::next(std::begin(ArgumentTypes));
+         ATy != std::end(ArgumentTypes); ++ATy)
+      Stream << " -> " << **ATy;
+    Stream << " -> " << *ReturnType << ")";
   }
 };
 

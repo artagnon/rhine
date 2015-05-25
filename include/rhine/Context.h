@@ -35,7 +35,8 @@ public:
 
   Context(std::ostream &ErrStream = std::cerr):
       Builder(new llvm::IRBuilder<>(llvm::getGlobalContext())),
-      DiagPrinter(new DiagnosticPrinter(&ErrStream)) {}
+      DiagPrinter(new DiagnosticPrinter(&ErrStream)),
+      ExternalsCache(nullptr) {}
 
   // The big free
   void releaseMemory() {

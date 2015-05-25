@@ -40,7 +40,7 @@ public:
   RTValue getValID() const;
   Type *getType() const;
   void setType(Type *T);
-  virtual Type *typeInfer(Context *K = nullptr) = 0;
+  virtual Type *typeInfer(Context *K) = 0;
   virtual llvm::Value *toLL(llvm::Module *M, Context *K) = 0;
   friend ostream &operator<<(ostream &Stream, const Value &V) {
     V.print(Stream);
@@ -62,7 +62,7 @@ public:
                              const std::string &N, const Type *T);
   void Profile(FoldingSetNodeID &ID);
   std::string getName();
-  Type *typeInfer(Context *K = nullptr);
+  Type *typeInfer(Context *K);
   llvm::Value *toLL(llvm::Module *M, Context *K);
   friend ostream &operator<<(ostream &Stream, const Symbol &S) {
     S.print(Stream);
@@ -79,7 +79,7 @@ public:
   static GlobalString *get(std::string Val, Context *K);
   static bool classof(const Value *V);
   std::string getVal();
-  Type *typeInfer(Context *K = nullptr);
+  Type *typeInfer(Context *K);
   llvm::Value *toLL(llvm::Module *M, Context *K);
   friend ostream &operator<<(ostream &Stream, const GlobalString &S) {
     S.print(Stream);
