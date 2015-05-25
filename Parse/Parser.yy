@@ -208,7 +208,7 @@ value_expr:
                 }
         |       rvalue[L] '+' rvalue[R]
                 {
-                  auto Op = AddInst::get(IntegerType::get(32, K), K);
+                  auto Op = AddInst::get(K);
                   Op->addOperand($L);
                   Op->addOperand($R);
                   $$ = Op;

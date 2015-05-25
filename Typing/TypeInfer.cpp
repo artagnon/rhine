@@ -40,10 +40,14 @@ Type *Function::typeInfer(Context *K) {
 }
 
 Type *AddInst::typeInfer(Context *K) {
-  auto LType = getOperand(0)->typeInfer(K);
-  if (getOperand(1)->typeInfer(K) != LType)
+  auto Operand0 = getOperand(0);
+  auto Operand1 = getOperand(1);
+  auto LType = Operand0->typeInfer(K);
+  if (Operand1->typeInfer(K) != LType)
     assert(0 && "AddInst with operands of different types");
-  return getType();
+  Operand0->setType(LType);
+  Operand1->setType(LType);
+  return LType;
 }
 
 Type *generalizedSymbolType(Type *Ty, std::string Name, Context *K) {
