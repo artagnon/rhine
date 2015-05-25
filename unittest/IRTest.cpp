@@ -79,11 +79,13 @@ TEST(IR, Comment) {
   EXPECT_TRANSFORM_PP(SourcePrg, ExpectedPP);
 }
 
-TEST(IR, DISABLED_TwoArguments)
+TEST(IR, TwoArguments)
 {
   std::string SourcePrg = "def foo [a ~Int b ~Int] a + b;";
   std::string ExpectedPP =
     "foo ~Fn(Int -> Int -> Int)\n"
+    "a ~Int\n"
+    "b ~Int\n"
     "+ ~Int\n"
     "a ~Int\n"
     "b ~Int";

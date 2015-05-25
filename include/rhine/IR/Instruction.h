@@ -42,8 +42,8 @@ protected:
 class AddInst : public Instruction {
 public:
   AddInst(Type *Ty) : Instruction(Ty, RT_AddInst) {}
-  static AddInst *get(Type *Ty, Context *K) {
-    return new (K->RhAllocator) AddInst(Ty);
+  static AddInst *get(Context *K) {
+    return new (K->RhAllocator) AddInst(UnType::get(K));
   }
   static bool classof(const Value *V) {
     return V->getValID() == RT_AddInst;
