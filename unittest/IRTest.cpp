@@ -12,7 +12,7 @@ void EXPECT_TRANSFORM_PP(std::string &SourcePrg, std::string &ExpectedPP)
 }
 
 TEST(IR, ConstantInt) {
-  std::string SourcePrg = "defun foo [] 3;";
+  std::string SourcePrg = "def foo [] 3;";
   std::string ExpectedPP =
     "foo ~Fn(VoidType -> Int)\n"
     "3 ~Int";
@@ -21,7 +21,7 @@ TEST(IR, ConstantInt) {
 
 TEST(IR, AddTwoInt)
 {
-  std::string SourcePrg = "defun foo [] 3 + 2;";
+  std::string SourcePrg = "def foo [] 3 + 2;";
   std::string ExpectedPP =
     "foo ~Fn(VoidType -> Int)\n"
     "+ ~Int\n"
@@ -32,7 +32,7 @@ TEST(IR, AddTwoInt)
 
 TEST(IR, ConstantString)
 {
-  std::string SourcePrg = "defun foo [] \"moo!\";";
+  std::string SourcePrg = "def foo [] \"moo!\";";
   std::string ExpectedPP =
     "foo ~Fn(VoidType -> String)\n"
     "\"moo!\" ~String\n";
@@ -41,7 +41,7 @@ TEST(IR, ConstantString)
 
 TEST(IR, TypePropagation)
 {
-  std::string SourcePrg = "defun id [var ~Int] var;\n";
+  std::string SourcePrg = "def id [var ~Int] var;\n";
   std::string ExpectedPP =
     "id ~Fn(Int -> Int)\n"
     "var ~Int\n"
@@ -50,7 +50,7 @@ TEST(IR, TypePropagation)
 }
 
 TEST(IR, BindInst) {
-  std::string SourcePrg = "defun bsym [] sym = 3;";
+  std::string SourcePrg = "def bsym [] sym = 3;";
   std::string ExpectedPP =
     "bsym ~Fn(VoidType -> VoidType)\n"
     "sym = 3 ~Int";
@@ -58,7 +58,7 @@ TEST(IR, BindInst) {
 }
 
 TEST(IR, BindPropagation) {
-  std::string SourcePrg = "defun bsym [] {"
+  std::string SourcePrg = "def bsym [] {"
     "sym = 3;\n"
     "sym;\n"
     "}";

@@ -15,7 +15,7 @@ void EXPECT_OUTPUT(std::string &SourcePrg, std::string &ExpectedOut)
 
 TEST(Execution, PrintfBasic) {
   std::string SourcePrg =
-    "defun main [] {\n"
+    "def main [] {\n"
     "  printf \"43\";\n"
     "}";
   std::string ExpectedOut = "43";
@@ -24,10 +24,10 @@ TEST(Execution, PrintfBasic) {
 
 TEST(Execution, FunctionArgument) {
   std::string SourcePrg =
-    "defun printid [var ~ String] {\n"
+    "def printid [var ~ String] {\n"
     "  printf var;\n"
     "}\n"
-    "defun main [] {\n"
+    "def main [] {\n"
     "  printid \"21\";\n"
     "}";
   std::string ExpectedOut = "21";
@@ -36,7 +36,7 @@ TEST(Execution, FunctionArgument) {
 
 TEST(Execution, MallocBasic) {
   std::string SourcePrg =
-    "defun main [] {\n"
+    "def main [] {\n"
     "  malloc 8;\n"
     "  printf \"3\";\n"
     "}";
@@ -46,10 +46,10 @@ TEST(Execution, MallocBasic) {
 
 TEST(Execution, FunctionPointer) {
   std::string SourcePrg =
-    "defun callee [] {\n"
+    "def callee [] {\n"
     "  3;\n"
     "}\n"
-    "defun main [] {\n"
+    "def main [] {\n"
     "  callee;\n"
     "}";
   std::string ExpectedOut = "";
@@ -58,7 +58,7 @@ TEST(Execution, FunctionPointer) {
 
 TEST(Execution, ExternalsFunctionPointer) {
   std::string SourcePrg =
-    "defun main [] {\n"
+    "def main [] {\n"
     "  malloc;\n"
     "}";
   std::string ExpectedOut = "";

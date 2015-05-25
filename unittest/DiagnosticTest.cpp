@@ -6,30 +6,30 @@ using namespace rhine;
 
 TEST(Diagnostic, BareDefun)
 {
-  std::string SourcePrg = "defun foo []";
-  std::string ExpectedErr = "string stream:1:13: error: syntax error";
+  std::string SourcePrg = "def foo []";
+  std::string ExpectedErr = "string stream:1:11: error: syntax error";
   EXPECT_DEATH(parseCodeGenString(SourcePrg), ExpectedErr);
 }
 
 TEST(Diagnostic, UnboundVariable)
 {
-  std::string SourcePrg = "defun unboundVar [] var ~Int;";
-  std::string ExpectedErr = "string stream:1:21: error: unbound symbol var";
+  std::string SourcePrg = "def unboundVar [] var ~Int;";
+  std::string ExpectedErr = "string stream:1:19: error: unbound symbol var";
   EXPECT_DEATH(parseCodeGenString(SourcePrg), ExpectedErr);
 }
 
 TEST(Diagnostic, UntypedVariable)
 {
-  std::string SourcePrg = "defun untypedVar [var] var;";
+  std::string SourcePrg = "def untypedVar [var] var;";
   std::string ExpectedErr =
-    "string stream:1:24: error: untyped symbol var";
+    "string stream:1:22: error: untyped symbol var";
   EXPECT_DEATH(parseCodeGenString(SourcePrg), ExpectedErr);
 }
 
 TEST(Diagnostic, NotAFunction)
 {
   std::string SourcePrg =
-    "defun main [] {\n"
+    "def main [] {\n"
     "  foo = 2;\n"
     "  foo 4;\n"
     "}\n";
@@ -41,7 +41,7 @@ TEST(Diagnostic, NotAFunction)
 TEST(Diagnostic, FunctionNotFound)
 {
   std::string SourcePrg =
-    "defun main [] {\n"
+    "def main [] {\n"
     "  bar 4;\n"
     "}\n";
   std::string ExpectedErr =
@@ -51,21 +51,21 @@ TEST(Diagnostic, FunctionNotFound)
 
 TEST(Diagnostic, BareDanglingBrace)
 {
-  std::string SourcePrg = "defun foo [] {";
-  std::string ExpectedErr = "string stream:1:15: error: syntax error";
+  std::string SourcePrg = "def foo [] {";
+  std::string ExpectedErr = "string stream:1:13: error: syntax error";
   EXPECT_DEATH(parseCodeGenString(SourcePrg), ExpectedErr);
 }
 
 TEST(Diagnostic, EmptyDefunBody)
 {
-  std::string SourcePrg = "defun foo [] {}";
-  std::string ExpectedErr = "string stream:1:15: error: syntax error";
+  std::string SourcePrg = "def foo [] {}";
+  std::string ExpectedErr = "string stream:1:13: error: syntax error";
   EXPECT_DEATH(parseCodeGenString(SourcePrg), ExpectedErr);
 }
 
 TEST(Diagnostic, DanglingBraceWithStatement)
 {
-  std::string SourcePrg = "defun foo [] { 3;";
-  std::string ExpectedErr = "string stream:1:18: error: syntax error";
+  std::string SourcePrg = "def foo [] { 3;";
+  std::string ExpectedErr = "string stream:1:16: error: syntax error";
   EXPECT_DEATH(parseCodeGenString(SourcePrg), ExpectedErr);
 }

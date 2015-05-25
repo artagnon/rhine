@@ -60,7 +60,7 @@ SPTAB   [ \t]+
     *string_buf_ptr++ = *yptr++;
 }
 
-"defun" { return T::DEFUN; }
+"def" { return T::DEF; }
 "if" { return T::IF; }
 "then" { return T::THEN; }
 "&&" { return T::AND; }
