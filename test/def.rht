@@ -1,5 +1,5 @@
-def test1 [b] b;
-def test2 [a b] a + b;
+def test1 [b ~Int] b;
+def test2 [a ~Int b ~Int] a + b;
 // def test3 [a b c] (if true (* a b c) []);
 def test4 [] 8;
 def main [] {

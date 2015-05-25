@@ -61,14 +61,14 @@ Type *AddInst::typeInfer(Context *K) {
     assert(0 && "AddInst with operands of different types");
   Operand0->setType(LType);
   Operand1->setType(LType);
-  setType(LType);
+  setType(FunctionType::get(LType, {LType, LType}, K));
   return LType;
 }
 
 Type *Symbol::typeInfer(Context *K) {
   if (auto Ty = Resolve::resolveSymbolTy(getName(), getType(), K)) {
     setType(Ty);
-    if (FunctionType::classof(Ty)) {
+    if (isa<FunctionType>(Ty)) {
       auto PTy = PointerType::get(Ty, K);
       K->addMapping(Name, PTy);
       return PTy;
@@ -84,8 +84,8 @@ Type *Symbol::typeInfer(Context *K) {
 }
 
 Type *CallInst::typeInfer(Context *K) {
-  if (auto GSymTy = Resolve::resolveSymbolTy(getName(), getType(), K)) {
-    if (auto Ty = dyn_cast<FunctionType>(GSymTy)) {
+  if (auto SymTy = Resolve::resolveSymbolTy(getName(), getType(), K)) {
+    if (auto Ty = dyn_cast<FunctionType>(SymTy)) {
       return Ty->getRTy();
     } else {
       K->DiagPrinter->errorReport(
@@ -100,7 +100,7 @@ Type *CallInst::typeInfer(Context *K) {
 
 Type *BindInst::typeInfer(Context *K) {
   Type *Ty = getVal()->typeInfer(K);
-  assert (!UnType::classof(Ty) && "Unable to type infer BindInst");
+  assert (!isa<UnType>(Ty) && "Unable to type infer BindInst");
   K->addMapping(getName(), Ty);
   return getType();
 }

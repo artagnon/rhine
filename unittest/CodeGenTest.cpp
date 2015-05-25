@@ -58,7 +58,7 @@ TEST(CodeGen, MultipleDefun)
 
 TEST(CodeGen, FunctionCall)
 {
-  std::string SourcePrg = "def foom [] printf \"43\";";
+  std::string SourcePrg = "def foom [] println '43';";
   std::string ExpectedPP =
     "call i32 (i8*, ...) @printf";
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
@@ -117,13 +117,13 @@ TEST(CodeGen, BindPropagation) {
 TEST(CodeGen, ExternalsCaching) {
   std::string SourcePrg =
     "def compside [] {"
-    "printf \"foom\";\n"
-    "printf \"baz\";\n"
+    "println 'foom';\n"
+    "println 'baz';\n"
     "}";
   std::string ExpectedPP =
-    "  %printf = call i32 (i8*, ...) @printf"
+    "  %println = call i32 (i8*, ...) @printf"
     "(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @0, i32 0, i32 0))\n"
-    "  %printf1 = call i32 (i8*, ...) @printf"
+    "  %println1 = call i32 (i8*, ...) @printf"
     "(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @1, i32 0, i32 0))";
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }

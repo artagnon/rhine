@@ -37,7 +37,7 @@ llvm::Type *FunctionType::toLL(llvm::Module *M, Context *K) {
   // TODO: Support variadic functiontype
   auto ATys = getATys();
   std::vector<llvm::Type *> ATyAr;
-  if (ATys.size() != 1 || !VoidType::classof(ATys[0]))
+  if (ATys.size() != 1 || !isa<VoidType>(ATys[0]))
     for (auto Ty: getATys())
       ATyAr.push_back(Ty->toLL(M, K));
   return llvm::FunctionType::get(getRTy()->toLL(M, K), ATyAr, false);

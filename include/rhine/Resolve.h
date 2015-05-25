@@ -10,7 +10,7 @@ namespace rhine {
 class Resolve {
 public:
   static class Type *resolveSymbolTy(std::string Name, class Type *Ty, Context *K) {
-    if (!UnType::classof(Ty))
+    if (!isa<UnType>(Ty))
       return Ty;
     if (auto Result = K->getMappingTy(Name)) {
       return Result;

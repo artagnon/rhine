@@ -15,7 +15,7 @@ Externals::Externals(Context *K) {
     FunctionType::get(StringType::get(K), {IntegerType::get(64, K)}, K);
 
   ExternalsMapping.insert(
-      std::make_pair("printf", ExternalsRef(PrintfTy, printf)));
+      std::make_pair("println", ExternalsRef(PrintfTy, printf)));
   ExternalsMapping.insert(
       std::make_pair("malloc", ExternalsRef(MallocTy, malloc)));
 }
