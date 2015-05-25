@@ -14,7 +14,7 @@ void EXPECT_PARSE_PP(std::string SourcePrg, std::string ExpectedPP)
 
 TEST(CodeGen, DefunStm)
 {
-  std::string SourcePrg = "defun foo [] 3 + 2;";
+  std::string SourcePrg = "def foo [] 3 + 2;";
   std::string ExpectedPP =
     "define i32 @foo() {\n"
     "entry:\n"
@@ -26,7 +26,7 @@ TEST(CodeGen, DefunStm)
 TEST(CodeGen, DefunCompoundStm)
 {
   std::string SourcePrg =
-    "defun foo []\n"
+    "def foo []\n"
     "{\n"
     "  3 + 2;\n"
     "  4 + 5;\n"
@@ -42,8 +42,8 @@ TEST(CodeGen, DefunCompoundStm)
 TEST(CodeGen, MultipleDefun)
 {
   std::string SourcePrg =
-    "defun foo [] 2;\n"
-    "defun bar [] 3;\n";
+    "def foo [] 2;\n"
+    "def bar [] 3;\n";
   std::string ExpectedPP =
     "define i32 @foo() {\n"
     "entry:\n"
@@ -58,7 +58,7 @@ TEST(CodeGen, MultipleDefun)
 
 TEST(CodeGen, FunctionCall)
 {
-  std::string SourcePrg = "defun foom [] printf \"43\";";
+  std::string SourcePrg = "def foom [] printf \"43\";";
   std::string ExpectedPP =
     "call i32 (i8*, ...) @printf";
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
@@ -67,7 +67,7 @@ TEST(CodeGen, FunctionCall)
 TEST(CodeGen, TypeAnnotation)
 {
   std::string SourcePrg =
-    "defun id [var ~Int] 0;\n";
+    "def id [var ~Int] 0;\n";
   std::string ExpectedPP =
     "define i32 @id(i32) {\n"
     "entry:\n"
@@ -79,7 +79,7 @@ TEST(CodeGen, TypeAnnotation)
 TEST(CodeGen, FunctionArgBinding)
 {
   std::string SourcePrg =
-    "defun id [var ~Int] var ~Int;\n";
+    "def id [var ~Int] var ~Int;\n";
   std::string ExpectedPP =
     "define i32 @id(i32) {\n"
     "entry:\n"
@@ -91,7 +91,7 @@ TEST(CodeGen, FunctionArgBinding)
 TEST(CodeGen, TypePropagation)
 {
   std::string SourcePrg =
-    "defun id [var ~Int] var;\n";
+    "def id [var ~Int] var;\n";
   std::string ExpectedPP =
     "define i32 @id(i32) {\n"
     "entry:\n"
@@ -102,7 +102,7 @@ TEST(CodeGen, TypePropagation)
 
 TEST(CodeGen, BindPropagation) {
   std::string SourcePrg =
-    "defun bsym [] {"
+    "def bsym [] {"
     "sym = 3;\n"
     "sym;\n"
     "}";
@@ -116,7 +116,7 @@ TEST(CodeGen, BindPropagation) {
 
 TEST(CodeGen, ExternalsCaching) {
   std::string SourcePrg =
-    "defun compside [] {"
+    "def compside [] {"
     "printf \"foom\";\n"
     "printf \"baz\";\n"
     "}";
@@ -131,7 +131,7 @@ TEST(CodeGen, ExternalsCaching) {
 TEST(CodeGen, VoidRepresentation)
 {
   std::string SourcePrg =
-    "defun id [] var = 3;\n";
+    "def id [] var = 3;\n";
   std::string ExpectedPP =
     "define void @id() {\n"
     "entry:\n"
@@ -142,7 +142,7 @@ TEST(CodeGen, VoidRepresentation)
 
 TEST(CodeGen, CallInstTyInfer) {
   std::string SourcePrg =
-    "defun mallocCall [] {\n"
+    "def mallocCall [] {\n"
     "  malloc 8;\n"
     "}";
   std::string ExpectedPP =
@@ -156,10 +156,10 @@ TEST(CodeGen, CallInstTyInfer) {
 
 TEST(CodeGen, FunctionPointer) {
   std::string SourcePrg =
-    "defun callee [] {\n"
+    "def callee [] {\n"
     "  3;\n"
     "}\n"
-    "defun caller [] {\n"
+    "def caller [] {\n"
     "  callee;\n"
     "}";
   std::string ExpectedPP =
@@ -172,7 +172,7 @@ TEST(CodeGen, FunctionPointer) {
 
 TEST(CodeGen, ExternalsFunctionPointer) {
   std::string SourcePrg =
-    "defun mallocRet [] {\n"
+    "def mallocRet [] {\n"
     "  malloc;\n"
     "}";
   std::string ExpectedPP =

@@ -36,7 +36,7 @@
 
 %start start
 
-%token                  DEFUN
+%token                  DEF
 %token                  IF
 %token                  THEN
 %token                  AND
@@ -51,7 +51,7 @@
 %token  <String>        STRING
 %type   <VarList>       argument_list
 %type   <StmList>       compound_stm stm_list single_stm
-%type   <Fcn>           fn_decl defun
+%type   <Fcn>           fn_decl def
 %type   <Value>         expression
 %type   <Value>         assign_expr
 %type   <Value>         rvalue
@@ -77,14 +77,14 @@ start:
 
 
 tlexpr:
-                defun[D]
+                def[D]
                 {
                   Driver->Root.M.appendFunction($D);
                 }
                 ;
 
 fn_decl:
-                DEFUN SYMBOL[N] '[' argument_list[A] ']' type_annotation[T]
+                DEF SYMBOL[N] '[' argument_list[A] ']' type_annotation[T]
                 {
                   std::vector<Type *> ATys;
                   for (auto Sym : *$A)
@@ -97,7 +97,7 @@ fn_decl:
                   Fn->setArgumentList(*$A);
                   $$ = Fn;
                 }
-        |       DEFUN SYMBOL[N] '[' ']' type_annotation[T]
+        |       DEF SYMBOL[N] '[' ']' type_annotation[T]
                 {
                   auto FTy = FunctionType::get($T, K);
                   FTy->setSourceLocation(@3);
@@ -107,7 +107,7 @@ fn_decl:
                   $$ = Fn;
                 }
                 ;
-defun:
+def:
                 fn_decl[F] compound_stm[L]
                 {
                   $F->setBody(*$L);
