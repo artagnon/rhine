@@ -28,7 +28,7 @@ TEST(Execution, FunctionArgument) {
     "  println var;\n"
     "}\n"
     "def main [] {\n"
-    "  printid \"21\";\n"
+    "  printid '21';\n"
     "}";
   std::string ExpectedOut = "21";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
@@ -38,7 +38,7 @@ TEST(Execution, MallocBasic) {
   std::string SourcePrg =
     "def main [] {\n"
     "  malloc 8;\n"
-    "  println \"3\";\n"
+    "  println '3';\n"
     "}";
   std::string ExpectedOut = "3";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
@@ -65,10 +65,19 @@ TEST(Execution, ExternalsFunctionPointer) {
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
 
-TEST(CodeGen, DollarOperator) {
+TEST(Execution, DollarOperator) {
   std::string SourcePrg =
     "def foo [x ~Int] '2';\n"
     "def main [] println $ foo 3;";
   std::string ExpectedOut = "2";
+  EXPECT_OUTPUT(SourcePrg, ExpectedOut);
+}
+
+TEST(Execution, DISABLED_TyCoerceIntToStr) {
+  std::string SourcePrg =
+    "def main [] {\n"
+    "  println 62;\n"
+    "}";
+  std::string ExpectedOut = "62";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }

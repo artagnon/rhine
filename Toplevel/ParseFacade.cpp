@@ -2,6 +2,7 @@
 #include "llvm/IR/Module.h"
 
 #include "rhine/IR.h"
+#include "rhine/TypeCoercion.h"
 #include "rhine/ParseDriver.h"
 
 #include <iostream>
@@ -50,6 +51,8 @@ std::string parseTransformIR(std::string PrgString,
   if (!Driver.parseString(PrgString))
     exit(1);
   Root.M.typeInfer(&Ctx);
+  auto TyCoerce = TypeCoercion(&Ctx);
+  TyCoerce.runOnModule(&Root.M);
   auto Ret = irToPP(&Root.M);
   Ctx.releaseMemory();
   return Ret;
@@ -66,6 +69,8 @@ std::string parseCodeGenString(std::string PrgString,
   if (!Driver.parseString(PrgString))
     exit(1);
   Root.M.typeInfer(&Ctx);
+  auto TyCoerce = TypeCoercion(&Ctx);
+  TyCoerce.runOnModule(&Root.M);
   Root.M.toLL(M, &Ctx);
   Ctx.releaseMemory();
   return llToPP(M);
@@ -86,6 +91,8 @@ void parseCodeGenFile(std::string Filename, llvm::Module *M, bool Debug) {
   if (!Driver.parseFile(Filename))
     exit(1);
   Root.M.typeInfer(&Ctx);
+  auto TyCoerce = TypeCoercion(&Ctx);
+  TyCoerce.runOnModule(&Root.M);
   Root.M.toLL(M, &Ctx);
   Ctx.releaseMemory();
   M->dump();

@@ -36,6 +36,13 @@ public:
   }
   void typeInfer(Context *K = nullptr);
   void toLL(llvm::Module *M, Context *K);
+  typedef std::vector<Function *>::iterator iterator;
+  iterator begin() {
+    return ContainedFs.begin();
+  }
+  iterator end() {
+    return ContainedFs.end();
+  }
 protected:
   virtual void print(std::ostream &Stream) const {
     for (auto F: ContainedFs)
