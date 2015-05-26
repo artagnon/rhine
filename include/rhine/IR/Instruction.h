@@ -29,6 +29,9 @@ public:
   std::vector<Value *> getOperands() {
     return OperandList;
   }
+  void setOperands(std::vector<Value *> Ops) {
+    OperandList = Ops;
+  }
   friend ostream &operator<<(ostream &Stream, const Instruction &I) {
     I.print(Stream);
     return Stream;

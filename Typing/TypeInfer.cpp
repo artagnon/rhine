@@ -26,12 +26,13 @@ void typeInferSymbolList(std::vector<Symbol *> V, Context *K) {
                  });
 }
 
-Type *typeInferValueList(std::vector<Value *> Val, Context *K) {
-  Type *LastTy;
-  for (auto V: Val) {
-    LastTy = V->typeInfer(K);
-  }
-  return LastTy;
+Type *typeInferValueList(std::vector<Value *> V, Context *K) {
+  std::transform(V.begin(), V.end(), V.begin(),
+                 [K](Value *L) -> Value * {
+                   L->typeInfer(K);
+                   return L;
+                 });
+  return V.back()->typeInfer(K);
 }
 
 Type *Lambda::typeInfer(Context *K) {
@@ -73,10 +74,8 @@ Type *Symbol::typeInfer(Context *K) {
       K->addMapping(Name, PTy);
       return PTy;
     }
-    else {
-      K->addMapping(Name, Ty);
-      return Ty;
-    }
+    K->addMapping(Name, Ty);
+    return Ty;
   }
   K->DiagPrinter->errorReport(
       SourceLoc, "untyped symbol " + Name);
@@ -86,12 +85,12 @@ Type *Symbol::typeInfer(Context *K) {
 Type *CallInst::typeInfer(Context *K) {
   if (auto SymTy = Resolve::resolveSymbolTy(getName(), getType(), K)) {
     if (auto Ty = dyn_cast<FunctionType>(SymTy)) {
+      setType(Ty);
       return Ty->getRTy();
-    } else {
-      K->DiagPrinter->errorReport(
-          SourceLoc, Name + " was not typed as a function");
-      exit(1);
     }
+    K->DiagPrinter->errorReport(
+        SourceLoc, Name + " was not typed as a function");
+    exit(1);
   }
   K->DiagPrinter->errorReport(
       SourceLoc, "untyped function " + Name);

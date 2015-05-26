@@ -9,9 +9,9 @@ using namespace llvm;
 
 namespace rhine {
 Externals::Externals(Context *K) {
-  auto PrintfTy =
+  PrintfTy =
     FunctionType::get(IntegerType::get(32, K), {StringType::get(K)}, K);
-  auto MallocTy =
+  MallocTy =
     FunctionType::get(StringType::get(K), {IntegerType::get(64, K)}, K);
 
   ExternalsMapping.insert(
