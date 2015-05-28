@@ -73,7 +73,7 @@ TEST(Execution, DollarOperator) {
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
 
-TEST(Execution, DISABLED_TyCoerceIntToStr) {
+TEST(Execution, TyCoerceIntToStr) {
   std::string SourcePrg =
     "def main [] {\n"
     "  println 62;\n"
