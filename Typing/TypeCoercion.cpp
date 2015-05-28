@@ -15,7 +15,13 @@ Value *TypeCoercion::convertValue(ConstantInt *I, StringType *) {
   return GlobalString::get(std::to_string(I->getVal()), K);
 }
 
-Value *TypeCoercion::convertValue(Value *V, Type *) {
+Value *TypeCoercion::convertValue(Value *V, Type *Ty) {
+  if (auto I = dyn_cast<ConstantInt>(V)) {
+    if (auto ITy = dyn_cast<IntegerType>(Ty))
+      return convertValue(I, ITy);
+    if (auto STy = dyn_cast<StringType>(Ty))
+      return convertValue(I, STy);
+  }
   return V;
 }
 
