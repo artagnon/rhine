@@ -91,3 +91,14 @@ TEST(IR, TwoArguments)
     "b ~Int";
   EXPECT_TRANSFORM_PP(SourcePrg, ExpectedPP);
 }
+
+TEST(IR, TypePropagationCallInst)
+{
+  std::string SourcePrg = "def id [var ~String] println var;\n";
+  std::string ExpectedPP =
+    "id ~Fn(String -> Int)\n"
+    "var ~String\n"
+    "println ~Fn(String -> Int)\n"
+    "var ~String\n";
+  EXPECT_TRANSFORM_PP(SourcePrg, ExpectedPP);
+}
