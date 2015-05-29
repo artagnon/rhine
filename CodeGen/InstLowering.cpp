@@ -30,26 +30,17 @@ llvm::Function *getCalleeFunction(std::string Name, location SourceLoc,
 }
 
 llvm::Value *CallInst::toLL(llvm::Module *M, Context *K) {
-  auto Callee = getCalleeFunction(getName(), getSourceLocation(), M, K);
-  auto Resolved = Resolve::resolveSymbolTy(getName(), getType(), K);
-  auto CalleeTy = cast<FunctionType>(Resolved);
+  auto Callee = getCalleeFunction(Name, SourceLoc, M, K);
 
   if (!getOperands().size())
-    return K->Builder->CreateCall(Callee, getName());
-
-  // HACK: Integer bitwidth refinement
-  auto Arg = getOperand(0);
-  if (IntegerType::classof(Arg->getType())) {
-    if (auto Ty = dyn_cast<IntegerType>(CalleeTy->getATy(0)))
-      Arg->setType(IntegerType::get(Ty->getBitwidth(), K));
-  }
+    return K->Builder->CreateCall(Callee, Name);
 
   // Prepare arguments to call
   std::vector<llvm::Value *> LLOps;
   for (auto Op: getOperands()) {
     LLOps.push_back(Op->toLL(M, K));
   }
-  return K->Builder->CreateCall(Callee, LLOps, getName());
+  return K->Builder->CreateCall(Callee, LLOps, Name);
 }
 
 llvm::Value *AddInst::toLL(llvm::Module *M, Context *K) {
