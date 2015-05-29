@@ -10,5 +10,5 @@ def main [] {
   println $ test1 55;
   println $ test2 55 66;
   // (println (test3 55 66 22));
-  println $ test4;
+  println $ test4 ();
 }

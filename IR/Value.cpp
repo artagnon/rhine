@@ -1,4 +1,5 @@
 #include "rhine/IR/Value.h"
+#include "rhine/IR/Constant.h"
 
 namespace rhine {
 
@@ -25,27 +26,11 @@ void Value::setType(Type *T) {
 Symbol::Symbol(std::string N, Type *T) : Value(T, RT_Symbol), Name(N) {}
 
 Symbol *Symbol::get(std::string N, Type *T, Context *K) {
-  FoldingSetNodeID ID;
-  void *IP;
-  Symbol::Profile(ID, N, T);
-  if (Symbol *S = K->SymbolCache.FindNodeOrInsertPos(ID, IP)) return S;
-  Symbol *S = new (K->RhAllocator) Symbol(N, T);
-  K->SymbolCache.InsertNode(S, IP);
-  return S;
+  return new (K->RhAllocator) Symbol(N, T);
 }
 
 bool Symbol::classof(const Value *V) {
   return V->getValID() == RT_Symbol;
-}
-
-inline void Symbol::Profile(FoldingSetNodeID &ID, const std::string &N,
-                            const Type *T) {
-  ID.AddString(N);
-  ID.AddPointer(T);
-}
-
-void Symbol::Profile(FoldingSetNodeID &ID) {
-  Profile(ID, Name, VTy);
 }
 
 std::string Symbol::getName() {
