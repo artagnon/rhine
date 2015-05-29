@@ -59,9 +59,6 @@ public:
   Symbol(std::string N, Type *T);
   static Symbol *get(std::string N, Type *T, Context *K);
   static bool classof(const Value *V);
-  static inline void Profile(FoldingSetNodeID &ID,
-                             const std::string &N, const Type *T);
-  void Profile(FoldingSetNodeID &ID);
   std::string getName();
   Type *typeInfer(Context *K);
   llvm::Value *toLL(llvm::Module *M, Context *K);

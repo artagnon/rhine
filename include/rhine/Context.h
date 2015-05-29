@@ -25,7 +25,6 @@ class Context {
 
 public:
   llvm::BumpPtrAllocator RhAllocator;
-  llvm::FoldingSet<class Symbol> SymbolCache;
   llvm::FoldingSet<class FunctionType> FTyCache;
   llvm::FoldingSet<class PointerType> PTyCache;
   llvm::FoldingSet<class IntegerType> ITyCache;
@@ -41,7 +40,6 @@ public:
   // The big free
   void releaseMemory() {
     RhAllocator.Reset();
-    SymbolCache.clear();
     FTyCache.clear();
     ITyCache.clear();
     SymbolMapping.clear();

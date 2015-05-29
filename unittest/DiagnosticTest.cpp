@@ -22,7 +22,7 @@ TEST(Diagnostic, UntypedVariable)
 {
   std::string SourcePrg = "def untypedVar [var] var;";
   std::string ExpectedErr =
-    "string stream:1:22: error: untyped symbol var";
+    "string stream:1:17: error: untyped symbol var";
   EXPECT_DEATH(parseCodeGenString(SourcePrg), ExpectedErr);
 }
 

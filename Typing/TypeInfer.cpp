@@ -18,25 +18,20 @@ Type *GlobalString::typeInfer(Context *K) {
   return getType();
 }
 
-void typeInferSymbolList(std::vector<Symbol *> V, Context *K) {
+template <typename T>
+Type *typeInferValueList(std::vector<T> V, Context *K) {
   std::transform(V.begin(), V.end(), V.begin(),
-                 [K](Symbol *S) -> Symbol * {
-                   S->typeInfer(K);
-                   return S;
-                 });
-}
-
-Type *typeInferValueList(std::vector<Value *> V, Context *K) {
-  std::transform(V.begin(), V.end(), V.begin(),
-                 [K](Value *L) -> Value * {
+                 [K](T L) -> T {
                    L->typeInfer(K);
                    return L;
                  });
+  if (!V.size())
+    return nullptr;
   return V.back()->typeInfer(K);
 }
 
 Type *Lambda::typeInfer(Context *K) {
-  typeInferSymbolList(getArguments(), K);
+  typeInferValueList(getArguments(), K);
   auto LastTy = typeInferValueList(getVal(), K);
   auto FTy = FunctionType::get(
       LastTy, cast<FunctionType>(getType())->getATys(), K);
@@ -45,29 +40,26 @@ Type *Lambda::typeInfer(Context *K) {
 }
 
 Type *Function::typeInfer(Context *K) {
-  typeInferSymbolList(getArguments(), K);
+  typeInferValueList(getArguments(), K);
   auto LastTy = typeInferValueList(getVal(), K);
   auto FTy = FunctionType::get(
       LastTy, cast<FunctionType>(getType())->getATys(), K);
   setType(FTy);
-  K->addMapping(getName(), FTy);
+  K->addMapping(Name, FTy);
   return FTy;
 }
 
 Type *AddInst::typeInfer(Context *K) {
-  auto Operand0 = getOperand(0);
-  auto Operand1 = getOperand(1);
-  auto LType = Operand0->typeInfer(K);
-  if (Operand1->typeInfer(K) != LType)
+  typeInferValueList(getOperands(), K);
+  auto LType = getOperand(0)->getType();
+  if (LType != getOperand(1)->getType())
     assert(0 && "AddInst with operands of different types");
-  Operand0->setType(LType);
-  Operand1->setType(LType);
   setType(FunctionType::get(LType, {LType, LType}, K));
   return LType;
 }
 
 Type *Symbol::typeInfer(Context *K) {
-  if (auto Ty = Resolve::resolveSymbolTy(getName(), getType(), K)) {
+  if (auto Ty = Resolve::resolveSymbolTy(Name, VTy, K)) {
     setType(Ty);
     if (isa<FunctionType>(Ty)) {
       auto PTy = PointerType::get(Ty, K);
@@ -83,7 +75,8 @@ Type *Symbol::typeInfer(Context *K) {
 }
 
 Type *CallInst::typeInfer(Context *K) {
-  if (auto SymTy = Resolve::resolveSymbolTy(getName(), getType(), K)) {
+  typeInferValueList(getOperands(), K);
+  if (auto SymTy = Resolve::resolveSymbolTy(Name, VTy, K)) {
     if (auto Ty = dyn_cast<FunctionType>(SymTy)) {
       setType(Ty);
       return Ty->getRTy();

@@ -11,16 +11,25 @@ Value *TypeCoercion::convertValue(ConstantInt *I, IntegerType *DestTy) {
   return I;
 }
 
-Value *TypeCoercion::convertValue(ConstantInt *I, StringType *) {
-  return GlobalString::get(std::to_string(I->getVal()), K);
+Value *TypeCoercion::convertValue(Value *V, StringType *) {
+  if (isa<StringType>(V->getType()))
+    return V;
+  if (auto I = dyn_cast<ConstantInt>(V))
+    return GlobalString::get(std::to_string(I->getVal()), K);
+  if (auto C = dyn_cast<CallInst>(V)) {
+    auto FTy = cast<FunctionType>(C->getType());
+    if (dyn_cast<StringType>(FTy->getRTy()))
+      return V;
+  }
+  assert(0 && "Unable to construct GlobalString");
 }
 
 Value *TypeCoercion::convertValue(Value *V, Type *Ty) {
+  if (auto STy = dyn_cast<StringType>(Ty))
+    return convertValue(V, STy);
   if (auto I = dyn_cast<ConstantInt>(V)) {
     if (auto ITy = dyn_cast<IntegerType>(Ty))
       return convertValue(I, ITy);
-    if (auto STy = dyn_cast<StringType>(Ty))
-      return convertValue(I, STy);
   }
   return V;
 }
@@ -36,7 +45,7 @@ void TypeCoercion::runOnFunction(Function *F) {
           auto SourceLoc = C->getSourceLocation();
           if (OpSize != ASize) {
             K->DiagPrinter->errorReport(
-                SourceLoc, "CallInst arguments size mismatch " +
+                SourceLoc, "CallInst arguments size mismatch: " +
                 std::to_string(OpSize) + " versus " + std::to_string(ASize));
             exit(1);
           }
