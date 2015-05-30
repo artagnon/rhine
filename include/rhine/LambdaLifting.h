@@ -9,7 +9,6 @@ class LambdaLifting {
   Context *K;
 public:
   LambdaLifting(Context *K) : K(K) {}
-  Function *functionFromLambda(Lambda *L);
   void runOnFunction(Function *F);
   void runOnModule(Module *M);
 };

@@ -229,7 +229,7 @@ value_expr:
                   Op->addOperand($E);
                   $$ = Op;
                 }
-        |       '\\' argument_list[A] ARROW compound_stm[C]
+        |       '\\' argument_list[A] ARROW compound_stm[B]
                 {
                   std::vector<Type *> ATys;
                   for (auto Sym : *$A)
@@ -238,6 +238,8 @@ value_expr:
                   FTy->setSourceLocation(@4);
                   auto Fn = Function::get(FTy, K);
                   Fn->setSourceLocation(@1);
+                  Fn->setArguments(*$A);
+                  Fn->setBody(*$B);
                   $$ = Fn;
                 }
                 ;

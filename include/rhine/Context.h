@@ -14,6 +14,11 @@
 #include "rhine/Diagnostic.h"
 
 namespace rhine {
+class FunctionType;
+class PointerType;
+class IntegerType;
+class Type;
+
 struct SymbolRef {
   class Type *Ty;
   llvm::Value *LLVal;
@@ -25,9 +30,9 @@ class Context {
 
 public:
   llvm::BumpPtrAllocator RhAllocator;
-  llvm::FoldingSet<class FunctionType> FTyCache;
-  llvm::FoldingSet<class PointerType> PTyCache;
-  llvm::FoldingSet<class IntegerType> ITyCache;
+  llvm::FoldingSet<FunctionType> FTyCache;
+  llvm::FoldingSet<PointerType> PTyCache;
+  llvm::FoldingSet<IntegerType> ITyCache;
   llvm::IRBuilder<> *Builder;
   DiagnosticPrinter *DiagPrinter;
   struct Externals *ExternalsCache;
@@ -45,14 +50,14 @@ public:
     SymbolMapping.clear();
   }
 
-  void addMapping(std::string S, class Type *Ty, llvm::Value *V = nullptr) {
+  void addMapping(std::string S, Type *Ty, llvm::Value *V = nullptr) {
     auto Ret = SymbolMapping.insert(std::make_pair(S, SymbolRef(Ty, V)));
     if (!Ret.second) {
       if (Ty) Ret.first->second.Ty = Ty;
       if (V) Ret.first->second.LLVal = V;
     }
   }
-  class Type *getMappingTy(std::string S) {
+  Type *getMappingTy(std::string S) {
     auto R = SymbolMapping.find(S);
     return R == SymbolMapping.end() ? nullptr : R->second.Ty;
   }

@@ -202,11 +202,18 @@ TEST(CodeGen, MultipleArguments)
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }
 
-TEST(CodeGen, DISABLED_Lambda)
+TEST(CodeGen, Lambda)
 {
   std::string SourcePrg =
-    "def foo [] b = \\x -> x;;";
+    "def foo [] b = \\x ~ Int -> x;;";
   std::string ExpectedPP =
-    "foom";
+    "define i32 @lambda(i32) {\n"
+    "entry:\n"
+    "  ret i32 %0\n"
+    "}\n\n"
+    "define void @foo() {\n"
+    "entry:\n"
+    "  ret void\n"
+    "}";
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }
