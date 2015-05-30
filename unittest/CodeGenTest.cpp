@@ -201,3 +201,12 @@ TEST(CodeGen, MultipleArguments)
     "}";
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }
+
+TEST(CodeGen, DISABLED_Lambda)
+{
+  std::string SourcePrg =
+    "def foo [] b = \\x -> x;;";
+  std::string ExpectedPP =
+    "foom";
+  EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
+}

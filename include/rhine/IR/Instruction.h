@@ -108,6 +108,9 @@ public:
   static bool classof(const Value *V) {
     return V->getValID() == RT_BindInst;
   }
+  void setVal(Value *V) {
+    Val = V;
+  }
   Value *getVal() {
     return Val;
   }

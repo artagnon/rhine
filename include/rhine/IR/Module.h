@@ -22,7 +22,12 @@ public:
     return new Module;
   }
   void appendFunction(Function *F) {
+    F->setParent(this);
     ContainedFs.push_back(F);
+  }
+  void insertFunction(std::vector<Function *>::iterator It, Function *F) {
+    F->setParent(this);
+    ContainedFs.insert(It, F);
   }
   std::vector<Function *> getVal() {
     return ContainedFs;

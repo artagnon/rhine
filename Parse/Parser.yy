@@ -229,9 +229,12 @@ value_expr:
                   Op->addOperand($E);
                   $$ = Op;
                 }
-        |       '\\' argument_list ARROW compound_stm[C]
+        |       '\\' argument_list[A] ARROW compound_stm[C]
                 {
-                  auto FTy = FunctionType::get(UnType::get(K), K);
+                  std::vector<Type *> ATys;
+                  for (auto Sym : *$A)
+                    ATys.push_back(Sym->getType());
+                  auto FTy = FunctionType::get(UnType::get(K), ATys, K);
                   FTy->setSourceLocation(@4);
                   auto Fn = Function::get(FTy, K);
                   Fn->setSourceLocation(@1);

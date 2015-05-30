@@ -2,6 +2,7 @@
 #include "llvm/IR/Module.h"
 
 #include "rhine/IR.h"
+#include "rhine/LambdaLifting.h"
 #include "rhine/TypeCoercion.h"
 #include "rhine/ParseDriver.h"
 
@@ -41,39 +42,74 @@ std::string llToPP(llvm::Module *M)
   return OutputStream.str();
 }
 
-std::string parseTransformIR(std::string PrgString,
-                             std::ostream &ErrStream,
-                             bool Debug)
+enum class ParseSource {
+  STRING,
+  FILE
+};
+
+enum class PostParseAction {
+  IR,
+  LL,
+  LLDUMP,
+};
+
+std::string parseAction(std::string PrgString,
+                        llvm::Module *M,
+                        std::ostream &ErrStream,
+                        bool Debug,
+                        ParseSource SrcE,
+                        PostParseAction ActionE)
 {
+  std::string Ret;
   rhine::PTree Root;
   rhine::Context Ctx(ErrStream);
   auto Driver = rhine::ParseDriver(Root, &Ctx, Debug);
-  if (!Driver.parseString(PrgString))
-    exit(1);
+  switch(SrcE) {
+  case ParseSource::STRING:
+    if (!Driver.parseString(PrgString))
+      exit(1);
+    break;
+  case ParseSource::FILE:
+    if (!Driver.parseFile(PrgString))
+      exit(1);
+    break;
+  }
+  auto LambLift = LambdaLifting(&Ctx);
+  LambLift.runOnModule(&Root.M);
   Root.M.typeInfer(&Ctx);
   auto TyCoerce = TypeCoercion(&Ctx);
   TyCoerce.runOnModule(&Root.M);
-  auto Ret = irToPP(&Root.M);
+  switch(ActionE) {
+  case PostParseAction::IR:
+    Ret = irToPP(&Root.M);
+    break;
+  case PostParseAction::LL:
+    Root.M.toLL(M, &Ctx);
+    Ret = llToPP(M);
+    break;
+  case PostParseAction::LLDUMP:
+    Root.M.toLL(M, &Ctx);
+    M->dump();
+    break;
+  }
   Ctx.releaseMemory();
   return Ret;
 }
 
+std::string parseTransformIR(std::string PrgString,
+                             std::ostream &ErrStream,
+                             bool Debug)
+{
+  return parseAction(PrgString, nullptr, ErrStream, Debug,
+                     ParseSource::STRING, PostParseAction::IR);
+}
 std::string parseCodeGenString(std::string PrgString,
                                llvm::Module *M,
                                std::ostream &ErrStream,
                                bool Debug)
 {
-  rhine::PTree Root;
-  rhine::Context Ctx(ErrStream);
-  auto Driver = rhine::ParseDriver(Root, &Ctx, Debug);
-  if (!Driver.parseString(PrgString))
-    exit(1);
-  Root.M.typeInfer(&Ctx);
-  auto TyCoerce = TypeCoercion(&Ctx);
-  TyCoerce.runOnModule(&Root.M);
-  Root.M.toLL(M, &Ctx);
-  Ctx.releaseMemory();
-  return llToPP(M);
+  return parseAction(PrgString, M, ErrStream, Debug,
+                     ParseSource::STRING, PostParseAction::LL);
 }
 
 std::string parseCodeGenString(std::string PrgString,
@@ -85,16 +121,7 @@ std::string parseCodeGenString(std::string PrgString,
 }
 
 void parseCodeGenFile(std::string Filename, llvm::Module *M, bool Debug) {
-  rhine::PTree Root;
-  rhine::Context Ctx;
-  auto Driver = rhine::ParseDriver(Root, &Ctx, Debug);
-  if (!Driver.parseFile(Filename))
-    exit(1);
-  Root.M.typeInfer(&Ctx);
-  auto TyCoerce = TypeCoercion(&Ctx);
-  TyCoerce.runOnModule(&Root.M);
-  Root.M.toLL(M, &Ctx);
-  Ctx.releaseMemory();
-  M->dump();
+  parseAction(Filename, M, std::cerr, Debug,
+              ParseSource::FILE, PostParseAction::LLDUMP);
 }
 }

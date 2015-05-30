@@ -16,6 +16,8 @@ using namespace std;
 using namespace llvm;
 
 namespace rhine {
+class Module;
+
 class Constant : public Value {
 public:
   Constant(Type *Ty, RTValue ID) : Value(Ty, ID) {}
@@ -153,16 +155,24 @@ protected:
       Stream << *V << std::endl;
   }
 };
+
 class Function : public Lambda {
+  Module *ParentModule;
   std::string Name;
 public:
   Function(FunctionType *FTy) :
-      Lambda(FTy, RT_Function) {}
+      Lambda(FTy, RT_Function), ParentModule(nullptr) {}
   static Function *get(FunctionType *FTy, Context *K) {
     return new (K->RhAllocator) Function(FTy);
   }
   static bool classof(const Value *V) {
     return V->getValID() == RT_Function;
+  }
+  void setParent(Module *Parent) {
+    ParentModule = Parent;
+  }
+  Module *getParent() {
+    return ParentModule;
   }
   void setName(std::string N) {
     Name = N;
