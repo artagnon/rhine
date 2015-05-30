@@ -39,7 +39,7 @@ public:
     M.print(Stream);
     return Stream;
   }
-  void typeInfer(Context *K = nullptr);
+  void typeInfer(Context *K);
   void toLL(llvm::Module *M, Context *K);
   typedef std::vector<Function *>::iterator iterator;
   iterator begin() {

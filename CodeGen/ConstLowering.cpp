@@ -52,8 +52,4 @@ llvm::Constant *Function::toLL(llvm::Module *M, Context *K) {
   K->Builder->CreateRet(LastLL);
   return TheFunction;
 }
-
-llvm::Constant *Lambda::toLL(llvm::Module *M, Context *K) {
-  assert(0 && "Lambdas should not be present after LambdaLifting");
-}
 }

@@ -30,18 +30,10 @@ Type *typeInferValueList(std::vector<T> V, Context *K) {
   return V.back()->typeInfer(K);
 }
 
-Type *Lambda::typeInfer(Context *K) {
-  typeInferValueList(getArguments(), K);
-  auto LastTy = typeInferValueList(getVal(), K);
-  auto FTy = FunctionType::get(
-      LastTy, cast<FunctionType>(getType())->getATys(), K);
-  setType(FTy);
-  return FTy;
-}
-
 Type *Function::typeInfer(Context *K) {
   typeInferValueList(getArguments(), K);
   auto LastTy = typeInferValueList(getVal(), K);
+  assert(LastTy && "Function has null body");
   auto FTy = FunctionType::get(
       LastTy, cast<FunctionType>(getType())->getATys(), K);
   setType(FTy);
@@ -52,8 +44,8 @@ Type *Function::typeInfer(Context *K) {
 Type *AddInst::typeInfer(Context *K) {
   typeInferValueList(getOperands(), K);
   auto LType = getOperand(0)->getType();
-  if (LType != getOperand(1)->getType())
-    assert(0 && "AddInst with operands of different types");
+  assert(LType == getOperand(1)->getType() &&
+         "AddInst with operands of different types");
   setType(FunctionType::get(LType, {LType, LType}, K));
   return LType;
 }
