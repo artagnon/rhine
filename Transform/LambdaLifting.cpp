@@ -1,5 +1,5 @@
 #include "rhine/IR.h"
-#include "rhine/LambdaLifting.h"
+#include "rhine/Transform/LambdaLifting.h"
 
 namespace rhine {
 void LambdaLifting::runOnFunction(Function *F) {

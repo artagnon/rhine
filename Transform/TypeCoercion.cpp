@@ -1,5 +1,5 @@
 #include "rhine/IR.h"
-#include "rhine/TypeCoercion.h"
+#include "rhine/Transform/TypeCoercion.h"
 
 namespace rhine {
 Value *TypeCoercion::convertValue(ConstantInt *I, IntegerType *DestTy) {

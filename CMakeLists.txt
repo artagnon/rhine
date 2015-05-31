@@ -7,7 +7,7 @@ set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/Modules")
 
 include_directories("${PROJECT_SOURCE_DIR}/include")
 add_subdirectory(Parse)
-add_subdirectory(Typing)
+add_subdirectory(Transform)
 add_subdirectory(IR)
 add_subdirectory(CodeGen)
 add_subdirectory(Toplevel)

@@ -2,9 +2,9 @@
 #include "llvm/IR/Module.h"
 
 #include "rhine/IR.h"
-#include "rhine/LambdaLifting.h"
-#include "rhine/TypeCoercion.h"
 #include "rhine/ParseDriver.h"
+#include "rhine/Transform/LambdaLifting.h"
+#include "rhine/Transform/TypeCoercion.h"
 
 #include <iostream>
 #include <string>
