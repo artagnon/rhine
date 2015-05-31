@@ -6,7 +6,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "rhine/ParseTree.h"
+#include "rhine/Parse/ParseTree.h"
 #include "rhine/Context.h"
 
 namespace rhine {

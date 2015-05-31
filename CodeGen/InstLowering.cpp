@@ -1,5 +1,4 @@
 #include "rhine/Context.h"
-#include "rhine/Resolve.h"
 #include "rhine/IR/Instruction.h"
 #include "rhine/Externals.h"
 

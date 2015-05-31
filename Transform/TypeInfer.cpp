@@ -1,5 +1,5 @@
 #include "rhine/IR.h"
-#include "rhine/Resolve.h"
+#include "rhine/Transform/Resolve.h"
 
 namespace rhine {
 Type *ConstantInt::typeInfer(Context *K) {

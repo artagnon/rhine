@@ -1,6 +1,6 @@
 #include "rhine/IR.h"
 #include "rhine/Support.h"
-#include "rhine/Toplevel.h"
+#include "rhine/Toplevel/Toplevel.h"
 #include "gtest/gtest.h"
 #include "gtest/internal/gtest-port.h"
 

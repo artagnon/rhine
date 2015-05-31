@@ -6,8 +6,8 @@
 #include <iomanip>
 #include <unistd.h>
 
-#include "rhine/ParseDriver.h"
-#include "rhine/Lexer.h"
+#include "rhine/Parse/ParseDriver.h"
+#include "rhine/Parse/Lexer.h"
 #include "Parser.hpp"
 
 namespace rhine {
