@@ -11,7 +11,8 @@ add_executable(UnitTest
   "${CMAKE_CURRENT_SOURCE_DIR}/DiagnosticTest.cpp")
 set_target_properties(UnitTest PROPERTIES
   LINKER_LANGUAGE CXX
-  COMPILE_FLAGS "${LLVM_CXXFLAGS}")
+  COMPILE_FLAGS "${LLVM_CXXFLAGS}"
+  RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
 target_link_libraries(UnitTest
   gtest_main
   CodeGen
