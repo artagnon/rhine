@@ -17,3 +17,5 @@ set_target_properties(IR PROPERTIES
 target_link_libraries(IR
   ${LLVM_LDFLAGS}
   ${LLVM_LIBRARIES})
+add_dependencies(IR
+  Parse)

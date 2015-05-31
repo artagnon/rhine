@@ -9,3 +9,5 @@ add_library(Diagnostic
 set_target_properties(Diagnostic PROPERTIES
   LINKER_LANGUAGE CXX
   COMPILE_FLAGS "${LLVM_CXXFLAGS}")
+add_dependencies(Diagnostic
+  Parse)
