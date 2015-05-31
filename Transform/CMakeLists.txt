@@ -5,7 +5,7 @@ add_library(Typing
   "${CMAKE_CURRENT_SOURCE_DIR}/TypeInfer.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/TypeCoercion.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/LambdaLifting.cpp"
-  "${PROJECT_SOURCE_DIR}/include/rhine/Resolve.h"
+  "${PROJECT_SOURCE_DIR}/include/rhine/Transform/Resolve.h"
   "${PROJECT_SOURCE_DIR}/include/rhine/Transform/TypeCoercion.h"
   "${PROJECT_SOURCE_DIR}/include/rhine/Transform/LambdaLifting.h"
   "${PROJECT_SOURCE_DIR}/include/rhine/Externals.h")

@@ -58,9 +58,9 @@
 %type   <Symbol>        typed_symbol lvalue
 
 %{
-#include "rhine/ParseDriver.h"
+#include "rhine/Parse/Lexer.h"
+#include "rhine/Parse/ParseDriver.h"
 #include "rhine/Diagnostic.h"
-#include "rhine/Lexer.h"
 
 #undef yylex
 #define yylex Driver->Lexx->lex

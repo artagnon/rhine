@@ -1,5 +1,5 @@
-#include "rhine/Toplevel.h"
-#include "rhine/ParseDriver.h"
+#include "rhine/Toplevel/Toplevel.h"
+#include "rhine/Parse/ParseDriver.h"
 #include "rhine/Externals.h"
 #include "rhine/Support.h"
 

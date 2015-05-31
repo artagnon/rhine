@@ -18,7 +18,10 @@ link_directories(${LLVM_LIBRARY_DIRS})
 add_library(Parse
   ${FLEX_Lexx_OUTPUTS}
   ${BISON_Parseyy_OUTPUTS}
-  "${CMAKE_CURRENT_SOURCE_DIR}/ParseDriver.cpp")
+  "${CMAKE_CURRENT_SOURCE_DIR}/ParseDriver.cpp"
+  "${PROJECT_SOURCE_DIR}/include/rhine/Parse/Lexer.h"
+  "${PROJECT_SOURCE_DIR}/include/rhine/Parse/ParseTree.h"
+  "${PROJECT_SOURCE_DIR}/include/rhine/Parse/ParseDriver.h")
 set_target_properties(Parse PROPERTIES
   LINKER_LANGUAGE CXX
   COMPILE_FLAGS "${LLVM_CXXFLAGS} -Wno-deprecated-register -Wno-sign-compare")

@@ -1,7 +1,7 @@
 /* -*- Bison -*- */
 %{
-#include "rhine/ParseDriver.h"
-#include "rhine/Lexer.h"
+#include "rhine/Parse/ParseDriver.h"
+#include "rhine/Parse/Lexer.h"
 
 #define YY_USER_ACTION yylloc->columns(yyleng);
 #define K Driver->Ctx

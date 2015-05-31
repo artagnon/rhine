@@ -1,10 +1,11 @@
-#include "llvm/Support/raw_ostream.h"
-#include "llvm/IR/Module.h"
-
-#include "rhine/IR.h"
-#include "rhine/ParseDriver.h"
+#include "rhine/Toplevel/ParseFacade.h"
+#include "rhine/Parse/ParseDriver.h"
 #include "rhine/Transform/LambdaLifting.h"
 #include "rhine/Transform/TypeCoercion.h"
+#include "rhine/IR.h"
+
+#include "llvm/Support/raw_ostream.h"
+#include "llvm/IR/Module.h"
 
 #include <iostream>
 #include <string>
@@ -41,17 +42,6 @@ std::string llToPP(llvm::Module *M)
   M->print(OutputStream, nullptr);
   return OutputStream.str();
 }
-
-enum class ParseSource {
-  STRING,
-  FILE
-};
-
-enum class PostParseAction {
-  IR,
-  LL,
-  LLDUMP,
-};
 
 std::string parseAction(std::string PrgString,
                         llvm::Module *M,
