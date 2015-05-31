@@ -4,6 +4,7 @@
 #include "rhine/Transform/TypeCoercion.h"
 #include "rhine/IR.h"
 
+#include "llvm/ExecutionEngine/ExecutionEngine.h"
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/IR/Module.h"
 
@@ -56,10 +57,14 @@ std::string ParseFacade::parseAction(ParseSource SrcE,
     Ret = irToPP(&Root.M);
     break;
   case PostParseAction::LL:
+    if (!M)
+      M = new llvm::Module("main", llvm::getGlobalContext());
     Root.M.toLL(M, &Ctx);
     Ret = llToPP(M);
     break;
   case PostParseAction::LLDUMP:
+    if (!M)
+      M = new llvm::Module("main", llvm::getGlobalContext());
     Root.M.toLL(M, &Ctx);
     M->dump();
     break;
@@ -68,25 +73,21 @@ std::string ParseFacade::parseAction(ParseSource SrcE,
   return Ret;
 }
 
-std::string parseCodeGenString(std::string PrgString,
-                               llvm::Module *M,
-                               std::ostream &ErrStream,
-                               bool Debug)
-{
-  auto Pf = ParseFacade(PrgString, M, ErrStream, Debug);
-  return Pf.parseAction(ParseSource::STRING, PostParseAction::LL);
-}
+MainFTy ParseFacade::jitAction(ParseSource SrcE, PostParseAction ActionE) {
+  LLVMInitializeNativeTarget();
+  LLVMInitializeNativeAsmPrinter();
 
-std::string parseCodeGenString(std::string PrgString,
-                               std::ostream &ErrStream,
-                               bool Debug)
-{
-  auto M = new llvm::Module("main", llvm::getGlobalContext());
-  return parseCodeGenString(PrgString, M, ErrStream, Debug);
-}
-
-void parseCodeGenFile(std::string Filename, llvm::Module *M, bool Debug) {
-  auto Pf = ParseFacade(Filename, M, std::cerr, Debug);
-  Pf.parseAction(ParseSource::FILE, PostParseAction::LLDUMP);
+  auto Owner = make_unique<llvm::Module>("main", llvm::getGlobalContext());
+  M = Owner.get();
+  parseAction(SrcE, ActionE);
+  auto EE = EngineBuilder(std::move(Owner)).create();
+  assert(EE && "Error creating MCJIT with EngineBuilder");
+  union {
+    uint64_t raw;
+    MainFTy usable;
+  } functionPointer;
+  functionPointer.raw = EE->getFunctionAddress("main");
+  assert(functionPointer.usable && "no main function found");
+  return functionPointer.usable;
 }
 }

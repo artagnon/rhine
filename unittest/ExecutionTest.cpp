@@ -1,12 +1,13 @@
-#include "rhine/IR.h"
-#include "rhine/Support.h"
-#include "rhine/Toplevel/Toplevel.h"
+#include "rhine/Toplevel/ParseFacade.h"
 #include "gtest/gtest.h"
 #include "gtest/internal/gtest-port.h"
 
+using namespace rhine;
+
 void EXPECT_OUTPUT(std::string &SourcePrg, std::string &ExpectedOut)
 {
-  auto Handle = rhine::jitFacade(SourcePrg, false, true);
+  auto Pf = ParseFacade(SourcePrg);
+  auto Handle = Pf.jitAction(ParseSource::STRING, PostParseAction::LL);
   testing::internal::CaptureStdout();
   Handle();
   std::string ActualOut = testing::internal::GetCapturedStdout();

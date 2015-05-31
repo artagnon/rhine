@@ -7,6 +7,8 @@
 
 #include "llvm/IR/Module.h"
 
+typedef int (*MainFTy)();
+
 namespace rhine {
 enum class ParseSource {
   STRING,
@@ -25,8 +27,8 @@ class ParseFacade {
   std::ostream &ErrStream;
   bool Debug;
 public:
-  ParseFacade(std::string &PrgString_, llvm::Module *M_,
-              std::ostream &ErrStream_ = std::cerr, bool Debug_ = false):
+  ParseFacade(std::string &PrgString_, std::ostream &ErrStream_ = std::cerr,
+              llvm::Module *M_ = nullptr, bool Debug_ = false):
       PrgString(PrgString_), M(M_), ErrStream(ErrStream_), Debug(Debug_) {}
 
   template <typename T>
@@ -36,6 +38,7 @@ public:
   std::string llToPP(T *Obj);
 
   std::string parseAction(ParseSource SrcE, PostParseAction ActionE);
+  MainFTy jitAction(ParseSource SrcE, PostParseAction ActionE);
 };
 }
 
