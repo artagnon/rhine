@@ -2,6 +2,12 @@
 #ifndef PARSEFACADE_H
 #define PARSEFACADE_H
 
+#include <string>
+#include <iostream>
+
+#include "llvm/IR/Module.h"
+
+namespace rhine {
 enum class ParseSource {
   STRING,
   FILE
@@ -13,6 +19,24 @@ enum class PostParseAction {
   LLDUMP,
 };
 
+class ParseFacade {
+  std::string &PrgString;
+  llvm::Module *M;
+  std::ostream &ErrStream;
+  bool Debug;
+public:
+  ParseFacade(std::string &PrgString_, llvm::Module *M_,
+              std::ostream &ErrStream_ = std::cerr, bool Debug_ = false):
+      PrgString(PrgString_), M(M_), ErrStream(ErrStream_), Debug(Debug_) {}
 
+  template <typename T>
+  std::string irToPP(T *Obj);
+
+  template <typename T>
+  std::string llToPP(T *Obj);
+
+  std::string parseAction(ParseSource SrcE, PostParseAction ActionE);
+};
+}
 
 #endif

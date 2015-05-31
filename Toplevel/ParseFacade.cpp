@@ -11,7 +11,8 @@
 #include <string>
 
 namespace rhine {
-std::string irToPP(Value *Obj)
+template <typename T>
+std::string ParseFacade::irToPP(T *Obj)
 {
   std::string Output;
   std::ostringstream OutputStream(Output);
@@ -19,36 +20,17 @@ std::string irToPP(Value *Obj)
   return OutputStream.str();
 }
 
-std::string irToPP(Module *M)
-{
-  std::string Output;
-  std::ostringstream OutputStream(Output);
-  OutputStream << *M;
-  return OutputStream.str();
-}
-
-std::string llToPP(llvm::Value *Obj)
+template <typename T>
+std::string ParseFacade::llToPP(T *Obj)
 {
   std::string Output;
   llvm::raw_string_ostream OutputStream(Output);
-  Obj->print(OutputStream);
+  Obj->print(OutputStream, nullptr);
   return OutputStream.str();
 }
 
-std::string llToPP(llvm::Module *M)
-{
-  std::string Output;
-  llvm::raw_string_ostream OutputStream(Output);
-  M->print(OutputStream, nullptr);
-  return OutputStream.str();
-}
-
-std::string parseAction(std::string PrgString,
-                        llvm::Module *M,
-                        std::ostream &ErrStream,
-                        bool Debug,
-                        ParseSource SrcE,
-                        PostParseAction ActionE)
+std::string ParseFacade::parseAction(ParseSource SrcE,
+                                     PostParseAction ActionE)
 {
   std::string Ret;
   rhine::PTree Root;
@@ -90,16 +72,16 @@ std::string parseTransformIR(std::string PrgString,
                              std::ostream &ErrStream,
                              bool Debug)
 {
-  return parseAction(PrgString, nullptr, ErrStream, Debug,
-                     ParseSource::STRING, PostParseAction::IR);
+  auto Pf = ParseFacade(PrgString, nullptr, ErrStream, Debug);
+  return Pf.parseAction(ParseSource::STRING, PostParseAction::IR);
 }
 std::string parseCodeGenString(std::string PrgString,
                                llvm::Module *M,
                                std::ostream &ErrStream,
                                bool Debug)
 {
-  return parseAction(PrgString, M, ErrStream, Debug,
-                     ParseSource::STRING, PostParseAction::LL);
+  auto Pf = ParseFacade(PrgString, M, ErrStream, Debug);
+  return Pf.parseAction(ParseSource::STRING, PostParseAction::LL);
 }
 
 std::string parseCodeGenString(std::string PrgString,
@@ -111,7 +93,7 @@ std::string parseCodeGenString(std::string PrgString,
 }
 
 void parseCodeGenFile(std::string Filename, llvm::Module *M, bool Debug) {
-  parseAction(Filename, M, std::cerr, Debug,
-              ParseSource::FILE, PostParseAction::LLDUMP);
+  auto Pf = ParseFacade(Filename, M, std::cerr, Debug);
+  Pf.parseAction(ParseSource::FILE, PostParseAction::LLDUMP);
 }
 }
