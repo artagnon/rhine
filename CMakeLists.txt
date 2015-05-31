@@ -17,7 +17,7 @@ add_subdirectory(gtest)
 add_subdirectory(unittest)
 
 add_custom_target(check
-  COMMAND "${PROJECT_BINARY_DIR}/UnitTest"
+  COMMAND "${PROJECT_BINARY_DIR}/unittest/UnitTest"
   COMMENT "Running unittests ..."
   DEPENDS CLI
   DEPENDS UnitTest)
