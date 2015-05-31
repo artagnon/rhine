@@ -1,4 +1,5 @@
 #include "rhine/Toplevel/Toplevel.h"
+#include "rhine/Toplevel/ParseFacade.h"
 #include "rhine/Parse/ParseDriver.h"
 #include "rhine/Externals.h"
 #include "rhine/Support.h"
@@ -31,10 +32,11 @@ MainFTy jitFacade(std::string InStr, bool Debug, bool IsStringStream) {
   LLVMInitializeNativeAsmPrinter();
 
   auto Owner = make_unique<llvm::Module>("main", llvm::getGlobalContext());
+  auto Pf = ParseFacade(InStr, Owner.get(), std::cerr, Debug);
   if (IsStringStream)
-    parseCodeGenString(InStr, Owner.get(), std::cerr, Debug);
+    Pf.parseAction(ParseSource::STRING, PostParseAction::LL);
   else
-    parseCodeGenFile(InStr, Owner.get(), Debug);
+    Pf.parseAction(ParseSource::FILE, PostParseAction::LLDUMP);
   auto EE = EngineBuilder(std::move(Owner)).create();
   assert(EE && "Error creating MCJIT with EngineBuilder");
   union {
