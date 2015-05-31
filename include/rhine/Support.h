@@ -11,14 +11,6 @@ namespace rhine {
 //===--------------------------------------------------------------------===//
 // Meant to be used by unittests.
 //===--------------------------------------------------------------------===//
-std::string irToPP (Value *V);
-std::string irToPP (Module *M);
-std::string llToPP (llvm::Value *Obj);
-std::string llToPP(llvm::Module *M);
-
-std::string parseTransformIR(std::string PrgString,
-                             std::ostream &ErrStream = std::cerr,
-                             bool Debug = false);
 std::string parseCodeGenString(std::string PrgString,
                                llvm::Module *M,
                                std::ostream &ErrStream = std::cerr,

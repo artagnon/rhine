@@ -68,13 +68,6 @@ std::string ParseFacade::parseAction(ParseSource SrcE,
   return Ret;
 }
 
-std::string parseTransformIR(std::string PrgString,
-                             std::ostream &ErrStream,
-                             bool Debug)
-{
-  auto Pf = ParseFacade(PrgString, nullptr, ErrStream, Debug);
-  return Pf.parseAction(ParseSource::STRING, PostParseAction::IR);
-}
 std::string parseCodeGenString(std::string PrgString,
                                llvm::Module *M,
                                std::ostream &ErrStream,
