@@ -1,11 +1,13 @@
-#include "rhine/IR.h"
-#include "rhine/Support.h"
+#include "rhine/Toplevel/ParseFacade.h"
 #include "gtest/gtest.h"
+
+using namespace rhine;
 
 void EXPECT_PARSE_PP(std::string SourcePrg, std::string ExpectedPP)
 {
   std::ostringstream Scratch;
-  auto Source = rhine::parseCodeGenString(SourcePrg, Scratch);
+  auto Pf = ParseFacade(SourcePrg, Scratch);
+  auto Source = Pf.parseAction(ParseSource::STRING, PostParseAction::LL);
   auto ActualErr = Scratch.str();
   ASSERT_STREQ("", ActualErr.c_str());
   EXPECT_PRED_FORMAT2(::testing::IsSubstring, ExpectedPP.c_str(),
