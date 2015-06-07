@@ -45,7 +45,7 @@ TEST(Execution, MallocBasic) {
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
 
-TEST(Execution, FunctionPointer) {
+TEST(Execution, BasicFunctionPointer) {
   std::string SourcePrg =
     "def callee [] {\n"
     "  3;\n"
@@ -80,5 +80,15 @@ TEST(Execution, TyCoerceIntToStr) {
     "  println 62;\n"
     "}";
   std::string ExpectedOut = "62";
+  EXPECT_OUTPUT(SourcePrg, ExpectedOut);
+}
+
+TEST(Execution, FunctionPointer)
+{
+  std::string SourcePrg =
+    "def bar [addfn ~Fn(Int -> Int -> Int)] addfn 2 4;\n"
+    "def addCandidate [a ~Int b ~Int] a + b;\n"
+    "def main [] bar addCandidate;";
+  std::string ExpectedOut = "";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }

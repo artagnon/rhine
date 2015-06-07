@@ -208,7 +208,7 @@ type_list:
                   TypeList->push_back($T);
                   $$ = TypeList;
                 }
-        |       type_list[L] type_lit[T]
+        |       type_list[L] ARROW type_lit[T]
                 {
                   $L->push_back($T);
                   $$ = $L;
