@@ -1,18 +1,7 @@
-#include "rhine/Toplevel/ParseFacade.h"
+#include "rhine/TestUtil.h"
 #include "gtest/gtest.h"
-#include "gtest/internal/gtest-port.h"
 
 using namespace rhine;
-
-void EXPECT_OUTPUT(std::string &SourcePrg, std::string &ExpectedOut)
-{
-  auto Pf = ParseFacade(SourcePrg);
-  auto Handle = Pf.jitAction(ParseSource::STRING, PostParseAction::LL);
-  testing::internal::CaptureStdout();
-  Handle();
-  std::string ActualOut = testing::internal::GetCapturedStdout();
-  EXPECT_STREQ(ExpectedOut.c_str(), ActualOut.c_str());
-}
 
 TEST(Execution, PrintfBasic) {
   std::string SourcePrg =
@@ -71,15 +60,6 @@ TEST(Execution, DollarOperator) {
     "def foo [x ~Int] '2';\n"
     "def main [] println $ foo 3;";
   std::string ExpectedOut = "2";
-  EXPECT_OUTPUT(SourcePrg, ExpectedOut);
-}
-
-TEST(Execution, TyCoerceIntToStr) {
-  std::string SourcePrg =
-    "def main [] {\n"
-    "  println 62;\n"
-    "}";
-  std::string ExpectedOut = "62";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
 

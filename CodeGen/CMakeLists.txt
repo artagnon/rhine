@@ -9,7 +9,6 @@ add_library(CodeGen
   "${CMAKE_CURRENT_SOURCE_DIR}/InstLowering.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ModuleLowering.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Externals.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/Intrinsic.cpp"
   "${PROJECT_SOURCE_DIR}/include/rhine/Externals.h"
   "${PROJECT_SOURCE_DIR}/include/rhine/IR/Type.h"
   "${PROJECT_SOURCE_DIR}/include/rhine/IR/Value.h"
