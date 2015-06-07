@@ -1,17 +1,7 @@
-#include "rhine/Toplevel/ParseFacade.h"
+#include "rhine/TestUtil.h"
 #include "gtest/gtest.h"
 
 using namespace rhine;
-
-void EXPECT_TRANSFORM_PP(std::string &SourcePrg, std::string &ExpectedPP)
-{
-  std::ostringstream Scratch;
-  auto Pf = ParseFacade(SourcePrg, Scratch);
-  auto Source = Pf.parseAction(ParseSource::STRING, PostParseAction::IR);
-  auto Err = Scratch.str();
-  EXPECT_PRED_FORMAT2(::testing::IsSubstring, ExpectedPP.c_str(),
-                      Source.c_str());
-}
 
 TEST(IR, ConstantInt) {
   std::string SourcePrg = "def foo [] 3;";

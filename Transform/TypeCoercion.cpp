@@ -22,6 +22,8 @@ Value *TypeCoercion::convertValue(Value *V, StringType *) {
     if (dyn_cast<StringType>(FTy->getRTy()))
       return V;
   }
+  // Finally, insert a toString
+
   assert(0 && "Unable to construct GlobalString");
 }
 
