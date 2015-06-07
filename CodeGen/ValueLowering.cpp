@@ -7,10 +7,8 @@ llvm::Value *Symbol::toLL(llvm::Module *M, Context *K) {
   auto Name = getName();
   if (auto Result = K->getMappingVal(Name)) {
     return Result;
-  } else if (auto FPtr = Externals::get(K)->getMappingVal(Name)) {
-    if (auto Result = FPtr(M, K)) {
+  } else if (auto Result = Externals::get(K)->getMappingVal(Name, M)) {
       return Result;
-    }
   }
   K->DiagPrinter->errorReport(
       SourceLoc, "unbound symbol " + Name);

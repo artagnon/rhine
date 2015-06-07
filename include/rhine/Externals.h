@@ -7,27 +7,32 @@
 #include "rhine/IR/Type.h"
 
 namespace rhine {
-typedef llvm::Constant *ExternalsFTy(llvm::Module *M, Context *K);
+struct Externals;
+
+typedef llvm::Constant *(Externals::*ExternalsFTy)(llvm::Module *M);
 
 struct ExternalsRef {
   PointerType *FTy;
-  ExternalsFTy *FGenerator;
-  ExternalsRef(PointerType *Ty, ExternalsFTy *H) : FTy(Ty), FGenerator(H) {}
+  ExternalsFTy FHandle;
+  ExternalsRef(PointerType *Ty, ExternalsFTy H) : FTy(Ty), FHandle(H) {}
 };
 
 struct Externals {
-  static FunctionType *PrintfTy;
-  static FunctionType *MallocTy;
-  static FunctionType *ToStringTy;
-  static ExternalsFTy printf;
-  static ExternalsFTy malloc;
-  static ExternalsFTy toString;
+  Context *K;
+  FunctionType *PrintfTy;
+  FunctionType *MallocTy;
+  FunctionType *ToStringTy;
+
+  llvm::Constant *printf(llvm::Module *M);
+  llvm::Constant *malloc(llvm::Module *M);
+  llvm::Constant *toString(llvm::Module *M);
+
   std::map<std::string, ExternalsRef> ExternalsMapping;
 
-  Externals(Context *K);
+  Externals(Context *K_);
   static Externals *get(Context *K);
   PointerType *getMappingTy(std::string S);
-  ExternalsFTy *getMappingVal(std::string S);
+  llvm::Constant *getMappingVal(std::string S, llvm::Module *M);
 };
 }
 

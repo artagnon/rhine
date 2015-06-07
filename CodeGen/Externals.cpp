@@ -5,14 +5,12 @@
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ExecutionEngine/MCJIT.h"
 
+#define THIS_FPTR(FPtr) ((this)->*(FPtr))
+
 using namespace llvm;
 
 namespace rhine {
-FunctionType *Externals::PrintfTy;
-FunctionType *Externals::MallocTy;
-FunctionType *Externals::ToStringTy;
-
-Externals::Externals(Context *K) {
+Externals::Externals(Context *K_) : K(K_) {
   PrintfTy =
     FunctionType::get(IntegerType::get(32, K), {StringType::get(K)}, true, K);
   MallocTy =
@@ -24,11 +22,11 @@ Externals::Externals(Context *K) {
   auto ToStringTyPtr = PointerType::get(ToStringTy, K);
 
   ExternalsMapping.insert(
-      std::make_pair("println", ExternalsRef(PrintfTyPtr, printf)));
+      std::make_pair("println", ExternalsRef(PrintfTyPtr, &Externals::printf)));
   ExternalsMapping.insert(
-      std::make_pair("malloc", ExternalsRef(MallocTyPtr, malloc)));
+      std::make_pair("malloc", ExternalsRef(MallocTyPtr, &Externals::malloc)));
   ExternalsMapping.insert(
-      std::make_pair("toString", ExternalsRef(ToStringTyPtr, toString)));
+      std::make_pair("toString", ExternalsRef(ToStringTyPtr, &Externals::toString)));
 }
 
 Externals *Externals::get(Context *K) {
@@ -42,12 +40,12 @@ PointerType *Externals::getMappingTy(std::string S) {
   return V == ExternalsMapping.end() ? nullptr : V->second.FTy;
 }
 
-ExternalsFTy *Externals::getMappingVal(std::string S) {
+llvm::Constant *Externals::getMappingVal(std::string S, llvm::Module *M) {
   auto V = ExternalsMapping.find(S);
-  return V == ExternalsMapping.end() ? nullptr : V->second.FGenerator;
+  return V == ExternalsMapping.end() ? nullptr : THIS_FPTR(V->second.FHandle)(M);
 }
 
-llvm::Constant *Externals::printf(llvm::Module *M, Context *K) {
+llvm::Constant *Externals::printf(llvm::Module *M) {
   // getOrInsertFunction::
   //
   // Look up the specified function in the module symbol table.
@@ -61,12 +59,12 @@ llvm::Constant *Externals::printf(llvm::Module *M, Context *K) {
   return M->getOrInsertFunction("printf", FTy);
 }
 
-llvm::Constant *Externals::malloc(llvm::Module *M, Context *K) {
+llvm::Constant *Externals::malloc(llvm::Module *M) {
   auto FTy = cast<llvm::FunctionType>(MallocTy->toLL(M, K));
   return M->getOrInsertFunction("malloc", FTy);
 }
 
-llvm::Constant *Externals::toString(llvm::Module *M, Context *K) {
+llvm::Constant *Externals::toString(llvm::Module *M) {
   auto FTy = cast<llvm::FunctionType>(ToStringTy->toLL(M, K));
   return M->getOrInsertFunction("std_toString_int", FTy);
 }

@@ -4,7 +4,7 @@
 
 namespace rhine {
 llvm::Value *getCalleeFunction(std::string Name, location SourceLoc,
-                                       llvm::Module *M, Context *K) {
+                               llvm::Module *M, Context *K) {
   if (auto Result = K->getMappingVal(Name)) {
     if (auto CalleeCandidate = dyn_cast<llvm::Function>(Result))
       return CalleeCandidate;
@@ -16,8 +16,8 @@ llvm::Value *getCalleeFunction(std::string Name, location SourceLoc,
           SourceLoc, Name + " was not declared as a function");
       exit(1);
     }
-  } else if (auto FPtr = Externals::get(K)->getMappingVal(Name)) {
-    if (auto CalleeCandidate = dyn_cast<llvm::Function>(FPtr(M, K)))
+  } else if (auto FCandidate = Externals::get(K)->getMappingVal(Name, M)) {
+    if (auto CalleeCandidate = dyn_cast<llvm::Function>(FCandidate))
       return CalleeCandidate;
     else {
       // Polymorphic externals?
