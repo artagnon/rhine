@@ -35,7 +35,7 @@ Type *Function::typeInfer(Context *K) {
   auto LastTy = typeInferValueList(getVal(), K);
   assert(LastTy && "Function has null body");
   auto FTy = FunctionType::get(
-      LastTy, cast<FunctionType>(getType())->getATys(), K);
+      LastTy, cast<FunctionType>(getType())->getATys(), false, K);
   auto PTy = PointerType::get(FTy, K);
   setType(FTy);
   K->addMapping(Name, PTy);
@@ -47,7 +47,7 @@ Type *AddInst::typeInfer(Context *K) {
   auto LType = getOperand(0)->getType();
   assert(LType == getOperand(1)->getType() &&
          "AddInst with operands of different types");
-  setType(FunctionType::get(LType, {LType, LType}, K));
+  setType(FunctionType::get(LType, {LType, LType}, false, K));
   return LType;
 }
 
