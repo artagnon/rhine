@@ -90,7 +90,7 @@ fn_decl:
                   std::vector<Type *> ATys;
                   for (auto Sym : *$A)
                     ATys.push_back(Sym->getType());
-                  auto FTy = FunctionType::get($T, ATys, K);
+                  auto FTy = FunctionType::get($T, ATys, false, K);
                   FTy->setSourceLocation(@4);
                   auto Fn = Function::get(FTy, K);
                   Fn->setSourceLocation(@1);
@@ -194,7 +194,7 @@ type_lit:
                 }
         |       TFUNCTION '(' type_list[A] ARROW type_lit[R] ')'
                 {
-                  auto FTy = FunctionType::get($R, *$A, K);
+                  auto FTy = FunctionType::get($R, *$A, false, K);
                   auto PTy = PointerType::get(FTy, K);
                   FTy->setSourceLocation(@1);
                   PTy->setSourceLocation(@1);
@@ -264,7 +264,7 @@ value_expr:
                   std::vector<Type *> ATys;
                   for (auto Sym : *$A)
                     ATys.push_back(Sym->getType());
-                  auto FTy = FunctionType::get(UnType::get(K), ATys, K);
+                  auto FTy = FunctionType::get(UnType::get(K), ATys, false, K);
                   FTy->setSourceLocation(@4);
                   auto Fn = Function::get(FTy, K);
                   Fn->setSourceLocation(@1);

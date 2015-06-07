@@ -199,58 +199,28 @@ protected:
 
 class FunctionType : public Type {
   Type *ReturnType;
+  bool IsVariadic;
   std::vector<Type *> ArgumentTypes;
 public:
-  FunctionType(Type *RTy, std::vector<Type *> ATys) :
-      Type(RT_FunctionType), ReturnType(RTy), ArgumentTypes(ATys) {}
-  static FunctionType *get(Type *RTy, std::vector<Type *> ATys, Context *K) {
-    FoldingSetNodeID ID;
-    void *IP;
-    FunctionType::Profile(ID, RTy, ATys);
-    if (auto FTy = K->FTyCache.FindNodeOrInsertPos(ID, IP))
-      return FTy;
-    FunctionType *FTy = new (K->RhAllocator) FunctionType(RTy, ATys);
-    K->FTyCache.InsertNode(FTy, IP);
-    return FTy;
-  }
-  static FunctionType *get(Type *RTy, Context *K) {
-    return FunctionType::get(RTy, { VoidType::get(K) }, K);
-  }
-  static bool classof(const Type *T) {
-    return T->getTyID() == RT_FunctionType;
-  }
+  FunctionType(Type *RTy, std::vector<Type *> ATys, bool IsV);
+  static FunctionType *get(Type *RTy, std::vector<Type *> ATys,
+                           bool IsV, Context *K);
+  static FunctionType *get(Type *RTy, Context *K);
+  static bool classof(const Type *T);
   static inline void Profile(FoldingSetNodeID &ID, const Type *RTy,
-                             const std::vector<Type *> ATys) {
-    ID.AddPointer(RTy);
-    for (auto &T: ATys)
-      ID.AddPointer(T);
-  }
-  void Profile(FoldingSetNodeID &ID) {
-    Profile(ID, ReturnType, ArgumentTypes);
-  }
-  Type *getATy(unsigned i) {
-    assert(i < ArgumentTypes.size() && "getATy() out of bounds");
-    return ArgumentTypes[i];
-  }
-  std::vector<Type *> getATys() {
-    return ArgumentTypes;
-  }
-  Type *getRTy() {
-    return ReturnType;
-  }
+                             const std::vector<Type *> ATys, bool IsV);
+  void Profile(FoldingSetNodeID &ID);
+  Type *getATy(unsigned i);
+  std::vector<Type *> getATys();
+  Type *getRTy();
+  bool isVariadic();
   friend ostream &operator<<(ostream &Stream, const FunctionType &T) {
     T.print(Stream);
     return Stream;
   }
   llvm::Type *toLL(llvm::Module *M, Context *K);
 protected:
-  virtual void print(std::ostream &Stream) const {
-    Stream << "Fn(" << *ArgumentTypes[0];
-    for (auto ATy = std::next(std::begin(ArgumentTypes));
-         ATy != std::end(ArgumentTypes); ++ATy)
-      Stream << " -> " << **ATy;
-    Stream << " -> " << *ReturnType << ")";
-  }
+  virtual void print(std::ostream &Stream) const;
 };
 
 class PointerType : public Type {

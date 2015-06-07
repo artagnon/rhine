@@ -10,11 +10,11 @@ using namespace llvm;
 namespace rhine {
 Externals::Externals(Context *K) {
   auto PrintfTy =
-    FunctionType::get(IntegerType::get(32, K), {StringType::get(K)}, K);
+    FunctionType::get(IntegerType::get(32, K), {StringType::get(K)}, true, K);
   auto MallocTy =
-    FunctionType::get(StringType::get(K), {IntegerType::get(64, K)}, K);
+    FunctionType::get(StringType::get(K), {IntegerType::get(64, K)}, false, K);
   auto ToStringTy =
-    FunctionType::get(StringType::get(K), {IntegerType::get(32, K)}, K);
+    FunctionType::get(StringType::get(K), {IntegerType::get(32, K)}, false, K);
   PrintfTyPtr = PointerType::get(PrintfTy, K);
   MallocTyPtr = PointerType::get(MallocTy, K);
   ToStringTyPtr = PointerType::get(ToStringTy, K);
