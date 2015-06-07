@@ -1,4 +1,5 @@
 #include "rhine/IR.h"
+#include "rhine/Externals.h"
 #include "rhine/Transform/TypeCoercion.h"
 
 namespace rhine {
@@ -22,9 +23,9 @@ Value *TypeCoercion::convertValue(Value *V, StringType *) {
     if (dyn_cast<StringType>(FTy->getRTy()))
       return V;
   }
-  // Finally, insert a toString
-
-  assert(0 && "Unable to construct GlobalString");
+  auto Op = CallInst::get("toString", K);
+  Op->addOperand(V);
+  return Op;
 }
 
 Value *TypeCoercion::convertValue(Value *V, Type *Ty) {
