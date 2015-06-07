@@ -13,13 +13,18 @@ Externals::Externals(Context *K) {
     FunctionType::get(IntegerType::get(32, K), {StringType::get(K)}, K);
   auto MallocTy =
     FunctionType::get(StringType::get(K), {IntegerType::get(64, K)}, K);
+  auto ToStringTy =
+    FunctionType::get(StringType::get(K), {IntegerType::get(32, K)}, K);
   PrintfTyPtr = PointerType::get(PrintfTy, K);
   MallocTyPtr = PointerType::get(MallocTy, K);
+  ToStringTyPtr = PointerType::get(ToStringTy, K);
 
   ExternalsMapping.insert(
       std::make_pair("println", ExternalsRef(PrintfTyPtr, printf)));
   ExternalsMapping.insert(
       std::make_pair("malloc", ExternalsRef(MallocTyPtr, malloc)));
+  ExternalsMapping.insert(
+      std::make_pair("toString", ExternalsRef(ToStringTyPtr, toString)));
 }
 
 Externals *Externals::get(Context *K) {
@@ -60,5 +65,26 @@ llvm::Constant *Externals::malloc(llvm::Module *M, Context *K) {
   llvm::FunctionType *malloc_type =
     llvm::FunctionType::get(K->Builder->getInt8PtrTy(), ArgTys, false);
   return M->getOrInsertFunction("malloc", malloc_type);
+}
+
+llvm::Constant *Externals::toString(llvm::Module *M, Context *K) {
+  auto ArgTys = llvm::ArrayRef<llvm::Type *>(K->Builder->getInt32Ty());
+  llvm::FunctionType *toString_type =
+    llvm::FunctionType::get(K->Builder->getInt8PtrTy(), ArgTys, false);
+  return M->getOrInsertFunction("std_toString_int", toString_type);
+}
+
+
+//===----------------------------------------------------------------------===//
+//
+// Intrinsics are declared here because they get blown away during link stage if
+// they're in another file.
+//
+//===----------------------------------------------------------------------===//
+extern "C" {
+  __attribute__((used, noinline))
+  const char *std_toString_int(int toConvert) {
+    return std::to_string(toConvert).c_str();
+  }
 }
 }

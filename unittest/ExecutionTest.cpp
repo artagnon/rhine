@@ -92,3 +92,11 @@ TEST(Execution, FunctionPointer)
   std::string ExpectedOut = "";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
+
+TEST(Execution, ToString)
+{
+  std::string SourcePrg =
+    "def main [] println $ toString 2;";
+  std::string ExpectedOut = "2";
+  EXPECT_OUTPUT(SourcePrg, ExpectedOut);
+}
