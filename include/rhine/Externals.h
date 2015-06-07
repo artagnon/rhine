@@ -18,9 +18,11 @@ struct ExternalsRef {
 struct Externals {
   static ExternalsFTy printf;
   static ExternalsFTy malloc;
+  static ExternalsFTy toString;
   std::map<std::string, ExternalsRef> ExternalsMapping;
   PointerType *PrintfTyPtr;
   PointerType *MallocTyPtr;
+  PointerType *ToStringTyPtr;
 
   Externals(Context *K);
   static Externals *get(Context *K);

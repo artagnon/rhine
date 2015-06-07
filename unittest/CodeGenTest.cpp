@@ -234,8 +234,17 @@ TEST(CodeGen, FunctionPointer)
 TEST(CodeGen, ArgumentTypesChaining)
 {
   std::string SourcePrg =
-    "def boom [addfn ~Fn(Int -> Int -> Int)] addfn 2 4;\n";
+    "def boom [addfn ~Fn(Int -> Int -> Int)] addfn 2 4;";
   std::string ExpectedPP =
     "define i32 @boom(i32 (i32, i32)*)";
+  EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
+}
+
+TEST(CodeGen, ToString)
+{
+  std::string SourcePrg =
+    "def main [] toString 2;";
+  std::string ExpectedPP =
+    "%toString = call i8* @std_toString_int(i32 2)";
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }
