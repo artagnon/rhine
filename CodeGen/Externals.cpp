@@ -9,15 +9,17 @@ using namespace llvm;
 
 namespace rhine {
 Externals::Externals(Context *K) {
-  PrintfTy =
+  auto PrintfTy =
     FunctionType::get(IntegerType::get(32, K), {StringType::get(K)}, K);
-  MallocTy =
+  auto MallocTy =
     FunctionType::get(StringType::get(K), {IntegerType::get(64, K)}, K);
+  PrintfTyPtr = PointerType::get(PrintfTy, K);
+  MallocTyPtr = PointerType::get(MallocTy, K);
 
   ExternalsMapping.insert(
-      std::make_pair("println", ExternalsRef(PrintfTy, printf)));
+      std::make_pair("println", ExternalsRef(PrintfTyPtr, printf)));
   ExternalsMapping.insert(
-      std::make_pair("malloc", ExternalsRef(MallocTy, malloc)));
+      std::make_pair("malloc", ExternalsRef(MallocTyPtr, malloc)));
 }
 
 Externals *Externals::get(Context *K) {
@@ -26,7 +28,7 @@ Externals *Externals::get(Context *K) {
   return K->ExternalsCache;
 }
 
-FunctionType *Externals::getMappingTy(std::string S) {
+PointerType *Externals::getMappingTy(std::string S) {
   auto V = ExternalsMapping.find(S);
   return V == ExternalsMapping.end() ? nullptr : V->second.FTy;
 }

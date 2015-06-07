@@ -17,7 +17,8 @@ Value *TypeCoercion::convertValue(Value *V, StringType *) {
   if (auto I = dyn_cast<ConstantInt>(V))
     return GlobalString::get(std::to_string(I->getVal()), K);
   if (auto C = dyn_cast<CallInst>(V)) {
-    auto FTy = cast<FunctionType>(C->getType());
+    auto PTy = cast<PointerType>(C->getType());
+    auto FTy = cast<FunctionType>(PTy->getCTy());
     if (dyn_cast<StringType>(FTy->getRTy()))
       return V;
   }
@@ -39,7 +40,13 @@ void TypeCoercion::runOnFunction(Function *F) {
       F->begin(), F->end(), F->begin(),
       [this](Value *V) -> Value * {
         if (auto C = dyn_cast<CallInst>(V)) {
-          auto FTy = cast<FunctionType>(C->getType());
+          FunctionType *FTy;
+          if (auto BareFTy = dyn_cast<FunctionType>(C->getType())) {
+            FTy = BareFTy;
+          } else {
+            auto PTy = cast<PointerType>(C->getType());
+            FTy = cast<FunctionType>(PTy->getCTy());
+          }
           auto OpSize = C->getOperands().size();
           auto ASize = FTy->getATys().size();
           auto SourceLoc = C->getSourceLocation();

@@ -36,9 +36,10 @@ Type *Function::typeInfer(Context *K) {
   assert(LastTy && "Function has null body");
   auto FTy = FunctionType::get(
       LastTy, cast<FunctionType>(getType())->getATys(), K);
+  auto PTy = PointerType::get(FTy, K);
   setType(FTy);
-  K->addMapping(Name, FTy);
-  return FTy;
+  K->addMapping(Name, PTy);
+  return PTy;
 }
 
 Type *AddInst::typeInfer(Context *K) {
@@ -53,11 +54,6 @@ Type *AddInst::typeInfer(Context *K) {
 Type *Symbol::typeInfer(Context *K) {
   if (auto Ty = Resolve::resolveSymbolTy(Name, VTy, K)) {
     setType(Ty);
-    if (isa<FunctionType>(Ty)) {
-      auto PTy = PointerType::get(Ty, K);
-      K->addMapping(Name, PTy);
-      return PTy;
-    }
     K->addMapping(Name, Ty);
     return Ty;
   }
@@ -69,9 +65,11 @@ Type *Symbol::typeInfer(Context *K) {
 Type *CallInst::typeInfer(Context *K) {
   typeInferValueList(getOperands(), K);
   if (auto SymTy = Resolve::resolveSymbolTy(Name, VTy, K)) {
-    if (auto Ty = dyn_cast<FunctionType>(SymTy)) {
-      setType(Ty);
-      return Ty->getRTy();
+    if (auto PTy = dyn_cast<PointerType>(SymTy)) {
+      if (auto Ty = dyn_cast<FunctionType>(PTy->getCTy())) {
+        setType(PTy);
+        return Ty->getRTy();
+      }
     }
     K->DiagPrinter->errorReport(
         SourceLoc, Name + " was not typed as a function");

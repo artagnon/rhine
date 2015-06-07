@@ -156,7 +156,7 @@ TEST(CodeGen, CallInstTyInfer) {
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }
 
-TEST(CodeGen, FunctionPointer) {
+TEST(CodeGen, BasicFunctionPointer) {
   std::string SourcePrg =
     "def callee [] {\n"
     "  3;\n"
@@ -216,6 +216,18 @@ TEST(CodeGen, Lambda)
     "define void @foo() {\n"
     "entry:\n"
     "  ret void\n"
+    "}";
+  EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
+}
+
+TEST(CodeGen, DISABLED_FunctionPointer)
+{
+  std::string SourcePrg =
+    "def bar [printfn ~Fn(String -> Int)] printfn '12';";
+  std::string ExpectedPP =
+    "define i32 @bar(i32) {\n"
+    "entry:\n"
+    "  ret i32 %0\n"
     "}";
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }
