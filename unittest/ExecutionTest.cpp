@@ -3,15 +3,6 @@
 
 using namespace rhine;
 
-TEST(Execution, PrintfBasic) {
-  std::string SourcePrg =
-    "def main [] {\n"
-    "  println \"43\";\n"
-    "}";
-  std::string ExpectedOut = "43";
-  EXPECT_OUTPUT(SourcePrg, ExpectedOut);
-}
-
 TEST(Execution, FunctionArgument) {
   std::string SourcePrg =
     "def printid [var ~ String] {\n"
@@ -21,16 +12,6 @@ TEST(Execution, FunctionArgument) {
     "  printid '21';\n"
     "}";
   std::string ExpectedOut = "21";
-  EXPECT_OUTPUT(SourcePrg, ExpectedOut);
-}
-
-TEST(Execution, MallocBasic) {
-  std::string SourcePrg =
-    "def main [] {\n"
-    "  malloc 8;\n"
-    "  println '3';\n"
-    "}";
-  std::string ExpectedOut = "3";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
 
