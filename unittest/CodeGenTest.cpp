@@ -220,14 +220,22 @@ TEST(CodeGen, Lambda)
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }
 
-TEST(CodeGen, DISABLED_FunctionPointer)
+TEST(CodeGen, FunctionPointer)
 {
   std::string SourcePrg =
     "def bar [printfn ~Fn(String -> Int)] printfn '12';";
   std::string ExpectedPP =
-    "define i32 @bar(i32) {\n"
+    "define i32 @bar(i32 (i8*)*) {\n"
     "entry:\n"
-    "  ret i32 %0\n"
-    "}";
+    "  %printfn = call i32 %0(i8* getelementptr";
+  EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
+}
+
+TEST(CodeGen, ArgumentTypesChaining)
+{
+  std::string SourcePrg =
+    "def boom [addfn ~Fn(Int -> Int -> Int)] addfn 2 4;\n";
+  std::string ExpectedPP =
+    "define i32 @boom(i32 (i32, i32)*)";
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }
