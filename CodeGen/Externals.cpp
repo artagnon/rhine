@@ -56,7 +56,7 @@ llvm::Constant *Externals::printf(llvm::Module *M) {
   // the function exists but has the wrong prototype: return the function with a
   // constantexpr cast to the right prototype.
   auto FTy = cast<llvm::FunctionType>(PrintfTy->toLL(M, K));
-  return M->getOrInsertFunction("printf", FTy);
+  return M->getOrInsertFunction("std_Void_print__String", FTy);
 }
 
 llvm::Constant *Externals::malloc(llvm::Module *M) {
@@ -66,20 +66,21 @@ llvm::Constant *Externals::malloc(llvm::Module *M) {
 
 llvm::Constant *Externals::toString(llvm::Module *M) {
   auto FTy = cast<llvm::FunctionType>(ToStringTy->toLL(M, K));
-  return M->getOrInsertFunction("std_toString_int", FTy);
+  return M->getOrInsertFunction("std_String_toString__Int", FTy);
 }
 
-
-//===----------------------------------------------------------------------===//
-//
-// Intrinsics are declared here because they get blown away during link stage if
-// they're in another file.
-//
-//===----------------------------------------------------------------------===//
 extern "C" {
   __attribute__((used, noinline))
-  const char *std_toString_int(int toConvert) {
+  const char *std_String_toString__Int(int toConvert) {
     return std::to_string(toConvert).c_str();
+  }
+  __attribute__((used, noinline))
+  void std_Void_print__String(const char *toPrint) {
+    std::cout << toPrint;
+  }
+  __attribute__((used, noinline))
+  void std_Void_println__String(const char *toPrint) {
+    std::cout << toPrint << std::endl;
   }
 }
 }
