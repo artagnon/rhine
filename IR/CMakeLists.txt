@@ -4,6 +4,7 @@ find_package(LLVM REQUIRED native mcjit)
 link_directories(${LLVM_LIBRARY_DIRS})
 add_library(IR
   "${CMAKE_CURRENT_SOURCE_DIR}/Value.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Type.cpp"
   "${PROJECT_SOURCE_DIR}/include/rhine/Context.h"
   "${PROJECT_SOURCE_DIR}/include/rhine/IR/Type.h"
   "${PROJECT_SOURCE_DIR}/include/rhine/IR/Value.h"

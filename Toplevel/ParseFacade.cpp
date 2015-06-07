@@ -39,12 +39,16 @@ std::string ParseFacade::parseAction(ParseSource SrcE,
   auto Driver = rhine::ParseDriver(Root, &Ctx, Debug);
   switch(SrcE) {
   case ParseSource::STRING:
-    if (!Driver.parseString(PrgString))
+    if (!Driver.parseString(PrgString)) {
+      std::cerr << "Could not parse string" << std::endl;
       exit(1);
+    }
     break;
   case ParseSource::FILE:
-    if (!Driver.parseFile(PrgString))
+    if (!Driver.parseFile(PrgString)) {
+      std::cerr << "Could not parse file" << std::endl;
       exit(1);
+    }
     break;
   }
   auto LambLift = LambdaLifting(&Ctx);

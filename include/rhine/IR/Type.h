@@ -38,19 +38,15 @@ protected:
   location SourceLoc;
 public:
   Type(RTType ID) : TyID(ID) {}
-  RTType getTyID() const { return TyID; }
+  RTType getTyID() const;
   static Type *get() = delete;
-  void setSourceLocation(location SrcLoc)
-  {
-    SourceLoc = SrcLoc;
-  }
-  location getSourceLocation() {
-    return SourceLoc;
-  }
+  void setSourceLocation(location SrcLoc);
+  location getSourceLocation();
   friend ostream &operator<<(ostream &Stream, const Type &T) {
     T.print(Stream);
     return Stream;
   }
+  void dump();
   virtual llvm::Type *toLL(llvm::Module *M, Context *K) = 0;
 protected:
   virtual void print(std::ostream &Stream) const = 0;
@@ -290,7 +286,7 @@ public:
   llvm::Type *toLL(llvm::Module *M, Context *K);
 protected:
   virtual void print(std::ostream &Stream) const {
-    Stream << "Pointer(" << *ContainedType << ")";
+    Stream << *ContainedType << "*";
   }
 };
 }

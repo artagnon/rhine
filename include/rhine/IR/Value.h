@@ -46,6 +46,7 @@ public:
     V.print(Stream);
     return Stream;
   }
+  void dump();
 protected:
   virtual void print(std::ostream &Stream) const = 0;
 private:

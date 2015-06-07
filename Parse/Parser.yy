@@ -32,6 +32,7 @@
   class Type *Type;
   std::vector<class Symbol *> *VarList;
   std::vector<class Value *> *ValueList;
+  std::vector<class Type *> *TypeList;
 }
 
 %start start
@@ -45,6 +46,7 @@
 %token                  TINT
 %token                  TBOOL
 %token                  TSTRING
+%token                  TFUNCTION
 %token                  END       0
 %token  <RawSymbol>     SYMBOL
 %token  <Integer>       INTEGER
@@ -54,7 +56,8 @@
 %type   <ValueList>     compound_stm stm_list single_stm rvalue_list
 %type   <Fcn>           fn_decl def
 %type   <Value>         expression assign_expr value_expr rvalue
-%type   <Type>          type_annotation
+%type   <Type>          type_annotation type_lit
+%type   <TypeList>      type_list
 %type   <Symbol>        typed_symbol lvalue
 
 %{
@@ -164,24 +167,51 @@ type_annotation:
                 {
                   $$ = UnType::get(K);
                 }
-        |       '~' TINT
+        |       '~' type_lit[T]
+                {
+                  $$ = $T;
+                }
+                ;
+type_lit:
+                TINT
                 {
                   auto ITy = IntegerType::get(32, K);
-                  ITy->setSourceLocation(@2);
+                  ITy->setSourceLocation(@1);
                   $$ = ITy;
                 }
-        |       '~' TBOOL
+        |       TBOOL
                 {
                   auto BTy = BoolType::get(K);
-                  BTy->setSourceLocation(@2);
+                  BTy->setSourceLocation(@1);
                   $$ = BTy;
                 }
                 ;
-        |       '~' TSTRING
+        |       TSTRING
                 {
                   auto STy = StringType::get(K);
-                  STy->setSourceLocation(@2);
+                  STy->setSourceLocation(@1);
                   $$ = STy;
+                }
+        |       TFUNCTION '(' type_list[A] ARROW type_lit[R] ')'
+                {
+                  auto FTy = FunctionType::get($R, *$A, K);
+                  auto PTy = PointerType::get(FTy, K);
+                  FTy->setSourceLocation(@1);
+                  PTy->setSourceLocation(@1);
+                  $$ = PTy;
+                }
+                ;
+type_list:
+                type_lit[T]
+                {
+                  auto TypeList = new (K->RhAllocator) std::vector<Type *>;
+                  TypeList->push_back($T);
+                  $$ = TypeList;
+                }
+        |       type_list[L] type_lit[T]
+                {
+                  $L->push_back($T);
+                  $$ = $L;
                 }
                 ;
 expression:

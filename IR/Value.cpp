@@ -1,5 +1,6 @@
 #include "rhine/IR/Value.h"
 #include "rhine/IR/Constant.h"
+#include <iostream>
 
 namespace rhine {
 
@@ -21,6 +22,11 @@ Type *Value::getType() const {
 
 void Value::setType(Type *T) {
   VTy = T;
+}
+
+__attribute__((used, noinline))
+void Value::dump() {
+  std::cout << *this << std::endl;
 }
 
 Symbol::Symbol(std::string N, Type *T) : Value(T, RT_Symbol), Name(N) {}
