@@ -16,13 +16,13 @@ struct ExternalsRef {
 };
 
 struct Externals {
+  static FunctionType *PrintfTy;
+  static FunctionType *MallocTy;
+  static FunctionType *ToStringTy;
   static ExternalsFTy printf;
   static ExternalsFTy malloc;
   static ExternalsFTy toString;
   std::map<std::string, ExternalsRef> ExternalsMapping;
-  PointerType *PrintfTyPtr;
-  PointerType *MallocTyPtr;
-  PointerType *ToStringTyPtr;
 
   Externals(Context *K);
   static Externals *get(Context *K);
