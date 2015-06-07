@@ -3,11 +3,11 @@
 
 using namespace rhine;
 
-TEST(Externals, PrintfCG)
+TEST(Externals, PrintCG)
 {
   std::string SourcePrg = "def foom [] println '43';";
   std::string ExpectedPP =
-    "call i32 (i8*, ...) @printf";
+    "call i32 (i8*, ...) @std_Void_print__String";
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }
 
@@ -28,14 +28,14 @@ TEST(Externals, ExternalsCaching) {
     "println 'baz';\n"
     "}";
   std::string ExpectedPP =
-    "  %println = call i32 (i8*, ...) @printf"
+    "  %println = call i32 (i8*, ...) @std_Void_print__String"
     "(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @0, i32 0, i32 0))\n"
-    "  %println1 = call i32 (i8*, ...) @printf"
+    "  %println1 = call i32 (i8*, ...) @std_Void_print__String"
     "(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @1, i32 0, i32 0))";
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }
 
-TEST(Externals, PrintfExec) {
+TEST(Externals, PrintExec) {
   std::string SourcePrg =
     "def main [] {\n"
     "  println '43';\n"
@@ -51,5 +51,14 @@ TEST(Externals, MallocExec) {
     "  println '3';\n"
     "}";
   std::string ExpectedOut = "3";
+  EXPECT_OUTPUT(SourcePrg, ExpectedOut);
+}
+
+TEST(Externals, PrintfPercentChars) {
+  std::string SourcePrg =
+    "def main [] {\n"
+    "  println '%43';\n"
+    "}";
+  std::string ExpectedOut = "%43";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
