@@ -88,9 +88,9 @@ TEST(IR, TypePropagationCallInst)
 {
   std::string SourcePrg = "def id [var ~String] println var;\n";
   std::string ExpectedPP =
-    "id ~Fn(String -> Int)\n"
+    "id ~Fn(String -> ())\n"
     "var ~String\n"
-    "println ~Fn(String -> Int)*\n"
+    "println ~Fn(String -> ())*\n"
     "var ~String\n";
   EXPECT_TRANSFORM_PP(SourcePrg, ExpectedPP);
 }

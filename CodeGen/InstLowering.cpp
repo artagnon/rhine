@@ -33,14 +33,24 @@ llvm::Value *getCalleeFunction(std::string Name, location SourceLoc,
 
 llvm::Value *CallInst::toLL(llvm::Module *M, Context *K) {
   auto Callee = getCalleeFunction(Name, SourceLoc, M, K);
+  auto RTy = cast<FunctionType>(cast<PointerType>(VTy)->getCTy())->getRTy();
 
-  if (!getOperands().size())
+  if (!getOperands().size()) {
+    if (isa<VoidType>(RTy)) {
+      K->Builder->CreateCall(Callee);
+      return nullptr;
+    }
     return K->Builder->CreateCall(Callee, Name);
+  }
 
   // Prepare arguments to call
   std::vector<llvm::Value *> LLOps;
   for (auto Op: getOperands()) {
     LLOps.push_back(Op->toLL(M, K));
+  }
+  if (isa<VoidType>(RTy)) {
+    K->Builder->CreateCall(Callee, LLOps);
+    return nullptr;
   }
   return K->Builder->CreateCall(Callee, LLOps, Name);
 }

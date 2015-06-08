@@ -11,18 +11,20 @@ using namespace llvm;
 
 namespace rhine {
 Externals::Externals(Context *K_) : K(K_) {
-  PrintfTy =
-    FunctionType::get(IntegerType::get(32, K), {StringType::get(K)}, true, K);
+  PrintTy =
+    FunctionType::get(VoidType::get(K), {StringType::get(K)}, true, K);
   MallocTy =
     FunctionType::get(StringType::get(K), {IntegerType::get(64, K)}, false, K);
   ToStringTy =
     FunctionType::get(StringType::get(K), {IntegerType::get(32, K)}, false, K);
-  auto PrintfTyPtr = PointerType::get(PrintfTy, K);
+  auto PrintTyPtr = PointerType::get(PrintTy, K);
   auto MallocTyPtr = PointerType::get(MallocTy, K);
   auto ToStringTyPtr = PointerType::get(ToStringTy, K);
 
   ExternalsMapping.insert(
-      std::make_pair("println", ExternalsRef(PrintfTyPtr, &Externals::printf)));
+      std::make_pair("print", ExternalsRef(PrintTyPtr, &Externals::print)));
+  ExternalsMapping.insert(
+      std::make_pair("println", ExternalsRef(PrintTyPtr, &Externals::println)));
   ExternalsMapping.insert(
       std::make_pair("malloc", ExternalsRef(MallocTyPtr, &Externals::malloc)));
   ExternalsMapping.insert(
@@ -45,7 +47,7 @@ llvm::Constant *Externals::getMappingVal(std::string S, llvm::Module *M) {
   return V == ExternalsMapping.end() ? nullptr : THIS_FPTR(V->second.FHandle)(M);
 }
 
-llvm::Constant *Externals::printf(llvm::Module *M) {
+llvm::Constant *Externals::print(llvm::Module *M) {
   // getOrInsertFunction::
   //
   // Look up the specified function in the module symbol table.
@@ -55,8 +57,13 @@ llvm::Constant *Externals::printf(llvm::Module *M) {
   // function has the correct prototype, return the existing function. 4. Finally,
   // the function exists but has the wrong prototype: return the function with a
   // constantexpr cast to the right prototype.
-  auto FTy = cast<llvm::FunctionType>(PrintfTy->toLL(M, K));
+  auto FTy = cast<llvm::FunctionType>(PrintTy->toLL(M, K));
   return M->getOrInsertFunction("std_Void_print__String", FTy);
+}
+
+llvm::Constant *Externals::println(llvm::Module *M) {
+  auto FTy = cast<llvm::FunctionType>(PrintTy->toLL(M, K));
+  return M->getOrInsertFunction("std_Void_println__String", FTy);
 }
 
 llvm::Constant *Externals::malloc(llvm::Module *M) {

@@ -19,11 +19,12 @@ struct ExternalsRef {
 
 struct Externals {
   Context *K;
-  FunctionType *PrintfTy;
+  FunctionType *PrintTy;
   FunctionType *MallocTy;
   FunctionType *ToStringTy;
 
-  llvm::Constant *printf(llvm::Module *M);
+  llvm::Constant *print(llvm::Module *M);
+  llvm::Constant *println(llvm::Module *M);
   llvm::Constant *malloc(llvm::Module *M);
   llvm::Constant *toString(llvm::Module *M);
 
