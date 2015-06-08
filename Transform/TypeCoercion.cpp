@@ -23,7 +23,9 @@ Value *TypeCoercion::convertValue(Value *V, StringType *) {
     if (dyn_cast<StringType>(FTy->getRTy()))
       return V;
   }
-  auto Op = CallInst::get("toString", K);
+  auto toStringF = "toString";
+  auto Op = CallInst::get(toStringF, K);
+  Op->setType(Externals::get(K)->getMappingTy(toStringF));
   Op->addOperand(V);
   return Op;
 }

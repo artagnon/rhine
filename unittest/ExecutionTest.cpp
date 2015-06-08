@@ -6,7 +6,7 @@ using namespace rhine;
 TEST(Execution, FunctionArgument) {
   std::string SourcePrg =
     "def printid [var ~ String] {\n"
-    "  println var;\n"
+    "  print var;\n"
     "}\n"
     "def main [] {\n"
     "  printid '21';\n"
@@ -39,7 +39,7 @@ TEST(Execution, ExternalsFunctionPointer) {
 TEST(Execution, DollarOperator) {
   std::string SourcePrg =
     "def foo [x ~Int] '2';\n"
-    "def main [] println $ foo 3;";
+    "def main [] print $ foo 3;";
   std::string ExpectedOut = "2";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
@@ -57,7 +57,7 @@ TEST(Execution, FunctionPointer)
 TEST(Execution, ToString)
 {
   std::string SourcePrg =
-    "def main [] println $ toString 2;";
+    "def main [] print $ toString 2;";
   std::string ExpectedOut = "2";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }

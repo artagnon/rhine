@@ -244,6 +244,12 @@ value_expr:
                   Op->addOperand($R);
                   $$ = Op;
                 }
+        |       typed_symbol[S] '(' ')'
+                {
+                  auto CInst = CallInst::get($S->getName(), K);
+                  CInst->setSourceLocation(@1);
+                  $$ = CInst;
+                }
         |       typed_symbol[S] rvalue_list[L]
                 {
                   auto CInst = CallInst::get($S->getName(), K);

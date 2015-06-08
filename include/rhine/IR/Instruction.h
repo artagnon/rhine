@@ -67,10 +67,12 @@ protected:
 
 class CallInst : public Instruction {
   std::string Name;
+  std::string CallName;
 public:
   // We never know the type before looking up the symbol
   CallInst(std::string FunctionName, Type *Ty) :
-      Instruction(Ty, RT_CallInst), Name(FunctionName) {}
+      Instruction(Ty, RT_CallInst), Name(FunctionName),
+      CallName(FunctionName) {}
   static CallInst *get(std::string FunctionName, Context *K) {
     return new (K->RhAllocator) CallInst(FunctionName, UnType::get(K));
   }
