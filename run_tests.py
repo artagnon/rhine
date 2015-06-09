@@ -12,7 +12,7 @@ class colors:
 
 def get_test_files():
     filelist = []
-    for (dirpath, dirnames, filenames) in walk("tests/"):
+    for (dirpath, dirnames, filenames) in walk("test/"):
         filelist.extend(filenames)
     return filelist
 
@@ -33,7 +33,7 @@ def run():
         if filename.startswith("output.") or not filename.endswith(".rht"):
             no_tests -= 1
             continue
-        contents = open("tests/"+filename).read().split("---")
+        contents = open("test/"+filename).read().split("---")
         test_input = contents[0].strip()
         expected_output = "---".join(contents[1:]).strip()
 
@@ -45,15 +45,15 @@ def run():
         if stderr.find(expected_output) >= 0 or stdout.find(expected_output) >= 0:
             no_successes += 1
             try:
-                unlink('tests/output.'+filename)
+                unlink('test/output.'+filename)
             except OSError:
                 pass
             print "%s %s: SUCCESS%s" % (colors.OK, filename, colors.END)
         else:
-            f = open('tests/output.'+filename,'w')
+            f = open('test/output.'+filename,'w')
             f.write(stdout+stderr)
             f.close()
-            print "%s %s: FAILED (output written to tests/)" % (colors.FAIL, filename)
+            print "%s %s: FAILED (output written to test/)" % (colors.FAIL, filename)
 
     if no_successes == no_tests:
         print colors.OK

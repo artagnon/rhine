@@ -79,7 +79,8 @@ llvm::Constant *Externals::toString(llvm::Module *M) {
 extern "C" {
   __attribute__((used, noinline))
   const char *std_String_toString__Int(int toConvert) {
-    return std::to_string(toConvert).c_str();
+    auto newString = new std::string(std::to_string(toConvert));
+    return newString->c_str();
   }
   __attribute__((used, noinline))
   void std_Void_print__String(const char *toPrint) {
