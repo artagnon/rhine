@@ -10,3 +10,7 @@ def main [] {
   println $ test3 ();
   0;
 }
+--
+55
+61
+8
