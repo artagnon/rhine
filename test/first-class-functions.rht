@@ -1,0 +1,13 @@
+def foo [f] {
+  f println;
+}
+
+def bar [f] {
+  f 5;
+}
+
+def main [] {
+  foo bar;
+}
+--
+5

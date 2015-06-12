@@ -7,8 +7,9 @@
 using namespace llvm;
 
 namespace rhine {
-MainFTy jitFacade(std::string InStr, bool Debug) {
+MainFTy jitFacade(std::string InStr, bool Debug, bool IsStream) {
   auto Pf = ParseFacade(InStr, std::cerr, nullptr, Debug);
-  return Pf.jitAction(ParseSource::FILE, PostParseAction::LLDUMP);
+  return Pf.jitAction(IsStream ? ParseSource::STRING : ParseSource::FILE,
+                      PostParseAction::LLDUMP);
 }
 }

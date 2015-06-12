@@ -9,7 +9,7 @@
 typedef int (*MainFTy)();
 
 namespace rhine {
-MainFTy jitFacade(std::string InStr, bool Debug);
+MainFTy jitFacade(std::string InStr, bool Debug, bool IsStream = false);
 }
 
 #endif
