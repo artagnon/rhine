@@ -17,7 +17,7 @@ def get_test_files():
     return filelist
 
 def run():
-    stdlib = open("stdlib.rh").read()
+    stdlib = ""
     tests = get_test_files()
     no_tests = len(tests)
     no_successes = 0
@@ -33,16 +33,12 @@ def run():
         if filename.startswith("output.") or not filename.endswith(".rht"):
             no_tests -= 1
             continue
-        contents = open("test/"+filename).read().split("---")
-        test_input = contents[0].strip()
-        expected_output = "---".join(contents[1:]).strip()
-
-        p = Popen(["../rhine-build/Rhine", "-"], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+        test_input, expected_output = open("test/"+filename).read().split("--")
+        expected_output = expected_output.strip()
+        p = Popen(["../rhine-build/Rhine", "--stdin"], stdin=PIPE, stdout=PIPE, stderr=PIPE)
         stdout, stderr = p.communicate(stdlib+"\n"+test_input)
-        stdout = stdout
-        stderr = stderr
 
-        if stderr.find(expected_output) >= 0 or stdout.find(expected_output) >= 0:
+        if stdout.find(expected_output) >= 0:
             no_successes += 1
             try:
                 unlink('test/output.'+filename)

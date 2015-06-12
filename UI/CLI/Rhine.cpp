@@ -6,6 +6,7 @@
 enum OptionIndex {
   UNKNOWN,
   DEBUG,
+  STDIN,
   HELP
 };
 
@@ -15,6 +16,8 @@ const option::Descriptor Usage[] =
      "USAGE: Rhine [options] <filename>\n\nOptions:"},
     {DEBUG, 0, "", "debug", option::Arg::None,
      " --debug  \tDebug lexer and parser"},
+    {STDIN, 0, "", "stdin", option::Arg::None,
+     " --stdin  \tRead input from stdin"},
     {HELP, 0, "", "help", option::Arg::None,
      " --help  \tPrint usage and exit"},
     {}
@@ -30,16 +33,27 @@ int main(int argc, char *argv[]) {
   if (Parse.error())
     return 128;
 
-  if (Options[HELP]) {
-    option::printUsage(std::cout, Usage);
-    return 0;
-  }
-
   for (option::Option *Opt = Options[UNKNOWN]; Opt; Opt = Opt->next())
     std::cout << "Unknown options: " <<
       std::string(Opt->name, Opt->namelen) << std::endl;
   if (Options[UNKNOWN])
     return 128;
+
+  if (Options[HELP]) {
+    option::printUsage(std::cout, Usage);
+    return 0;
+  }
+
+  if (Options[STDIN]) {
+    std::string Input;
+    for (std::string Line; std::getline(std::cin, Line);)
+      Input += Line;
+    auto FHandle = rhine::jitFacade(Input, Options[DEBUG], true);
+    delete Options;
+    delete Buffer;
+    FHandle();
+    return 0;
+  }
 
   if (Parse.nonOptionsCount() != 1) {
     option::printUsage(std::cout, Usage);
