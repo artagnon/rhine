@@ -37,16 +37,8 @@
 
 %start start
 
-%token                  DEF
-%token                  IF
-%token                  THEN
-%token                  AND
-%token                  OR
-%token                  ARROW
-%token                  TINT
-%token                  TBOOL
-%token                  TSTRING
-%token                  TFUNCTION
+%token                  DEF IF THEN AND OR ARROW
+%token                  TINT TBOOL TSTRING TFUNCTION
 %token                  END       0
 %token  <RawSymbol>     SYMBOL
 %token  <Integer>       INTEGER
@@ -54,6 +46,7 @@
 %token  <String>        STRING
 %type   <VarList>       argument_list
 %type   <ValueList>     compound_stm stm_list single_stm rvalue_list
+%type   <ValueList>     compound_stm_nonterminating single_stm_nonterminating
 %type   <Fcn>           fn_decl def
 %type   <Value>         expression assign_expr value_expr rvalue
 %type   <Type>          type_annotation type_lit
@@ -124,6 +117,16 @@ compound_stm:
                 {
                   $$ = $L;
                 }
+compound_stm_nonterminating:
+                '{' stm_list[L] '}'
+                {
+                  $$ = $L;
+                }
+        |       single_stm_nonterminating[L]
+                {
+                  $$ = $L;
+                }
+                ;
 stm_list:
                 single_stm[L]
                 {
@@ -135,12 +138,17 @@ stm_list:
                   $$ = $L;
                 }
                 ;
-single_stm:
-                expression[E] ';'
+single_stm_nonterminating:
+                expression[E]
                 {
                   auto StatementList = new (K->RhAllocator) std::vector<Value *>;
                   StatementList->push_back($E);
                   $$ = StatementList;
+                }
+single_stm:
+                single_stm_nonterminating[S] ';'
+                {
+                  $$ = $S;
                 }
 argument_list:
                 typed_symbol[S]
@@ -265,7 +273,7 @@ value_expr:
                   Op->addOperand($E);
                   $$ = Op;
                 }
-        |       '\\' argument_list[A] ARROW compound_stm[B]
+        |       '\\' argument_list[A] ARROW compound_stm_nonterminating[B]
                 {
                   std::vector<Type *> ATys;
                   for (auto Sym : *$A)
