@@ -91,7 +91,7 @@ SPTAB   [ \t]+
   return T::SYMBOL;
 }
 
-[\[ \] \( \) + * ; { } $ ~ = \\] {
+[\[ \] \( \) + * ; { } $ ~ = \\ .] {
   return static_cast<P::token_type>(*yytext);
 }
 

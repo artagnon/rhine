@@ -40,7 +40,6 @@ public:
   RTValue getValID() const;
   Type *getType() const;
   void setType(Type *T);
-  virtual Type *typeInfer(Context *K) = 0;
   virtual llvm::Value *toLL(llvm::Module *M, Context *K) = 0;
   friend ostream &operator<<(ostream &Stream, const Value &V) {
     V.print(Stream);
@@ -60,7 +59,6 @@ public:
   static Symbol *get(std::string N, Type *T, Context *K);
   static bool classof(const Value *V);
   std::string getName();
-  Type *typeInfer(Context *K);
   llvm::Value *toLL(llvm::Module *M, Context *K);
   friend ostream &operator<<(ostream &Stream, const Symbol &S) {
     S.print(Stream);
@@ -77,7 +75,6 @@ public:
   static GlobalString *get(std::string Val, Context *K);
   static bool classof(const Value *V);
   std::string getVal();
-  Type *typeInfer(Context *K);
   llvm::Value *toLL(llvm::Module *M, Context *K);
   friend ostream &operator<<(ostream &Stream, const GlobalString &S) {
     S.print(Stream);
