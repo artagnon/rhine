@@ -1,5 +1,6 @@
 #include "rhine/Toplevel/ParseFacade.h"
 #include "rhine/Parse/ParseDriver.h"
+#include "rhine/Transform/TypeInfer.h"
 #include "rhine/Transform/LambdaLifting.h"
 #include "rhine/Transform/TypeCoercion.h"
 #include "rhine/IR.h"
@@ -53,7 +54,8 @@ std::string ParseFacade::parseAction(ParseSource SrcE,
   }
   auto LambLift = LambdaLifting(&Ctx);
   LambLift.runOnModule(&Root.M);
-  Root.M.typeInfer(&Ctx);
+  auto TyInfer = TypeInfer(&Ctx);
+  TyInfer.runOnModule(&Root.M);
   auto TyCoerce = TypeCoercion(&Ctx);
   TyCoerce.runOnModule(&Root.M);
   switch(ActionE) {

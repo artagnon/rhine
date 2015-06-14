@@ -1,97 +1,102 @@
 #include "rhine/IR.h"
+#include "rhine/Transform/TypeInfer.h"
 #include "rhine/Transform/Resolve.h"
 
 namespace rhine {
-Type *ConstantInt::typeInfer(Context *K) {
-  return getType();
+Type *TypeInfer::visit(ConstantInt *V) {
+  return V->getType();
 }
 
-Type *ConstantBool::typeInfer(Context *K) {
-  return getType();
+Type *TypeInfer::visit(ConstantBool *V) {
+  return V->getType();
 }
 
-Type *ConstantFloat::typeInfer(Context *K) {
-  return getType();
+Type *TypeInfer::visit(ConstantFloat *V) {
+  return V->getType();
 }
 
-Type *GlobalString::typeInfer(Context *K) {
-  return getType();
+Type *TypeInfer::visit(GlobalString *V) {
+  return V->getType();
 }
 
 template <typename T>
-Type *typeInferValueList(std::vector<T> V, Context *K) {
+Type *TypeInfer::typeInferValueList(std::vector<T> V) {
   std::transform(V.begin(), V.end(), V.begin(),
-                 [K](T L) -> T {
-                   L->typeInfer(K);
+                 [this](T L) -> T {
+                   visit(L);
                    return L;
                  });
   if (!V.size())
     return nullptr;
-  return V.back()->typeInfer(K);
+  return visit(V.back());
 }
 
-Type *Function::typeInfer(Context *K) {
-  typeInferValueList(getArguments(), K);
-  auto LastTy = typeInferValueList(getVal(), K);
+Type *TypeInfer::visit(Function *V) {
+  typeInferValueList(V->getArguments());
+  auto LastTy = typeInferValueList(V->getVal());
   assert(LastTy && "Function has null body");
   auto FTy = FunctionType::get(
-      LastTy, cast<FunctionType>(getType())->getATys(), false, K);
+      LastTy, cast<FunctionType>(V->getType())->getATys(), false, K);
   auto PTy = PointerType::get(FTy, K);
-  setType(FTy);
-  K->addMapping(Name, PTy);
+  V->setType(FTy);
+  K->addMapping(V->getName(), PTy);
   return PTy;
 }
 
-Type *AddInst::typeInfer(Context *K) {
-  typeInferValueList(getOperands(), K);
-  auto LType = getOperand(0)->getType();
-  assert(LType == getOperand(1)->getType() &&
+Type *TypeInfer::visit(AddInst *V) {
+  typeInferValueList(V->getOperands());
+  auto LType = V->getOperand(0)->getType();
+  assert(LType == V->getOperand(1)->getType() &&
          "AddInst with operands of different types");
-  setType(FunctionType::get(LType, {LType, LType}, false, K));
+  V->setType(FunctionType::get(LType, {LType, LType}, false, K));
   return LType;
 }
 
-Type *Symbol::typeInfer(Context *K) {
+Type *TypeInfer::visit(Symbol *V) {
+  auto Name = V->getName();
+  auto VTy = V->getType();
   if (auto Ty = Resolve::resolveSymbolTy(Name, VTy, K)) {
-    setType(Ty);
+    V->setType(Ty);
     K->addMapping(Name, Ty);
     return Ty;
   }
   K->DiagPrinter->errorReport(
-      SourceLoc, "untyped symbol " + Name);
+      V->getSourceLocation(), "untyped symbol " + Name);
   exit(1);
 }
 
-Type *CallInst::typeInfer(Context *K) {
-  typeInferValueList(getOperands(), K);
+Type *TypeInfer::visit(CallInst *V) {
+  typeInferValueList(V->getOperands());
+  auto Name = V->getName();
+  auto VTy = V->getType();
   if (auto SymTy = Resolve::resolveSymbolTy(Name, VTy, K)) {
     if (auto PTy = dyn_cast<PointerType>(SymTy)) {
       if (auto Ty = dyn_cast<FunctionType>(PTy->getCTy())) {
-        setType(PTy);
+        V->setType(PTy);
         return Ty->getRTy();
       }
     }
     K->DiagPrinter->errorReport(
-        SourceLoc, Name + " was not typed as a function");
+        V->getSourceLocation(), Name + " was not typed as a function");
     exit(1);
   }
   K->DiagPrinter->errorReport(
-      SourceLoc, "untyped function " + Name);
+      V->getSourceLocation(), "untyped function " + Name);
   exit(1);
 }
 
-Type *BindInst::typeInfer(Context *K) {
-  Type *Ty = getVal()->typeInfer(K);
+Type *TypeInfer::visit(BindInst *V) {
+  Type *Ty = visit(V->getVal());
   assert (!isa<UnType>(Ty) && "Unable to type infer BindInst");
-  K->addMapping(getName(), Ty);
-  return getType();
+  K->addMapping(V->getName(), Ty);
+  return V->getType();
 }
 
-void Module::typeInfer(Context *K) {
-  auto V = getVal();
+void TypeInfer::runOnModule(Module *M) {
+  auto V = M->getVal();
   std::transform(V.begin(), V.end(), V.begin(),
-                 [K](Function *F) -> Function * {
-                   F->typeInfer(K);
+                 [this](Function *F) -> Function * {
+                   visit(F);
                    return F;
                  });
 }

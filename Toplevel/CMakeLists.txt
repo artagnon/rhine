@@ -13,5 +13,5 @@ set_target_properties(Toplevel PROPERTIES
   COMPILE_FLAGS "${LLVM_CXXFLAGS}")
 target_link_libraries(Toplevel
   Parse
-  Typing
+  Transform
   CodeGen)

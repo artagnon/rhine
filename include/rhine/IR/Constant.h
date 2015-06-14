@@ -25,7 +25,6 @@ public:
     C.print(Stream);
     return Stream;
   }
-  Type *typeInfer(Context *K) = 0;
   llvm::Constant *toLL(llvm::Module *M, Context *K) = 0;
 protected:
   virtual void print(std::ostream &Stream) const = 0;
@@ -55,7 +54,6 @@ public:
     I.print(Stream);
     return Stream;
   }
-  Type *typeInfer(Context *K);
   llvm::Constant *toLL(llvm::Module *M, Context *K);
 protected:
   virtual void print(std::ostream &Stream) const {
@@ -81,7 +79,6 @@ public:
     B.print(Stream);
     return Stream;
   }
-  Type *typeInfer(Context *K);
   llvm::Constant *toLL(llvm::Module *M, Context *K);
 protected:
   virtual void print(std::ostream &Stream) const {
@@ -107,7 +104,6 @@ public:
     F.print(Stream);
     return Stream;
   }
-  Type *typeInfer(Context *K);
   llvm::Constant *toLL(llvm::Module *M, Context *K);
 protected:
   virtual void print(std::ostream &Stream) const {
@@ -157,7 +153,6 @@ public:
     F.print(Stream);
     return Stream;
   }
-  Type *typeInfer(Context *K);
   llvm::Constant *toLL(llvm::Module *M, Context *K);
   typedef std::vector<Value *>::iterator iterator;
   iterator begin() {
