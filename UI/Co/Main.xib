@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="7531" systemVersion="14D136" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="7706" systemVersion="14D136" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="7531"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="7706"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner"/>
@@ -23,9 +23,6 @@
                             <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
-                        <connections>
-                            <action selector="keyDownAction:" target="-1" id="RWl-Fb-otX"/>
-                        </connections>
                     </textField>
                     <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="x4S-fA-v2Y">
                         <rect key="frame" x="0.0" y="0.0" width="480" height="22"/>
@@ -34,19 +31,11 @@
                             <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
-                        <connections>
-                            <action selector="miniBufferAction:" target="pgE-Ka-3fI" id="8iZ-IW-PWv"/>
-                        </connections>
                     </textField>
                 </subviews>
             </view>
             <point key="canvasLocation" x="413" y="398"/>
         </window>
-        <customObject id="pgE-Ka-3fI" customClass="RhineView">
-            <connections>
-                <outlet property="mainBuffer" destination="HC6-Fe-iLS" id="daJ-lH-IwK"/>
-                <outlet property="miniBuffer" destination="x4S-fA-v2Y" id="wW8-Ts-DA0"/>
-            </connections>
-        </customObject>
+        <customObject id="mMe-2M-Ho0" customClass="RhineView"/>
     </objects>
 </document>
