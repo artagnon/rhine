@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		FF4E27341AED246F00211969 /* UIBridge.mm in Sources */ = {isa = PBXBuildFile; fileRef = FF4E27331AED246F00211969 /* UIBridge.mm */; };
 		FF4E27361AED247800211969 /* RhineCo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FF4E27351AED247800211969 /* RhineCo.cpp */; };
+		FF54C0B71B30EEE7006AFB2E /* App.m in Sources */ = {isa = PBXBuildFile; fileRef = FF54C0B61B30EEE7006AFB2E /* App.m */; };
+		FF54C0BC1B30F95E006AFB2E /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF54C0BB1B30F95E006AFB2E /* ViewController.m */; };
 		FF606D301AEDCA1200C29B20 /* View.m in Sources */ = {isa = PBXBuildFile; fileRef = FF606D2F1AEDCA1200C29B20 /* View.m */; };
 		FFCA29AA1AEC47310096D2D9 /* RhineCoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FFCA29A91AEC47310096D2D9 /* RhineCoTests.m */; };
 		FFCA29C01AEC47D20096D2D9 /* Main.xib in Resources */ = {isa = PBXBuildFile; fileRef = FFCA29B91AEC47D20096D2D9 /* Main.xib */; };
@@ -27,6 +29,10 @@
 /* Begin PBXFileReference section */
 		FF4E27331AED246F00211969 /* UIBridge.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = UIBridge.mm; sourceTree = SOURCE_ROOT; };
 		FF4E27351AED247800211969 /* RhineCo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RhineCo.cpp; sourceTree = SOURCE_ROOT; };
+		FF54C0B61B30EEE7006AFB2E /* App.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = App.m; sourceTree = SOURCE_ROOT; };
+		FF54C0BA1B30EF7A006AFB2E /* App.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = App.h; sourceTree = SOURCE_ROOT; };
+		FF54C0BB1B30F95E006AFB2E /* ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = SOURCE_ROOT; };
+		FF54C0BD1B30F996006AFB2E /* ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = SOURCE_ROOT; };
 		FF606CFF1AED25FC00C29B20 /* UIBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIBridge.h; sourceTree = SOURCE_ROOT; };
 		FF606D2F1AEDCA1200C29B20 /* View.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = View.m; sourceTree = SOURCE_ROOT; };
 		FF606D311AEDCA1A00C29B20 /* View.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = View.h; sourceTree = SOURCE_ROOT; };
@@ -77,6 +83,10 @@
 		FFCA298F1AEC47300096D2D9 /* RhineCo */ = {
 			isa = PBXGroup;
 			children = (
+				FF54C0BD1B30F996006AFB2E /* ViewController.h */,
+				FF54C0BB1B30F95E006AFB2E /* ViewController.m */,
+				FF54C0BA1B30EF7A006AFB2E /* App.h */,
+				FF54C0B61B30EEE7006AFB2E /* App.m */,
 				FF606D311AEDCA1A00C29B20 /* View.h */,
 				FF606D2F1AEDCA1200C29B20 /* View.m */,
 				FF606CFF1AED25FC00C29B20 /* UIBridge.h */,
@@ -196,8 +206,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				FF606D301AEDCA1200C29B20 /* View.m in Sources */,
+				FF54C0B71B30EEE7006AFB2E /* App.m in Sources */,
 				FF4E27361AED247800211969 /* RhineCo.cpp in Sources */,
 				FF4E27341AED246F00211969 /* UIBridge.mm in Sources */,
+				FF54C0BC1B30F95E006AFB2E /* ViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
