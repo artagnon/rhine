@@ -62,6 +62,18 @@ TEST(Execution, ToString)
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
 
+TEST(Execution, VoidArgument) {
+  std::string SourcePrg =
+    "def printSomething [] {\n"
+    "  print '27';\n"
+    "}\n"
+    "def main [] {\n"
+    "  printSomething ();\n"
+    "}";
+  std::string ExpectedOut = "27";
+  EXPECT_OUTPUT(SourcePrg, ExpectedOut);
+}
+
 TEST(Execution, DISABLED_FunctionPointerSwitch)
 {
   std::string SourcePrg =

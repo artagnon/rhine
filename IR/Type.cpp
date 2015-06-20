@@ -34,7 +34,7 @@ FunctionType *FunctionType::get(Type *RTy, std::vector<Type *> ATys,
 }
 
 FunctionType *FunctionType::get(Type *RTy, Context *K) {
-  return FunctionType::get(RTy, { VoidType::get(K) }, false, K);
+  return FunctionType::get(RTy, {}, false, K);
 }
 
 bool FunctionType::classof(const Type *T) {
@@ -71,10 +71,15 @@ bool FunctionType::isVariadic() {
 }
 
 void FunctionType::print(std::ostream &Stream) const {
-  Stream << "Fn(" << *ArgumentTypes[0];
-  for (auto ATy = std::next(std::begin(ArgumentTypes));
-       ATy != std::end(ArgumentTypes); ++ATy)
-    Stream << " -> " << **ATy;
+  Stream << "Fn(";
+  if (!ArgumentTypes.size())
+    Stream << "()";
+  else {
+    Stream << *ArgumentTypes[0];
+    for (auto ATy = std::next(std::begin(ArgumentTypes));
+         ATy != std::end(ArgumentTypes); ++ATy)
+      Stream << " -> " << **ATy;
+  }
   Stream << " -> " << *ReturnType << ")";
 }
 }
