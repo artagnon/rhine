@@ -25,6 +25,7 @@ enum RTValue {
   RT_AddInst,
   RT_CallInst,
   RT_BindInst,
+  RT_IfInst,
 };
 
 class Value : public FoldingSetNode {

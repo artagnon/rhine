@@ -97,7 +97,6 @@ class BindInst : public Instruction {
   std::string Name;
   Value *Val;
 public:
-  // This instruction cannot be an rvalue, and is of type Void
   BindInst(std::string N, Type *Ty, Value *V) :
       Instruction(Ty, RT_BindInst), Name(N), Val(V) {}
 
@@ -124,6 +123,51 @@ public:
 protected:
   virtual void print(std::ostream &Stream) const {
     Stream << Name << " = " << *Val;
+  }
+};
+
+
+class IfInst : public Instruction {
+  Value *Conditional;
+  std::vector<Value *> TrueBB;
+  std::vector<Value *> FalseBB;
+public:
+  IfInst(Type *Ty, Value * Conditional_,
+         std::vector<Value *> TrueBB_, std::vector<Value *> FalseBB_) :
+      Instruction(Ty, RT_IfInst), Conditional(Conditional_),
+      TrueBB(TrueBB_), FalseBB(FalseBB_) {}
+
+  static IfInst *get(Value * Conditional, std::vector<Value *> TrueBB,
+                     std::vector<Value *> FalseBB, Context *K) {
+    return new (K->RhAllocator) IfInst(UnType::get(K), Conditional,
+                                       TrueBB, FalseBB);
+  }
+  static bool classof(const Value *V) {
+    return V->getValID() == RT_IfInst;
+  }
+  Value *getConditional() {
+    return Conditional;
+  }
+  std::vector<Value *> getTrueBB() {
+    return TrueBB;
+  }
+  std::vector<Value *> getFalseBB() {
+    return FalseBB;
+  }
+  friend ostream &operator<<(ostream &Stream, const IfInst &S) {
+    S.print(Stream);
+    return Stream;
+  }
+  llvm::Value *toLL(llvm::Module *M, Context *K);
+protected:
+  virtual void print(std::ostream &Stream) const {
+    Stream << "if (" << *Conditional << ") {";
+    for (auto V: TrueBB)
+      Stream << *V << std::endl;
+    Stream << "} else {";
+    for (auto V: FalseBB)
+      Stream << *V << std::endl;
+    Stream << "}" << std::endl;
   }
 };
 }
