@@ -61,3 +61,14 @@ TEST(Execution, ToString)
   std::string ExpectedOut = "2";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
+
+TEST(Execution, DISABLED_FunctionPointerSwitch)
+{
+  std::string SourcePrg =
+    "def bar [ArithFn ~Fn(Int -> Int -> Int)] ArithFn 2 4;\n"
+    "def addCandidate [A ~Int B ~Int] A + B;\n"
+    "def subCandidate [A ~Int B ~Int] A - B;\n"
+    "def main [] if(0) bar addCandidate; else bar subCandidate;";
+  std::string ExpectedOut = "";
+  EXPECT_OUTPUT(SourcePrg, ExpectedOut);
+}

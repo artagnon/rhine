@@ -86,13 +86,16 @@ TEST(CodeGen, TypePropagation)
 TEST(CodeGen, BindPropagation) {
   std::string SourcePrg =
     "def bsym [] {"
-    "sym = 3;\n"
-    "sym;\n"
+    "  Sym = 3;\n"
+    "  Sym;\n"
     "}";
   std::string ExpectedPP =
     "define i32 @bsym() {\n"
     "entry:\n"
-    "  ret i32 3\n"
+    "  %SymAlloca = alloca i32\n"
+    "  store i32 3, i32* %SymAlloca\n"
+    "  %SymLoad = load i32, i32* %SymAlloca\n"
+    "  ret i32 %SymLoad\n"
     "}\n";
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }
@@ -110,10 +113,12 @@ TEST(CodeGen, FunctionCall)
 TEST(CodeGen, VoidRepresentation)
 {
   std::string SourcePrg =
-    "def id [] var = 3;\n";
+    "def id [] Var = 3;\n";
   std::string ExpectedPP =
     "define void @id() {\n"
     "entry:\n"
+    "  %VarAlloca = alloca i32\n"
+    "  store i32 3, i32* %VarAlloca\n"
     "  ret void\n"
     "}\n";
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
@@ -184,7 +189,7 @@ TEST(CodeGen, MultipleArguments)
 TEST(CodeGen, Lambda)
 {
   std::string SourcePrg =
-    "def foo [] b = \\x ~ Int -> x;";
+    "def foo [] Bfunc = \\x ~ Int -> x;";
   std::string ExpectedPP =
     "define i32 @lambda(i32) {\n"
     "entry:\n"
@@ -192,6 +197,8 @@ TEST(CodeGen, Lambda)
     "}\n\n"
     "define void @foo() {\n"
     "entry:\n"
+    "  %BfuncAlloca = alloca i32 (i32)*\n"
+    "  store i32 (i32)* @lambda, i32 (i32)** %BfuncAlloca\n"
     "  ret void\n"
     "}";
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
