@@ -37,7 +37,7 @@
 
 %start start
 
-%token                  DEF IF THEN AND OR ARROW
+%token                  DEF IF ELSE AND OR ARROW
 %token                  TINT TBOOL TSTRING TFUNCTION
 %token                  END       0
 %token  <RawSymbol>     SYMBOL
@@ -231,11 +231,11 @@ expression:
                 {
                   $$ = $A;
                 }
-        |       IF value_expr[V] THEN compound_stm[T] compound_stm[F]
+        |       IF '(' value_expr[V] ')' compound_stm[T] ELSE compound_stm[F]
                 {
                   $$ = nullptr;
                 }
-        |       IF assign_expr[A] THEN compound_stm[T] compound_stm[F]
+        |       IF '(' assign_expr[A] ')' compound_stm[T] ELSE compound_stm[F]
                 {
                   $$ = nullptr;
                 }

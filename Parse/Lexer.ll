@@ -63,7 +63,7 @@ SPTAB   [ \t]+
 "//"[^\r\n]* { /* skip comments */ }
 "def" { return T::DEF; }
 "if" { return T::IF; }
-"then" { return T::THEN; }
+"else" { return T::ELSE; }
 "&&" { return T::AND; }
 "||" { return T::OR; }
 "->" { return T::ARROW; }
