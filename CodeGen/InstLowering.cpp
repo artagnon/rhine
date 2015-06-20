@@ -63,7 +63,11 @@ llvm::Value *AddInst::toLL(llvm::Module *M, Context *K) {
 
 llvm::Value *BindInst::toLL(llvm::Module *M, Context *K) {
   auto V = getVal()->toLL(M, K);
-  K->addMapping(getName(), nullptr, V);
+  auto Ty = getVal()->getType()->toLL(M, K);
+  auto Name = getName();
+  auto Alloca = K->Builder->CreateAlloca(Ty, nullptr, Name + "Alloca");
+  K->Builder->CreateStore(V, Alloca);
+  K->addMapping(Name, nullptr, Alloca);
   return nullptr;
 }
 }
