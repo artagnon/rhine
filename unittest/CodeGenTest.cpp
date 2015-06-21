@@ -189,7 +189,7 @@ TEST(CodeGen, MultipleArguments)
 TEST(CodeGen, Lambda)
 {
   std::string SourcePrg =
-    "def foo [] Bfunc = \\x ~ Int -> x;";
+    "def foo [] Bfunc = \\x ~ Int -> x;;";
   std::string ExpectedPP =
     "define i32 @lambda(i32) {\n"
     "entry:\n"

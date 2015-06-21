@@ -31,6 +31,7 @@
   class Value *Value;
   class Type *Type;
   std::vector<class Symbol *> *VarList;
+  std::vector<class BasicBlock *> *BBList;
   std::vector<class Value *> *ValueList;
   std::vector<class Type *> *TypeList;
 }
@@ -45,8 +46,8 @@
 %token  <Boolean>       BOOLEAN
 %token  <String>        STRING
 %type   <VarList>       argument_list
+%type   <BBList>        bb_list
 %type   <ValueList>     compound_stm stm_list single_stm rvalue_list
-%type   <ValueList>     compound_stm_nonterminating single_stm_nonterminating
 %type   <Fcn>           fn_decl def
 %type   <Value>         expression assign_expr value_expr rvalue
 %type   <Type>          type_annotation type_lit
@@ -117,16 +118,17 @@ compound_stm:
                 {
                   $$ = $L;
                 }
-compound_stm_nonterminating:
-                '{' stm_list[L] '}'
+bb_list:
+                single_stm[L] ';'
                 {
-                  $$ = $L;
+                  auto BBList = new (K->RhAllocator )std::vector<BasicBlock *>;
+                  $$ = BBList->push_back(BasicBlock::get($L, K));
                 }
-        |       single_stm_nonterminating[L]
+        |       stm_list[L]
                 {
-                  $$ = $L;
+                  auto BBList = new (K->RhAllocator )std::vector<BasicBlock *>;
+                  $$ = BBList->push_back(BasicBlock::get($L, K));
                 }
-                ;
 stm_list:
                 single_stm[L]
                 {
@@ -138,18 +140,22 @@ stm_list:
                   $$ = $L;
                 }
                 ;
-single_stm_nonterminating:
-                expression[E]
+single_stm:
+                expression[E] ';'
                 {
                   auto StatementList = new (K->RhAllocator) std::vector<Value *>;
                   StatementList->push_back($E);
                   $$ = StatementList;
                 }
-single_stm:
-                single_stm_nonterminating[S] ';'
+        |       IF '(' value_expr[V] ')' compound_stm[T] ELSE compound_stm[F]
                 {
-                  $$ = $S;
+                  $$ = nullptr;
                 }
+        |       IF '(' assign_expr[A] ')' compound_stm[T] ELSE compound_stm[F]
+                {
+                  $$ = nullptr;
+                }
+                ;
 argument_list:
                 typed_symbol[S]
                 {
@@ -231,15 +237,6 @@ expression:
                 {
                   $$ = $A;
                 }
-        |       IF '(' value_expr[V] ')' compound_stm[T] ELSE compound_stm[F]
-                {
-                  auto Op = IfInst::get($V, *$T, *$F, K);
-                  $$ = Op;
-                }
-        |       IF '(' assign_expr[A] ')' compound_stm[T] ELSE compound_stm[F]
-                {
-                  $$ = nullptr;
-                }
                 ;
 value_expr:
                 rvalue[V]
@@ -275,7 +272,7 @@ value_expr:
                   Op->addOperand($E);
                   $$ = Op;
                 }
-        |       '\\' argument_list[A] ARROW compound_stm_nonterminating[B]
+        |       '\\' argument_list[A] ARROW compound_stm[B]
                 {
                   std::vector<Type *> ATys;
                   for (auto Sym : *$A)
