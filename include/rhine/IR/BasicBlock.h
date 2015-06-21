@@ -7,8 +7,8 @@
 
 namespace rhine {
 class BasicBlock {
-  std::vector<Value *> ValueList;
 public:
+  std::vector<Value *> ValueList;
   BasicBlock(std::vector<Value *> V) : ValueList(V) {}
   static BasicBlock *get(std::vector<Value *> V, Context *K) {
     return new (K->RhAllocator) BasicBlock(V);

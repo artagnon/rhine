@@ -27,11 +27,11 @@
   class ConstantBool *Boolean;
   class ConstantFloat *Float;
   class GlobalString *String;
+  class BasicBlock *BBList;
   class Function *Fcn;
   class Value *Value;
   class Type *Type;
   std::vector<class Symbol *> *VarList;
-  std::vector<class BasicBlock *> *BBList;
   std::vector<class Value *> *ValueList;
   std::vector<class Type *> *TypeList;
 }
@@ -46,8 +46,8 @@
 %token  <Boolean>       BOOLEAN
 %token  <String>        STRING
 %type   <VarList>       argument_list
-%type   <BBList>        bb_list
-%type   <ValueList>     compound_stm stm_list rvalue_list expression_list
+%type   <BBList>        stm_list compound_stm
+%type   <ValueList>     rvalue_list expression_list
 %type   <Fcn>           fn_decl def
 %type   <Value>         expression assign_expr value_expr rvalue
 %type   <Type>          type_annotation type_lit
@@ -106,7 +106,7 @@ fn_decl:
 def:
                 fn_decl[F] compound_stm[L]
                 {
-                  $F->setBody(*$L);
+                  $F->setBody($L);
                   $$ = $F;
                 }
                 ;
@@ -119,12 +119,12 @@ compound_stm:
                 {
                   auto ExpressionList = new (K->RhAllocator) std::vector<Value *>;
                   ExpressionList->push_back($E);
-                  $$ = ExpressionList;
+                  $$ = BasicBlock::get(*ExpressionList, K);
                 }
 stm_list:
                 expression_list[L]
                 {
-                  $$ = $L;
+                  $$ = BasicBlock::get(*$L, K);
                 }
         |       IF '(' value_expr[V] ')' compound_stm[T] ELSE compound_stm[F]
                 {
@@ -274,7 +274,7 @@ value_expr:
                   auto Fn = Function::get(FTy, K);
                   Fn->setSourceLocation(@1);
                   Fn->setArguments(*$A);
-                  Fn->setBody(*$B);
+                  Fn->setBody($B);
                   $$ = Fn;
                 }
                 ;

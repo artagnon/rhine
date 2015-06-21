@@ -44,10 +44,11 @@ llvm::Constant *Function::toLL(llvm::Module *M, Context *K) {
   // Add function symbol to symbol table
   K->addMapping(Name, nullptr, TheFunction);
 
-  BasicBlock *BB = BasicBlock::Create(K->Builder->getContext(), "entry", TheFunction);
+  llvm::BasicBlock *BB =
+    llvm::BasicBlock::Create(K->Builder->getContext(), "entry", TheFunction);
   K->Builder->SetInsertPoint(BB);
   llvm::Value *LastLL;
-  for (auto Val : getVal())
+  for (auto Val : getVal()->ValueList)
     LastLL = Val->toLL(M, K);
   K->Builder->CreateRet(LastLL);
   return TheFunction;
