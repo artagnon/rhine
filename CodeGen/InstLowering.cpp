@@ -70,4 +70,8 @@ llvm::Value *BindInst::toLL(llvm::Module *M, Context *K) {
   K->addMapping(Name, nullptr, Alloca);
   return nullptr;
 }
+
+llvm::Value *IfInst::toLL(llvm::Module *M, Context *K) {
+  return nullptr;
+}
 }

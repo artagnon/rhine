@@ -233,7 +233,8 @@ expression:
                 }
         |       IF '(' value_expr[V] ')' compound_stm[T] ELSE compound_stm[F]
                 {
-                  $$ = nullptr;
+                  auto Op = IfInst::get($V, *$T, *$F, K);
+                  $$ = Op;
                 }
         |       IF '(' assign_expr[A] ')' compound_stm[T] ELSE compound_stm[F]
                 {
@@ -248,6 +249,7 @@ value_expr:
         |       rvalue[L] '+' rvalue[R]
                 {
                   auto Op = AddInst::get(K);
+                  Op->setSourceLocation(@1);
                   Op->addOperand($L);
                   Op->addOperand($R);
                   $$ = Op;
