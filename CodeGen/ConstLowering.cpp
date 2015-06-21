@@ -48,7 +48,7 @@ llvm::Constant *Function::toLL(llvm::Module *M, Context *K) {
     llvm::BasicBlock::Create(K->Builder->getContext(), "entry", TheFunction);
   K->Builder->SetInsertPoint(BB);
   llvm::Value *LastLL;
-  for (auto Val : getVal()->ValueList)
+  for (auto Val : *getVal())
     LastLL = Val->toLL(M, K);
   K->Builder->CreateRet(LastLL);
   return TheFunction;

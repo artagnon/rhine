@@ -22,6 +22,7 @@ enum RTValue {
   RT_ConstantBool,
   RT_ConstantFloat,
   RT_Function,
+  RT_BasicBlock,
   RT_AddInst,
   RT_CallInst,
   RT_BindInst,
