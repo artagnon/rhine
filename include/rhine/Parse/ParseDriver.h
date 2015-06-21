@@ -34,7 +34,7 @@ public:
   bool TraceParsing;
   std::string StreamName;
   class Lexer *Lexx;
-  class PTree &Root;
+  PTree &Root;
   Context *Ctx;
 };
 }

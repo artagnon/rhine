@@ -47,7 +47,7 @@
 %token  <String>        STRING
 %type   <VarList>       argument_list
 %type   <BBList>        bb_list
-%type   <ValueList>     compound_stm stm_list single_stm rvalue_list
+%type   <ValueList>     compound_stm stm_list rvalue_list expression_list
 %type   <Fcn>           fn_decl def
 %type   <Value>         expression assign_expr value_expr rvalue
 %type   <Type>          type_annotation type_lit
@@ -57,6 +57,7 @@
 %{
 #include "rhine/Parse/Lexer.h"
 #include "rhine/Parse/ParseDriver.h"
+#include "rhine/Parse/ParseTree.h"
 #include "rhine/Diagnostic.h"
 
 #undef yylex
@@ -114,38 +115,16 @@ compound_stm:
                 {
                   $$ = $L;
                 }
-        |       single_stm[L]
+        |       expression[E] ';'
                 {
-                  $$ = $L;
-                }
-bb_list:
-                single_stm[L] ';'
-                {
-                  auto BBList = new (K->RhAllocator )std::vector<BasicBlock *>;
-                  $$ = BBList->push_back(BasicBlock::get($L, K));
-                }
-        |       stm_list[L]
-                {
-                  auto BBList = new (K->RhAllocator )std::vector<BasicBlock *>;
-                  $$ = BBList->push_back(BasicBlock::get($L, K));
+                  auto ExpressionList = new (K->RhAllocator) std::vector<Value *>;
+                  ExpressionList->push_back($E);
+                  $$ = ExpressionList;
                 }
 stm_list:
-                single_stm[L]
+                expression_list[L]
                 {
                   $$ = $L;
-                }
-        |       stm_list[L] expression[E] ';'
-                {
-                  $L->push_back($E);
-                  $$ = $L;
-                }
-                ;
-single_stm:
-                expression[E] ';'
-                {
-                  auto StatementList = new (K->RhAllocator) std::vector<Value *>;
-                  StatementList->push_back($E);
-                  $$ = StatementList;
                 }
         |       IF '(' value_expr[V] ')' compound_stm[T] ELSE compound_stm[F]
                 {
@@ -228,6 +207,19 @@ type_list:
                   $$ = $L;
                 }
                 ;
+expression_list:
+                expression[E] ';'
+                {
+                  auto EList = new (K->RhAllocator) std::vector<Value *>;
+                  EList->push_back($E);
+                  $$ = EList;
+                }
+        |       expression_list[L] expression[E] ';'
+                {
+                  $L->push_back($E);
+                  $$ = $L;
+                }
+        ;
 expression:
                 value_expr[V]
                 {
