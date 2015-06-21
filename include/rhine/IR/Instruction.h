@@ -12,6 +12,7 @@
 #include "rhine/Context.h"
 #include "rhine/IR/Type.h"
 #include "rhine/IR/Value.h"
+#include "rhine/IR/BasicBlock.h"
 
 namespace rhine {
 class Instruction : public Value {
@@ -129,16 +130,16 @@ protected:
 
 class IfInst : public Instruction {
   Value *Conditional;
-  std::vector<Value *> TrueBB;
-  std::vector<Value *> FalseBB;
+  BasicBlock *TrueBB;
+  BasicBlock *FalseBB;
 public:
   IfInst(Type *Ty, Value * Conditional_,
-         std::vector<Value *> TrueBB_, std::vector<Value *> FalseBB_) :
+         BasicBlock *TrueBB_, BasicBlock *FalseBB_) :
       Instruction(Ty, RT_IfInst), Conditional(Conditional_),
       TrueBB(TrueBB_), FalseBB(FalseBB_) {}
 
-  static IfInst *get(Value * Conditional, std::vector<Value *> TrueBB,
-                     std::vector<Value *> FalseBB, Context *K) {
+  static IfInst *get(Value * Conditional, BasicBlock *TrueBB,
+                     BasicBlock *FalseBB, Context *K) {
     return new (K->RhAllocator) IfInst(UnType::get(K), Conditional,
                                        TrueBB, FalseBB);
   }
@@ -148,10 +149,10 @@ public:
   Value *getConditional() {
     return Conditional;
   }
-  std::vector<Value *> getTrueBB() {
+  BasicBlock *getTrueBB() {
     return TrueBB;
   }
-  std::vector<Value *> getFalseBB() {
+  BasicBlock *getFalseBB() {
     return FalseBB;
   }
   friend ostream &operator<<(ostream &Stream, const IfInst &S) {
@@ -162,10 +163,10 @@ public:
 protected:
   virtual void print(std::ostream &Stream) const {
     Stream << "if (" << *Conditional << ") {";
-    for (auto V: TrueBB)
+    for (auto V: *TrueBB)
       Stream << *V << std::endl;
     Stream << "} else {";
-    for (auto V: FalseBB)
+    for (auto V: *FalseBB)
       Stream << *V << std::endl;
     Stream << "}" << std::endl;
   }

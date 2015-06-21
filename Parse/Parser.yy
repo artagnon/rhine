@@ -115,12 +115,7 @@ def:
 compound_stm:
                 '{' stm_list[L] '}'
                 {
-                  auto BBListV = $L->getBBs();
-                  auto BBList = new (K->RhAllocator) std::vector<BasicBlock *>;
-                  for (auto V: BBListV) {
-                    BBList->push_back(V);
-                  }
-                  $$ = BBList;
+                  $$ = $L->getBBs();
                 }
         |       expression[E] ';'
                 {
@@ -140,7 +135,14 @@ stm_list:
                 }
         |       IF '(' value_expr[V] ')' compound_stm[T] ELSE compound_stm[F]
                 {
-                  $$ = nullptr;
+                  auto TrueBB = (*$T)[0];
+                  auto FalseBB = (*$F)[0];
+                  std::vector<BasicBlock *> BBList;
+                  BBList.push_back(TrueBB);
+                  BBList.push_back(FalseBB);
+                  auto IfStmt = IfInst::get($V, TrueBB, FalseBB, K);
+                  auto BBSpear = BasicBlockSpear::get(IfStmt, BBList, K);
+                  $$ = BBSpear;
                 }
         |       IF '(' assign_expr[A] ')' compound_stm[T] ELSE compound_stm[F]
                 {

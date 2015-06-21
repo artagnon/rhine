@@ -30,8 +30,8 @@ public:
     assert(Idx < BBList.size() && "Idx out of BBSpear getBB() bounds");
     return BBList[Idx];
   }
-  std::vector <BasicBlock *> getBBs() {
-    return BBList;
+  std::vector<BasicBlock *> *getBBs() {
+    return &BBList;
   }
 };
 }
