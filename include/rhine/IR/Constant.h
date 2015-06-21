@@ -11,6 +11,7 @@
 
 #include "rhine/Context.h"
 #include "rhine/IR/Value.h"
+#include "rhine/IR/BasicBlock.h"
 
 using namespace std;
 using namespace llvm;
@@ -115,7 +116,7 @@ class Function : public Value {
   Module *ParentModule;
   std::string Name;
   std::vector<Symbol *> ArgumentList;
-  std::vector<Value *> Val;
+  BasicBlock *Val;
 public:
   Function(FunctionType *FTy) :
       Value(FTy, RT_Function), ParentModule(nullptr) {}
@@ -143,10 +144,10 @@ public:
   std::vector<Symbol *> getArguments() {
     return ArgumentList;
   }
-  void setBody(std::vector<Value *> Body) {
+  void setBody(BasicBlock *Body) {
     Val = Body;
   }
-  std::vector<Value *> getVal() {
+  BasicBlock *getVal() {
     return Val;
   }
   friend ostream &operator<<(ostream &Stream, const Function &F) {
@@ -156,17 +157,17 @@ public:
   llvm::Constant *toLL(llvm::Module *M, Context *K);
   typedef std::vector<Value *>::iterator iterator;
   iterator begin() {
-    return Val.begin();
+    return Val->ValueList.begin();
   }
   iterator end() {
-    return Val.end();
+    return Val->ValueList.end();
   }
 protected:
   virtual void print(std::ostream &Stream) const {
     Stream << Name << " ~" << *getType() << std::endl;
     for (auto A: ArgumentList)
       Stream << *A << std::endl;
-    for (auto V: Val)
+    for (auto V: Val->ValueList)
       Stream << *V << std::endl;
   }
 };

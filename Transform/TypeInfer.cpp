@@ -33,7 +33,7 @@ Type *TypeInfer::typeInferValueList(std::vector<T> V) {
 
 Type *TypeInfer::visit(Function *V) {
   typeInferValueList(V->getArguments());
-  auto LastTy = typeInferValueList(V->getVal());
+  auto LastTy = typeInferValueList(V->getVal()->ValueList);
   assert(LastTy && "Function has null body");
   auto FTy = FunctionType::get(
       LastTy, cast<FunctionType>(V->getType())->getATys(), false, K);
