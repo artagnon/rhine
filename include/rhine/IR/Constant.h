@@ -1,7 +1,7 @@
 //-*- C++ -*-
 
-#ifndef CONSTANT_H
-#define CONSTANT_H
+#ifndef RHINE_CONSTANT_H
+#define RHINE_CONSTANT_H
 
 #include "llvm/IR/Constants.h"
 
