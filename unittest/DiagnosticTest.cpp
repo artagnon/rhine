@@ -62,13 +62,6 @@ TEST(Diagnostic, BareDanglingBrace)
   EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
 }
 
-TEST(Diagnostic, EmptyDefunBody)
-{
-  std::string SourcePrg = "def foo [] {}";
-  std::string ExpectedErr = "string stream:1:13: error: syntax error";
-  EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
-}
-
 TEST(Diagnostic, DanglingBraceWithStatement)
 {
   std::string SourcePrg = "def foo [] { 3;";
