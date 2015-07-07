@@ -27,11 +27,10 @@
   class ConstantBool *Boolean;
   class ConstantFloat *Float;
   class GlobalString *String;
-  class BasicBlockSpear *BBSpear;
+  class BasicBlock *BB;
   class Function *Fcn;
   class Value *Value;
   class Type *Type;
-  std::vector<class BasicBlock *> *BBList;
   std::vector<class Symbol *> *VarList;
   std::vector<class Value *> *ValueList;
   std::vector<class Type *> *TypeList;
@@ -47,11 +46,11 @@
 %token  <Boolean>       BOOLEAN
 %token  <String>        STRING
 %type   <VarList>       argument_list
-%type   <BBSpear>       stm_list
-%type   <BBList>        compound_stm
-%type   <ValueList>     rvalue_list expression_list
+%type   <BB>            compound_stm
+%type   <ValueList>     rvalue_list stm_list
 %type   <Fcn>           fn_decl def
-%type   <Value>         expression assign_expr value_expr rvalue
+%type   <Value>         expression expression_or_branch
+%type   <Value>         assign_expr value_expr rvalue
 %type   <Type>          type_annotation type_lit
 %type   <TypeList>      type_list
 %type   <Symbol>        typed_symbol lvalue
@@ -108,47 +107,21 @@ fn_decl:
 def:
                 fn_decl[F] compound_stm[L]
                 {
-                  $F->setBody((*$L)[0]);
+                  $F->setBody($L);
                   $$ = $F;
                 }
                 ;
 compound_stm:
                 '{' stm_list[L] '}'
                 {
-                  $$ = $L->getBBs();
+                  $$ = BasicBlock::get(*$L, K);
                 }
         |       expression[E] ';'
                 {
-                  std::vector<Value *> ExpressionList;
-                  ExpressionList.push_back($E);
-                  auto BBList = new (K->RhAllocator) std::vector<BasicBlock *>;
-                  BBList->push_back(BasicBlock::get(ExpressionList, K));
-                  $$ = BBList;
+                  std::vector<Value *> StmList;
+                  StmList.push_back($E);
+                  $$ = BasicBlock::get(StmList, K);
                 }
-stm_list:
-                expression_list[L]
-                {
-                  std::vector<BasicBlock *> BBList;
-                  BBList.push_back(BasicBlock::get(*$L, K));
-                  auto BBSpear = BasicBlockSpear::get(nullptr, BBList, K);
-                  $$ = BBSpear;
-                }
-        |       IF '(' value_expr[V] ')' compound_stm[T] ELSE compound_stm[F]
-                {
-                  auto TrueBB = (*$T)[0];
-                  auto FalseBB = (*$F)[0];
-                  std::vector<BasicBlock *> BBList;
-                  BBList.push_back(TrueBB);
-                  BBList.push_back(FalseBB);
-                  auto IfStmt = IfInst::get($V, TrueBB, FalseBB, K);
-                  auto BBSpear = BasicBlockSpear::get(IfStmt, BBList, K);
-                  $$ = BBSpear;
-                }
-        |       IF '(' assign_expr[A] ')' compound_stm[T] ELSE compound_stm[F]
-                {
-                  $$ = nullptr;
-                }
-                ;
 argument_list:
                 typed_symbol[S]
                 {
@@ -221,19 +194,36 @@ type_list:
                   $$ = $L;
                 }
                 ;
-expression_list:
-                expression[E] ';'
+stm_list:
                 {
-                  auto EList = new (K->RhAllocator) std::vector<Value *>;
-                  EList->push_back($E);
-                  $$ = EList;
+                  $$ = nullptr;
                 }
-        |       expression_list[L] expression[E] ';'
+        |       stm_list[L] expression_or_branch[E]
                 {
-                  $L->push_back($E);
-                  $$ = $L;
+                  if ($1 == nullptr) {
+                    auto EList = new (K->RhAllocator) std::vector<Value *>;
+                    EList->push_back($E);
+                    $$ = EList;
+                  } else {
+                    $1->push_back($E);
+                    $$ = $1;
+                  }
                 }
         ;
+expression_or_branch:
+                expression[E] ';'
+                {
+                  $$ = $E;
+                }
+        |       IF '(' value_expr[V] ')' compound_stm[T] ELSE compound_stm[F]
+                {
+                  $$ = nullptr;
+                }
+        |       IF '(' assign_expr[A] ')' compound_stm[T] ELSE compound_stm[F]
+                {
+                  $$ = nullptr;
+                }
+                ;
 expression:
                 value_expr[V]
                 {
@@ -288,7 +278,7 @@ value_expr:
                   auto Fn = Function::get(FTy, K);
                   Fn->setSourceLocation(@1);
                   Fn->setArguments(*$A);
-                  Fn->setBody((*$B)[0]);
+                  Fn->setBody($B);
                   $$ = Fn;
                 }
                 ;
