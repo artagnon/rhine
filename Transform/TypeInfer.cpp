@@ -31,6 +31,17 @@ Type *TypeInfer::typeInferValueList(std::vector<T> V) {
   return visit(V.back());
 }
 
+Type *TypeInfer::typeInferBB(BasicBlock *BB) {
+  std::transform(BB->begin(), BB->end(), BB->begin(),
+                 [this](Value *L) -> Value * {
+                   visit(L);
+                   return L;
+                 });
+  if (!BB->size())
+    return nullptr;
+  return visit(BB->back());
+}
+
 Type *TypeInfer::visit(Function *V) {
   typeInferValueList(V->getArguments());
   auto LastTy = typeInferValueList(V->getVal()->ValueList);
@@ -50,6 +61,17 @@ Type *TypeInfer::visit(AddInst *V) {
          "AddInst with operands of different types");
   V->setType(FunctionType::get(LType, {LType, LType}, false, K));
   return LType;
+}
+
+Type *TypeInfer::visit(IfInst *V) {
+   auto TrueTy = typeInferBB(V->getTrueBB());
+   auto FalseTy = typeInferBB(V->getFalseBB());
+   if (TrueTy != FalseTy) {
+     K->DiagPrinter->errorReport(
+         V->getSourceLocation(), "mismatched true/false block types");
+     exit(1);
+   }
+   return TrueTy;
 }
 
 Type *TypeInfer::visit(Symbol *V) {

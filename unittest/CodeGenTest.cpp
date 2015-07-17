@@ -232,3 +232,13 @@ TEST(CodeGen, ToString)
     "%toString = call i8* @std_String_toString__Int(i32 2)";
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }
+
+TEST(CodeGen, IfBasic)
+{
+  std::string SourcePrg =
+    "def main [] { if (0) 2; else 3; }";
+  std::string ExpectedPP =
+    "define i32 @main() {\n"
+    "entry:\n";
+  EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
+}

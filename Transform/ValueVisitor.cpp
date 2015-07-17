@@ -10,6 +10,7 @@ Type *ValueVisitor<Type *>::visit(Value *V) {
   if (auto C = dyn_cast<GlobalString>(V)) { return visit(C); }
   if (auto C = dyn_cast<Function>(V)) { return visit(C); }
   if (auto C = dyn_cast<AddInst>(V)) { return visit(C); }
+  if (auto C = dyn_cast<IfInst>(V)) { return visit(C); }
   if (auto C = dyn_cast<Symbol>(V)) { return visit(C); }
   if (auto C = dyn_cast<CallInst>(V)) { return visit(C); }
   if (auto C = dyn_cast<BindInst>(V)) { return visit(C); }

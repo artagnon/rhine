@@ -29,6 +29,12 @@ public:
   iterator end() {
     return ValueList.end();
   }
+  unsigned size() {
+    return ValueList.size();
+  }
+  Value *back() {
+    return ValueList.back();
+  }
 protected:
   virtual void print(std::ostream &Stream) const {
     for (auto V: ValueList)

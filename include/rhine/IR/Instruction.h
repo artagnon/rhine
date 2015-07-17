@@ -162,10 +162,10 @@ public:
   llvm::Value *toLL(llvm::Module *M, Context *K);
 protected:
   virtual void print(std::ostream &Stream) const {
-    Stream << "if (" << *Conditional << ") {";
+    Stream << "if (" << *Conditional << ") {" << std::endl;
     for (auto V: *TrueBB)
       Stream << *V << std::endl;
-    Stream << "} else {";
+    Stream << "} else {" << std::endl;
     for (auto V: *FalseBB)
       Stream << *V << std::endl;
     Stream << "}" << std::endl;
