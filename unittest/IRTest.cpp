@@ -94,3 +94,17 @@ TEST(IR, TypePropagationCallInst)
     "var ~String\n";
   EXPECT_TRANSFORM_PP(SourcePrg, ExpectedPP);
 }
+
+TEST(IR, IfBasic)
+{
+  std::string SourcePrg =
+    "def main [] { if (0) 2; else 3; }";
+  std::string ExpectedPP =
+    "main ~Fn(() -> Int)\n"
+    "if (0 ~Int) {\n"
+    "2 ~Int\n"
+    "} else {\n"
+    "3 ~Int\n"
+    "}";
+  EXPECT_TRANSFORM_PP(SourcePrg, ExpectedPP);
+}

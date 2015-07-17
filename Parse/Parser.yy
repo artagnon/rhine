@@ -116,7 +116,7 @@ compound_stm:
                 {
                   $$ = BasicBlock::get(*$L, K);
                 }
-        |       expression[E] ';'
+        |       expression_or_branch[E]
                 {
                   std::vector<Value *> StmList;
                   StmList.push_back($E);
@@ -217,11 +217,11 @@ expression_or_branch:
                 }
         |       IF '(' value_expr[V] ')' compound_stm[T] ELSE compound_stm[F]
                 {
-                  $$ = nullptr;
+                  $$ = IfInst::get($V, $T, $F, K);
                 }
         |       IF '(' assign_expr[A] ')' compound_stm[T] ELSE compound_stm[F]
                 {
-                  $$ = nullptr;
+                  $$ = IfInst::get($A, $T, $F, K);
                 }
                 ;
 expression:

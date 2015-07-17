@@ -13,6 +13,7 @@ public:
   void runOnModule(Module *M);
   template <typename T>
   Type *typeInferValueList(std::vector<T> V);
+  Type *typeInferBB(BasicBlock *BB);
   using ValueVisitor<Type *>::visit;
   Type *visit(ConstantInt *I) override;
   Type *visit(ConstantBool *B) override;
@@ -20,6 +21,7 @@ public:
   Type *visit(GlobalString *G) override;
   Type *visit(Function *F) override;
   Type *visit(AddInst *A) override;
+  Type *visit(IfInst *F) override;
   Type *visit(Symbol *S) override;
   Type *visit(CallInst *C) override;
   Type *visit(BindInst *B) override;
