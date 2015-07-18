@@ -110,7 +110,7 @@ TEST(CodeGen, FunctionCall)
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }
 
-TEST(CodeGen, VoidRepresentation)
+TEST(CodeGen, VoidLowering)
 {
   std::string SourcePrg =
     "def id [] Var = 3;\n";

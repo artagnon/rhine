@@ -116,10 +116,12 @@ class Function : public Value {
   Module *ParentModule;
   std::string Name;
   std::vector<Symbol *> ArgumentList;
+  Symbol *VariadicRestSymbol;
   BasicBlock *Val;
 public:
   Function(FunctionType *FTy) :
-      Value(FTy, RT_Function), ParentModule(nullptr) {}
+      Value(FTy, RT_Function), ParentModule(nullptr),
+      VariadicRestSymbol(nullptr), Val(nullptr) {}
   static Function *get(FunctionType *FTy, Context *K) {
     return new (K->RhAllocator) Function(FTy);
   }
@@ -140,6 +142,13 @@ public:
   }
   void setArguments(std::vector<Symbol *> L) {
     ArgumentList = L;
+  }
+  void setVariadicRest(Symbol *Rest) {
+    if (!Rest)
+      return;
+    assert(cast<FunctionType>(VTy)->isVariadic() &&
+           "Confusion about whether function is variadic");
+    VariadicRestSymbol = Rest;
   }
   std::vector<Symbol *> getArguments() {
     return ArgumentList;
@@ -167,6 +176,8 @@ protected:
     Stream << Name << " ~" << *getType() << std::endl;
     for (auto A: ArgumentList)
       Stream << *A << std::endl;
+    if (VariadicRestSymbol)
+      Stream << "&" << *VariadicRestSymbol << std::endl;
     for (auto V: Val->ValueList)
       Stream << *V << std::endl;
   }
