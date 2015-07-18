@@ -317,6 +317,12 @@ rvalue:
                   Int->setSourceLocation(@1);
                   $$ = Int;
                 }
+        |       BOOLEAN[B]
+                {
+                  auto Bool = $B;
+                  Bool->setSourceLocation(@1);
+                  $$ = Bool;
+                }
         |       STRING[P]
                 {
                   auto Str = $P;

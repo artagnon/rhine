@@ -72,6 +72,10 @@ llvm::Value *BindInst::toLL(llvm::Module *M, Context *K) {
 }
 
 llvm::Value *IfInst::toLL(llvm::Module *M, Context *K) {
+  auto Conditional = getConditional()->toLL(M, K);
+  auto TrueBB = getTrueBB()->toLL(M, K);
+  auto FalseBB = getFalseBB()->toLL(M, K);
+  K->Builder->CreateCondBr(Conditional, TrueBB, FalseBB);
   return nullptr;
 }
 }

@@ -64,13 +64,13 @@ std::string ParseFacade::parseAction(ParseSource SrcE,
     break;
   case PostParseAction::LL:
     if (!M)
-      M = new llvm::Module("main", llvm::getGlobalContext());
+      M = new llvm::Module("main", Ctx.LLContext);
     Root.M.toLL(M, &Ctx);
     Ret = llToPP(M);
     break;
   case PostParseAction::LLDUMP:
     if (!M)
-      M = new llvm::Module("main", llvm::getGlobalContext());
+      M = new llvm::Module("main", Ctx.LLContext);
     Root.M.toLL(M, &Ctx);
     M->dump();
     break;
