@@ -8,11 +8,15 @@
 namespace rhine {
 class BasicBlock : public Value {
 public:
+  std::string Name;
   std::vector<Value *> ValueList;
-  BasicBlock(Type *Ty, std::vector<Value *> V) :
+  BasicBlock(Type *Ty, std::vector<Value *> V, std::string Name) :
       Value(Ty, RT_BasicBlock), ValueList(V) {}
   static BasicBlock *get(std::vector<Value *> V, Context *K) {
-    return new (K->RhAllocator) BasicBlock(UnType::get(K), V);
+    return new (K->RhAllocator) BasicBlock(UnType::get(K), V, "");
+  }
+  static BasicBlock *get(std::vector<Value *> V, std::string Name, Context *K) {
+    return new (K->RhAllocator) BasicBlock(UnType::get(K), V, Name);
   }
   static bool classof(const Value *V) {
     return V->getValID() == RT_BasicBlock;
@@ -21,7 +25,7 @@ public:
     B.print(Stream);
     return Stream;
   }
-  llvm::Constant *toLL(llvm::Module *M, Context *K) { return nullptr; };
+  llvm::BasicBlock *toLL(llvm::Module *M, Context *K);
   typedef std::vector<Value *>::iterator iterator;
   iterator begin() {
     return ValueList.begin();

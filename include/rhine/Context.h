@@ -5,6 +5,7 @@
 
 #include "llvm/IR/Value.h"
 #include "llvm/IR/IRBuilder.h"
+#include "llvm/IR/LLVMContext.h"
 #include "llvm/ADT/FoldingSet.h"
 
 #include <cstdlib>
@@ -33,12 +34,14 @@ public:
   llvm::FoldingSet<FunctionType> FTyCache;
   llvm::FoldingSet<PointerType> PTyCache;
   llvm::FoldingSet<IntegerType> ITyCache;
+  llvm::LLVMContext &LLContext;
   llvm::IRBuilder<> *Builder;
   DiagnosticPrinter *DiagPrinter;
   struct Externals *ExternalsCache;
 
   Context(std::ostream &ErrStream = std::cerr):
-      Builder(new llvm::IRBuilder<>(llvm::getGlobalContext())),
+      LLContext(llvm::getGlobalContext()),
+      Builder(new llvm::IRBuilder<>(LLContext)),
       DiagPrinter(new DiagnosticPrinter(&ErrStream)),
       ExternalsCache(nullptr) {}
 

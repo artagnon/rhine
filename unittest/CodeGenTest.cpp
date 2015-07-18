@@ -236,7 +236,7 @@ TEST(CodeGen, ToString)
 TEST(CodeGen, IfBasic)
 {
   std::string SourcePrg =
-    "def main [] { if (0) 2; else 3; }";
+    "def main [] { if (false) 2; else 3; }";
   std::string ExpectedPP =
     "define i32 @main() {\n"
     "entry:\n";
