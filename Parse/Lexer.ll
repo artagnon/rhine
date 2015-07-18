@@ -68,11 +68,11 @@ SPTAB   [ \t]+
 "||" { return T::OR; }
 "->" { return T::ARROW; }
 
-
 "Int" { return T::TINT; }
 "Bool" { return T::TBOOL; }
 "String" { return T::TSTRING; }
 "Fn" { return T::TFUNCTION; }
+"()" { return T::TVOID; }
 
 "true" {
   auto B = ConstantBool::get(true, K);
@@ -91,7 +91,7 @@ SPTAB   [ \t]+
   return T::SYMBOL;
 }
 
-[\[ \] \( \) + * ; { } $ ~ = \\ .] {
+[\[ \] \( \) + * ; { } $ ~ = \\ \&] {
   return static_cast<P::token_type>(*yytext);
 }
 

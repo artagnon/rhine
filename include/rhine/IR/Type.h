@@ -199,7 +199,7 @@ protected:
 
 class FunctionType : public Type {
   Type *ReturnType;
-  bool IsVariadic;
+  bool VariadicFlag;
   std::vector<Type *> ArgumentTypes;
 public:
   FunctionType(Type *RTy, std::vector<Type *> ATys, bool IsV);
@@ -213,7 +213,7 @@ public:
   Type *getATy(unsigned i);
   std::vector<Type *> getATys();
   Type *getRTy();
-  bool isVariadic();
+  bool isVariadic() const;
   friend ostream &operator<<(ostream &Stream, const FunctionType &T) {
     T.print(Stream);
     return Stream;

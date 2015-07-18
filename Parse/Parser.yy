@@ -31,15 +31,15 @@
   class Function *Fcn;
   class Value *Value;
   class Type *Type;
-  std::vector<class Symbol *> *VarList;
+  class ArgumentList *VarList;
+  class TypeList *TyList;
   std::vector<class Value *> *ValueList;
-  std::vector<class Type *> *TypeList;
 }
 
 %start start
 
 %token                  DEF IF ELSE AND OR ARROW
-%token                  TINT TBOOL TSTRING TFUNCTION
+%token                  TINT TBOOL TSTRING TFUNCTION TVOID
 %token                  END       0
 %token  <RawSymbol>     SYMBOL
 %token  <Integer>       INTEGER
@@ -52,7 +52,7 @@
 %type   <Value>         expression expression_or_branch
 %type   <Value>         assign_expr value_expr rvalue
 %type   <Type>          type_annotation type_lit
-%type   <TypeList>      type_list
+%type   <TyList>        type_list
 %type   <Symbol>        typed_symbol lvalue
 
 %{
@@ -84,14 +84,20 @@ fn_decl:
                 DEF SYMBOL[N] '[' argument_list[A] ']' type_annotation[T]
                 {
                   std::vector<Type *> ATys;
+                  Symbol *VariadicRest = nullptr;
+                  if ($A->isVariadic()) {
+                    VariadicRest = $A->back();
+                    $A->pop_back();
+                  }
                   for (auto Sym : *$A)
                     ATys.push_back(Sym->getType());
-                  auto FTy = FunctionType::get($T, ATys, false, K);
+                  auto FTy = FunctionType::get($T, ATys, VariadicRest, K);
                   FTy->setSourceLocation(@4);
                   auto Fn = Function::get(FTy, K);
                   Fn->setSourceLocation(@1);
                   Fn->setName(*$N);
                   Fn->setArguments(*$A);
+                  Fn->setVariadicRest(VariadicRest);
                   $$ = Fn;
                 }
         |       DEF SYMBOL[N] '[' ']' type_annotation[T]
@@ -125,13 +131,19 @@ compound_stm:
 argument_list:
                 typed_symbol[S]
                 {
-                  auto SymbolList = new (K->RhAllocator) std::vector<Symbol *>;
+                  auto SymbolList = new (K->RhAllocator) ArgumentList;
                   SymbolList->push_back($S);
                   $$ = SymbolList;
                 }
         |       argument_list[L] typed_symbol[S]
                 {
                   $L->push_back($S);
+                  $$ = $L;
+                }
+        |       argument_list[L] '&' typed_symbol[S]
+                {
+                  $L->push_back($S);
+                  $L->setIsVariadic(true);
                   $$ = $L;
                 }
                 ;
@@ -172,9 +184,15 @@ type_lit:
                   STy->setSourceLocation(@1);
                   $$ = STy;
                 }
+        |       TVOID
+                {
+                  auto STy = VoidType::get(K);
+                  STy->setSourceLocation(@1);
+                  $$ = STy;
+                }
         |       TFUNCTION '(' type_list[A] ARROW type_lit[R] ')'
                 {
-                  auto FTy = FunctionType::get($R, *$A, false, K);
+                  auto FTy = FunctionType::get($R, *$A, $A->isVariadic(), K);
                   auto PTy = PointerType::get(FTy, K);
                   FTy->setSourceLocation(@1);
                   PTy->setSourceLocation(@1);
@@ -184,13 +202,18 @@ type_lit:
 type_list:
                 type_lit[T]
                 {
-                  auto TypeList = new (K->RhAllocator) std::vector<Type *>;
-                  TypeList->push_back($T);
-                  $$ = TypeList;
+                  auto TyL = new (K->RhAllocator) TypeList;
+                  TyL->push_back($T);
+                  $$ = TyL;
                 }
         |       type_list[L] ARROW type_lit[T]
                 {
                   $L->push_back($T);
+                  $$ = $L;
+                }
+        |       type_list[L] ARROW '&'
+                {
+                  $L->setIsVariadic(true);
                   $$ = $L;
                 }
                 ;
@@ -247,7 +270,7 @@ value_expr:
                   Op->addOperand($R);
                   $$ = Op;
                 }
-        |       typed_symbol[S] '(' ')'
+        |       typed_symbol[S] TVOID
                 {
                   auto CInst = CallInst::get($S->getName(), K);
                   CInst->setSourceLocation(@1);

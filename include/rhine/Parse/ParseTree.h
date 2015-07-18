@@ -9,6 +9,28 @@
 using namespace std;
 
 namespace rhine {
+class ArgumentList : public std::vector<class Symbol *> {
+  bool VariadicFlag = false;
+public:
+  bool isVariadic() {
+    return VariadicFlag;
+  }
+  void setIsVariadic(bool toSet) {
+    VariadicFlag = toSet;
+  }
+};
+
+class TypeList : public std::vector<class Type *> {
+  bool VariadicFlag = false;
+public:
+  bool isVariadic() {
+    return VariadicFlag;
+  }
+  void setIsVariadic(bool toSet) {
+    VariadicFlag = toSet;
+  }
+};
+
 class PTree {
 public:
   Module M;

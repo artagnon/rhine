@@ -3,15 +3,15 @@
 
 using namespace rhine;
 
-TEST(FunctionPointer, DISABLED_PassPrint)
+TEST(FunctionPointer, PassPrint)
 {
   std::string SourcePrg =
-    "def bar [printfn ~Fn(String -> Void)] printfn '12';\n"
+    "def bar [printfn ~Fn(String -> & -> ())] printfn '12';\n"
     "def main [] bar print;";
   std::string ExpectedPP =
-    "define i32 @bar(i32 (i8*)*) {\n"
+    "define void @bar(void (i8*, ...)*) {\n"
     "entry:\n"
-    "  %printfn = call i32 %0(i8* getelementptr";
+    "  call void (i8*, ...) %0(i8* getelementptr";
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
   std::string ExpectedOut = "12";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);

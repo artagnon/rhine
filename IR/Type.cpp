@@ -18,7 +18,7 @@ location Type::getSourceLocation() {
 }
 
 FunctionType::FunctionType(Type *RTy, std::vector<Type *> ATys, bool IsV) :
-    Type(RT_FunctionType), ReturnType(RTy), IsVariadic(IsV),
+    Type(RT_FunctionType), ReturnType(RTy), VariadicFlag(IsV),
     ArgumentTypes(ATys) {}
 
 FunctionType *FunctionType::get(Type *RTy, std::vector<Type *> ATys,
@@ -50,7 +50,7 @@ void FunctionType::Profile(FoldingSetNodeID &ID, const Type *RTy,
 }
 
 void FunctionType::Profile(FoldingSetNodeID &ID) {
-  Profile(ID, ReturnType, ArgumentTypes, IsVariadic);
+  Profile(ID, ReturnType, ArgumentTypes, VariadicFlag);
 }
 
 Type *FunctionType::getATy(unsigned i) {
@@ -66,19 +66,24 @@ Type *FunctionType::getRTy() {
   return ReturnType;
 }
 
-bool FunctionType::isVariadic() {
-  return IsVariadic;
+bool FunctionType::isVariadic() const {
+  return VariadicFlag;
 }
 
 void FunctionType::print(std::ostream &Stream) const {
   Stream << "Fn(";
-  if (!ArgumentTypes.size())
-    Stream << "()";
-  else {
+  if (!ArgumentTypes.size()) {
+    if (isVariadic())
+      Stream << "&";
+    else
+      Stream << "()";
+  } else {
     Stream << *ArgumentTypes[0];
     for (auto ATy = std::next(std::begin(ArgumentTypes));
          ATy != std::end(ArgumentTypes); ++ATy)
       Stream << " -> " << **ATy;
+    if (isVariadic())
+      Stream << " -> &";
   }
   Stream << " -> " << *ReturnType << ")";
 }
