@@ -3,12 +3,10 @@
 #include "rhine/Externals.h"
 
 namespace rhine {
-llvm::BasicBlock *BasicBlock::toLL(llvm::Module *M, Context *K) {
-  auto Ret = llvm::BasicBlock::Create(K->LLContext, Name);
+llvm::Value *BasicBlock::toLL(llvm::Module *M, Context *K) {
   llvm::Value *LastLL;
   for (auto Val : ValueList)
     LastLL = Val->toLL(M, K);
-  K->Builder->CreateRet(LastLL);
-  return Ret;
+  return LastLL;
 }
 }

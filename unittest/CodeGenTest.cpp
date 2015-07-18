@@ -204,17 +204,6 @@ TEST(CodeGen, Lambda)
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }
 
-TEST(CodeGen, FunctionPointer)
-{
-  std::string SourcePrg =
-    "def bar [printfn ~Fn(String -> Int)] printfn '12';";
-  std::string ExpectedPP =
-    "define i32 @bar(i32 (i8*)*) {\n"
-    "entry:\n"
-    "  %printfn = call i32 %0(i8* getelementptr";
-  EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
-}
-
 TEST(CodeGen, ArgumentTypesChaining)
 {
   std::string SourcePrg =
@@ -230,15 +219,5 @@ TEST(CodeGen, ToString)
     "def main [] toString 2;";
   std::string ExpectedPP =
     "%toString = call i8* @std_String_toString__Int(i32 2)";
-  EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
-}
-
-TEST(CodeGen, IfBasic)
-{
-  std::string SourcePrg =
-    "def main [] { if (false) 2; else 3; }";
-  std::string ExpectedPP =
-    "define i32 @main() {\n"
-    "entry:\n";
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }

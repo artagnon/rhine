@@ -44,16 +44,6 @@ TEST(Execution, DollarOperator) {
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
 
-TEST(Execution, FunctionPointer)
-{
-  std::string SourcePrg =
-    "def bar [addfn ~Fn(Int -> Int -> Int)] addfn 2 4;\n"
-    "def addCandidate [a ~Int b ~Int] a + b;\n"
-    "def main [] bar addCandidate;";
-  std::string ExpectedOut = "";
-  EXPECT_OUTPUT(SourcePrg, ExpectedOut);
-}
-
 TEST(Execution, ToString)
 {
   std::string SourcePrg =
@@ -71,16 +61,5 @@ TEST(Execution, VoidArgument) {
     "  printSomething ();\n"
     "}";
   std::string ExpectedOut = "27";
-  EXPECT_OUTPUT(SourcePrg, ExpectedOut);
-}
-
-TEST(Execution, DISABLED_FunctionPointerSwitch)
-{
-  std::string SourcePrg =
-    "def bar [ArithFn ~Fn(Int -> Int -> Int)] ArithFn 2 4;\n"
-    "def addCandidate [A ~Int B ~Int] A + B;\n"
-    "def subCandidate [A ~Int B ~Int] A - B;\n"
-    "def main [] if(0) bar addCandidate; else bar subCandidate;";
-  std::string ExpectedOut = "";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }

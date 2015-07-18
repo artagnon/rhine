@@ -25,7 +25,7 @@ public:
     B.print(Stream);
     return Stream;
   }
-  llvm::BasicBlock *toLL(llvm::Module *M, Context *K);
+  llvm::Value *toLL(llvm::Module *M, Context *K);
   typedef std::vector<Value *>::iterator iterator;
   iterator begin() {
     return ValueList.begin();

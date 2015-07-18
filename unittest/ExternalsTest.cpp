@@ -3,29 +3,23 @@
 
 using namespace rhine;
 
-TEST(Externals, PrintCG)
-{
-  std::string SourcePrg = "def foom [] print '43';";
+TEST(Externals, Print) {
+  std::string SourcePrg =
+    "def main [] {\n"
+    "  print '43';\n"
+    "}";
   std::string ExpectedPP =
     "call void (i8*, ...) @std_Void_print__String";
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
-}
-
-TEST(CodeGen, MallocCG) {
-  std::string SourcePrg =
-    "def mallocCall [] {\n"
-    "  malloc 8;\n"
-    "}";
-  std::string ExpectedPP =
-    "call i8* @malloc(i64 8)";
-  EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
+  std::string ExpectedOut = "43";
+  EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
 
 TEST(Externals, ExternalsCaching) {
   std::string SourcePrg =
-    "def compside [] {"
-    "print 'foom';\n"
-    "print 'baz';\n"
+    "def compside [] {\n"
+    "  print 'foom';\n"
+    "  print 'baz';\n"
     "}";
   std::string ExpectedPP =
     "  call void (i8*, ...) @std_Void_print__String"
@@ -35,26 +29,20 @@ TEST(Externals, ExternalsCaching) {
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }
 
-TEST(Externals, PrintExec) {
-  std::string SourcePrg =
-    "def main [] {\n"
-    "  print '43';\n"
-    "}";
-  std::string ExpectedOut = "43";
-  EXPECT_OUTPUT(SourcePrg, ExpectedOut);
-}
-
-TEST(Externals, MallocExec) {
+TEST(Externals, Malloc) {
   std::string SourcePrg =
     "def main [] {\n"
     "  malloc 8;\n"
     "  print '3';\n"
     "}";
+  std::string ExpectedPP =
+    "call i8* @malloc(i64 8)";
+  EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
   std::string ExpectedOut = "3";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
 
-TEST(Externals, PrintfPercentChars) {
+TEST(Externals, PrintPercentChars) {
   std::string SourcePrg =
     "def main [] {\n"
     "  print '%43';\n"
