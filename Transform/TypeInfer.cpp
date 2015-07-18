@@ -71,6 +71,7 @@ Type *TypeInfer::visit(IfInst *V) {
          V->getSourceLocation(), "mismatched true/false block types");
      exit(1);
    }
+   V->setType(TrueTy);
    return TrueTy;
 }
 

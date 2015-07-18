@@ -38,12 +38,14 @@ public:
   llvm::IRBuilder<> *Builder;
   DiagnosticPrinter *DiagPrinter;
   struct Externals *ExternalsCache;
+  llvm::Function *CurrentFunction;
 
   Context(std::ostream &ErrStream = std::cerr):
       LLContext(llvm::getGlobalContext()),
       Builder(new llvm::IRBuilder<>(LLContext)),
       DiagPrinter(new DiagnosticPrinter(&ErrStream)),
-      ExternalsCache(nullptr) {}
+      ExternalsCache(nullptr),
+      CurrentFunction(nullptr) {}
 
   // The big free
   void releaseMemory() {
