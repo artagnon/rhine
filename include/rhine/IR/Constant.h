@@ -21,7 +21,7 @@ class Module;
 
 class Constant : public Value {
 public:
-  Constant(Type *Ty, RTValue ID) : Value(Ty, ID) {}
+  Constant(Type *Ty, RTValue ID);
   friend ostream &operator<<(ostream &Stream, const Constant &C) {
     C.print(Stream);
     return Stream;
@@ -34,8 +34,7 @@ protected:
 class ConstantInt : public Constant {
   int Val;
 public:
-  ConstantInt(int Val, unsigned Bitwidth, Context *K) :
-      Constant(IntegerType::get(Bitwidth, K), RT_ConstantInt), Val(Val) {}
+  ConstantInt(int Val, unsigned Bitwidth, Context *K);
   static ConstantInt *get(int Val, unsigned Bitwidth, Context *K) {
     return new (K->RhAllocator) ConstantInt(Val, Bitwidth, K);
   }

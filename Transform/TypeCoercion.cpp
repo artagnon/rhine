@@ -30,6 +30,12 @@ Value *TypeCoercion::convertValue(Value *V, StringType *) {
   return Op;
 }
 
+Value *TypeCoercion::convertValue(Value *V, BoolType *) {
+  if (isa<BoolType>(V->getType()))
+    return V;
+  return V;
+}
+
 Value *TypeCoercion::convertValue(Value *V, Type *Ty) {
   if (auto STy = dyn_cast<StringType>(Ty))
     return convertValue(V, STy);
@@ -67,6 +73,12 @@ void TypeCoercion::runOnFunction(Function *F) {
                 convertValue(C->getOperand(It), FTy->getATy(It)));
           C->setOperands(TransformedOperands);
           return C;
+        }
+        if (auto I = dyn_cast<IfInst>(V)) {
+          auto ConvertedConditional =
+            convertValue(I->getConditional(), BoolType::get(K));
+          I->setConditional(ConvertedConditional);
+          return I;
         }
         return V;
       });

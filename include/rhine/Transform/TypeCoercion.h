@@ -11,6 +11,7 @@ public:
   TypeCoercion(Context *K) : K(K) {}
   Value *convertValue(ConstantInt *I, IntegerType *DestTy);
   Value *convertValue(Value *V, StringType *);
+  Value *convertValue(Value *V, BoolType *);
   Value *convertValue(Value *V, Type *);
   void runOnFunction(Function *F);
   void runOnModule(Module *M);
