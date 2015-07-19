@@ -19,20 +19,11 @@ class Instruction : public Value {
 protected:
   std::vector<Value *> OperandList;
 public:
-  Instruction(Type *Ty, RTValue ID) : Value(Ty, ID) {}
-  void addOperand(Value *V) {
-    OperandList.push_back(V);
-  }
-  Value *getOperand(unsigned i) {
-    assert(i < OperandList.size() && "getOperand() out of range");
-    return OperandList[i];
-  }
-  std::vector<Value *> getOperands() {
-    return OperandList;
-  }
-  void setOperands(std::vector<Value *> Ops) {
-    OperandList = Ops;
-  }
+  Instruction(Type *Ty, RTValue ID);
+  void addOperand(Value *V);
+  Value *getOperand(unsigned i);
+  std::vector<Value *> getOperands();
+  void setOperands(std::vector<Value *> Ops);
   friend ostream &operator<<(ostream &Stream, const Instruction &I) {
     I.print(Stream);
     return Stream;
@@ -44,89 +35,53 @@ protected:
 
 class AddInst : public Instruction {
 public:
-  AddInst(Type *Ty) : Instruction(Ty, RT_AddInst) {}
-  static AddInst *get(Context *K) {
-    return new (K->RhAllocator) AddInst(UnType::get(K));
-  }
-  static bool classof(const Value *V) {
-    return V->getValID() == RT_AddInst;
-  }
+  AddInst(Type *Ty);
+  static AddInst *get(Context *K);
+  static bool classof(const Value *V);
   friend ostream &operator<<(ostream &Stream, const AddInst &A) {
     A.print(Stream);
     return Stream;
   }
   llvm::Value *toLL(llvm::Module *M, Context *K);
 protected:
-  virtual void print(std::ostream &Stream) const {
-    Stream << "+ ~" << *getType() << std::endl;
-    for (auto O: OperandList)
-      Stream << *O << std::endl;
-  }
+  virtual void print(std::ostream &Stream) const;
 };
 
 class CallInst : public Instruction {
   std::string Name;
   std::string CallName;
 public:
-  // We never know the type before looking up the symbol
-  CallInst(std::string FunctionName, Type *Ty) :
-      Instruction(Ty, RT_CallInst), Name(FunctionName),
-      CallName(FunctionName) {}
-  static CallInst *get(std::string FunctionName, Context *K) {
-    return new (K->RhAllocator) CallInst(FunctionName, UnType::get(K));
-  }
-  static bool classof(const Value *V) {
-    return V->getValID() == RT_CallInst;
-  }
-  std::string getName() {
-    return Name;
-  }
+  CallInst(std::string FunctionName, Type *Ty);
+  static CallInst *get(std::string FunctionName, Context *K);
+  static bool classof(const Value *V);
+  std::string getName();
   friend ostream &operator<<(ostream &Stream, const CallInst &C) {
     C.print(Stream);
     return Stream;
   }
   llvm::Value *toLL(llvm::Module *M, Context *K);
 protected:
-  virtual void print(std::ostream &Stream) const {
-    Stream << Name << " ~" << *getType() << std::endl;
-    for (auto O: OperandList)
-      Stream << *O << std::endl;
-  }
+  virtual void print(std::ostream &Stream) const;
 };
 
 class BindInst : public Instruction {
   std::string Name;
   Value *Val;
 public:
-  BindInst(std::string N, Type *Ty, Value *V) :
-      Instruction(Ty, RT_BindInst), Name(N), Val(V) {}
-
-  static BindInst *get(std::string N, Value *V, Context *K) {
-    return new (K->RhAllocator) BindInst(N, VoidType::get(K), V);
-  }
-  static bool classof(const Value *V) {
-    return V->getValID() == RT_BindInst;
-  }
-  void setVal(Value *V) {
-    Val = V;
-  }
-  Value *getVal() {
-    return Val;
-  }
-  std::string getName() {
-    return Name;
-  }
+  BindInst(std::string N, Type *Ty, Value *V);
+  static BindInst *get(std::string N, Value *V, Context *K);
+  static bool classof(const Value *V);
+  void setVal(Value *V);
+  Value *getVal();
+  std::string getName();
   friend ostream &operator<<(ostream &Stream, const BindInst &S) {
     S.print(Stream);
     return Stream;
   }
   llvm::Value *toLL(llvm::Module *M, Context *K);
 protected:
-  virtual void print(std::ostream &Stream) const {
-    Stream << Name << " = " << *Val;
-  }
+  virtual void print(std::ostream &Stream) const;
 };
-
 
 class IfInst : public Instruction {
   Value *Conditional;
@@ -134,42 +89,21 @@ class IfInst : public Instruction {
   BasicBlock *FalseBB;
 public:
   IfInst(Type *Ty, Value * Conditional_,
-         BasicBlock *TrueBB_, BasicBlock *FalseBB_) :
-      Instruction(Ty, RT_IfInst), Conditional(Conditional_),
-      TrueBB(TrueBB_), FalseBB(FalseBB_) {}
-
+         BasicBlock *TrueBB_, BasicBlock *FalseBB_);
   static IfInst *get(Value * Conditional, BasicBlock *TrueBB,
-                     BasicBlock *FalseBB, Context *K) {
-    return new (K->RhAllocator) IfInst(UnType::get(K), Conditional,
-                                       TrueBB, FalseBB);
-  }
-  static bool classof(const Value *V) {
-    return V->getValID() == RT_IfInst;
-  }
-  Value *getConditional() {
-    return Conditional;
-  }
-  BasicBlock *getTrueBB() {
-    return TrueBB;
-  }
-  BasicBlock *getFalseBB() {
-    return FalseBB;
-  }
+                     BasicBlock *FalseBB, Context *K);
+  static bool classof(const Value *V);
+  Value *getConditional();
+  void setConditional(Value *C);
+  BasicBlock *getTrueBB();
+  BasicBlock *getFalseBB();
   friend ostream &operator<<(ostream &Stream, const IfInst &S) {
     S.print(Stream);
     return Stream;
   }
   llvm::Value *toLL(llvm::Module *M, Context *K);
 protected:
-  virtual void print(std::ostream &Stream) const {
-    Stream << "if (" << *Conditional << ") {" << std::endl;
-    for (auto V: *TrueBB)
-      Stream << *V << std::endl;
-    Stream << "} else {" << std::endl;
-    for (auto V: *FalseBB)
-      Stream << *V << std::endl;
-    Stream << "}" << std::endl;
-  }
+  virtual void print(std::ostream &Stream) const;
 };
 }
 
