@@ -51,6 +51,7 @@
 %type   <Fcn>           fn_decl def
 %type   <Value>         expression expression_or_branch
 %type   <Value>         assign_expr value_expr rvalue
+%type   <Value>         lambda_assign lambda_expr
 %type   <Type>          type_annotation type_lit
 %type   <TyList>        type_list
 %type   <Symbol>        typed_symbol lvalue
@@ -238,6 +239,10 @@ expression_or_branch:
                 {
                   $$ = $E;
                 }
+        |       lambda_assign[A]
+                {
+                  $$ = $A;
+                }
         |       IF '(' value_expr[V] ')' compound_stm[T] ELSE compound_stm[F]
                 {
                   $$ = IfInst::get($V, $T, $F, K);
@@ -291,7 +296,25 @@ value_expr:
                   Op->addOperand($E);
                   $$ = Op;
                 }
-        |       '\\' argument_list[A] ARROW compound_stm[B]
+                ;
+assign_expr:
+                lvalue[L] '=' value_expr[E]
+                {
+                  auto Op = BindInst::get($L->getName(), $E, K);
+                  Op->setSourceLocation(@1);
+                  $$ = Op;
+                }
+                ;
+lambda_assign:
+                lvalue[L] '=' lambda_expr[E]
+                {
+                  auto Op = BindInst::get($L->getName(), $E, K);
+                  Op->setSourceLocation(@1);
+                  $$ = Op;
+                }
+                ;
+lambda_expr:
+                '\\' argument_list[A] ARROW compound_stm[B]
                 {
                   std::vector<Type *> ATys;
                   for (auto Sym : *$A)
@@ -303,14 +326,6 @@ value_expr:
                   Fn->setArguments(*$A);
                   Fn->setBody($B);
                   $$ = Fn;
-                }
-                ;
-assign_expr:
-                lvalue[L] '=' value_expr[E]
-                {
-                  auto Op = BindInst::get($L->getName(), $E, K);
-                  Op->setSourceLocation(@1);
-                  $$ = Op;
                 }
                 ;
 lvalue:
