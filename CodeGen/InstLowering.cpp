@@ -92,9 +92,12 @@ llvm::Value *IfInst::toLL(llvm::Module *M, Context *K) {
   FalseBB = K->Builder->GetInsertBlock();
 
   K->Builder->SetInsertPoint(MergeBB);
-  auto PN = K->Builder->CreatePHI(VTy->toLL(M, K), 2, "iftmp");
-  PN->addIncoming(TrueV, TrueBB);
-  PN->addIncoming(FalseV, FalseBB);
-  return PN;
+  if (!isa<VoidType>(VTy)) {
+    auto PN = K->Builder->CreatePHI(VTy->toLL(M, K), 2, "iftmp");
+    PN->addIncoming(TrueV, TrueBB);
+    PN->addIncoming(FalseV, FalseBB);
+    return PN;
+  }
+  return nullptr;
 }
 }
