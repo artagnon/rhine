@@ -31,3 +31,11 @@ TEST(TyCoerce, IntTyToString) {
   std::string ExpectedOut = "3";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
+
+TEST(TyCoerce, DISABLED_NestedBB)
+{
+  std::string SourcePrg =
+    "def main [] { if (false) print 2; else print 3; }";
+  std::string ExpectedOut = "3";
+  EXPECT_OUTPUT(SourcePrg, ExpectedOut);
+}

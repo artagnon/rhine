@@ -19,5 +19,13 @@ TEST(If, BasicCodeGen)
     "  %iftmp = phi i32 [ 2, %true ], [ 3, %false ]\n"
     "  ret i32 %iftmp\n"
     "}";
- EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
+  EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
+}
+
+TEST(If, BasicExecution)
+{
+  std::string SourcePrg =
+    "def main [] { if (false) print '2'; else print '3'; }";
+  std::string ExpectedOut = "3";
+  EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
