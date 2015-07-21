@@ -3,6 +3,22 @@
 
 using namespace rhine;
 
+TEST(FunctionPointer, BasicCodeGen) {
+  std::string SourcePrg =
+    "def callee [] {\n"
+    "  3;\n"
+    "}\n"
+    "def caller [] {\n"
+    "  callee;\n"
+    "}";
+  std::string ExpectedPP =
+    "define i32 ()* @caller() {\n"
+    "entry:\n"
+    "  ret i32 ()* @callee\n"
+    "}\n";
+  EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
+}
+
 TEST(FunctionPointer, PassPrint)
 {
   std::string SourcePrg =
