@@ -49,7 +49,6 @@ protected:
 
 class CallInst : public Instruction {
   std::string Name;
-  std::string CallName;
 public:
   CallInst(std::string FunctionName, Type *Ty);
   static CallInst *get(std::string FunctionName, Context *K);

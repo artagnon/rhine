@@ -37,8 +37,7 @@ void AddInst::print(std::ostream &Stream) const {
 }
 
 CallInst::CallInst(std::string FunctionName, Type *Ty) :
-    Instruction(Ty, RT_CallInst), Name(FunctionName),
-    CallName(FunctionName) {}
+    Instruction(Ty, RT_CallInst), Name(FunctionName) {}
 
 CallInst *CallInst::get(std::string FunctionName, Context *K) {
   return new (K->RhAllocator) CallInst(FunctionName, UnType::get(K));

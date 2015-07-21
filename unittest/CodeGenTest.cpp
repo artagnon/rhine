@@ -138,22 +138,6 @@ TEST(CodeGen, CallInstTyInfer) {
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }
 
-TEST(CodeGen, BasicFunctionPointer) {
-  std::string SourcePrg =
-    "def callee [] {\n"
-    "  3;\n"
-    "}\n"
-    "def caller [] {\n"
-    "  callee;\n"
-    "}";
-  std::string ExpectedPP =
-    "define i32 ()* @caller() {\n"
-    "entry:\n"
-    "  ret i32 ()* @callee\n"
-    "}\n";
-  EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
-}
-
 TEST(CodeGen, ExternalsFunctionPointer) {
   std::string SourcePrg =
     "def mallocRet [] {\n"

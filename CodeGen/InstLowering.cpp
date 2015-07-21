@@ -20,7 +20,6 @@ llvm::Value *getCalleeFunction(std::string Name, location SourceLoc,
     if (auto CalleeCandidate = dyn_cast<llvm::Function>(FCandidate))
       return CalleeCandidate;
     else {
-      // Polymorphic externals?
       K->DiagPrinter->errorReport(
           SourceLoc, Name + " was declared with different signature earlier");
       exit(1);
