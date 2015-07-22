@@ -14,9 +14,7 @@ bool isPointerToFunction(llvm::Value *Candidate) {
 llvm::Value *getCalleeFunction(std::string Name, location SourceLoc,
                                llvm::Module *M, Context *K) {
   if (auto Result = K->getMappingVal(Name)) {
-    if (auto CalleeCandidate = dyn_cast<llvm::Function>(Result))
-      return CalleeCandidate;
-    else if (isPointerToFunction(Result))
+    if (isa<llvm::Function>(Result) || isPointerToFunction(Result))
       return Result;
     else {
       auto Sym = Symbol::get(Name, K->getMappingTy(Name), K)->toLL(M, K);
