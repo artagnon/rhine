@@ -3,15 +3,25 @@
 #include "rhine/Externals.h"
 
 namespace rhine {
+bool isPointerToFunction(llvm::Value *Candidate) {
+  if (auto PTy = dyn_cast<llvm::PointerType>(Candidate->getType())) {
+    if (isa<llvm::FunctionType>(PTy->getElementType()))
+      return true;
+  }
+  return false;
+}
+
 llvm::Value *getCalleeFunction(std::string Name, location SourceLoc,
                                llvm::Module *M, Context *K) {
   if (auto Result = K->getMappingVal(Name)) {
     if (auto CalleeCandidate = dyn_cast<llvm::Function>(Result))
       return CalleeCandidate;
-    else if (auto PTy = dyn_cast<llvm::PointerType>(Result->getType())) {
-      if (dyn_cast<llvm::FunctionType>(PTy->getElementType()))
-        return Result;
-    } else {
+    else if (isPointerToFunction(Result))
+      return Result;
+    else {
+      auto Sym = Symbol::get(Name, K->getMappingTy(Name), K)->toLL(M, K);
+      if (isPointerToFunction(Sym))
+        return Sym;
       K->DiagPrinter->errorReport(
           SourceLoc, Name + " was not declared as a function");
       exit(1);

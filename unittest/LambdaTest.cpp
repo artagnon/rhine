@@ -21,7 +21,7 @@ TEST(Lambda, BasicCodeGen)
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }
 
-TEST(Lambda, DISABLED_BasicExecution)
+TEST(Lambda, BasicExecution)
 {
   std::string SourcePrg =
     "def main [] {\n"
