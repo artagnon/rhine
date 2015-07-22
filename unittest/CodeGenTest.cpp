@@ -178,12 +178,3 @@ TEST(CodeGen, ArgumentTypesChaining)
     "define i32 @boom(i32 (i32, i32)*)";
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }
-
-TEST(CodeGen, ToString)
-{
-  std::string SourcePrg =
-    "def main [] toString 2;";
-  std::string ExpectedPP =
-    "%toString = call i8* @std_String_toString__Int(i32 2)";
-  EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
-}

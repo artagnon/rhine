@@ -19,6 +19,27 @@ TEST(FunctionPointer, BasicCodeGen) {
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }
 
+TEST(FunctionPointer, BasicExecution) {
+  std::string SourcePrg =
+    "def callee [] {\n"
+    "  3;\n"
+    "}\n"
+    "def main [] {\n"
+    "  callee;\n"
+    "}";
+  std::string ExpectedOut = "";
+  EXPECT_OUTPUT(SourcePrg, ExpectedOut);
+}
+
+TEST(FunctionPointer, Externals) {
+  std::string SourcePrg =
+    "def main [] {\n"
+    "  malloc;\n"
+    "}";
+  std::string ExpectedOut = "";
+  EXPECT_OUTPUT(SourcePrg, ExpectedOut);
+}
+
 TEST(FunctionPointer, PassPrint)
 {
   std::string SourcePrg =
