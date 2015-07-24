@@ -88,6 +88,19 @@ Type *TypeInfer::visit(Symbol *V) {
   exit(1);
 }
 
+Type *TypeInfer::visit(Argument *V) {
+  auto Name = V->getName();
+  auto VTy = V->getType();
+  if (auto Ty = Resolve::resolveSymbolTy(Name, VTy, K)) {
+    V->setType(Ty);
+    K->addMapping(Name, Ty);
+    return Ty;
+  }
+  K->DiagPrinter->errorReport(
+      V->getSourceLocation(), "untyped argument " + Name);
+  exit(1);
+}
+
 Type *TypeInfer::visit(CallInst *V) {
   typeInferValueList(V->getOperands());
   auto Name = V->getName();

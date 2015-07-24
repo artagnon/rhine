@@ -17,6 +17,7 @@ protected:
   virtual R visit(Function *F) = 0;
   virtual R visit(AddInst *A) = 0;
   virtual R visit(IfInst *F) = 0;
+  virtual R visit(Argument *A) = 0;
   virtual R visit(Symbol *S) = 0;
   virtual R visit(CallInst *C) = 0;
   virtual R visit(BindInst *B) = 0;
