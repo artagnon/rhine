@@ -23,6 +23,7 @@
 %union {
   std::string *RawSymbol;
   class Symbol *Symbol;
+  class Argument *Argument;
   class ConstantInt *Integer;
   class ConstantBool *Boolean;
   class ConstantFloat *Float;
@@ -31,7 +32,7 @@
   class Function *Fcn;
   class Value *Value;
   class Type *Type;
-  class ArgumentList *VarList;
+  class ArgumentList *ArgList;
   class TypeList *TyList;
   std::vector<class Value *> *ValueList;
 }
@@ -45,7 +46,7 @@
 %token  <Integer>       INTEGER
 %token  <Boolean>       BOOLEAN
 %token  <String>        STRING
-%type   <VarList>       argument_list
+%type   <ArgList>       argument_list
 %type   <BB>            compound_stm
 %type   <ValueList>     rvalue_list stm_list
 %type   <Fcn>           fn_decl def
@@ -54,6 +55,7 @@
 %type   <Value>         lambda_assign lambda_expr
 %type   <Type>          type_annotation type_lit
 %type   <TyList>        type_list
+%type   <Argument>      typed_argument
 %type   <Symbol>        typed_symbol lvalue
 
 %{
@@ -85,7 +87,7 @@ fn_decl:
                 DEF SYMBOL[N] '[' argument_list[A] ']' type_annotation[T]
                 {
                   std::vector<Type *> ATys;
-                  Symbol *VariadicRest = nullptr;
+                  Argument *VariadicRest = nullptr;
                   if ($A->isVariadic()) {
                     VariadicRest = $A->back();
                     $A->pop_back();
@@ -130,22 +132,30 @@ compound_stm:
                   $$ = BasicBlock::get(StmList, K);
                 }
 argument_list:
-                typed_symbol[S]
+                typed_argument[S]
                 {
-                  auto SymbolList = new (K->RhAllocator) ArgumentList;
-                  SymbolList->push_back($S);
-                  $$ = SymbolList;
+                  auto AList = new (K->RhAllocator) ArgumentList;
+                  AList->push_back($S);
+                  $$ = AList;
                 }
-        |       argument_list[L] typed_symbol[S]
+        |       argument_list[L] typed_argument[S]
                 {
                   $L->push_back($S);
                   $$ = $L;
                 }
-        |       argument_list[L] '&' typed_symbol[S]
+        |       argument_list[L] '&' typed_argument[S]
                 {
                   $L->push_back($S);
                   $L->setIsVariadic(true);
                   $$ = $L;
+                }
+                ;
+typed_argument:
+                SYMBOL[S] type_annotation[T]
+                {
+                  auto Sym = Argument::get(*$S, $T, K);
+                  Sym->setSourceLocation(@1);
+                  $$ = Sym;
                 }
                 ;
 typed_symbol:
@@ -155,7 +165,7 @@ typed_symbol:
                   Sym->setSourceLocation(@1);
                   $$ = Sym;
                 }
-        ;
+                ;
 type_annotation:
                 {
                   $$ = UnType::get(K);
@@ -367,9 +377,9 @@ rvalue:
                   Str->setSourceLocation(@1);
                   $$ = Str;
                 }
-        |       typed_symbol[S]
+        |       lvalue[L]
                 {
-                  $$ = $S;
+                  $$ = $L;
                 }
                 ;
 %%

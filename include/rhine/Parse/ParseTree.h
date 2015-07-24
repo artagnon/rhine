@@ -9,7 +9,7 @@
 using namespace std;
 
 namespace rhine {
-class ArgumentList : public std::vector<class Symbol *> {
+class ArgumentList : public std::vector<class Argument *> {
   bool VariadicFlag = false;
 public:
   bool isVariadic() {

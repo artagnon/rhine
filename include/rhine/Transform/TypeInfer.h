@@ -23,6 +23,7 @@ public:
   Type *visit(AddInst *A) override;
   Type *visit(IfInst *F) override;
   Type *visit(Symbol *S) override;
+  Type *visit(Argument *A) override;
   Type *visit(CallInst *C) override;
   Type *visit(BindInst *B) override;
 };

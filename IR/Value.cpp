@@ -29,14 +29,15 @@ void Value::dump() {
   std::cout << *this << std::endl;
 }
 
-Symbol::Symbol(std::string N, Type *T) : Value(T, RT_Symbol), Name(N) {}
+Symbol::Symbol(std::string N, Type *T, RTValue ID) : Value(T, ID), Name(N) {}
 
 Symbol *Symbol::get(std::string N, Type *T, Context *K) {
   return new (K->RhAllocator) Symbol(N, T);
 }
 
 bool Symbol::classof(const Value *V) {
-  return V->getValID() == RT_Symbol;
+  return V->getValID() >= RT_Symbol &&
+    V->getValID() <= RT_Argument;
 }
 
 std::string Symbol::getName() {
@@ -44,6 +45,20 @@ std::string Symbol::getName() {
 }
 
 void Symbol::print(std::ostream &Stream) const {
+  Stream << Name << " ~" << *getType();
+}
+
+Argument::Argument(std::string N, Type *T) : Symbol(N, T, RT_Argument) {}
+
+Argument *Argument::get(std::string N, Type *T, Context *K) {
+  return new (K->RhAllocator) Argument(N, T);
+}
+
+bool Argument::classof(const Value *V) {
+  return V->getValID() == RT_Argument;
+}
+
+void Argument::print(std::ostream &Stream) const {
   Stream << Name << " ~" << *getType();
 }
 

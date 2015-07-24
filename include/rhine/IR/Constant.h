@@ -83,8 +83,8 @@ protected:
 class Function : public Value {
   Module *ParentModule;
   std::string Name;
-  std::vector<Symbol *> ArgumentList;
-  Symbol *VariadicRestSymbol;
+  std::vector<Argument *> ArgumentList;
+  Argument *VariadicRestSymbol;
   BasicBlock *Val;
 public:
   Function(FunctionType *FTy);
@@ -94,9 +94,9 @@ public:
   Module *getParent();
   void setName(std::string N);
   std::string getName();
-  void setArguments(std::vector<Symbol *> L);
-  void setVariadicRest(Symbol *Rest);
-  std::vector<Symbol *> getArguments();
+  void setArguments(std::vector<Argument *> L);
+  void setVariadicRest(Argument *Rest);
+  std::vector<Argument *> getArguments();
   void setBody(BasicBlock *Body);
   BasicBlock *getVal();
   BasicBlock::iterator begin();

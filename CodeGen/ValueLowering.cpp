@@ -9,11 +9,21 @@ llvm::Value *Symbol::toLL(llvm::Module *M, Context *K) {
     if (isa<AllocaInst>(Result))
       return K->Builder->CreateLoad(Result, Name + "Load");
     return Result;
-  } else if (auto Result = Externals::get(K)->getMappingVal(Name, M)) {
+  } else if (auto Result = Externals::get(K)->getMappingVal(Name, M))
     return Result;
-  }
   K->DiagPrinter->errorReport(
       SourceLoc, "unbound symbol " + Name);
+  exit(1);
+}
+
+llvm::Value *Argument::toLL(llvm::Module *M, Context *K) {
+  auto Name = getName();
+  if (auto Result = K->getMappingVal(Name))
+    return Result;
+  else if (auto Result = Externals::get(K)->getMappingVal(Name, M))
+    return Result;
+  K->DiagPrinter->errorReport(
+      SourceLoc, "unbound argument " + Name);
   exit(1);
 }
 

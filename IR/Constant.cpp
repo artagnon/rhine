@@ -94,11 +94,11 @@ std::string Function::getName() {
   return Name;
 }
 
-void Function::setArguments(std::vector<Symbol *> L) {
+void Function::setArguments(std::vector<Argument *> L) {
   ArgumentList = L;
 }
 
-void Function::setVariadicRest(Symbol *Rest) {
+void Function::setVariadicRest(Argument *Rest) {
   if (!Rest)
     return;
   assert(cast<FunctionType>(VTy)->isVariadic() &&
@@ -106,7 +106,7 @@ void Function::setVariadicRest(Symbol *Rest) {
   VariadicRestSymbol = Rest;
 }
 
-std::vector<Symbol *> Function::getArguments() {
+std::vector<Argument *> Function::getArguments() {
   return ArgumentList;
 }
 
