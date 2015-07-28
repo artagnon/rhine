@@ -3,12 +3,12 @@
 #define RHINE_FUNCTIONTRANSFORM_H
 
 #include "rhine/IR.h"
-#include "rhine/Transform/ModuleTransform.h"
+#include "rhine/Transform/ModulePass.h"
 
 namespace rhine {
-class FunctionTransform : public ModuleTransform {
+class FunctionPass : public ModulePass {
 public:
-  FunctionTransform(Context *K) : ModuleTransform(K) {}
+  FunctionPass(Context *K) : ModulePass(K) {}
   void runOnModule(Module *M);
   virtual void runOnFunction(Function *F) = 0;
 };

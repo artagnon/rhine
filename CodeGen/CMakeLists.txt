@@ -9,14 +9,7 @@ add_library(CodeGen
   "${CMAKE_CURRENT_SOURCE_DIR}/InstLowering.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ModuleLowering.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/BasicBlockLowering.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/Externals.cpp"
-  "${PROJECT_SOURCE_DIR}/include/rhine/Externals.h"
-  "${PROJECT_SOURCE_DIR}/include/rhine/IR/Type.h"
-  "${PROJECT_SOURCE_DIR}/include/rhine/IR/Value.h"
-  "${PROJECT_SOURCE_DIR}/include/rhine/IR/Constant.h"
-  "${PROJECT_SOURCE_DIR}/include/rhine/IR/Instruction.h"
-  "${PROJECT_SOURCE_DIR}/include/rhine/IR/Module.h"
-  "${PROJECT_SOURCE_DIR}/include/rhine/IR.h")
+  "${CMAKE_CURRENT_SOURCE_DIR}/Externals.cpp")
 set_target_properties(CodeGen PROPERTIES
   LINKER_LANGUAGE CXX
   COMPILE_FLAGS "${LLVM_CXXFLAGS}")

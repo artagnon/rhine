@@ -5,7 +5,6 @@ include_directories("${PROJECT_SOURCE_DIR}/gtest/include")
 include_directories("${LLVM_INCLUDE_DIRS}")
 
 add_library(Util
-  "${PROJECT_SOURCE_DIR}/include/rhine/TestUtil.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/TestUtil.cpp")
 set_target_properties(Util PROPERTIES
   LINKER_LANGUAGE CXX
