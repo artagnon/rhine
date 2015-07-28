@@ -38,6 +38,7 @@ protected:
   location SourceLoc;
 public:
   Type(RTType ID) : TyID(ID) {}
+  virtual ~Type() {}
   RTType getTyID() const;
   static Type *get() = delete;
   void setSourceLocation(location SrcLoc);
@@ -57,6 +58,7 @@ private:
 class UnType : public Type {
 public:
   UnType(): Type(RT_UnType) {}
+  virtual ~UnType() {}
   static UnType *get(Context *K) {
     static auto UniqueUnType = new UnType;
     return UniqueUnType;
@@ -78,6 +80,7 @@ protected:
 class VoidType : public Type {
 public:
   VoidType(): Type(RT_VoidType) {}
+  virtual ~VoidType() {}
   static VoidType *get(Context *K) {
     static auto UniqueVoidType = new VoidType;
     return UniqueVoidType;
@@ -100,6 +103,7 @@ class IntegerType : public Type {
 public:
   IntegerType(unsigned Width):
       Type(RT_IntegerType), Bitwidth(Width) {}
+  virtual ~IntegerType() {}
   static IntegerType *get(unsigned Bitwidth, Context *K) {
     FoldingSetNodeID ID;
     void *IP;
@@ -137,6 +141,7 @@ protected:
 class BoolType : public Type {
 public:
   BoolType(): Type(RT_BoolType) {}
+  virtual ~BoolType() {}
   static BoolType *get(Context *K) {
     static auto UniqueBoolType = new BoolType;
     return UniqueBoolType;
@@ -158,6 +163,7 @@ protected:
 class FloatType : public Type {
 public:
   FloatType(): Type(RT_FloatType) {}
+  virtual ~FloatType() {}
   static FloatType *get(Context *K) {
     static auto UniqueFloatType = new FloatType;
     return UniqueFloatType;
@@ -179,6 +185,7 @@ protected:
 class StringType : public Type {
 public:
   StringType(): Type(RT_StringType) {}
+  virtual ~StringType() {}
   static StringType *get(Context *K) {
     static auto UniqueStringType = new StringType;
     return UniqueStringType;
@@ -203,6 +210,7 @@ class FunctionType : public Type {
   std::vector<Type *> ArgumentTypes;
 public:
   FunctionType(Type *RTy, std::vector<Type *> ATys, bool IsV);
+  virtual ~FunctionType() {}
   static FunctionType *get(Type *RTy, std::vector<Type *> ATys,
                            bool IsV, Context *K);
   static FunctionType *get(Type *RTy, Context *K);
@@ -227,6 +235,7 @@ class PointerType : public Type {
   Type *ContainedType;
 public:
   PointerType(Type *CTy) : Type(RT_PointerType), ContainedType(CTy) {}
+  virtual ~PointerType() {}
   static PointerType *get(Type *CTy, Context *K) {
     FoldingSetNodeID ID;
     void *IP;

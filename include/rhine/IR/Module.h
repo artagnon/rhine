@@ -18,6 +18,7 @@ namespace rhine {
 class Module {
   std::vector<Function *> ContainedFs;
 public:
+  virtual ~Module() {}
   Module *get() {
     return new Module;
   }

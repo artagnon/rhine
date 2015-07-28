@@ -9,7 +9,20 @@ template <typename R>
 class ValueVisitor {
 protected:
   ~ValueVisitor() {}
-  virtual R visit(Value *V);
+  virtual R visit(Value *V) {
+    if (auto C = dyn_cast<ConstantInt>(V)) { return visit(C); }
+    if (auto C = dyn_cast<ConstantBool>(V)) { return visit(C); }
+    if (auto C = dyn_cast<ConstantFloat>(V)) { return visit(C); }
+    if (auto C = dyn_cast<GlobalString>(V)) { return visit(C); }
+    if (auto C = dyn_cast<Function>(V)) { return visit(C); }
+    if (auto C = dyn_cast<AddInst>(V)) { return visit(C); }
+    if (auto C = dyn_cast<IfInst>(V)) { return visit(C); }
+    if (auto C = dyn_cast<Argument>(V)) { return visit(C); }
+    else if (auto C = dyn_cast<Symbol>(V)) { return visit(C); }
+    if (auto C = dyn_cast<CallInst>(V)) { return visit(C); }
+    if (auto C = dyn_cast<BindInst>(V)) { return visit(C); }
+    assert(0 && "Unknown ValueVisitor dispatch");
+  }
   virtual R visit(ConstantInt *I) = 0;
   virtual R visit(ConstantBool *B) = 0;
   virtual R visit(ConstantFloat *F) = 0;
