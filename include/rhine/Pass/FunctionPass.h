@@ -3,7 +3,7 @@
 #define RHINE_FUNCTIONTRANSFORM_H
 
 #include "rhine/IR.h"
-#include "rhine/Transform/ModulePass.h"
+#include "rhine/Pass/ModulePass.h"
 
 namespace rhine {
 class FunctionPass : public ModulePass {

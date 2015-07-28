@@ -1,5 +1,5 @@
 #include "rhine/IR.h"
-#include "rhine/Transform/FunctionPass.h"
+#include "rhine/Pass/FunctionPass.h"
 
 namespace rhine {
 void FunctionPass::runOnModule(Module *M) {

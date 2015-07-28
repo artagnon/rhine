@@ -3,13 +3,13 @@
 #define RHINE_TYPEINFER_H
 
 #include "rhine/Transform/ValueVisitor.h"
-#include "rhine/Transform/FunctionPass.h"
+#include "rhine/Pass/FunctionPass.h"
 
 namespace rhine {
 class TypeInfer : public ValueVisitor<Type *>, public FunctionPass {
 public:
   TypeInfer(Context *K) : FunctionPass(K) {}
-  ~TypeInfer() {}
+  virtual ~TypeInfer() {}
   void runOnFunction(Function *F) override;
   template <typename T>
   Type *typeInferValueList(std::vector<T> V);
