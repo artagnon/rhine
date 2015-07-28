@@ -83,9 +83,4 @@ void TypeCoercion::runOnFunction(Function *F) {
         return V;
       });
 }
-
-void TypeCoercion::runOnModule(Module *M) {
-  for (auto F: *M)
-    runOnFunction(F);
-}
 }

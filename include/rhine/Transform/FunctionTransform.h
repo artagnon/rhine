@@ -3,13 +3,13 @@
 #define RHINE_FUNCTIONTRANSFORM_H
 
 #include "rhine/IR.h"
+#include "rhine/Transform/ModuleTransform.h"
 
 namespace rhine {
-class FunctionTransform {
-protected:
-  Context *K;
+class FunctionTransform : public ModuleTransform {
 public:
-  FunctionTransform(Context *K) : K(K) {}
+  FunctionTransform(Context *K) : ModuleTransform(K) {}
+  void runOnModule(Module *M);
   virtual void runOnFunction(Function *F) = 0;
 };
 }

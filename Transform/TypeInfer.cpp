@@ -128,12 +128,7 @@ Type *TypeInfer::visit(BindInst *V) {
   return V->getType();
 }
 
-void TypeInfer::runOnModule(Module *M) {
-  auto V = M->getVal();
-  std::transform(V.begin(), V.end(), V.begin(),
-                 [this](Function *F) -> Function * {
-                   visit(F);
-                   return F;
-                 });
+void TypeInfer::runOnFunction(Function *F) {
+  visit(F);
 }
 }
