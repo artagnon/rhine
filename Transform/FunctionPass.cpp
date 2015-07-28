@@ -1,8 +1,8 @@
 #include "rhine/IR.h"
-#include "rhine/Transform/FunctionTransform.h"
+#include "rhine/Transform/FunctionPass.h"
 
 namespace rhine {
-void FunctionTransform::runOnModule(Module *M) {
+void FunctionPass::runOnModule(Module *M) {
   auto V = M->getVal();
   std::transform(V.begin(), V.end(), V.begin(),
                  [this](Function *F) -> Function * {

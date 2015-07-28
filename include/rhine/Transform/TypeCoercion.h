@@ -3,12 +3,12 @@
 #define RHINE_TYPECOERCION_H
 
 #include "rhine/IR.h"
-#include "rhine/Transform/FunctionTransform.h"
+#include "rhine/Transform/FunctionPass.h"
 
 namespace rhine {
-class TypeCoercion : public FunctionTransform {
+class TypeCoercion : public FunctionPass {
 public:
-  TypeCoercion(Context *K) : FunctionTransform(K) {}
+  TypeCoercion(Context *K) : FunctionPass(K) {}
   Value *convertValue(ConstantInt *I, IntegerType *DestTy);
   Value *convertValue(Value *V, StringType *);
   Value *convertValue(Value *V, BoolType *);

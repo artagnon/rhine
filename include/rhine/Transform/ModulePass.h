@@ -5,11 +5,11 @@
 #include "rhine/IR.h"
 
 namespace rhine {
-class ModuleTransform {
+class ModulePass {
 protected:
   Context *K;
 public:
-  ModuleTransform(Context *K) : K(K) {}
+  ModulePass(Context *K) : K(K) {}
   virtual void runOnModule(Module *M) = 0;
 };
 }

@@ -6,14 +6,7 @@ add_library(IR
   "${CMAKE_CURRENT_SOURCE_DIR}/Value.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Type.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Constant.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/Instruction.cpp"
-  "${PROJECT_SOURCE_DIR}/include/rhine/Context.h"
-  "${PROJECT_SOURCE_DIR}/include/rhine/IR/Type.h"
-  "${PROJECT_SOURCE_DIR}/include/rhine/IR/Value.h"
-  "${PROJECT_SOURCE_DIR}/include/rhine/IR/Constant.h"
-  "${PROJECT_SOURCE_DIR}/include/rhine/IR/Instruction.h"
-  "${PROJECT_SOURCE_DIR}/include/rhine/IR/Module.h"
-  "${PROJECT_SOURCE_DIR}/include/rhine/IR.h")
+  "${CMAKE_CURRENT_SOURCE_DIR}/Instruction.cpp")
 set_target_properties(IR PROPERTIES
   LINKER_LANGUAGE CXX
   COMPILE_FLAGS "${LLVM_CXXFLAGS}")

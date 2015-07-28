@@ -3,12 +3,12 @@
 #define RHINE_LAMBDALIFTING_H
 
 #include "rhine/IR.h"
-#include "rhine/Transform/FunctionTransform.h"
+#include "rhine/Transform/FunctionPass.h"
 
 namespace rhine {
-class LambdaLifting : public FunctionTransform {
+class LambdaLifting : public FunctionPass {
 public:
-  LambdaLifting(Context *K) : FunctionTransform(K) {}
+  LambdaLifting(Context *K) : FunctionPass(K) {}
   void runOnFunction(Function *F) override;
 };
 }
