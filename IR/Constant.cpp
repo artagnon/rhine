@@ -126,6 +126,18 @@ BasicBlock::iterator Function::end() {
   return Val->ValueList.end();
 }
 
+Function::arg_iterator Function::arg_begin() {
+  return ArgumentList.begin();
+}
+
+Function::arg_iterator Function::arg_end() {
+  return ArgumentList.end();
+}
+
+iterator_range<Function::arg_iterator> Function::args() {
+  return iterator_range<Function::arg_iterator>(arg_begin(), arg_end());
+}
+
 void Function::print(std::ostream &Stream) const {
   Stream << Name << " ~" << *getType() << std::endl;
   for (auto A: ArgumentList)
