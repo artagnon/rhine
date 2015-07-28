@@ -4,6 +4,7 @@
 #define RHINE_CONSTANT_H
 
 #include "llvm/IR/Constants.h"
+#include "llvm/ADT/iterator_range.h"
 
 #include <string>
 #include <vector>
@@ -101,6 +102,10 @@ public:
   BasicBlock *getVal();
   BasicBlock::iterator begin();
   BasicBlock::iterator end();
+  typedef std::vector<Argument *>::iterator arg_iterator;
+  arg_iterator arg_begin();
+  arg_iterator arg_end();
+  iterator_range<arg_iterator> args();
   friend ostream &operator<<(ostream &Stream, const Function &F) {
     F.print(Stream);
     return Stream;

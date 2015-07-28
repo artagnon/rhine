@@ -3,14 +3,13 @@
 #define RHINE_LAMBDALIFTING_H
 
 #include "rhine/IR.h"
+#include "rhine/Transform/ModuleTransform.h"
 
 namespace rhine {
-class LambdaLifting {
-  Context *K;
+class LambdaLifting : public ModuleTransform {
 public:
-  LambdaLifting(Context *K) : K(K) {}
+  LambdaLifting(Context *K) : ModuleTransform(K) {}
   void runOnFunction(Function *F);
-  void runOnModule(Module *M);
 };
 }
 

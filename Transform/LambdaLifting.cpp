@@ -20,9 +20,4 @@ void LambdaLifting::runOnFunction(Function *F) {
         return V;
       });
 }
-
-void LambdaLifting::runOnModule(Module *M) {
-  for (auto F: *M)
-    runOnFunction(F);
-}
 }
