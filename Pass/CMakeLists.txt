@@ -6,3 +6,6 @@ add_library(Pass
 set_target_properties(Pass PROPERTIES
   LINKER_LANGUAGE CXX
   COMPILE_FLAGS "${LLVM_CXXFLAGS}")
+target_link_libraries(Pass
+  ${LLVM_LDFLAGS}
+  ${LLVM_LIBRARIES})

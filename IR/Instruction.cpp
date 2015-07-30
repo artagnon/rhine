@@ -31,9 +31,9 @@ bool AddInst::classof(const Value *V) {
 }
 
 void AddInst::print(std::ostream &Stream) const {
-  Stream << "+ ~" << *getType() << std::endl;
+  Stream << "+ ~" << *getType();
   for (auto O: OperandList)
-    Stream << *O << std::endl;
+    Stream << std::endl << *O;
 }
 
 CallInst::CallInst(std::string FunctionName, Type *Ty) :
@@ -52,9 +52,9 @@ std::string CallInst::getName() {
 }
 
 void CallInst::print(std::ostream &Stream) const {
-  Stream << Name << " ~" << *getType() << std::endl;
+  Stream << Name << " ~" << *getType();
   for (auto O: OperandList)
-    Stream << *O << std::endl;
+    Stream << std::endl << *O;
 }
 
 BindInst::BindInst(std::string N, Type *Ty, Value *V) :
@@ -122,6 +122,6 @@ void IfInst::print(std::ostream &Stream) const {
   Stream << "} else {" << std::endl;
   for (auto V: *FalseBB)
     Stream << *V << std::endl;
-  Stream << "}" << std::endl;
+  Stream << "}";
 }
 }

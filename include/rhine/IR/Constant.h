@@ -113,6 +113,8 @@ public:
   llvm::Constant *toLL(llvm::Module *M, Context *K);
 protected:
   virtual void print(std::ostream &Stream) const;
+private:
+  void emitArguments(std::ostream &Stream) const;
 };
 }
 
