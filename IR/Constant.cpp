@@ -138,13 +138,30 @@ iterator_range<Function::arg_iterator> Function::args() {
   return iterator_range<Function::arg_iterator>(arg_begin(), arg_end());
 }
 
+void Function::emitArguments(std::ostream &Stream) const {
+  Stream << " [";
+  if (ArgumentList.size()) {
+    auto Terminator = *ArgumentList.rbegin();
+    for (auto A: ArgumentList) {
+      Stream << *A;
+      if (A != Terminator)
+        Stream << " ";
+    }
+  }
+  if (VariadicRestSymbol) {
+    if (ArgumentList.size())
+      Stream << " ";
+    Stream << "&" << *VariadicRestSymbol;
+  }
+  Stream << "]";
+}
+
 void Function::print(std::ostream &Stream) const {
-  Stream << Name << " ~" << *getType() << std::endl;
-  for (auto A: ArgumentList)
-    Stream << *A << std::endl;
-  if (VariadicRestSymbol)
-    Stream << "&" << *VariadicRestSymbol << std::endl;
+  Stream << "def " << Name;
+  emitArguments(Stream);
+  Stream << " ~" << *getType() << " {";
   for (auto V: Val->ValueList)
-    Stream << *V << std::endl;
+    Stream << std::endl << *V;
+  Stream << std::endl << "}";
 }
 }

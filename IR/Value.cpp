@@ -78,6 +78,6 @@ std::string GlobalString::getVal() {
 }
 
 void GlobalString::print(std::ostream &Stream) const {
-  Stream << "\"" << Val << "\" ~" << *getType();
+  Stream << "'" << Val << "' ~" << *getType();
 }
 }

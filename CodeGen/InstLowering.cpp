@@ -1,3 +1,5 @@
+#include "llvm/ADT/None.h"
+
 #include "rhine/Context.h"
 #include "rhine/IR/Instruction.h"
 #include "rhine/Externals.h"
@@ -47,7 +49,7 @@ llvm::Value *CallInst::toLL(llvm::Module *M, Context *K) {
       K->Builder->CreateCall(Callee);
       return nullptr;
     }
-    return K->Builder->CreateCall(Callee, Name);
+    return K->Builder->CreateCall(Callee, llvm::None, Name);
   }
 
   // Prepare arguments to call
