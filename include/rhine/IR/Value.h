@@ -34,8 +34,9 @@ class Value : public FoldingSetNode {
 protected:
   Type *VTy;
   location SourceLoc;
+  std::string Name;
 public:
-  Value(Type *VTy, RTValue ID);
+  Value(Type *VTy, RTValue ID, std::string N = "");
   virtual ~Value() { }
   Value *get() = delete;
   void setSourceLocation(location SrcLoc);
@@ -43,6 +44,8 @@ public:
   RTValue getValID() const;
   Type *getType() const;
   void setType(Type *T);
+  std::string getName() const;
+  void setName(std::string Str);
   virtual llvm::Value *toLL(llvm::Module *M, Context *K) = 0;
   friend ostream &operator<<(ostream &Stream, const Value &V) {
     V.print(Stream);
@@ -56,13 +59,10 @@ private:
 };
 
 class Symbol : public Value {
-protected:
-  std::string Name;
 public:
   Symbol(std::string N, Type *T, RTValue ID = RT_Symbol);
   static Symbol *get(std::string N, Type *T, Context *K);
   static bool classof(const Value *V);
-  std::string getName();
   llvm::Value *toLL(llvm::Module *M, Context *K);
   friend ostream &operator<<(ostream &Stream, const Symbol &S) {
     S.print(Stream);

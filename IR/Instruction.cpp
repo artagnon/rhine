@@ -1,7 +1,8 @@
 #include "rhine/IR/Instruction.h"
 
 namespace rhine {
-Instruction::Instruction(Type *Ty, RTValue ID) : Value(Ty, ID) {}
+Instruction::Instruction(Type *Ty, RTValue ID, std::string N) :
+    Value(Ty, ID, N) {}
 
 void Instruction::addOperand(Value *V) {
   OperandList.push_back(V);
@@ -58,7 +59,7 @@ void CallInst::print(std::ostream &Stream) const {
 }
 
 BindInst::BindInst(std::string N, Type *Ty, Value *V) :
-    Instruction(Ty, RT_BindInst), Name(N), Val(V) {}
+    Instruction(Ty, RT_BindInst, N), Val(V) {}
 
 BindInst *BindInst::get(std::string N, Value *V, Context *K) {
   return new (K->RhAllocator) BindInst(N, VoidType::get(K), V);

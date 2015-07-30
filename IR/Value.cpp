@@ -4,7 +4,8 @@
 
 namespace rhine {
 
-Value::Value(Type *VTy, RTValue ID) : VTy(VTy), ValID(ID) {}
+Value::Value(Type *VTy, RTValue ID, std::string N) :
+    VTy(VTy), Name(N), ValID(ID) {}
 
 void Value::setSourceLocation(location SrcLoc) {
   SourceLoc = SrcLoc;
@@ -24,12 +25,20 @@ void Value::setType(Type *T) {
   VTy = T;
 }
 
+std::string Value::getName() const {
+  return Name;
+}
+
+void Value::setName(std::string Str) {
+  Name = Str;
+}
+
 __attribute__((used, noinline))
 void Value::dump() {
   std::cout << *this << std::endl;
 }
 
-Symbol::Symbol(std::string N, Type *T, RTValue ID) : Value(T, ID), Name(N) {}
+Symbol::Symbol(std::string N, Type *T, RTValue ID) : Value(T, ID, N) {}
 
 Symbol *Symbol::get(std::string N, Type *T, Context *K) {
   return new (K->RhAllocator) Symbol(N, T);
@@ -38,10 +47,6 @@ Symbol *Symbol::get(std::string N, Type *T, Context *K) {
 bool Symbol::classof(const Value *V) {
   return V->getValID() >= RT_Symbol &&
     V->getValID() <= RT_Argument;
-}
-
-std::string Symbol::getName() {
-  return Name;
 }
 
 void Symbol::print(std::ostream &Stream) const {
