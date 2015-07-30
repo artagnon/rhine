@@ -19,7 +19,7 @@ class Instruction : public Value {
 protected:
   std::vector<Value *> OperandList;
 public:
-  Instruction(Type *Ty, RTValue ID);
+  Instruction(Type *Ty, RTValue ID, std::string Name = "");
   void addOperand(Value *V);
   Value *getOperand(unsigned i);
   std::vector<Value *> getOperands();
@@ -64,7 +64,6 @@ protected:
 };
 
 class BindInst : public Instruction {
-  std::string Name;
   Value *Val;
 public:
   BindInst(std::string N, Type *Ty, Value *V);
