@@ -21,10 +21,6 @@ public:
   static bool classof(const Value *V) {
     return V->getValID() == RT_BasicBlock;
   }
-  friend ostream &operator<<(ostream &Stream, const BasicBlock &B) {
-    B.print(Stream);
-    return Stream;
-  }
   llvm::Value *toLL(llvm::Module *M, Context *K);
   typedef std::vector<Value *>::iterator iterator;
   iterator begin() {

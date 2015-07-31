@@ -23,10 +23,6 @@ class Module;
 class Constant : public Value {
 public:
   Constant(Type *Ty, RTValue ID);
-  friend ostream &operator<<(ostream &Stream, const Constant &C) {
-    C.print(Stream);
-    return Stream;
-  }
   llvm::Constant *toLL(llvm::Module *M, Context *K) = 0;
 protected:
   virtual void print(std::ostream &Stream) const = 0;
@@ -40,10 +36,6 @@ public:
   static bool classof(const Value *V);
   int getVal();
   unsigned getBitwidth();
-  friend ostream &operator<<(ostream &Stream, const ConstantInt &I) {
-    I.print(Stream);
-    return Stream;
-  }
   llvm::Constant *toLL(llvm::Module *M, Context *K);
 protected:
   virtual void print(std::ostream &Stream) const;
@@ -56,10 +48,6 @@ public:
   static ConstantBool *get(bool Val, Context *K);
   static bool classof(const Value *V);
   float getVal();
-  friend ostream &operator<<(ostream &Stream, const ConstantBool &B) {
-    B.print(Stream);
-    return Stream;
-  }
   llvm::Constant *toLL(llvm::Module *M, Context *K);
 protected:
   virtual void print(std::ostream &Stream) const;
@@ -72,10 +60,6 @@ public:
   static ConstantFloat *get(float Val, Context *K);
   static bool classof(const Value *V);
   float getVal();
-  friend ostream &operator<<(ostream &Stream, const ConstantFloat &F) {
-    F.print(Stream);
-    return Stream;
-  }
   llvm::Constant *toLL(llvm::Module *M, Context *K);
 protected:
   virtual void print(std::ostream &Stream) const;
@@ -106,10 +90,6 @@ public:
   arg_iterator arg_begin();
   arg_iterator arg_end();
   iterator_range<arg_iterator> args();
-  friend ostream &operator<<(ostream &Stream, const Function &F) {
-    F.print(Stream);
-    return Stream;
-  }
   llvm::Constant *toLL(llvm::Module *M, Context *K);
 protected:
   virtual void print(std::ostream &Stream) const;
