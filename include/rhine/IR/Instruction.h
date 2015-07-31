@@ -24,10 +24,6 @@ public:
   Value *getOperand(unsigned i);
   std::vector<Value *> getOperands();
   void setOperands(std::vector<Value *> Ops);
-  friend ostream &operator<<(ostream &Stream, const Instruction &I) {
-    I.print(Stream);
-    return Stream;
-  }
   virtual llvm::Value *toLL(llvm::Module *M, Context *K) = 0;
 protected:
   virtual void print(std::ostream &Stream) const = 0;
@@ -38,10 +34,6 @@ public:
   AddInst(Type *Ty);
   static AddInst *get(Context *K);
   static bool classof(const Value *V);
-  friend ostream &operator<<(ostream &Stream, const AddInst &A) {
-    A.print(Stream);
-    return Stream;
-  }
   llvm::Value *toLL(llvm::Module *M, Context *K);
 protected:
   virtual void print(std::ostream &Stream) const;
@@ -54,10 +46,6 @@ public:
   static CallInst *get(std::string FunctionName, Context *K);
   static bool classof(const Value *V);
   std::string getName();
-  friend ostream &operator<<(ostream &Stream, const CallInst &C) {
-    C.print(Stream);
-    return Stream;
-  }
   llvm::Value *toLL(llvm::Module *M, Context *K);
 protected:
   virtual void print(std::ostream &Stream) const;
@@ -71,10 +59,6 @@ public:
   static bool classof(const Value *V);
   void setVal(Value *V);
   Value *getVal();
-  friend ostream &operator<<(ostream &Stream, const MallocInst &S) {
-    S.print(Stream);
-    return Stream;
-  }
   llvm::Value *toLL(llvm::Module *M, Context *K);
 protected:
   virtual void print(std::ostream &Stream) const;
@@ -86,10 +70,6 @@ public:
   static LoadInst *get(std::string N, Type *T, Context *K);
   static bool classof(const Value *V);
   llvm::Value *toLL(llvm::Module *M, Context *K);
-  friend ostream &operator<<(ostream &Stream, const LoadInst &S) {
-    S.print(Stream);
-    return Stream;
-  }
 protected:
   virtual void print(std::ostream &Stream) const;
 };
@@ -108,10 +88,6 @@ public:
   void setConditional(Value *C);
   BasicBlock *getTrueBB();
   BasicBlock *getFalseBB();
-  friend ostream &operator<<(ostream &Stream, const IfInst &S) {
-    S.print(Stream);
-    return Stream;
-  }
   llvm::Value *toLL(llvm::Module *M, Context *K);
 protected:
   virtual void print(std::ostream &Stream) const;

@@ -34,6 +34,7 @@ public:
 class PTree {
 public:
   Module M;
+  PTree() {}
 };
 }
 

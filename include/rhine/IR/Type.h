@@ -66,10 +66,6 @@ public:
   static bool classof(const Type *T) {
     return T->getTyID() == RT_UnType;
   }
-  friend ostream &operator<<(ostream &Stream, const UnType &U) {
-    U.print(Stream);
-    return Stream;
-  }
   virtual llvm::Type *toLL(llvm::Module *M, Context *K);
 protected:
   virtual void print(std::ostream &Stream) const {
@@ -87,10 +83,6 @@ public:
   }
   static bool classof(const Type *T) {
     return T->getTyID() == RT_VoidType;
-  }
-  friend ostream &operator<<(ostream &Stream, const VoidType &V) {
-    V.print(Stream);
-    return Stream;
   }
   virtual llvm::Type *toLL(llvm::Module *M, Context *K);
 protected:
@@ -126,10 +118,6 @@ public:
   void Profile(FoldingSetNodeID &ID) {
     Profile(ID, Bitwidth);
   }
-  friend ostream &operator<<(ostream &Stream, const IntegerType &T) {
-    T.print(Stream);
-    return Stream;
-  }
   llvm::Type *toLL(llvm::Module *M, Context *K);
 protected:
   unsigned Bitwidth;
@@ -149,10 +137,6 @@ public:
   static bool classof(const Type *T) {
     return T->getTyID() == RT_BoolType;
   }
-  friend ostream &operator<<(ostream &Stream, const BoolType &T) {
-    T.print(Stream);
-    return Stream;
-  }
   llvm::Type *toLL(llvm::Module *M, Context *K);
 protected:
   virtual void print(std::ostream &Stream) const {
@@ -171,10 +155,6 @@ public:
   static bool classof(const Type *T) {
     return T->getTyID() == RT_FloatType;
   }
-  friend ostream &operator<<(ostream &Stream, const FloatType &T) {
-    T.print(Stream);
-    return Stream;
-  }
   llvm::Type *toLL(llvm::Module *M, Context *K);
 protected:
   virtual void print(std::ostream &Stream) const {
@@ -192,10 +172,6 @@ public:
   }
   static bool classof(const Type *T) {
     return T->getTyID() == RT_StringType;
-  }
-  friend ostream &operator<<(ostream &Stream, const StringType &T) {
-    T.print(Stream);
-    return Stream;
   }
   llvm::Type *toLL(llvm::Module *M, Context *K);
 protected:
@@ -222,10 +198,6 @@ public:
   std::vector<Type *> getATys();
   Type *getRTy();
   bool isVariadic() const;
-  friend ostream &operator<<(ostream &Stream, const FunctionType &T) {
-    T.print(Stream);
-    return Stream;
-  }
   llvm::Type *toLL(llvm::Module *M, Context *K);
 protected:
   virtual void print(std::ostream &Stream) const;
@@ -257,10 +229,6 @@ public:
   }
   Type *getCTy() {
     return ContainedType;
-  }
-  friend ostream &operator<<(ostream &Stream, const PointerType &T) {
-    T.print(Stream);
-    return Stream;
   }
   llvm::Type *toLL(llvm::Module *M, Context *K);
 protected:

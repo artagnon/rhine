@@ -64,10 +64,6 @@ public:
   static Argument *get(std::string N, Type *T, Context *K);
   static bool classof(const Value *V);
   llvm::Value *toLL(llvm::Module *M, Context *K);
-  friend ostream &operator<<(ostream &Stream, const Argument &S) {
-    S.print(Stream);
-    return Stream;
-  }
 protected:
   virtual void print(std::ostream &Stream) const;
 };
@@ -80,10 +76,6 @@ public:
   static bool classof(const Value *V);
   std::string getVal();
   llvm::Value *toLL(llvm::Module *M, Context *K);
-  friend ostream &operator<<(ostream &Stream, const GlobalString &S) {
-    S.print(Stream);
-    return Stream;
-  }
 protected:
   virtual void print(std::ostream &Stream) const;
 };
