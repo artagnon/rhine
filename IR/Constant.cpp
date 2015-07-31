@@ -68,7 +68,7 @@ void ConstantFloat::print(std::ostream &Stream) const {
 
 Function::Function(FunctionType *FTy) :
     Value(FTy, RT_Function), ParentModule(nullptr),
-    VariadicRestSymbol(nullptr), Val(nullptr) {}
+    VariadicRestLoadInst(nullptr), Val(nullptr) {}
 
 Function *Function::get(FunctionType *FTy, Context *K) {
   return new (K->RhAllocator) Function(FTy);
@@ -103,7 +103,7 @@ void Function::setVariadicRest(Argument *Rest) {
     return;
   assert(cast<FunctionType>(VTy)->isVariadic() &&
          "Confusion about whether function is variadic");
-  VariadicRestSymbol = Rest;
+  VariadicRestLoadInst = Rest;
 }
 
 std::vector<Argument *> Function::getArguments() {
@@ -148,10 +148,10 @@ void Function::emitArguments(std::ostream &Stream) const {
         Stream << " ";
     }
   }
-  if (VariadicRestSymbol) {
+  if (VariadicRestLoadInst) {
     if (ArgumentList.size())
       Stream << " ";
-    Stream << "&" << *VariadicRestSymbol;
+    Stream << "&" << *VariadicRestLoadInst;
   }
   Stream << "]";
 }

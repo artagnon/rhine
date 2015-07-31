@@ -58,31 +58,43 @@ void CallInst::print(std::ostream &Stream) const {
     Stream << std::endl << *O;
 }
 
-BindInst::BindInst(std::string N, Type *Ty, Value *V) :
-    Instruction(Ty, RT_BindInst, N), Val(V) {}
+MallocInst::MallocInst(std::string N, Type *Ty, Value *V) :
+    Instruction(Ty, RT_MallocInst, N), Val(V) {}
 
-BindInst *BindInst::get(std::string N, Value *V, Context *K) {
-  return new (K->RhAllocator) BindInst(N, VoidType::get(K), V);
+MallocInst *MallocInst::get(std::string N, Value *V, Context *K) {
+  return new (K->RhAllocator) MallocInst(
+      N, VoidType::get(K), V);
 }
 
-bool BindInst::classof(const Value *V) {
-  return V->getValID() == RT_BindInst;
+bool MallocInst::classof(const Value *V) {
+  return V->getValID() == RT_MallocInst;
 }
 
-void BindInst::setVal(Value *V) {
+void MallocInst::setVal(Value *V) {
   Val = V;
 }
 
-Value *BindInst::getVal() {
+Value *MallocInst::getVal() {
   return Val;
 }
 
-std::string BindInst::getName() {
-  return Name;
+void MallocInst::print(std::ostream &Stream) const {
+  Stream << Name << " = " << *Val;
 }
 
-void BindInst::print(std::ostream &Stream) const {
-  Stream << Name << " = " << *Val;
+LoadInst::LoadInst(std::string N, Type *T, RTValue ID) :
+    Instruction(T, ID, N) {}
+
+LoadInst *LoadInst::get(std::string N, Type *T, Context *K) {
+  return new (K->RhAllocator) LoadInst(N, T);
+}
+
+bool LoadInst::classof(const Value *V) {
+  return V->getValID() == RT_LoadInst;
+}
+
+void LoadInst::print(std::ostream &Stream) const {
+  Stream << Name << " ~" << *getType();
 }
 
 IfInst::IfInst(Type *Ty, Value * Conditional_,

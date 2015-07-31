@@ -16,7 +16,6 @@ using namespace llvm;
 
 namespace rhine {
 enum RTValue {
-  RT_Symbol,
   RT_Argument,
   RT_GlobalString,
   RT_ConstantInt,
@@ -26,7 +25,8 @@ enum RTValue {
   RT_BasicBlock,
   RT_AddInst,
   RT_CallInst,
-  RT_BindInst,
+  RT_MallocInst,
+  RT_LoadInst,
   RT_IfInst,
 };
 
@@ -58,21 +58,7 @@ private:
   const RTValue ValID;
 };
 
-class Symbol : public Value {
-public:
-  Symbol(std::string N, Type *T, RTValue ID = RT_Symbol);
-  static Symbol *get(std::string N, Type *T, Context *K);
-  static bool classof(const Value *V);
-  llvm::Value *toLL(llvm::Module *M, Context *K);
-  friend ostream &operator<<(ostream &Stream, const Symbol &S) {
-    S.print(Stream);
-    return Stream;
-  }
-protected:
-  virtual void print(std::ostream &Stream) const;
-};
-
-class Argument : public Symbol {
+class Argument : public Value {
 public:
   Argument(std::string N, Type *T);
   static Argument *get(std::string N, Type *T, Context *K);

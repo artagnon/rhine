@@ -44,7 +44,7 @@ TEST(IR, TypePropagation)
   EXPECT_TRANSFORM_PP(SourcePrg, ExpectedPP);
 }
 
-TEST(IR, BindInst) {
+TEST(IR, MallocInst) {
   std::string SourcePrg = "def bsym [] sym = 3;";
   std::string ExpectedPP =
     "def bsym [] ~Fn(() -> ()) {\n"

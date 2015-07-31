@@ -75,10 +75,10 @@ Type *TypeInfer::visit(IfInst *V) {
    return TrueTy;
 }
 
-Type *TypeInfer::visit(Symbol *V) {
+Type *TypeInfer::visit(LoadInst *V) {
   auto Name = V->getName();
   auto VTy = V->getType();
-  if (auto Ty = Resolve::resolveSymbolTy(Name, VTy, K)) {
+  if (auto Ty = Resolve::resolveLoadInstTy(Name, VTy, K)) {
     V->setType(Ty);
     K->addMapping(Name, Ty);
     return Ty;
@@ -91,7 +91,7 @@ Type *TypeInfer::visit(Symbol *V) {
 Type *TypeInfer::visit(Argument *V) {
   auto Name = V->getName();
   auto VTy = V->getType();
-  if (auto Ty = Resolve::resolveSymbolTy(Name, VTy, K)) {
+  if (auto Ty = Resolve::resolveLoadInstTy(Name, VTy, K)) {
     V->setType(Ty);
     K->addMapping(Name, Ty);
     return Ty;
@@ -105,7 +105,7 @@ Type *TypeInfer::visit(CallInst *V) {
   typeInferValueList(V->getOperands());
   auto Name = V->getName();
   auto VTy = V->getType();
-  if (auto SymTy = Resolve::resolveSymbolTy(Name, VTy, K)) {
+  if (auto SymTy = Resolve::resolveLoadInstTy(Name, VTy, K)) {
     if (auto PTy = dyn_cast<PointerType>(SymTy)) {
       if (auto Ty = dyn_cast<FunctionType>(PTy->getCTy())) {
         V->setType(PTy);
@@ -121,9 +121,9 @@ Type *TypeInfer::visit(CallInst *V) {
   exit(1);
 }
 
-Type *TypeInfer::visit(BindInst *V) {
-  Type *Ty = visit(V->getVal());
-  assert (!isa<UnType>(Ty) && "Unable to type infer BindInst");
+Type *TypeInfer::visit(MallocInst *V) {
+  auto Ty = visit(V->getVal());
+  assert (!isa<UnType>(Ty) && "Unable to type infer MallocInst");
   K->addMapping(V->getName(), Ty);
   return V->getType();
 }
