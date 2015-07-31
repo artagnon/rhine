@@ -87,8 +87,8 @@ SPTAB   [ \t]+
 }
 
 {SYMBOL} {
-  yylval->RawSymbol = new (K->RhAllocator) std::string(yytext);
-  return T::SYMBOL;
+  yylval->LiteralName = new (K->RhAllocator) std::string(yytext);
+  return T::LITERALNAME;
 }
 
 [\[ \] \( \) + * ; { } $ ~ = \\ \&] {

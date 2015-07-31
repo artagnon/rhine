@@ -21,8 +21,8 @@
 %error-verbose
 
 %union {
-  std::string *RawSymbol;
-  class Symbol *Symbol;
+  std::string *LiteralName;
+  class LoadInst *MallocedVar;
   class Argument *Argument;
   class ConstantInt *Integer;
   class ConstantBool *Boolean;
@@ -42,7 +42,7 @@
 %token                  DEF IF ELSE AND OR ARROW
 %token                  TINT TBOOL TSTRING TFUNCTION TVOID
 %token                  END       0
-%token  <RawSymbol>     SYMBOL
+%token  <LiteralName>   LITERALNAME
 %token  <Integer>       INTEGER
 %token  <Boolean>       BOOLEAN
 %token  <String>        STRING
@@ -56,7 +56,7 @@
 %type   <Type>          type_annotation type_lit
 %type   <TyList>        type_list
 %type   <Argument>      typed_argument
-%type   <Symbol>        typed_symbol lvalue
+%type   <MallocedVar>   typed_symbol lvalue
 
 %{
 #include "rhine/Parse/Lexer.h"
@@ -84,7 +84,7 @@ tlexpr:
                 ;
 
 fn_decl:
-                DEF SYMBOL[N] '[' argument_list[A] ']' type_annotation[T]
+                DEF LITERALNAME[N] '[' argument_list[A] ']' type_annotation[T]
                 {
                   std::vector<Type *> ATys;
                   Argument *VariadicRest = nullptr;
@@ -103,7 +103,7 @@ fn_decl:
                   Fn->setVariadicRest(VariadicRest);
                   $$ = Fn;
                 }
-        |       DEF SYMBOL[N] '[' ']' type_annotation[T]
+        |       DEF LITERALNAME[N] '[' ']' type_annotation[T]
                 {
                   auto FTy = FunctionType::get($T, K);
                   FTy->setSourceLocation(@3);
@@ -151,7 +151,7 @@ argument_list:
                 }
                 ;
 typed_argument:
-                SYMBOL[S] type_annotation[T]
+                LITERALNAME[S] type_annotation[T]
                 {
                   auto Sym = Argument::get(*$S, $T, K);
                   Sym->setSourceLocation(@1);
@@ -159,9 +159,9 @@ typed_argument:
                 }
                 ;
 typed_symbol:
-                SYMBOL[S] type_annotation[T]
+                LITERALNAME[S] type_annotation[T]
                 {
-                  auto Sym = Symbol::get(*$S, $T, K);
+                  auto Sym = LoadInst::get(*$S, $T, K);
                   Sym->setSourceLocation(@1);
                   $$ = Sym;
                 }
@@ -243,7 +243,7 @@ stm_list:
                     $$ = $1;
                   }
                 }
-        ;
+                ;
 expression_or_branch:
                 expression[E] ';'
                 {
@@ -310,7 +310,7 @@ value_expr:
 assign_expr:
                 lvalue[L] '=' value_expr[E]
                 {
-                  auto Op = BindInst::get($L->getName(), $E, K);
+                  auto Op = MallocInst::get($L->getName(), $E, K);
                   Op->setSourceLocation(@1);
                   $$ = Op;
                 }
@@ -318,7 +318,7 @@ assign_expr:
 lambda_assign:
                 lvalue[L] '=' lambda_expr[E]
                 {
-                  auto Op = BindInst::get($L->getName(), $E, K);
+                  auto Op = MallocInst::get($L->getName(), $E, K);
                   Op->setSourceLocation(@1);
                   $$ = Op;
                 }

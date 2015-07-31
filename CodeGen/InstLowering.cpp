@@ -19,7 +19,7 @@ llvm::Value *getCalleeFunction(std::string Name, location SourceLoc,
     if (isa<llvm::Function>(Result) || isPointerToFunction(Result))
       return Result;
     else {
-      auto Sym = Symbol::get(Name, K->getMappingTy(Name), K)->toLL(M, K);
+      auto Sym = LoadInst::get(Name, K->getMappingTy(Name), K)->toLL(M, K);
       if (isPointerToFunction(Sym))
         return Sym;
       K->DiagPrinter->errorReport(
@@ -70,7 +70,7 @@ llvm::Value *AddInst::toLL(llvm::Module *M, Context *K) {
   return K->Builder->CreateAdd(Op0, Op1);
 }
 
-llvm::Value *BindInst::toLL(llvm::Module *M, Context *K) {
+llvm::Value *MallocInst::toLL(llvm::Module *M, Context *K) {
   auto V = getVal()->toLL(M, K);
   auto Ty = getVal()->getType()->toLL(M, K);
   auto Name = getName();
@@ -78,6 +78,19 @@ llvm::Value *BindInst::toLL(llvm::Module *M, Context *K) {
   K->Builder->CreateStore(V, Alloca);
   K->addMapping(Name, nullptr, Alloca);
   return nullptr;
+}
+
+llvm::Value *LoadInst::toLL(llvm::Module *M, Context *K) {
+  auto Name = getName();
+  if (auto Result = K->getMappingVal(Name)) {
+    if (isa<AllocaInst>(Result))
+      return K->Builder->CreateLoad(Result, Name + "Load");
+    return Result;
+  } else if (auto Result = Externals::get(K)->getMappingVal(Name, M))
+    return Result;
+  K->DiagPrinter->errorReport(
+      SourceLoc, "unbound symbol " + Name);
+  exit(1);
 }
 
 llvm::Value *IfInst::toLL(llvm::Module *M, Context *K) {

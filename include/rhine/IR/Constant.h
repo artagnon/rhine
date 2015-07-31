@@ -85,7 +85,7 @@ class Function : public Value {
   Module *ParentModule;
   std::string Name;
   std::vector<Argument *> ArgumentList;
-  Argument *VariadicRestSymbol;
+  Argument *VariadicRestLoadInst;
   BasicBlock *Val;
 public:
   Function(FunctionType *FTy);

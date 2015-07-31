@@ -18,9 +18,9 @@ protected:
     if (auto C = dyn_cast<AddInst>(V)) { return visit(C); }
     if (auto C = dyn_cast<IfInst>(V)) { return visit(C); }
     if (auto C = dyn_cast<Argument>(V)) { return visit(C); }
-    else if (auto C = dyn_cast<Symbol>(V)) { return visit(C); }
+    if (auto C = dyn_cast<MallocInst>(V)) { return visit(C); }
+    if (auto C = dyn_cast<LoadInst>(V)) { return visit(C); }
     if (auto C = dyn_cast<CallInst>(V)) { return visit(C); }
-    if (auto C = dyn_cast<BindInst>(V)) { return visit(C); }
     assert(0 && "Unknown ValueVisitor dispatch");
   }
   virtual R visit(ConstantInt *I) = 0;
@@ -31,9 +31,9 @@ protected:
   virtual R visit(AddInst *A) = 0;
   virtual R visit(IfInst *F) = 0;
   virtual R visit(Argument *A) = 0;
-  virtual R visit(Symbol *S) = 0;
+  virtual R visit(MallocInst *B) = 0;
+  virtual R visit(LoadInst *S) = 0;
   virtual R visit(CallInst *C) = 0;
-  virtual R visit(BindInst *B) = 0;
 };
 }
 

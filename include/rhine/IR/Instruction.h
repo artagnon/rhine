@@ -63,20 +63,33 @@ protected:
   virtual void print(std::ostream &Stream) const;
 };
 
-class BindInst : public Instruction {
+class MallocInst : public Instruction {
   Value *Val;
 public:
-  BindInst(std::string N, Type *Ty, Value *V);
-  static BindInst *get(std::string N, Value *V, Context *K);
+  MallocInst(std::string N, Type *Ty, Value *V);
+  static MallocInst *get(std::string N, Value *V, Context *K);
   static bool classof(const Value *V);
   void setVal(Value *V);
   Value *getVal();
-  std::string getName();
-  friend ostream &operator<<(ostream &Stream, const BindInst &S) {
+  friend ostream &operator<<(ostream &Stream, const MallocInst &S) {
     S.print(Stream);
     return Stream;
   }
   llvm::Value *toLL(llvm::Module *M, Context *K);
+protected:
+  virtual void print(std::ostream &Stream) const;
+};
+
+class LoadInst : public Instruction {
+public:
+  LoadInst(std::string N, Type *T, RTValue ID = RT_LoadInst);
+  static LoadInst *get(std::string N, Type *T, Context *K);
+  static bool classof(const Value *V);
+  llvm::Value *toLL(llvm::Module *M, Context *K);
+  friend ostream &operator<<(ostream &Stream, const LoadInst &S) {
+    S.print(Stream);
+    return Stream;
+  }
 protected:
   virtual void print(std::ostream &Stream) const;
 };
