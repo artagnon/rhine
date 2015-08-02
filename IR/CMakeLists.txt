@@ -6,6 +6,7 @@ add_library(IR
   "${CMAKE_CURRENT_SOURCE_DIR}/Value.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Type.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Constant.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/BasicBlock.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Instruction.cpp")
 set_target_properties(IR PROPERTIES
   LINKER_LANGUAGE CXX
