@@ -33,8 +33,13 @@ public:
 
 class PTree {
 public:
+  PTree() : VirtualRegisterNumber(0) {}
   Module M;
-  PTree() {}
+  std::string getVirtualRegisterName() {
+    return "rhv" + std::to_string(VirtualRegisterNumber++);
+  }
+private:
+  unsigned VirtualRegisterNumber;
 };
 }
 

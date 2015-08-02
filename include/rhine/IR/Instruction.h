@@ -40,12 +40,12 @@ protected:
 };
 
 class CallInst : public Instruction {
-  std::string Name;
+  std::string Callee;
 public:
   CallInst(std::string FunctionName, Type *Ty);
   static CallInst *get(std::string FunctionName, Context *K);
   static bool classof(const Value *V);
-  std::string getName();
+  std::string getCallee();
   llvm::Value *toLL(llvm::Module *M, Context *K);
 protected:
   virtual void print(std::ostream &Stream) const;
