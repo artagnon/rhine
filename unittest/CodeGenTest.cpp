@@ -124,33 +124,6 @@ TEST(CodeGen, VoidLowering)
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }
 
-TEST(CodeGen, CallInstTyInfer) {
-  std::string SourcePrg =
-    "def mallocCall [] {\n"
-    "  malloc 8;\n"
-    "}";
-  std::string ExpectedPP =
-    "define i8* @mallocCall() {\n"
-    "entry:\n"
-    "  %rhv0 = call i8* @malloc(i64 8)\n"
-    "  ret i8* %rhv0\n"
-    "}\n";
-  EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
-}
-
-TEST(CodeGen, ExternalsFunctionPointer) {
-  std::string SourcePrg =
-    "def mallocRet [] {\n"
-    "  malloc;\n"
-    "}";
-  std::string ExpectedPP =
-    "define i8* (i64)* @mallocRet() {\n"
-    "entry:\n"
-    "  ret i8* (i64)* @malloc\n"
-    "}\n";
-  EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
-}
-
 TEST(CodeGen, MultipleArguments)
 {
   std::string SourcePrg =

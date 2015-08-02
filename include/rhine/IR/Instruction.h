@@ -34,9 +34,9 @@ public:
   AddInst(Type *Ty);
   static AddInst *get(Context *K);
   static bool classof(const Value *V);
-  llvm::Value *toLL(llvm::Module *M, Context *K);
+  llvm::Value *toLL(llvm::Module *M, Context *K) override;
 protected:
-  virtual void print(std::ostream &Stream) const;
+  void print(std::ostream &Stream) const override;
 };
 
 class CallInst : public Instruction {
@@ -46,9 +46,9 @@ public:
   static CallInst *get(std::string FunctionName, Context *K);
   static bool classof(const Value *V);
   std::string getCallee();
-  llvm::Value *toLL(llvm::Module *M, Context *K);
+  llvm::Value *toLL(llvm::Module *M, Context *K) override;
 protected:
-  virtual void print(std::ostream &Stream) const;
+  void print(std::ostream &Stream) const override;
 };
 
 class MallocInst : public Instruction {
@@ -59,9 +59,9 @@ public:
   static bool classof(const Value *V);
   void setVal(Value *V);
   Value *getVal();
-  llvm::Value *toLL(llvm::Module *M, Context *K);
+  llvm::Value *toLL(llvm::Module *M, Context *K) override;
 protected:
-  virtual void print(std::ostream &Stream) const;
+  void print(std::ostream &Stream) const override;
 };
 
 class LoadInst : public Instruction {
@@ -69,9 +69,9 @@ public:
   LoadInst(std::string N, Type *T, RTValue ID = RT_LoadInst);
   static LoadInst *get(std::string N, Type *T, Context *K);
   static bool classof(const Value *V);
-  llvm::Value *toLL(llvm::Module *M, Context *K);
+  llvm::Value *toLL(llvm::Module *M, Context *K) override;
 protected:
-  virtual void print(std::ostream &Stream) const;
+  void print(std::ostream &Stream) const override;
 };
 
 class IfInst : public Instruction {
@@ -88,9 +88,9 @@ public:
   void setConditional(Value *C);
   BasicBlock *getTrueBB();
   BasicBlock *getFalseBB();
-  llvm::Value *toLL(llvm::Module *M, Context *K);
+  llvm::Value *toLL(llvm::Module *M, Context *K) override;
 protected:
-  virtual void print(std::ostream &Stream) const;
+  void print(std::ostream &Stream) const override;
 };
 }
 

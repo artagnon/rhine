@@ -36,7 +36,7 @@ TEST(Externals, Malloc) {
     "  print '3';\n"
     "}";
   std::string ExpectedPP =
-    "call i8* @malloc(i64 8)";
+    "call i8* @std_String_malloc__Int(i64 8)";
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
   std::string ExpectedOut = "3";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
@@ -66,4 +66,17 @@ TEST(Externals, ToStringExecution)
     "def main [] print $ toString 2;";
   std::string ExpectedOut = "2";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
+}
+
+TEST(CodeGen, ExternalsFunctionPointer) {
+  std::string SourcePrg =
+    "def mallocRet [] {\n"
+    "  malloc;\n"
+    "}";
+  std::string ExpectedPP =
+    "define i8* (i64)* @mallocRet() {\n"
+    "entry:\n"
+    "  ret i8* (i64)* @std_String_malloc__Int\n"
+    "}\n";
+  EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }
