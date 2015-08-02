@@ -132,8 +132,8 @@ TEST(CodeGen, CallInstTyInfer) {
   std::string ExpectedPP =
     "define i8* @mallocCall() {\n"
     "entry:\n"
-    "  %malloc = call i8* @malloc(i64 8)\n"
-    "  ret i8* %malloc\n"
+    "  %rhv0 = call i8* @malloc(i64 8)\n"
+    "  ret i8* %rhv0\n"
     "}\n";
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }
@@ -164,8 +164,8 @@ TEST(CodeGen, MultipleArguments)
     "}\n\n"
     "define i32 @main() {\n"
     "entry:\n"
-    "  %foo = call i32 @foo(i32 3, i32 2)\n"
-    "  ret i32 %foo\n"
+    "  %rhv1 = call i32 @foo(i32 3, i32 2)\n"
+    "  ret i32 %rhv1\n"
     "}";
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }

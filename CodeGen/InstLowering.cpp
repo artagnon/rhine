@@ -41,15 +41,15 @@ llvm::Value *getCalleeFunction(std::string Name, location SourceLoc,
 }
 
 llvm::Value *CallInst::toLL(llvm::Module *M, Context *K) {
-  auto Callee = getCalleeFunction(Name, SourceLoc, M, K);
+  auto CalleeFn = getCalleeFunction(Callee, SourceLoc, M, K);
   auto RTy = cast<FunctionType>(cast<PointerType>(VTy)->getCTy())->getRTy();
 
   if (!getOperands().size()) {
     if (isa<VoidType>(RTy)) {
-      K->Builder->CreateCall(Callee);
+      K->Builder->CreateCall(CalleeFn);
       return nullptr;
     }
-    return K->Builder->CreateCall(Callee, llvm::None, Name);
+    return K->Builder->CreateCall(CalleeFn, llvm::None, Name);
   }
 
   // Prepare arguments to call
@@ -58,10 +58,10 @@ llvm::Value *CallInst::toLL(llvm::Module *M, Context *K) {
     LLOps.push_back(Op->toLL(M, K));
   }
   if (isa<VoidType>(RTy)) {
-    K->Builder->CreateCall(Callee, LLOps);
+    K->Builder->CreateCall(CalleeFn, LLOps);
     return nullptr;
   }
-  return K->Builder->CreateCall(Callee, LLOps, Name);
+  return K->Builder->CreateCall(CalleeFn, LLOps, Name);
 }
 
 llvm::Value *AddInst::toLL(llvm::Module *M, Context *K) {

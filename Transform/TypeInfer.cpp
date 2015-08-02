@@ -103,9 +103,9 @@ Type *TypeInfer::visit(Argument *V) {
 
 Type *TypeInfer::visit(CallInst *V) {
   typeInferValueList(V->getOperands());
-  auto Name = V->getName();
+  auto Callee = V->getCallee();
   auto VTy = V->getType();
-  if (auto SymTy = Resolve::resolveLoadInstTy(Name, VTy, K)) {
+  if (auto SymTy = Resolve::resolveLoadInstTy(Callee, VTy, K)) {
     if (auto PTy = dyn_cast<PointerType>(SymTy)) {
       if (auto Ty = dyn_cast<FunctionType>(PTy->getCTy())) {
         V->setType(PTy);
@@ -113,11 +113,11 @@ Type *TypeInfer::visit(CallInst *V) {
       }
     }
     K->DiagPrinter->errorReport(
-        V->getSourceLocation(), Name + " was not typed as a function");
+        V->getSourceLocation(), Callee + " was not typed as a function");
     exit(1);
   }
   K->DiagPrinter->errorReport(
-      V->getSourceLocation(), "untyped function " + Name);
+      V->getSourceLocation(), "untyped function " + Callee);
   exit(1);
 }
 

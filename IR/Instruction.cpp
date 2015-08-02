@@ -38,7 +38,7 @@ void AddInst::print(std::ostream &Stream) const {
 }
 
 CallInst::CallInst(std::string FunctionName, Type *Ty) :
-    Instruction(Ty, RT_CallInst), Name(FunctionName) {}
+    Instruction(Ty, RT_CallInst), Callee(FunctionName) {}
 
 CallInst *CallInst::get(std::string FunctionName, Context *K) {
   return new (K->RhAllocator) CallInst(FunctionName, UnType::get(K));
@@ -48,12 +48,12 @@ bool CallInst::classof(const Value *V) {
   return V->getValID() == RT_CallInst;
 }
 
-std::string CallInst::getName() {
-  return Name;
+std::string CallInst::getCallee() {
+  return Callee;
 }
 
 void CallInst::print(std::ostream &Stream) const {
-  Stream << Name << " ~" << *getType();
+  Stream << Callee << " ~" << *getType();
   for (auto O: OperandList)
     Stream << std::endl << *O;
 }

@@ -281,6 +281,7 @@ value_expr:
                 {
                   auto Op = AddInst::get(K);
                   Op->setSourceLocation(@1);
+                  Op->setName(Driver->Root.getVirtualRegisterName());
                   Op->addOperand($L);
                   Op->addOperand($R);
                   $$ = Op;
@@ -289,12 +290,14 @@ value_expr:
                 {
                   auto CInst = CallInst::get($S->getName(), K);
                   CInst->setSourceLocation(@1);
+                  CInst->setName(Driver->Root.getVirtualRegisterName());
                   $$ = CInst;
                 }
         |       typed_symbol[S] rvalue_list[L]
                 {
                   auto CInst = CallInst::get($S->getName(), K);
                   CInst->setSourceLocation(@1);
+                  CInst->setName(Driver->Root.getVirtualRegisterName());
                   for (auto Op: *$L)
                     CInst->addOperand(Op);
                   $$ = CInst;
@@ -303,6 +306,7 @@ value_expr:
                 {
                   auto Op = CallInst::get($S->getName(), K);
                   Op->setSourceLocation(@1);
+                  Op->setName(Driver->Root.getVirtualRegisterName());
                   Op->addOperand($E);
                   $$ = Op;
                 }
