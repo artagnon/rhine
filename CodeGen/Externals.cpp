@@ -68,7 +68,7 @@ llvm::Constant *Externals::println(llvm::Module *M) {
 
 llvm::Constant *Externals::malloc(llvm::Module *M) {
   auto FTy = cast<llvm::FunctionType>(MallocTy->toLL(M, K));
-  return M->getOrInsertFunction("malloc", FTy);
+  return M->getOrInsertFunction("std_String_malloc__Int", FTy);
 }
 
 llvm::Constant *Externals::toString(llvm::Module *M) {
@@ -78,17 +78,21 @@ llvm::Constant *Externals::toString(llvm::Module *M) {
 
 extern "C" {
   __attribute__((used, noinline))
-  const char *std_String_toString__Int(int toConvert) {
-    auto newString = new std::string(std::to_string(toConvert));
+  const void *std_String_malloc__Int(int Size) {
+    return malloc(Size);
+  }
+  __attribute__((used, noinline))
+  const char *std_String_toString__Int(int ToConvert) {
+    auto newString = new std::string(std::to_string(ToConvert));
     return newString->c_str();
   }
   __attribute__((used, noinline))
-  void std_Void_print__String(const char *toPrint) {
-    std::cout << toPrint;
+  void std_Void_print__String(const char *ToPrint) {
+    std::cout << ToPrint;
   }
   __attribute__((used, noinline))
-  void std_Void_println__String(const char *toPrint) {
-    std::cout << toPrint << std::endl;
+  void std_Void_println__String(const char *ToPrint) {
+    std::cout << ToPrint << std::endl;
   }
 }
 }
