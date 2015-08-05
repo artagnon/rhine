@@ -68,13 +68,13 @@ TEST(Externals, ToStringExecution)
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
 
-TEST(CodeGen, ExternalsFunctionPointer) {
+TEST(Externals, FunctionPointer) {
   std::string SourcePrg =
     "def mallocRet [] {\n"
     "  malloc;\n"
     "}";
   std::string ExpectedPP =
-    "define i8* (i64)* @mallocRet() {\n"
+    "define i8* (i64)* @mallocRet() gc \"rhgc\" {\n"
     "entry:\n"
     "  ret i8* (i64)* @std_String_malloc__Int\n"
     "}\n";

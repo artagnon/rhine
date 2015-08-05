@@ -8,11 +8,11 @@ TEST(Lambda, BasicCodeGen)
   std::string SourcePrg =
     "def foo [] Bfunc = \\x ~ Int -> x;";
   std::string ExpectedPP =
-    "define i32 @lambda(i32) {\n"
+    "define i32 @lambda(i32) gc \"rhgc\" {\n"
     "entry:\n"
     "  ret i32 %0\n"
     "}\n\n"
-    "define void @foo() {\n"
+    "define void @foo() gc \"rhgc\" {\n"
     "entry:\n"
     "  %Alloc = call i8* @std_String_malloc__Int(i64 1)\n"
     "  %0 = bitcast i8* %Alloc to i32 (i32)**\n"

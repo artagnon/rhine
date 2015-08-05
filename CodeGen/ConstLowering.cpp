@@ -29,6 +29,7 @@ llvm::Constant *Function::toLL(llvm::Module *M, Context *K) {
         SourceLoc, Name + " was declared with different signature earlier");
     exit(1);
   }
+  K->CurrentFunction->setGC("rhgc");
 
   // Bind argument symbols to function argument values in symbol table
   auto ArgList = getArguments();

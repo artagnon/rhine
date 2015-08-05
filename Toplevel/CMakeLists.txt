@@ -14,4 +14,5 @@ set_target_properties(Toplevel PROPERTIES
 target_link_libraries(Toplevel
   Parse
   Transform
-  CodeGen)
+  CodeGen
+  Runtime)

@@ -12,7 +12,7 @@ TEST(FunctionPointer, BasicCodeGen) {
     "  callee;\n"
     "}";
   std::string ExpectedPP =
-    "define i32 ()* @caller() {\n"
+    "define i32 ()* @caller() gc \"rhgc\" {\n"
     "entry:\n"
     "  ret i32 ()* @callee\n"
     "}\n";
@@ -46,7 +46,7 @@ TEST(FunctionPointer, PassPrint)
     "def bar [printfn ~Fn(String -> & -> ())] printfn '12';\n"
     "def main [] bar print;";
   std::string ExpectedPP =
-    "define void @bar(void (i8*, ...)*) {\n"
+    "define void @bar(void (i8*, ...)*) gc \"rhgc\" {\n"
     "entry:\n"
     "  call void (i8*, ...) %0(i8* getelementptr";
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);

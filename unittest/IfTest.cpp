@@ -8,7 +8,7 @@ TEST(If, BasicCodeGen)
   std::string SourcePrg =
     "def main [] { if (false) 2; else 3; }";
   std::string ExpectedPP =
-    "define i32 @main() {\n"
+    "define i32 @main() gc \"rhgc\" {\n"
     "entry:\n"
     "  br i1 false, label %true, label %false\n\n"
     "true:                                             ; preds = %entry\n"
