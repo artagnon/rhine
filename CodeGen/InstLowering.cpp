@@ -74,16 +74,24 @@ llvm::Value *MallocInst::toLL(llvm::Module *M, Context *K) {
   auto V = getVal()->toLL(M, K);
   auto Ty = getVal()->getType()->toLL(M, K);
   auto Name = getName();
-  auto Alloca = K->Builder->CreateAlloca(Ty, nullptr, Name + "Alloca");
-  K->Builder->CreateStore(V, Alloca);
-  K->addMapping(Name, nullptr, Alloca);
+  auto Sz = Ty->getPrimitiveSizeInBits() / 8;
+  if (!Sz) Sz = 1;
+  auto ITy = IntegerType::get(64, K)->toLL(M, K);
+  std::vector<llvm::Value *> LLOps;
+  LLOps.push_back(llvm::ConstantInt::get(ITy, Sz));
+  auto MallocF = Externals::get(K)->getMappingVal("malloc", M);
+  auto Slot = K->Builder->CreateCall(MallocF, LLOps, "Alloc");
+  auto CastSlot = K->Builder->CreateBitCast(
+      Slot, llvm::PointerType::get(Ty, 0));
+  K->Builder->CreateStore(V, CastSlot);
+  K->addMapping(Name, nullptr, CastSlot);
   return nullptr;
 }
 
 llvm::Value *LoadInst::toLL(llvm::Module *M, Context *K) {
   auto Name = getName();
   if (auto Result = K->getMappingVal(Name)) {
-    if (isa<AllocaInst>(Result))
+    if (isa<llvm::BitCastInst>(Result))
       return K->Builder->CreateLoad(Result, Name + "Load");
     return Result;
   } else if (auto Result = Externals::get(K)->getMappingVal(Name, M))

@@ -14,8 +14,9 @@ TEST(Lambda, BasicCodeGen)
     "}\n\n"
     "define void @foo() {\n"
     "entry:\n"
-    "  %BfuncAlloca = alloca i32 (i32)*\n"
-    "  store i32 (i32)* @lambda, i32 (i32)** %BfuncAlloca\n"
+    "  %Alloc = call i8* @std_String_malloc__Int(i64 1)\n"
+    "  %0 = bitcast i8* %Alloc to i32 (i32)**\n"
+    "  store i32 (i32)* @lambda, i32 (i32)** %0\n"
     "  ret void\n"
     "}";
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);

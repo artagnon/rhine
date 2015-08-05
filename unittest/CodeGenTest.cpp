@@ -92,9 +92,10 @@ TEST(CodeGen, BindPropagation) {
   std::string ExpectedPP =
     "define i32 @bsym() {\n"
     "entry:\n"
-    "  %SymAlloca = alloca i32\n"
-    "  store i32 3, i32* %SymAlloca\n"
-    "  %SymLoad = load i32, i32* %SymAlloca\n"
+    "  %Alloc = call i8* @std_String_malloc__Int(i64 4)\n"
+    "  %0 = bitcast i8* %Alloc to i32*\n"
+    "  store i32 3, i32* %0\n"
+    "  %SymLoad = load i32, i32* %0\n"
     "  ret i32 %SymLoad\n"
     "}\n";
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
@@ -117,8 +118,9 @@ TEST(CodeGen, VoidLowering)
   std::string ExpectedPP =
     "define void @id() {\n"
     "entry:\n"
-    "  %VarAlloca = alloca i32\n"
-    "  store i32 3, i32* %VarAlloca\n"
+    "  %Alloc = call i8* @std_String_malloc__Int(i64 4)\n"
+    "  %0 = bitcast i8* %Alloc to i32*\n"
+    "  store i32 3, i32* %0\n"
     "  ret void\n"
     "}\n";
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
