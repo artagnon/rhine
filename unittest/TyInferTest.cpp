@@ -9,7 +9,7 @@ TEST(TyInfer, CallInst) {
     "  malloc 8;\n"
     "}";
   std::string ExpectedPP =
-    "define i8* @mallocCall() {\n"
+    "define i8* @mallocCall() gc \"rhgc\" {\n"
     "entry:\n"
     "  %rhv0 = call i8* @std_String_malloc__Int(i64 8)\n"
     "  ret i8* %rhv0\n"

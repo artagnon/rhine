@@ -3,6 +3,7 @@
 #include "rhine/Transform/TypeInfer.h"
 #include "rhine/Transform/LambdaLifting.h"
 #include "rhine/Transform/TypeCoercion.h"
+#include "rhine/Runtime/GC.h"
 #include "rhine/IR.h"
 
 #include "llvm/ExecutionEngine/ExecutionEngine.h"
