@@ -3,6 +3,12 @@
 #include "rhine/Externals.h"
 
 namespace rhine {
+llvm::Value *UnresolvedValue::toLL(llvm::Module *M, Context *K) {
+  K->DiagPrinter->errorReport(
+      SourceLoc, "ResolveValues not run properly" + Name);
+  exit(1);
+}
+
 llvm::Value *Argument::toLL(llvm::Module *M, Context *K) {
   auto Name = getName();
   if (auto Result = K->getMappingVal(Name))

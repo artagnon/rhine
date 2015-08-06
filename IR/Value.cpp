@@ -38,7 +38,24 @@ void Value::dump() {
   std::cout << *this << std::endl;
 }
 
-Argument::Argument(std::string N, Type *T) : Value(T, RT_Argument, N) {}
+UnresolvedValue::UnresolvedValue(std::string N, Type *T, RTValue ValID) :
+    Value(T, ValID, N) {}
+
+UnresolvedValue *UnresolvedValue::get(std::string N, Type *T, Context *K) {
+  return new (K->RhAllocator) UnresolvedValue(N, T);
+}
+
+bool UnresolvedValue::classof(const Value *V) {
+  return V->getValID() >= RT_UnresolvedValue &&
+    V->getValID() <= RT_Argument;
+}
+
+void UnresolvedValue::print(std::ostream &Stream) const {
+  Stream << Name << " ~" << *getType();
+}
+
+Argument::Argument(std::string N, Type *T) :
+    UnresolvedValue(N, T, RT_Argument) {}
 
 Argument *Argument::get(std::string N, Type *T, Context *K) {
   return new (K->RhAllocator) Argument(N, T);

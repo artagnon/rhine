@@ -16,6 +16,7 @@ using namespace llvm;
 
 namespace rhine {
 enum RTValue {
+  RT_UnresolvedValue,
   RT_Argument,
   RT_GlobalString,
   RT_ConstantInt,
@@ -52,20 +53,32 @@ public:
     return Stream;
   }
   void dump();
+  void printAsOperand(raw_ostream &O, bool PrintType = true,
+                      const Module *M = nullptr) const;
 protected:
   virtual void print(std::ostream &Stream) const = 0;
 private:
   const RTValue ValID;
 };
 
-class Argument : public Value {
+class UnresolvedValue : public Value {
+public:
+  UnresolvedValue(std::string N, Type *T, RTValue ValID = RT_UnresolvedValue);
+  static UnresolvedValue *get(std::string N, Type *T, Context *K);
+  static bool classof(const Value *V);
+  virtual llvm::Value *toLL(llvm::Module *M, Context *K) override;
+protected:
+  virtual void print(std::ostream &Stream) const override;
+};
+
+class Argument : public UnresolvedValue {
 public:
   Argument(std::string N, Type *T);
   static Argument *get(std::string N, Type *T, Context *K);
   static bool classof(const Value *V);
-  llvm::Value *toLL(llvm::Module *M, Context *K);
+  virtual llvm::Value *toLL(llvm::Module *M, Context *K) override;
 protected:
-  virtual void print(std::ostream &Stream) const;
+  virtual void print(std::ostream &Stream) const override;
 };
 
 class GlobalString : public Value {
@@ -75,9 +88,9 @@ public:
   static GlobalString *get(std::string Val, Context *K);
   static bool classof(const Value *V);
   std::string getVal();
-  llvm::Value *toLL(llvm::Module *M, Context *K);
+  virtual llvm::Value *toLL(llvm::Module *M, Context *K);
 protected:
-  virtual void print(std::ostream &Stream) const;
+  virtual void print(std::ostream &Stream) const override;
 };
 }
 
