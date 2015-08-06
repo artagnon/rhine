@@ -2,7 +2,7 @@
 
 namespace rhine {
 BasicBlock::BasicBlock(Type *Ty, std::vector<Value *> V) :
-    Value(Ty, RT_BasicBlock), ValueList(V) {}
+    Value(Ty, RT_BasicBlock), Parent(nullptr), ValueList(V) {}
 
 BasicBlock *BasicBlock::get(std::vector<Value *> V, Context *K) {
   return new (K->RhAllocator) BasicBlock(UnType::get(K), V);
@@ -26,6 +26,10 @@ unsigned BasicBlock::size() {
 
 Value *BasicBlock::back() {
   return ValueList.back();
+}
+
+Function *BasicBlock::getParent() const {
+  return Parent;
 }
 
 void BasicBlock::print(std::ostream &Stream) const {

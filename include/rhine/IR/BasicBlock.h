@@ -7,6 +7,7 @@
 
 namespace rhine {
 class BasicBlock : public Value {
+  Function *Parent;
 public:
   std::vector<Value *> ValueList;
   BasicBlock(Type *Ty, std::vector<Value *> V);
@@ -18,6 +19,7 @@ public:
   iterator end();
   unsigned size();
   Value *back();
+  Function *getParent() const;
 protected:
   virtual void print(std::ostream &Stream) const;
 };
