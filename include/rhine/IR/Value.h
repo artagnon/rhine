@@ -19,16 +19,19 @@ enum RTValue {
   RT_UnresolvedValue,
   RT_Argument,
   RT_GlobalString,
+  RT_Constant,
   RT_ConstantInt,
   RT_ConstantBool,
   RT_ConstantFloat,
   RT_Function,
   RT_BasicBlock,
+  RT_Instruction,
   RT_AddInst,
   RT_CallInst,
   RT_MallocInst,
   RT_LoadInst,
   RT_IfInst,
+  RT_User
 };
 
 class Value : public FoldingSetNode {

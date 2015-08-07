@@ -3,6 +3,11 @@
 namespace rhine {
 Constant::Constant(Type *Ty, RTValue ID) : Value(Ty, ID) {}
 
+bool Constant::classof(const Value *V) {
+  return V->getValID() >= RT_ConstantInt &&
+    V->getValID() <= RT_ConstantFloat;
+}
+
 ConstantInt::ConstantInt(int Val, unsigned Bitwidth, Context *K) :
     Constant(IntegerType::get(Bitwidth, K), RT_ConstantInt), Val(Val) {}
 
@@ -118,12 +123,16 @@ BasicBlock *Function::getVal() {
   return Val;
 }
 
+BasicBlock *Function::getEntryBlock() {
+  return Val;
+}
+
 BasicBlock::iterator Function::begin() {
-  return Val->ValueList.begin();
+  return Val->begin();
 }
 
 BasicBlock::iterator Function::end() {
-  return Val->ValueList.end();
+  return Val->end();
 }
 
 Function::arg_iterator Function::arg_begin() {
