@@ -24,7 +24,7 @@ Value *TypeCoercion::convertValue(Value *V, StringType *) {
       return V;
   }
   auto toStringF = "toString";
-  auto Op = CallInst::get(toStringF, K);
+  auto Op = CallInst::get(toStringF, 1, K);
   Op->setType(Externals::get(K)->getMappingTy(toStringF));
   Op->addOperand(V);
   return Op;

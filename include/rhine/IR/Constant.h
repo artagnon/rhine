@@ -23,6 +23,7 @@ class Module;
 class Constant : public Value {
 public:
   Constant(Type *Ty, RTValue ID);
+  static bool classof(const Value *V);
   llvm::Constant *toLL(llvm::Module *M, Context *K) = 0;
 protected:
   virtual void print(std::ostream &Stream) const = 0;
@@ -84,6 +85,7 @@ public:
   std::vector<Argument *> getArguments();
   void setBody(BasicBlock *Body);
   BasicBlock *getVal();
+  BasicBlock *getEntryBlock();
   BasicBlock::iterator begin();
   BasicBlock::iterator end();
   typedef std::vector<Argument *>::iterator arg_iterator;
