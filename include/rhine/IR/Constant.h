@@ -11,7 +11,8 @@
 #include <sstream>
 
 #include "rhine/Context.h"
-#include "rhine/IR/Value.h"
+#include "rhine/IR/User.h"
+#include "rhine/IR/UnresolvedValue.h"
 #include "rhine/IR/BasicBlock.h"
 
 using namespace std;
@@ -20,9 +21,10 @@ using namespace llvm;
 namespace rhine {
 class Module;
 
-class Constant : public Value {
+class Constant : public User {
 public:
   Constant(Type *Ty, RTValue ID);
+  virtual ~Constant() {}
   static bool classof(const Value *V);
   llvm::Constant *toLL(llvm::Module *M, Context *K) = 0;
 protected:
@@ -46,6 +48,7 @@ class ConstantBool : public Constant {
   bool Val;
 public:
   ConstantBool(bool Val, Context *K);
+  virtual ~ConstantBool() {}
   static ConstantBool *get(bool Val, Context *K);
   static bool classof(const Value *V);
   float getVal();
@@ -58,6 +61,7 @@ class ConstantFloat : public Constant {
 public:
   float Val;
   ConstantFloat(float Val, Context *K);
+  virtual ~ConstantFloat() {}
   static ConstantFloat *get(float Val, Context *K);
   static bool classof(const Value *V);
   float getVal();
@@ -66,7 +70,7 @@ protected:
   virtual void print(std::ostream &Stream) const;
 };
 
-class Function : public Value {
+class Function : public User {
   Module *ParentModule;
   std::string Name;
   std::vector<Argument *> ArgumentList;
@@ -74,6 +78,7 @@ class Function : public Value {
   BasicBlock *Val;
 public:
   Function(FunctionType *FTy);
+  virtual ~Function() {}
   static Function *get(FunctionType *FTy, Context *K);
   static bool classof(const Value *V);
   void setParent(Module *Parent);

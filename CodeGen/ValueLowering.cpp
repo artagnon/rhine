@@ -1,5 +1,7 @@
 #include "rhine/Context.h"
 #include "rhine/IR/Value.h"
+#include "rhine/IR/UnresolvedValue.h"
+#include "rhine/IR/GlobalValue.h"
 #include "rhine/Externals.h"
 
 namespace rhine {

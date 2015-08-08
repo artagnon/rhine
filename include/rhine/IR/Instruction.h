@@ -19,6 +19,7 @@ namespace rhine {
 class Instruction : public User {
 public:
   Instruction(Type *Ty, RTValue ID, unsigned NumOps, std::string Name = "");
+  virtual ~Instruction() {}
   static bool classof(const Value *V);
   std::vector<Value *> getOperands() const;
   void setOperands(std::vector<Value *> Ops);
@@ -30,6 +31,7 @@ protected:
 class AddInst : public Instruction {
 public:
   AddInst(Type *Ty);
+  virtual ~AddInst() {}
   void *operator new(size_t s);
   static AddInst *get(Context *K);
   static bool classof(const Value *V);
@@ -42,6 +44,7 @@ class CallInst : public Instruction {
   std::string Callee;
 public:
   CallInst(std::string FunctionName, Type *Ty, unsigned NumOps);
+  virtual ~CallInst() {}
   void *operator new(size_t s, unsigned n);
   static CallInst *get(std::string FunctionName,
                        unsigned NumOperands, Context *K);
@@ -56,6 +59,7 @@ class MallocInst : public Instruction {
   Value *Val;
 public:
   MallocInst(std::string N, Type *Ty, Value *V);
+  virtual ~MallocInst() {}
   void *operator new(size_t s);
   static MallocInst *get(std::string N, Value *V, Context *K);
   static bool classof(const Value *V);
@@ -69,6 +73,7 @@ protected:
 class LoadInst : public Instruction {
 public:
   LoadInst(std::string N, Type *T, RTValue ID = RT_LoadInst);
+  virtual ~LoadInst() {}
   void *operator new(size_t s);
   static LoadInst *get(std::string N, Type *T, Context *K);
   static bool classof(const Value *V);
@@ -84,6 +89,7 @@ class IfInst : public Instruction {
 public:
   IfInst(Type *Ty, Value * Conditional_,
          BasicBlock *TrueBB_, BasicBlock *FalseBB_);
+  virtual ~IfInst() {}
   void *operator new(size_t s);
   static IfInst *get(Value * Conditional, BasicBlock *TrueBB,
                      BasicBlock *FalseBB, Context *K);
