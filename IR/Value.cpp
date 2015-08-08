@@ -3,7 +3,7 @@
 
 namespace rhine {
 Value::Value(Type *VTy, RTValue ID, std::string N) :
-    VTy(VTy), Name(N), ValID(ID) {}
+    VTy(VTy), UseList(nullptr), Name(N), ValID(ID) {}
 
 void Value::setSourceLocation(location SrcLoc) {
   SourceLoc = SrcLoc;
@@ -31,8 +31,19 @@ void Value::setName(std::string Str) {
   Name = Str;
 }
 
+bool Value::use_empty() const { return UseList == nullptr; }
+
 void Value::addUse(Use &U) {
   U.addToList(UseList);
+}
+
+void Value::replaceAllUsesWith(Value *New) {
+  assert(New && "Value::replaceAllUsesWith(<null>) is invalid!");
+
+  while (!use_empty()) {
+    Use &U = *UseList;
+    U.set(New);
+  }
 }
 
 __attribute__((used, noinline))
