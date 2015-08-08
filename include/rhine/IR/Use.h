@@ -12,6 +12,7 @@ class Use {
   Use *Next;
   unsigned OperandNumber;
 public:
+  Use();
   unsigned getOperandNumber();
   void setOperandNumber(unsigned Num);
   void setVal(Value *Val_);
@@ -22,7 +23,7 @@ public:
   void swap(Use &RHS);
   void addToList(Use *UseList);
   void removeFromList();
-
+  void set(Value *V);
   friend class Value;
 };
 }

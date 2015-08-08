@@ -61,6 +61,8 @@ public:
   void printAsOperand(raw_ostream &O, bool PrintType = true,
                       const Module *M = nullptr) const;
   void addUse(Use &U);
+  void replaceAllUsesWith(Value *V);
+  bool use_empty() const;
 protected:
   virtual void print(std::ostream &Stream) const = 0;
 private:

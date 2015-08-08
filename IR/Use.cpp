@@ -3,6 +3,8 @@
 #include "rhine/IR/Value.h"
 
 namespace rhine {
+Use::Use() : Val(nullptr), Prev(nullptr), Next(nullptr), OperandNumber(0) {}
+
 unsigned Use::getOperandNumber() {
   return OperandNumber;
 }
@@ -65,5 +67,11 @@ void Use::addToList(Use *UseList) {
 void Use::removeFromList() {
   assert(Next && "Cannot remove primary Use");
   Next->Prev = nullptr;
+}
+
+void Use::set(Value *V) {
+  if (Val) removeFromList();
+  Val = V;
+  if (V) V->addUse(*this);
 }
 }
