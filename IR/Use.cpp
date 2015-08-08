@@ -17,4 +17,8 @@ Value *Use::operator=(Value *RHS) {
   setVal(RHS);
   return RHS;
 }
+
+Value *Use::operator->() { return Val; }
+
+Use::operator Value *() const { return Val; }
 }
