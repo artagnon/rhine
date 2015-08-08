@@ -17,14 +17,10 @@
 
 namespace rhine {
 class Instruction : public User {
-protected:
-  std::vector<Value *> OperandList;
 public:
   Instruction(Type *Ty, RTValue ID, unsigned NumOps, std::string Name = "");
   static bool classof(const Value *V);
-  void addOperand(Value *V);
-  Value *getOperand(unsigned i);
-  std::vector<Value *> getOperands();
+  std::vector<Value *> getOperands() const;
   void setOperands(std::vector<Value *> Ops);
   virtual llvm::Value *toLL(llvm::Module *M, Context *K) = 0;
 protected:

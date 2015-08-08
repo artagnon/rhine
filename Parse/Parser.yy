@@ -282,8 +282,8 @@ value_expr:
                   auto Op = AddInst::get(K);
                   Op->setSourceLocation(@1);
                   Op->setName(Driver->Root.getVirtualRegisterName());
-                  Op->addOperand($L);
-                  Op->addOperand($R);
+                  Op->setOperand(0, $L);
+                  Op->setOperand(1, $R);
                   $$ = Op;
                 }
         |       typed_symbol[S] TVOID
@@ -298,8 +298,8 @@ value_expr:
                   auto CInst = CallInst::get($S->getName(), $L->size(), K);
                   CInst->setSourceLocation(@1);
                   CInst->setName(Driver->Root.getVirtualRegisterName());
-                  for (auto Op: *$L)
-                    CInst->addOperand(Op);
+                  for (unsigned OpN = 0; OpN < $L->size(); OpN++)
+                    CInst->setOperand(OpN, (*$L)[OpN]);
                   $$ = CInst;
                 }
         |       typed_symbol[S] '$' value_expr[E]
@@ -307,7 +307,7 @@ value_expr:
                   auto Op = CallInst::get($S->getName(), 1, K);
                   Op->setSourceLocation(@1);
                   Op->setName(Driver->Root.getVirtualRegisterName());
-                  Op->addOperand($E);
+                  Op->setOperand(0, $E);
                   $$ = Op;
                 }
                 ;

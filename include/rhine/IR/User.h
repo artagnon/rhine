@@ -7,9 +7,10 @@
 
 namespace rhine {
 class User : public Value {
+protected:
   unsigned NumOperands;
 public:
-  User(Type *Ty, RTValue ID, Use *OpList, unsigned NumOps, std::string N);
+  User(Type *Ty, RTValue ID, unsigned NumOps, std::string N);
   void *operator new(size_t Size, unsigned Us);
   static bool classof(const Value *V);
   Use *getOperandList();

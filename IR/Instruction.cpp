@@ -3,28 +3,26 @@
 namespace rhine {
 Instruction::Instruction(Type *Ty, RTValue ID,
                          unsigned NumOps, std::string N) :
-    User(Ty, ID, nullptr, 0, N) {}
+    User(Ty, ID, NumOps, N) {}
 
 bool Instruction::classof(const Value *V) {
   return V->getValID() >= RT_AddInst &&
     V->getValID() <= RT_IfInst;
 }
 
-void Instruction::addOperand(Value *V) {
-  OperandList.push_back(V);
-}
-
-Value *Instruction::getOperand(unsigned i) {
-  assert(i < OperandList.size() && "getOperand() out of range");
-  return OperandList[i];
-}
-
-std::vector<Value *> Instruction::getOperands() {
-  return OperandList;
+std::vector<Value *> Instruction::getOperands() const {
+  std::vector<Value *> OpV;
+  for (unsigned OpN = 0; OpN < NumOperands; OpN++) {
+    OpV.push_back(getOperand(OpN));
+  }
+  return OpV;
 }
 
 void Instruction::setOperands(std::vector<Value *> Ops) {
-  OperandList = Ops;
+  assert(Ops.size() == NumOperands && "Incorrect number passed to setOperands()");
+  for (unsigned OpN = 0; OpN < NumOperands; OpN++) {
+    setOperand(OpN, Ops[OpN]);
+  }
 }
 
 AddInst::AddInst(Type *Ty) : Instruction(Ty, RT_AddInst, 2) {}
@@ -43,7 +41,7 @@ bool AddInst::classof(const Value *V) {
 
 void AddInst::print(std::ostream &Stream) const {
   Stream << "+ ~" << *getType();
-  for (auto O: OperandList)
+  for (auto O: getOperands())
     Stream << std::endl << *O;
 }
 
@@ -69,7 +67,7 @@ std::string CallInst::getCallee() {
 
 void CallInst::print(std::ostream &Stream) const {
   Stream << Callee << " ~" << *getType();
-  for (auto O: OperandList)
+  for (auto O: getOperands())
     Stream << std::endl << *O;
 }
 
