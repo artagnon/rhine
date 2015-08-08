@@ -2,12 +2,8 @@
 #include "rhine/IR/Constant.h"
 
 namespace rhine {
-User::User(Type *Ty, RTValue ID, Use *OpList, unsigned NumOps, std::string N) :
-    Value(Ty, ID, N), NumOperands(NumOps) {
-  for (unsigned OpN = 0; OpN < NumOperands; OpN++) {
-    setOperand(OpN, OpList[OpN]);
-  }
-}
+User::User(Type *Ty, RTValue ID, unsigned NumOps, std::string N) :
+    Value(Ty, ID, N), NumOperands(NumOps) {}
 
 void *User::operator new(size_t Size, unsigned Us) {
   void *Storage = ::operator new (Us * sizeof(Use) + Size);
