@@ -2,6 +2,13 @@
 #include "rhine/IR/Constant.h"
 
 namespace rhine {
+User::User(Type *Ty, RTValue ID, Use *OpList, unsigned NumOps, std::string N) :
+    Value(Ty, ID, N), NumOperands(NumOps) {
+  for (unsigned OpN = 0; OpN < NumOperands; OpN++) {
+    setOperand(OpN, OpList[OpN]);
+  }
+}
+
 void *User::operator new(size_t Size, unsigned Us) {
   void *Storage = ::operator new (Us * sizeof(Use) + Size);
   auto Start = static_cast<Use *>(Storage);
@@ -21,6 +28,15 @@ bool User::classof(const Value *V) {
 
 Use *User::getOperandList() {
   return reinterpret_cast<Use *>(this) - NumOperands;
+}
+
+const Use *User::getOperandList() const {
+  return const_cast<User *>(this)->getOperandList();
+}
+
+Value *User::getOperand(unsigned i) const {
+  assert(i < NumOperands && "getOperand() out of range!");
+  return getOperandList()[i];
 }
 
 void User::setOperand(unsigned i, Value *Val) {

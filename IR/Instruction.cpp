@@ -1,8 +1,9 @@
 #include "rhine/IR/Instruction.h"
 
 namespace rhine {
-Instruction::Instruction(Type *Ty, RTValue ID, std::string N) :
-    Value(Ty, ID, N) {}
+Instruction::Instruction(Type *Ty, RTValue ID,
+                         unsigned NumOps, std::string N) :
+    User(Ty, ID, nullptr, 0, N) {}
 
 bool Instruction::classof(const Value *V) {
   return V->getValID() >= RT_AddInst &&
@@ -26,7 +27,7 @@ void Instruction::setOperands(std::vector<Value *> Ops) {
   OperandList = Ops;
 }
 
-AddInst::AddInst(Type *Ty) : Instruction(Ty, RT_AddInst) {}
+AddInst::AddInst(Type *Ty) : Instruction(Ty, RT_AddInst, 2) {}
 
 void *AddInst::operator new(size_t s) {
   return User::operator new(s, 2);
@@ -46,16 +47,16 @@ void AddInst::print(std::ostream &Stream) const {
     Stream << std::endl << *O;
 }
 
-CallInst::CallInst(std::string FunctionName, Type *Ty) :
-    Instruction(Ty, RT_CallInst), Callee(FunctionName) {}
+CallInst::CallInst(std::string FunctionName, Type *Ty, unsigned NumOps) :
+    Instruction(Ty, RT_CallInst, NumOps), Callee(FunctionName) {}
 
 void *CallInst::operator new(size_t s, unsigned n) {
   return User::operator new(s, n);
 }
 
 CallInst *CallInst::get(std::string FunctionName,
-                        unsigned NumOperands, Context *K) {
-  return new (NumOperands) CallInst(FunctionName, UnType::get(K));
+                        unsigned NumOps, Context *K) {
+  return new (NumOps) CallInst(FunctionName, UnType::get(K), NumOps);
 }
 
 bool CallInst::classof(const Value *V) {
@@ -73,15 +74,14 @@ void CallInst::print(std::ostream &Stream) const {
 }
 
 MallocInst::MallocInst(std::string N, Type *Ty, Value *V) :
-    Instruction(Ty, RT_MallocInst, N), Val(V) {}
+    Instruction(Ty, RT_MallocInst, 1, N), Val(V) {}
 
 void *MallocInst::operator new(size_t s) {
-  return User::operator new(s, 2);
+  return User::operator new(s, 1);
 }
 
 MallocInst *MallocInst::get(std::string N, Value *V, Context *K) {
-  return new MallocInst(
-      N, VoidType::get(K), V);
+  return new MallocInst(N, VoidType::get(K), V);
 }
 
 bool MallocInst::classof(const Value *V) {
@@ -101,7 +101,7 @@ void MallocInst::print(std::ostream &Stream) const {
 }
 
 LoadInst::LoadInst(std::string N, Type *T, RTValue ID) :
-    Instruction(T, ID, N) {}
+    Instruction(T, ID, 1, N) {}
 
 void *LoadInst::operator new(size_t s) {
   return User::operator new(s, 1);
@@ -121,11 +121,11 @@ void LoadInst::print(std::ostream &Stream) const {
 
 IfInst::IfInst(Type *Ty, Value * Conditional_,
                BasicBlock *TrueBB_, BasicBlock *FalseBB_):
-    Instruction(Ty, RT_IfInst), Conditional(Conditional_),
+    Instruction(Ty, RT_IfInst, 3), Conditional(Conditional_),
     TrueBB(TrueBB_), FalseBB(FalseBB_) {}
 
 void *IfInst::operator new(size_t s) {
-  return User::operator new(s, 2);
+  return User::operator new(s, 3);
 }
 
 IfInst *IfInst::get(Value * Conditional, BasicBlock *TrueBB,

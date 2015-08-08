@@ -9,10 +9,12 @@ namespace rhine {
 class User : public Value {
   unsigned NumOperands;
 public:
-  User() = delete;
+  User(Type *Ty, RTValue ID, Use *OpList, unsigned NumOps, std::string N);
   void *operator new(size_t Size, unsigned Us);
   static bool classof(const Value *V);
   Use *getOperandList();
+  const Use *getOperandList() const;
+  Value *getOperand(unsigned i) const;
   void setOperand(unsigned i, Value *Val);
 };
 }

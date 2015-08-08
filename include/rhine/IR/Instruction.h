@@ -16,11 +16,11 @@
 #include "rhine/IR/User.h"
 
 namespace rhine {
-class Instruction : public Value {
+class Instruction : public User {
 protected:
   std::vector<Value *> OperandList;
 public:
-  Instruction(Type *Ty, RTValue ID, std::string Name = "");
+  Instruction(Type *Ty, RTValue ID, unsigned NumOps, std::string Name = "");
   static bool classof(const Value *V);
   void addOperand(Value *V);
   Value *getOperand(unsigned i);
@@ -45,7 +45,7 @@ protected:
 class CallInst : public Instruction {
   std::string Callee;
 public:
-  CallInst(std::string FunctionName, Type *Ty);
+  CallInst(std::string FunctionName, Type *Ty, unsigned NumOps);
   void *operator new(size_t s, unsigned n);
   static CallInst *get(std::string FunctionName,
                        unsigned NumOperands, Context *K);

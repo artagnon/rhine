@@ -14,6 +14,8 @@ public:
   void setVal(Value *Val_);
   class User *getUser();
   Value *operator=(Value *RHS);
+  Value *operator->();
+  operator Value *() const;
 };
 }
 #endif
