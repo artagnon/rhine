@@ -18,8 +18,13 @@ void *User::operator new(size_t Size, unsigned Us) {
   return Obj;
 }
 
+void *User::operator new(size_t Size) {
+  return ::operator new (Size);
+}
+
 bool User::classof(const Value *V) {
-  return V->getValID() == RT_User;
+  return V->getValID() >= RT_User &&
+    V->getValID() <= RT_IfInst;
 }
 
 Use *User::getOperandList() {

@@ -10,12 +10,14 @@
 #include "location.hh"
 #include "rhine/Context.h"
 #include "rhine/IR/Type.h"
+#include "rhine/IR/Use.h"
 
 using namespace std;
 using namespace llvm;
 
 namespace rhine {
 enum RTValue {
+  RT_User,
   RT_UnresolvedValue,
   RT_Argument,
   RT_GlobalString,
@@ -24,19 +26,19 @@ enum RTValue {
   RT_ConstantBool,
   RT_ConstantFloat,
   RT_Function,
-  RT_BasicBlock,
   RT_Instruction,
   RT_AddInst,
   RT_CallInst,
   RT_MallocInst,
   RT_LoadInst,
   RT_IfInst,
-  RT_User
+  RT_BasicBlock,
 };
 
 class Value : public FoldingSetNode {
 protected:
   Type *VTy;
+  Use *UseList;
   location SourceLoc;
   std::string Name;
 public:
@@ -58,43 +60,11 @@ public:
   void dump();
   void printAsOperand(raw_ostream &O, bool PrintType = true,
                       const Module *M = nullptr) const;
+  void addUse(Use &U);
 protected:
   virtual void print(std::ostream &Stream) const = 0;
 private:
   const RTValue ValID;
 };
-
-class UnresolvedValue : public Value {
-public:
-  UnresolvedValue(std::string N, Type *T, RTValue ValID = RT_UnresolvedValue);
-  static UnresolvedValue *get(std::string N, Type *T, Context *K);
-  static bool classof(const Value *V);
-  virtual llvm::Value *toLL(llvm::Module *M, Context *K) override;
-protected:
-  virtual void print(std::ostream &Stream) const override;
-};
-
-class Argument : public UnresolvedValue {
-public:
-  Argument(std::string N, Type *T);
-  static Argument *get(std::string N, Type *T, Context *K);
-  static bool classof(const Value *V);
-  virtual llvm::Value *toLL(llvm::Module *M, Context *K) override;
-protected:
-  virtual void print(std::ostream &Stream) const override;
-};
-
-class GlobalString : public Value {
-  std::string Val;
-public:
-  GlobalString(std::string Val, Context *K);
-  static GlobalString *get(std::string Val, Context *K);
-  static bool classof(const Value *V);
-  std::string getVal();
-  virtual llvm::Value *toLL(llvm::Module *M, Context *K);
-protected:
-  virtual void print(std::ostream &Stream) const override;
-};
 }
-
 #endif

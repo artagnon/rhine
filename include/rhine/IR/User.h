@@ -10,8 +10,9 @@ class User : public Value {
 protected:
   unsigned NumOperands;
 public:
-  User(Type *Ty, RTValue ID, unsigned NumOps, std::string N);
+  User(Type *Ty, RTValue ID, unsigned NumOps = 0, std::string N = "");
   void *operator new(size_t Size, unsigned Us);
+  void *operator new(size_t Size);
   static bool classof(const Value *V);
   Use *getOperandList();
   const Use *getOperandList() const;

@@ -1,7 +1,8 @@
 #include "rhine/IR/Constant.h"
+#include "rhine/IR/UnresolvedValue.h"
 
 namespace rhine {
-Constant::Constant(Type *Ty, RTValue ID) : Value(Ty, ID) {}
+Constant::Constant(Type *Ty, RTValue ID) : User(Ty, ID) {}
 
 bool Constant::classof(const Value *V) {
   return V->getValID() >= RT_ConstantInt &&
@@ -12,7 +13,7 @@ ConstantInt::ConstantInt(int Val, unsigned Bitwidth, Context *K) :
     Constant(IntegerType::get(Bitwidth, K), RT_ConstantInt), Val(Val) {}
 
 ConstantInt *ConstantInt::get(int Val, unsigned Bitwidth, Context *K) {
-  return new (K->RhAllocator) ConstantInt(Val, Bitwidth, K);
+  return new ConstantInt(Val, Bitwidth, K);
 }
 
 bool ConstantInt::classof(const Value *V) {
@@ -37,7 +38,7 @@ ConstantBool::ConstantBool(bool Val, Context *K) :
     Constant(BoolType::get(K), RT_ConstantBool), Val(Val) {}
 
 ConstantBool *ConstantBool::get(bool Val, Context *K) {
-  return new (K->RhAllocator) ConstantBool(Val, K);
+  return new ConstantBool(Val, K);
 }
 
 bool ConstantBool::classof(const Value *V) {
@@ -56,7 +57,7 @@ ConstantFloat::ConstantFloat(float Val, Context *K) :
     Constant(FloatType::get(K), RT_ConstantFloat), Val(Val) {}
 
 ConstantFloat *ConstantFloat::get(float Val, Context *K) {
-  return new (K->RhAllocator) ConstantFloat(Val, K);
+  return new ConstantFloat(Val, K);
 }
 
 bool ConstantFloat::classof(const Value *V) {
@@ -72,11 +73,11 @@ void ConstantFloat::print(std::ostream &Stream) const {
 }
 
 Function::Function(FunctionType *FTy) :
-    Value(FTy, RT_Function), ParentModule(nullptr),
+    User(FTy, RT_Function), ParentModule(nullptr),
     VariadicRestLoadInst(nullptr), Val(nullptr) {}
 
 Function *Function::get(FunctionType *FTy, Context *K) {
-  return new (K->RhAllocator) Function(FTy);
+  return new Function(FTy);
 }
 
 bool Function::classof(const Value *V) {

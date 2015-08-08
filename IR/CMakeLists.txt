@@ -4,6 +4,8 @@ find_package(LLVM REQUIRED native mcjit)
 link_directories(${LLVM_LIBRARY_DIRS})
 add_library(IR
   "${CMAKE_CURRENT_SOURCE_DIR}/Value.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/UnresolvedValue.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/GlobalValue.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Type.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Constant.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/BasicBlock.cpp"

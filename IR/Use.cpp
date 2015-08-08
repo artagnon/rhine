@@ -1,6 +1,12 @@
 #include "rhine/IR/Use.h"
+#include "rhine/IR/User.h"
+#include "rhine/IR/Value.h"
 
 namespace rhine {
+unsigned Use::getOperandNumber() {
+  return OperandNumber;
+}
+
 void Use::setOperandNumber(unsigned Num) {
   OperandNumber = Num;
 }
@@ -21,4 +27,43 @@ Value *Use::operator=(Value *RHS) {
 Value *Use::operator->() { return Val; }
 
 Use::operator Value *() const { return Val; }
+
+void Use::swap(Use &RHS) {
+  if (Val == RHS.Val)
+    return;
+
+  if (Val)
+    removeFromList();
+
+  Value *OldVal = Val;
+  if (RHS.Val) {
+    RHS.removeFromList();
+    Val = RHS.Val;
+    Val->addUse(*this);
+  } else {
+    Val = nullptr;
+  }
+
+  if (OldVal) {
+    RHS.Val = OldVal;
+    RHS.Val->addUse(RHS);
+  } else {
+    RHS.Val = nullptr;
+  }
+}
+
+void Use::addToList(Use *UseList) {
+  if (!UseList) {
+    Prev = nullptr;
+    return;
+  }
+  UseList->Next = this;
+  Prev = UseList;
+  UseList = this;
+}
+
+void Use::removeFromList() {
+  assert(Next && "Cannot remove primary Use");
+  Next->Prev = nullptr;
+}
 }
