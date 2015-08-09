@@ -14,7 +14,7 @@ TEST(Lambda, BasicCodeGen)
     "}\n\n"
     "define void @foo() gc \"rhgc\" {\n"
     "entry:\n"
-    "  %Alloc = call i8* @std_String_malloc__Int(i64 1)\n"
+    "  %Alloc = call i8* @std_String_malloc__Int(i64 8)\n"
     "  %0 = bitcast i8* %Alloc to i32 (i32)**\n"
     "  store i32 (i32)* @lambda, i32 (i32)** %0\n"
     "  ret void\n"
