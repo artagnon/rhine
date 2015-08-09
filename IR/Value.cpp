@@ -5,6 +5,8 @@ namespace rhine {
 Value::Value(Type *VTy, RTValue ID, std::string N) :
     VTy(VTy), UseList(nullptr), Name(N), ValID(ID) {}
 
+Context *Value::getContext() { return VTy->getContext(); }
+
 void Value::setSourceLocation(location SrcLoc) {
   SourceLoc = SrcLoc;
 }
