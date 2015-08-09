@@ -8,9 +8,9 @@ class ResolutionMap {
 public:
   void addMapping(std::string Name, BasicBlock *Block,
                   Value *Val, llvm::Value *LLVal = nullptr) {
-    auto ThisVRMap = FunctionVR[Block];
+    auto &ThisVRMap = FunctionVR[Block];
     auto Ret = ThisVRMap.insert(std::make_pair(Name, ValueRef(Val, LLVal)));
-    auto NewElementInserted = Ret.second;
+    auto &NewElementInserted = Ret.second;
     if (!NewElementInserted) {
       auto IteratorToEquivalentKey = Ret.first;
       auto ValueRefOfEquivalentKey = IteratorToEquivalentKey->second;
@@ -19,7 +19,7 @@ public:
     }
   }
   ValueRef *getMapping(std::string Name, BasicBlock *Block) {
-    auto ThisVRMap = FunctionVR[Block];
+    auto &ThisVRMap = FunctionVR[Block];
     auto IteratorToElement = ThisVRMap.find(Name);
     return IteratorToElement == ThisVRMap.end() ? nullptr :
       &IteratorToElement->second;
@@ -39,7 +39,8 @@ void ResolveLocals::runOnFunction(Function *F) {
     if (auto U = dyn_cast<UnresolvedValue>(V)) {
       if (auto S = lookupNameinBlock(Name, F->getEntryBlock())) {
         auto L = LoadInst::get(Name, S->getType());
-        U->getUse()->set(L);
+        if (auto ThisUse = U->getUse())
+          ThisUse->set(L);
       } else {
         auto SourceLoc = U->getSourceLocation();
         auto K = F->getContext();
