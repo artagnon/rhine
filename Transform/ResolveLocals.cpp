@@ -42,6 +42,7 @@ void ResolveLocals::runOnFunction(Function *F) {
         U->getUse()->set(S);
       } else {
         auto SourceLoc = U->getSourceLocation();
+        auto K = F->getContext();
         K->DiagPrinter->errorReport(SourceLoc, "unbound symbol " + Name);
         exit(1);
       }

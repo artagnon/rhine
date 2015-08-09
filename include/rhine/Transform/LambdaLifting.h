@@ -8,7 +8,6 @@
 namespace rhine {
 class LambdaLifting : public FunctionPass {
 public:
-  LambdaLifting(Context *K) : FunctionPass(K) {}
   virtual ~LambdaLifting() {}
   void runOnFunction(Function *F) override;
 };

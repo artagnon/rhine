@@ -6,10 +6,7 @@
 
 namespace rhine {
 class ModulePass {
-protected:
-  Context *K;
 public:
-  ModulePass(Context *K) : K(K) {}
   virtual ~ModulePass() {}
   virtual void runOnModule(Module *M) = 0;
 };

@@ -3,6 +3,8 @@
 #include "rhine/Transform/TypeCoercion.h"
 
 namespace rhine {
+TypeCoercion::TypeCoercion() : K(nullptr) {}
+
 Value *TypeCoercion::convertValue(ConstantInt *I, IntegerType *DestTy) {
   auto SourceTy = cast<IntegerType>(I->getType());
   auto SourceBitwidth = SourceTy->getBitwidth();
@@ -46,6 +48,7 @@ Value *TypeCoercion::convertValue(Value *V, Type *Ty) {
 }
 
 void TypeCoercion::runOnFunction(Function *F) {
+  K = F->getContext();
   std::transform(
       F->begin(), F->end(), F->begin(),
       [this](Value *V) -> Value * {

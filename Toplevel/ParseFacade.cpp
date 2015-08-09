@@ -51,8 +51,8 @@ Module *ParseFacade::parseToIR(Context *Ctx, ParseSource SrcE) {
     break;
   }
   std::vector<ModulePass *> TransformChain =
-    { new ResolveLocals(Ctx), new LambdaLifting(Ctx),
-      new TypeInfer(Ctx), new TypeCoercion(Ctx) };
+    { new ResolveLocals, new LambdaLifting,
+      new TypeInfer, new TypeCoercion };
   for (auto Transform : TransformChain) {
     Transform->runOnModule(Root->M);
     delete Transform;

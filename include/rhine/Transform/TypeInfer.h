@@ -7,8 +7,9 @@
 
 namespace rhine {
 class TypeInfer : public ValueVisitor<Type *>, public FunctionPass {
+  Context *K;
 public:
-  TypeInfer(Context *K) : FunctionPass(K) {}
+  TypeInfer();
   virtual ~TypeInfer() {}
   void runOnFunction(Function *F) override;
   template <typename T>
