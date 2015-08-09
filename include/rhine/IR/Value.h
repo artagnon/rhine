@@ -45,6 +45,7 @@ public:
   Value(Type *VTy, RTValue ID, std::string N = "");
   virtual ~Value() { }
   Value *get() = delete;
+  Context *getContext();
   void setSourceLocation(location SrcLoc);
   location getSourceLocation();
   RTValue getValID() const;

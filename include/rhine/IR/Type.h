@@ -42,6 +42,7 @@ public:
   virtual ~Type();
   RTType getTyID() const;
   static Type *get() = delete;
+  Context *getContext();
   void setSourceLocation(location SrcLoc);
   location getSourceLocation();
   friend ostream &operator<<(ostream &Stream, const Type &T) {

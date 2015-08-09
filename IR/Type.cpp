@@ -7,6 +7,8 @@ Type::Type(RTType ID) : TyID(ID) {}
 
 Type::~Type() {}
 
+Context *Type::getContext() { return Kontext; }
+
 RTType Type::getTyID() const { return TyID; }
 
 void Type::setSourceLocation(location SrcLoc) {
