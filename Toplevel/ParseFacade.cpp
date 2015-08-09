@@ -79,6 +79,12 @@ std::string ParseFacade::parseAction(ParseSource SrcE,
     M->dump();
     break;
   }
+  for (auto F : Root.M) {
+    for (auto V : *F) {
+      delete V;
+    }
+    delete F;
+  }
   Ctx.releaseMemory();
   return Ret;
 }

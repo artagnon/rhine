@@ -3,7 +3,9 @@
 #include "rhine/IR/Value.h"
 
 namespace rhine {
-Use::Use() : Val(nullptr), Prev(nullptr), Next(nullptr), OperandNumber(0) {}
+Use::Use(unsigned OperandNo) :
+    Val(nullptr), Prev(nullptr),
+    Next(nullptr), OperandNumber(OperandNo) {}
 
 unsigned Use::getOperandNumber() {
   return OperandNumber;
@@ -56,7 +58,7 @@ void Use::swap(Use &RHS) {
 
 void Use::addToList(Use *UseList) {
   if (!UseList) {
-    Next = this;
+    UseList = this;
     return;
   }
   UseList->Next = this;
@@ -66,12 +68,22 @@ void Use::addToList(Use *UseList) {
 
 void Use::removeFromList() {
   if (!Prev) Val->zapUseList();
-  else Prev->Next = nullptr;
+  else {
+    delete Prev->Next;
+    Prev->Next = nullptr;
+  }
 }
 
 void Use::set(Value *V) {
   if (Val) removeFromList();
   Val = V;
   if (V) V->addUse(*this);
+}
+
+void Use::zap(Use *Start, const Use *Stop, bool Del) {
+  while (Start != Stop)
+    (--Stop)->~Use();
+  if (Del)
+    ::operator delete(Start);
 }
 }
