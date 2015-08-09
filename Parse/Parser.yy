@@ -10,7 +10,7 @@
 
 %initial-action
 {
-    @$.begin.filename = @$.end.filename = &Driver->StreamName;
+    @$.begin.filename = @$.end.filename = &K->DiagPrinter->StreamName;
 };
 
 %token-table
