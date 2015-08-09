@@ -1,4 +1,5 @@
 #include "llvm/ADT/None.h"
+#include "llvm/IR/DataLayout.h"
 
 #include "rhine/Context.h"
 #include "rhine/IR/Instruction.h"
@@ -76,7 +77,8 @@ llvm::Value *MallocInst::toLL(llvm::Module *M) {
   auto K = getContext();
   auto V = getVal()->toLL(M);
   auto Ty = getVal()->getType()->toLL(M);
-  auto Sz = Ty->getPrimitiveSizeInBits() / 8;
+  auto DL = DataLayout(M);
+  auto Sz = DL.getTypeSizeInBits(Ty) / 8;
   if (!Sz) Sz = 1;
   auto ITy = IntegerType::get(64, K)->toLL(M);
   std::vector<llvm::Value *> LLOps;
