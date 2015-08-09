@@ -120,7 +120,7 @@ void *LoadInst::operator new(size_t s) {
   return User::operator new(s, 1);
 }
 
-LoadInst *LoadInst::get(std::string N, Type *T, Context *K) {
+LoadInst *LoadInst::get(std::string N, Type *T) {
   return new LoadInst(N, T);
 }
 

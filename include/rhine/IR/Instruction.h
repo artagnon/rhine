@@ -77,7 +77,7 @@ public:
   LoadInst(std::string N, Type *T, RTValue ID = RT_LoadInst);
   virtual ~LoadInst() {}
   void *operator new(size_t s);
-  static LoadInst *get(std::string N, Type *T, Context *K);
+  static LoadInst *get(std::string N, Type *T);
   static bool classof(const Value *V);
   llvm::Value *toLL(llvm::Module *M) override;
 protected:

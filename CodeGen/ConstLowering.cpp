@@ -34,11 +34,10 @@ llvm::Constant *Function::toLL(llvm::Module *M) {
   // Bind argument symbols to function argument values in symbol table
   auto ArgList = getArguments();
   auto S = ArgList.begin();
-  auto V = K->CurrentFunction->arg_begin();
-  auto SEnd = ArgList.end();
-  auto VEnd = K->CurrentFunction->arg_end();
-  for (; S != SEnd && V != VEnd; ++S, ++V)
-    K->addMapping((*S)->getName(), nullptr, &(*V));
+  for (auto &Arg : K->CurrentFunction->args()) {
+    K->addMapping((*S)->getName(), nullptr, &Arg);
+    ++S;
+  }
 
   // Add function symbol to symbol table
   K->addMapping(Name, nullptr, K->CurrentFunction);

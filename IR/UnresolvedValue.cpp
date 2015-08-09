@@ -4,7 +4,7 @@ namespace rhine {
 UnresolvedValue::UnresolvedValue(std::string N, Type *T, RTValue ValID) :
     User(T, ValID, 0, N) {}
 
-UnresolvedValue *UnresolvedValue::get(std::string N, Type *T, Context *K) {
+UnresolvedValue *UnresolvedValue::get(std::string N, Type *T) {
   return new UnresolvedValue(N, T);
 }
 
