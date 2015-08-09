@@ -57,22 +57,22 @@ llvm::Constant *Externals::print(llvm::Module *M) {
   // function has the correct prototype, return the existing function. 4. Finally,
   // the function exists but has the wrong prototype: return the function with a
   // constantexpr cast to the right prototype.
-  auto FTy = cast<llvm::FunctionType>(PrintTy->toLL(M, K));
+  auto FTy = cast<llvm::FunctionType>(PrintTy->toLL(M));
   return M->getOrInsertFunction("std_Void_print__String", FTy);
 }
 
 llvm::Constant *Externals::println(llvm::Module *M) {
-  auto FTy = cast<llvm::FunctionType>(PrintTy->toLL(M, K));
+  auto FTy = cast<llvm::FunctionType>(PrintTy->toLL(M));
   return M->getOrInsertFunction("std_Void_println__String", FTy);
 }
 
 llvm::Constant *Externals::malloc(llvm::Module *M) {
-  auto FTy = cast<llvm::FunctionType>(MallocTy->toLL(M, K));
+  auto FTy = cast<llvm::FunctionType>(MallocTy->toLL(M));
   return M->getOrInsertFunction("std_String_malloc__Int", FTy);
 }
 
 llvm::Constant *Externals::toString(llvm::Module *M) {
-  auto FTy = cast<llvm::FunctionType>(ToStringTy->toLL(M, K));
+  auto FTy = cast<llvm::FunctionType>(ToStringTy->toLL(M));
   return M->getOrInsertFunction("std_String_toString__Int", FTy);
 }
 

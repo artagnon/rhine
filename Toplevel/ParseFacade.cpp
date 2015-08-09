@@ -66,13 +66,13 @@ std::string ParseFacade::parseAction(ParseSource SrcE,
   case PostParseAction::LL:
     if (!M)
       M = new llvm::Module("main", Ctx.LLContext);
-    Root.M.toLL(M, &Ctx);
+    Root.M.toLL(M);
     Ret = llToPP(M);
     break;
   case PostParseAction::LLDUMP:
     if (!M)
       M = new llvm::Module("main", Ctx.LLContext);
-    Root.M.toLL(M, &Ctx);
+    Root.M.toLL(M);
     M->dump();
     break;
   }

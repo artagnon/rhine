@@ -2,25 +2,26 @@
 #include "rhine/IR/Constant.h"
 
 namespace rhine {
-llvm::Constant *ConstantInt::toLL(llvm::Module *M, Context *K) {
-  auto LLTy = getType()->toLL(M, K);
+llvm::Constant *ConstantInt::toLL(llvm::Module *M) {
+  auto LLTy = getType()->toLL(M);
   return llvm::ConstantInt::get(LLTy, getVal());
 }
 
-llvm::Constant *ConstantBool::toLL(llvm::Module *M, Context *K) {
-  auto LLTy = getType()->toLL(M, K);
+llvm::Constant *ConstantBool::toLL(llvm::Module *M) {
+  auto LLTy = getType()->toLL(M);
   return llvm::ConstantInt::get(LLTy, getVal());
 }
 
-llvm::Constant *ConstantFloat::toLL(llvm::Module *M, Context *K) {
-  auto LLTy = getType()->toLL(M, K);
+llvm::Constant *ConstantFloat::toLL(llvm::Module *M) {
+  auto LLTy = getType()->toLL(M);
   return llvm::ConstantFP::get(LLTy, getVal());
 }
 
-llvm::Constant *Function::toLL(llvm::Module *M, Context *K) {
+llvm::Constant *Function::toLL(llvm::Module *M) {
+  auto K = getContext();
   auto Name = getName();
   auto RhFnTy = cast<FunctionType>(getType());
-  auto FnTy = cast<llvm::FunctionType>(RhFnTy->toLL(M, K));
+  auto FnTy = cast<llvm::FunctionType>(RhFnTy->toLL(M));
   if (auto FunctionCandidate =
       dyn_cast<llvm::Function>(M->getOrInsertFunction(Name, FnTy)))
     K->CurrentFunction = FunctionCandidate;
@@ -47,7 +48,7 @@ llvm::Constant *Function::toLL(llvm::Module *M, Context *K) {
     llvm::BasicBlock::Create(K->Builder->getContext(),
                              "entry", K->CurrentFunction);
   K->Builder->SetInsertPoint(BB);
-  auto LastLL = getVal()->toLL(M, K);
+  auto LastLL = getVal()->toLL(M);
   K->Builder->CreateRet(LastLL);
   return K->CurrentFunction;
 }
