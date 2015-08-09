@@ -7,6 +7,7 @@
 
 #include "llvm/IR/Module.h"
 #include "rhine/IR/Module.h"
+#include "rhine/Pass/ModulePass.h"
 
 typedef int (*MainFTy)();
 
@@ -37,7 +38,7 @@ public:
 
   template <typename T>
   std::string llToPP(T *Obj);
-  Module *parseToIR(Context *Ctx, ParseSource SrcE);
+  Module *parseToIR(ParseSource SrcE, std::vector<ModulePass *> TransformChain);
   std::string parseAction(ParseSource SrcE, PostParseAction ActionE);
   MainFTy jitAction(ParseSource SrcE, PostParseAction ActionE);
 };
