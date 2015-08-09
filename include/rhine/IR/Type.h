@@ -15,13 +15,13 @@
 #include <sstream>
 
 #include "location.hh"
-#include "rhine/Context.h"
 
 using namespace std;
 using namespace llvm;
 
 namespace rhine {
-// Discriminator for LLVM-style RTTI (dyn_cast<> et al.)
+class Context;
+
 enum RTType {
   RT_UnType,
   RT_VoidType,
@@ -37,8 +37,8 @@ class Type : public FoldingSetNode {
 protected:
   location SourceLoc;
 public:
-  Type(RTType ID) : TyID(ID) {}
-  virtual ~Type() {}
+  Type(RTType ID);
+  virtual ~Type();
   RTType getTyID() const;
   static Type *get() = delete;
   void setSourceLocation(location SrcLoc);
@@ -57,127 +57,72 @@ private:
 
 class UnType : public Type {
 public:
-  UnType(): Type(RT_UnType) {}
-  virtual ~UnType() {}
-  static UnType *get(Context *K) {
-    static auto UniqueUnType = new UnType;
-    return UniqueUnType;
-  }
-  static bool classof(const Type *T) {
-    return T->getTyID() == RT_UnType;
-  }
-  virtual llvm::Type *toLL(llvm::Module *M, Context *K);
+  UnType();
+  virtual ~UnType();
+  static UnType *get(Context *K);
+  static bool classof(const Type *T);
+  virtual llvm::Type *toLL(llvm::Module *M, Context *K) override;
 protected:
-  virtual void print(std::ostream &Stream) const {
-    Stream << "UnType";
-  }
+  virtual void print(std::ostream &Stream) const;
 };
 
 class VoidType : public Type {
 public:
-  VoidType(): Type(RT_VoidType) {}
-  virtual ~VoidType() {}
-  static VoidType *get(Context *K) {
-    static auto UniqueVoidType = new VoidType;
-    return UniqueVoidType;
-  }
-  static bool classof(const Type *T) {
-    return T->getTyID() == RT_VoidType;
-  }
-  virtual llvm::Type *toLL(llvm::Module *M, Context *K);
+  VoidType();
+  virtual ~VoidType();
+  static VoidType *get(Context *K);
+  static bool classof(const Type *T);
+  virtual llvm::Type *toLL(llvm::Module *M, Context *K) override;
 protected:
-  virtual void print(std::ostream &Stream) const {
-    Stream << "()";
-  }
+  virtual void print(std::ostream &Stream) const;
 };
 
 class IntegerType : public Type {
 public:
-  IntegerType(unsigned Width):
-      Type(RT_IntegerType), Bitwidth(Width) {}
-  virtual ~IntegerType() {}
-  static IntegerType *get(unsigned Bitwidth, Context *K) {
-    FoldingSetNodeID ID;
-    void *IP;
-    IntegerType::Profile(ID, Bitwidth);
-    if (auto T = K->ITyCache.FindNodeOrInsertPos(ID, IP))
-      return T;
-    auto T = new (K->RhAllocator) IntegerType(Bitwidth);
-    K->ITyCache.InsertNode(T, IP);
-    return T;
-  }
-  unsigned getBitwidth() {
-    return Bitwidth;
-  }
-  static bool classof(const Type *T) {
-    return T->getTyID() == RT_IntegerType;
-  }
-  static inline void Profile(FoldingSetNodeID &ID, const unsigned &W) {
-    ID.AddInteger(W);
-  }
-  void Profile(FoldingSetNodeID &ID) {
-    Profile(ID, Bitwidth);
-  }
+  IntegerType(unsigned Width);
+  virtual ~IntegerType();
+  static IntegerType *get(unsigned Bitwidth, Context *K);
+  unsigned getBitwidth();
+  static bool classof(const Type *T);
+  static inline void Profile(FoldingSetNodeID &ID, const unsigned &W);
+  void Profile(FoldingSetNodeID &ID);
   llvm::Type *toLL(llvm::Module *M, Context *K);
 protected:
   unsigned Bitwidth;
-  virtual void print(std::ostream &Stream) const {
-    Stream << "Int";
-  }
+  virtual void print(std::ostream &Stream) const;
 };
 
 class BoolType : public Type {
 public:
-  BoolType(): Type(RT_BoolType) {}
-  virtual ~BoolType() {}
-  static BoolType *get(Context *K) {
-    static auto UniqueBoolType = new BoolType;
-    return UniqueBoolType;
-  }
-  static bool classof(const Type *T) {
-    return T->getTyID() == RT_BoolType;
-  }
+  BoolType();
+  virtual ~BoolType();
+  static BoolType *get(Context *K);
+  static bool classof(const Type *T);
   llvm::Type *toLL(llvm::Module *M, Context *K);
 protected:
-  virtual void print(std::ostream &Stream) const {
-    Stream << "Bool";
-  }
+  virtual void print(std::ostream &Stream) const;
 };
 
 class FloatType : public Type {
 public:
-  FloatType(): Type(RT_FloatType) {}
-  virtual ~FloatType() {}
-  static FloatType *get(Context *K) {
-    static auto UniqueFloatType = new FloatType;
-    return UniqueFloatType;
-  }
-  static bool classof(const Type *T) {
-    return T->getTyID() == RT_FloatType;
-  }
+  FloatType();
+  virtual ~FloatType();
+  static FloatType *get(Context *K);
+  static bool classof(const Type *T);
   llvm::Type *toLL(llvm::Module *M, Context *K);
 protected:
-  virtual void print(std::ostream &Stream) const {
-    Stream << "Float";
-  }
+  virtual void print(std::ostream &Stream) const;
 };
 
 class StringType : public Type {
 public:
-  StringType(): Type(RT_StringType) {}
-  virtual ~StringType() {}
-  static StringType *get(Context *K) {
-    static auto UniqueStringType = new StringType;
-    return UniqueStringType;
-  }
-  static bool classof(const Type *T) {
-    return T->getTyID() == RT_StringType;
-  }
+  StringType();
+  virtual ~StringType();
+  static StringType *get(Context *K);
+  static bool classof(const Type *T);
   llvm::Type *toLL(llvm::Module *M, Context *K);
 protected:
-  virtual void print(std::ostream &Stream) const {
-    Stream << "String";
-  }
+  virtual void print(std::ostream &Stream) const;
 };
 
 class FunctionType : public Type {
@@ -186,7 +131,7 @@ class FunctionType : public Type {
   std::vector<Type *> ArgumentTypes;
 public:
   FunctionType(Type *RTy, std::vector<Type *> ATys, bool IsV);
-  virtual ~FunctionType() {}
+  virtual ~FunctionType();
   static FunctionType *get(Type *RTy, std::vector<Type *> ATys,
                            bool IsV, Context *K);
   static FunctionType *get(Type *RTy, Context *K);
@@ -206,35 +151,16 @@ protected:
 class PointerType : public Type {
   Type *ContainedType;
 public:
-  PointerType(Type *CTy) : Type(RT_PointerType), ContainedType(CTy) {}
-  virtual ~PointerType() {}
-  static PointerType *get(Type *CTy, Context *K) {
-    FoldingSetNodeID ID;
-    void *IP;
-    PointerType::Profile(ID, CTy);
-    if (auto PTy = K->PTyCache.FindNodeOrInsertPos(ID, IP))
-      return PTy;
-    PointerType *PTy = new (K->RhAllocator) PointerType(CTy);
-    K->PTyCache.InsertNode(PTy, IP);
-    return PTy;
-  }
-  static bool classof(const Type *T) {
-    return T->getTyID() == RT_PointerType;
-  }
-  static inline void Profile(FoldingSetNodeID &ID, const Type *CTy) {
-    ID.AddPointer(CTy);
-  }
-  void Profile(FoldingSetNodeID &ID) {
-    Profile(ID, ContainedType);
-  }
-  Type *getCTy() {
-    return ContainedType;
-  }
+  PointerType(Type *CTy);
+  virtual ~PointerType();
+  static PointerType *get(Type *CTy, Context *K);
+  static bool classof(const Type *T);
+  static inline void Profile(FoldingSetNodeID &ID, const Type *CTy);
+  void Profile(FoldingSetNodeID &ID);
+  Type *getCTy();
   llvm::Type *toLL(llvm::Module *M, Context *K);
 protected:
-  virtual void print(std::ostream &Stream) const {
-    Stream << *ContainedType << "*";
-  }
+  virtual void print(std::ostream &Stream) const;
 };
 }
 

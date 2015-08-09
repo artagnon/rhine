@@ -12,6 +12,7 @@
 #include <map>
 
 #include "location.hh"
+#include "rhine/IR/Type.h"
 #include "rhine/Diagnostic.h"
 
 namespace rhine {
@@ -34,6 +35,11 @@ public:
   llvm::FoldingSet<FunctionType> FTyCache;
   llvm::FoldingSet<PointerType> PTyCache;
   llvm::FoldingSet<IntegerType> ITyCache;
+  class UnType UniqueUnType;
+  class VoidType UniqueVoidType;
+  class BoolType UniqueBoolType;
+  class FloatType UniqueFloatType;
+  class StringType UniqueStringType;
   llvm::LLVMContext &LLContext;
   llvm::IRBuilder<> *Builder;
   DiagnosticPrinter *DiagPrinter;
