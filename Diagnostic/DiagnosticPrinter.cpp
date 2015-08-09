@@ -22,7 +22,6 @@ class ColorCode
   std::string ColorF;
 public:
   ColorCode(std::string Color) : ColorF(Color) {}
-  // Necessary to prevent color codes from messing up setw
   friend std::ostream& operator<<(std::ostream& Dest, ColorCode const& Code)
   {
     if ((&Dest == &std::cerr && isatty(fileno(stderr))) ||
@@ -36,7 +35,6 @@ public:
 
 void DiagnosticPrinter::errorReport(const location &Location,
                                     const std::string &Message) {
-  // TODO: when are these assumptions violated?
   assert(Location.begin.filename == Location.end.filename);
   assert(Location.begin.line == Location.end.line);
 

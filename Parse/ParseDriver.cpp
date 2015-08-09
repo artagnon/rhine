@@ -12,12 +12,11 @@
 
 namespace rhine {
 bool ParseDriver::parseStream(std::istream &In,
-                              const std::string &StreamName) {
-  this->StreamName = StreamName;
-
-  rhine::Lexer Lexx(&In, Ctx->DiagPrinter->ErrorStream, this);
-  Lexx.set_debug(TraceScanning);
-  this->Lexx = &Lexx;
+                              const std::string &StreamName_) {
+  StreamName = StreamName_;
+  rhine::Lexer Lex(&In, Ctx->DiagPrinter->ErrorStream, this);
+  Lex.set_debug(TraceScanning);
+  Lexx = &Lex;
 
   Parser Parseyy(this);
   Parseyy.set_debug_level(TraceParsing);
@@ -31,9 +30,10 @@ bool ParseDriver::parseFile(const std::string &Filename) {
 }
 
 bool ParseDriver::parseString(const std::string &Input,
-                              const std::string &StreamName) {
+                              const std::string &StreamName_) {
+  StreamName = StreamName_;
   Ctx->DiagPrinter->StringStreamInput = Input;
   std::istringstream Iss(Input);
-  return parseStream(Iss, StreamName);
+  return parseStream(Iss, StreamName_);
 }
 }

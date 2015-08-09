@@ -76,7 +76,6 @@ llvm::Value *MallocInst::toLL(llvm::Module *M) {
   auto K = getContext();
   auto V = getVal()->toLL(M);
   auto Ty = getVal()->getType()->toLL(M);
-  auto Name = getName();
   auto Sz = Ty->getPrimitiveSizeInBits() / 8;
   if (!Sz) Sz = 1;
   auto ITy = IntegerType::get(64, K)->toLL(M);
@@ -93,7 +92,6 @@ llvm::Value *MallocInst::toLL(llvm::Module *M) {
 
 llvm::Value *LoadInst::toLL(llvm::Module *M) {
   auto K = getContext();
-  auto Name = getName();
   if (auto Result = K->getMappingVal(Name)) {
     if (isa<llvm::BitCastInst>(Result))
       return K->Builder->CreateLoad(Result, Name + "Load");

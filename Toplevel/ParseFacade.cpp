@@ -33,11 +33,7 @@ std::string ParseFacade::llToPP(T *Obj)
   return OutputStream.str();
 }
 
-std::string ParseFacade::parseAction(ParseSource SrcE,
-                                     PostParseAction ActionE)
-{
-  std::string Ret;
-  auto Ctx = new rhine::Context(ErrStream);
+PTree *ParseFacade::parseToIR(Context *Ctx, ParseSource SrcE) {
   auto Root = new rhine::PTree(Ctx);
   auto Driver = rhine::ParseDriver(*Root, Ctx, Debug);
   switch(SrcE) {
@@ -61,6 +57,15 @@ std::string ParseFacade::parseAction(ParseSource SrcE,
     Transform->runOnModule(Root->M);
     delete Transform;
   }
+  return Root;
+}
+
+std::string ParseFacade::parseAction(ParseSource SrcE,
+                                     PostParseAction ActionE)
+{
+  std::string Ret;
+  auto Ctx = new rhine::Context(ErrStream);
+  auto Root = parseToIR(Ctx, SrcE);
   switch(ActionE) {
   case PostParseAction::IR:
     Ret = irToPP(Root->M);

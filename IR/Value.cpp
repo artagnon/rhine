@@ -3,7 +3,10 @@
 
 namespace rhine {
 Value::Value(Type *VTy, RTValue ID, std::string N) :
-    VTy(VTy), UseList(nullptr), Name(N), ValID(ID) {}
+    VTy(VTy), UseList(nullptr), Name(N), ValID(ID) {
+  SourceLoc.begin.line = SourceLoc.end.line = 0;
+  SourceLoc.begin.column = SourceLoc.end.column = 0;
+}
 
 Context *Value::getContext() { return VTy->getContext(); }
 
