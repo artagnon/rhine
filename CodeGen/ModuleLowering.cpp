@@ -3,8 +3,8 @@
 #include "rhine/Externals.h"
 
 namespace rhine {
-void Module::toLL(llvm::Module *M, Context *K) {
+void Module::toLL(llvm::Module *M) {
   for (auto F: getVal())
-    F->toLL(M, K);
+    F->toLL(M);
 }
 }

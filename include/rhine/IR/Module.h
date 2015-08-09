@@ -40,8 +40,7 @@ public:
     M.print(Stream);
     return Stream;
   }
-  void typeInfer(Context *K);
-  void toLL(llvm::Module *M, Context *K);
+  void toLL(llvm::Module *M);
   typedef std::vector<Function *>::iterator iterator;
   iterator begin() {
     return ContainedFs.begin();

@@ -19,7 +19,7 @@ llvm::Value *getCalleeFunction(std::string Name, location SourceLoc,
     if (isa<llvm::Function>(Result) || isPointerToFunction(Result))
       return Result;
     else {
-      auto Sym = LoadInst::get(Name, K->getMappingTy(Name), K)->toLL(M, K);
+      auto Sym = LoadInst::get(Name, K->getMappingTy(Name), K)->toLL(M);
       if (isPointerToFunction(Sym))
         return Sym;
       K->DiagPrinter->errorReport(
@@ -40,7 +40,8 @@ llvm::Value *getCalleeFunction(std::string Name, location SourceLoc,
   exit(1);
 }
 
-llvm::Value *CallInst::toLL(llvm::Module *M, Context *K) {
+llvm::Value *CallInst::toLL(llvm::Module *M) {
+  auto K = getContext();
   auto CalleeFn = getCalleeFunction(Callee, SourceLoc, M, K);
   auto RTy = cast<FunctionType>(cast<PointerType>(VTy)->getCTy())->getRTy();
 
@@ -55,7 +56,7 @@ llvm::Value *CallInst::toLL(llvm::Module *M, Context *K) {
   // Prepare arguments to call
   std::vector<llvm::Value *> LLOps;
   for (auto Op: getOperands()) {
-    LLOps.push_back(Op->toLL(M, K));
+    LLOps.push_back(Op->toLL(M));
   }
   if (isa<VoidType>(RTy)) {
     K->Builder->CreateCall(CalleeFn, LLOps);
@@ -64,19 +65,21 @@ llvm::Value *CallInst::toLL(llvm::Module *M, Context *K) {
   return K->Builder->CreateCall(CalleeFn, LLOps, Name);
 }
 
-llvm::Value *AddInst::toLL(llvm::Module *M, Context *K) {
-  auto Op0 = getOperand(0)->toLL(M, K);
-  auto Op1 = getOperand(1)->toLL(M, K);
+llvm::Value *AddInst::toLL(llvm::Module *M) {
+  auto K = getContext();
+  auto Op0 = getOperand(0)->toLL(M);
+  auto Op1 = getOperand(1)->toLL(M);
   return K->Builder->CreateAdd(Op0, Op1);
 }
 
-llvm::Value *MallocInst::toLL(llvm::Module *M, Context *K) {
-  auto V = getVal()->toLL(M, K);
-  auto Ty = getVal()->getType()->toLL(M, K);
+llvm::Value *MallocInst::toLL(llvm::Module *M) {
+  auto K = getContext();
+  auto V = getVal()->toLL(M);
+  auto Ty = getVal()->getType()->toLL(M);
   auto Name = getName();
   auto Sz = Ty->getPrimitiveSizeInBits() / 8;
   if (!Sz) Sz = 1;
-  auto ITy = IntegerType::get(64, K)->toLL(M, K);
+  auto ITy = IntegerType::get(64, K)->toLL(M);
   std::vector<llvm::Value *> LLOps;
   LLOps.push_back(llvm::ConstantInt::get(ITy, Sz));
   auto MallocF = Externals::get(K)->getMappingVal("malloc", M);
@@ -88,7 +91,8 @@ llvm::Value *MallocInst::toLL(llvm::Module *M, Context *K) {
   return nullptr;
 }
 
-llvm::Value *LoadInst::toLL(llvm::Module *M, Context *K) {
+llvm::Value *LoadInst::toLL(llvm::Module *M) {
+  auto K = getContext();
   auto Name = getName();
   if (auto Result = K->getMappingVal(Name)) {
     if (isa<llvm::BitCastInst>(Result))
@@ -101,29 +105,30 @@ llvm::Value *LoadInst::toLL(llvm::Module *M, Context *K) {
   exit(1);
 }
 
-llvm::Value *IfInst::toLL(llvm::Module *M, Context *K) {
+llvm::Value *IfInst::toLL(llvm::Module *M) {
+  auto K = getContext();
   auto TrueBB = llvm::BasicBlock::Create(
       K->LLContext, "true", K->CurrentFunction);
   auto FalseBB = llvm::BasicBlock::Create(
       K->LLContext, "false", K->CurrentFunction);
   auto MergeBB = llvm::BasicBlock::Create(
       K->LLContext, "merge", K->CurrentFunction);
-  auto Conditional = getConditional()->toLL(M, K);
+  auto Conditional = getConditional()->toLL(M);
   K->Builder->CreateCondBr(Conditional, TrueBB, FalseBB);
 
   K->Builder->SetInsertPoint(TrueBB);
-  auto TrueV = getTrueBB()->toLL(M, K);
+  auto TrueV = getTrueBB()->toLL(M);
   K->Builder->CreateBr(MergeBB);
   TrueBB = K->Builder->GetInsertBlock();
 
   K->Builder->SetInsertPoint(FalseBB);
-  auto FalseV = getFalseBB()->toLL(M, K);
+  auto FalseV = getFalseBB()->toLL(M);
   K->Builder->CreateBr(MergeBB);
   FalseBB = K->Builder->GetInsertBlock();
 
   K->Builder->SetInsertPoint(MergeBB);
   if (!isa<VoidType>(VTy)) {
-    auto PN = K->Builder->CreatePHI(VTy->toLL(M, K), 2, "iftmp");
+    auto PN = K->Builder->CreatePHI(VTy->toLL(M), 2, "iftmp");
     PN->addIncoming(TrueV, TrueBB);
     PN->addIncoming(FalseV, FalseBB);
     return PN;

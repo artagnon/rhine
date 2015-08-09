@@ -12,7 +12,7 @@ public:
   static GlobalString *get(std::string Val, Context *K);
   static bool classof(const Value *V);
   std::string getVal();
-  virtual llvm::Value *toLL(llvm::Module *M, Context *K);
+  virtual llvm::Value *toLL(llvm::Module *M);
 protected:
   virtual void print(std::ostream &Stream) const override;
 };

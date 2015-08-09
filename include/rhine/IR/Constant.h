@@ -26,7 +26,7 @@ public:
   Constant(Type *Ty, RTValue ID);
   virtual ~Constant() {}
   static bool classof(const Value *V);
-  llvm::Constant *toLL(llvm::Module *M, Context *K) = 0;
+  llvm::Constant *toLL(llvm::Module *M) = 0;
 protected:
   virtual void print(std::ostream &Stream) const = 0;
 };
@@ -39,7 +39,7 @@ public:
   static bool classof(const Value *V);
   int getVal();
   unsigned getBitwidth();
-  llvm::Constant *toLL(llvm::Module *M, Context *K);
+  llvm::Constant *toLL(llvm::Module *M);
 protected:
   virtual void print(std::ostream &Stream) const;
 };
@@ -52,7 +52,7 @@ public:
   static ConstantBool *get(bool Val, Context *K);
   static bool classof(const Value *V);
   float getVal();
-  llvm::Constant *toLL(llvm::Module *M, Context *K);
+  llvm::Constant *toLL(llvm::Module *M);
 protected:
   virtual void print(std::ostream &Stream) const;
 };
@@ -65,7 +65,7 @@ public:
   static ConstantFloat *get(float Val, Context *K);
   static bool classof(const Value *V);
   float getVal();
-  llvm::Constant *toLL(llvm::Module *M, Context *K);
+  llvm::Constant *toLL(llvm::Module *M);
 protected:
   virtual void print(std::ostream &Stream) const;
 };
@@ -97,7 +97,7 @@ public:
   arg_iterator arg_begin();
   arg_iterator arg_end();
   iterator_range<arg_iterator> args();
-  llvm::Constant *toLL(llvm::Module *M, Context *K);
+  llvm::Constant *toLL(llvm::Module *M);
 protected:
   virtual void print(std::ostream &Stream) const;
 private:

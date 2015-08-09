@@ -13,7 +13,7 @@ public:
   BasicBlock(Type *Ty, std::vector<Value *> V);
   static BasicBlock *get(std::vector<Value *> V, Context *K);
   static bool classof(const Value *V);
-  llvm::Value *toLL(llvm::Module *M, Context *K);
+  llvm::Value *toLL(llvm::Module *M);
   typedef std::vector<Value *>::iterator iterator;
   iterator begin();
   iterator end();

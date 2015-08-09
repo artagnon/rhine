@@ -11,7 +11,7 @@ public:
   virtual ~UnresolvedValue() {}
   static UnresolvedValue *get(std::string N, Type *T, Context *K);
   static bool classof(const Value *V);
-  virtual llvm::Value *toLL(llvm::Module *M, Context *K) override;
+  virtual llvm::Value *toLL(llvm::Module *M) override;
 protected:
   virtual void print(std::ostream &Stream) const override;
 };
@@ -22,7 +22,7 @@ public:
   virtual ~Argument() {}
   static Argument *get(std::string N, Type *T, Context *K);
   static bool classof(const Value *V);
-  virtual llvm::Value *toLL(llvm::Module *M, Context *K) override;
+  virtual llvm::Value *toLL(llvm::Module *M) override;
 protected:
   virtual void print(std::ostream &Stream) const override;
 };

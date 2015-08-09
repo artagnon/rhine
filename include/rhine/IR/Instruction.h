@@ -23,7 +23,7 @@ public:
   static bool classof(const Value *V);
   std::vector<Value *> getOperands() const;
   void setOperands(std::vector<Value *> Ops);
-  virtual llvm::Value *toLL(llvm::Module *M, Context *K) = 0;
+  virtual llvm::Value *toLL(llvm::Module *M) = 0;
 protected:
   virtual void print(std::ostream &Stream) const = 0;
 };
@@ -35,7 +35,7 @@ public:
   void *operator new(size_t s);
   static AddInst *get(Context *K);
   static bool classof(const Value *V);
-  llvm::Value *toLL(llvm::Module *M, Context *K) override;
+  llvm::Value *toLL(llvm::Module *M) override;
 protected:
   void print(std::ostream &Stream) const override;
 };
@@ -50,7 +50,7 @@ public:
                        unsigned NumOperands, Context *K);
   static bool classof(const Value *V);
   std::string getCallee();
-  llvm::Value *toLL(llvm::Module *M, Context *K) override;
+  llvm::Value *toLL(llvm::Module *M) override;
 protected:
   void print(std::ostream &Stream) const override;
 };
@@ -65,7 +65,7 @@ public:
   static bool classof(const Value *V);
   void setVal(Value *V);
   Value *getVal();
-  llvm::Value *toLL(llvm::Module *M, Context *K) override;
+  llvm::Value *toLL(llvm::Module *M) override;
 protected:
   void print(std::ostream &Stream) const override;
 };
@@ -77,7 +77,7 @@ public:
   void *operator new(size_t s);
   static LoadInst *get(std::string N, Type *T, Context *K);
   static bool classof(const Value *V);
-  llvm::Value *toLL(llvm::Module *M, Context *K) override;
+  llvm::Value *toLL(llvm::Module *M) override;
 protected:
   void print(std::ostream &Stream) const override;
 };
@@ -98,7 +98,7 @@ public:
   void setConditional(Value *C);
   BasicBlock *getTrueBB();
   BasicBlock *getFalseBB();
-  llvm::Value *toLL(llvm::Module *M, Context *K) override;
+  llvm::Value *toLL(llvm::Module *M) override;
 protected:
   void print(std::ostream &Stream) const override;
 };

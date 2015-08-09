@@ -53,7 +53,7 @@ public:
   void setType(Type *T);
   std::string getName() const;
   void setName(std::string Str);
-  virtual llvm::Value *toLL(llvm::Module *M, Context *K) = 0;
+  virtual llvm::Value *toLL(llvm::Module *M) = 0;
   friend ostream &operator<<(ostream &Stream, const Value &V) {
     V.print(Stream);
     return Stream;

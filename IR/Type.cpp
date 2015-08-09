@@ -5,6 +5,8 @@
 namespace rhine {
 Type::Type(RTType ID) : TyID(ID) {}
 
+Type::Type(Context *K, RTType ID) : Kontext(K), TyID(ID) {}
+
 Type::~Type() {}
 
 Context *Type::getContext() { return Kontext; }
@@ -60,8 +62,8 @@ void VoidType::print(std::ostream &Stream) const {
   Stream << "()";
 }
 
-IntegerType::IntegerType(unsigned Width):
-    Type(RT_IntegerType), Bitwidth(Width) {}
+IntegerType::IntegerType(Context *K, unsigned Width):
+    Type(K, RT_IntegerType), Bitwidth(Width) {}
 
 IntegerType::~IntegerType() {}
 
@@ -71,7 +73,7 @@ IntegerType *IntegerType::get(unsigned Bitwidth, Context *K) {
   IntegerType::Profile(ID, Bitwidth);
   if (auto T = K->ITyCache.FindNodeOrInsertPos(ID, IP))
     return T;
-  auto T = new (K->RhAllocator) IntegerType(Bitwidth);
+  auto T = new (K->RhAllocator) IntegerType(K, Bitwidth);
   K->ITyCache.InsertNode(T, IP);
   return T;
 }
@@ -150,8 +152,9 @@ void StringType::print(std::ostream &Stream) const {
   Stream << "String";
 }
 
-FunctionType::FunctionType(Type *RTy, std::vector<Type *> ATys, bool IsV) :
-    Type(RT_FunctionType), ReturnType(RTy), VariadicFlag(IsV),
+FunctionType::FunctionType(Context *K, Type *RTy,
+                           std::vector<Type *> ATys, bool IsV) :
+    Type(K, RT_FunctionType), ReturnType(RTy), VariadicFlag(IsV),
     ArgumentTypes(ATys) {}
 
 FunctionType::~FunctionType() {}
@@ -163,7 +166,7 @@ FunctionType *FunctionType::get(Type *RTy, std::vector<Type *> ATys,
   FunctionType::Profile(ID, RTy, ATys, IsV);
   if (auto FTy = K->FTyCache.FindNodeOrInsertPos(ID, IP))
     return FTy;
-  FunctionType *FTy = new (K->RhAllocator) FunctionType(RTy, ATys, IsV);
+  FunctionType *FTy = new (K->RhAllocator) FunctionType(K, RTy, ATys, IsV);
   K->FTyCache.InsertNode(FTy, IP);
   return FTy;
 }
@@ -223,7 +226,8 @@ void FunctionType::print(std::ostream &Stream) const {
   Stream << " -> " << *ReturnType << ")";
 }
 
-PointerType::PointerType(Type *CTy) : Type(RT_PointerType), ContainedType(CTy) {}
+PointerType::PointerType(Context *K, Type *CTy) :
+    Type(K, RT_PointerType), ContainedType(CTy) {}
 
 PointerType::~PointerType() {}
 PointerType *PointerType::get(Type *CTy, Context *K) {
@@ -232,7 +236,7 @@ PointerType *PointerType::get(Type *CTy, Context *K) {
   PointerType::Profile(ID, CTy);
   if (auto PTy = K->PTyCache.FindNodeOrInsertPos(ID, IP))
     return PTy;
-  PointerType *PTy = new (K->RhAllocator) PointerType(CTy);
+  PointerType *PTy = new (K->RhAllocator) PointerType(K, CTy);
   K->PTyCache.InsertNode(PTy, IP);
   return PTy;
 }
