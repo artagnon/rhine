@@ -7,6 +7,8 @@ Module *Module::get(Context *K) {
   return new (K->RhAllocator) Module(K);
 }
 
+Context *Module::getContext() { return Kontext; }
+
 Function *Module::front() {
   return ContainedFs.front();
 }

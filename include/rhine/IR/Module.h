@@ -22,6 +22,7 @@ public:
   Module(Context *K);
   virtual ~Module() {}
   static Module *get(Context *K);
+  Context *getContext();
   void appendFunction(Function *F) {
     F->setParent(this);
     ContainedFs.push_back(F);

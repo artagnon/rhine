@@ -33,9 +33,12 @@ std::string ParseFacade::llToPP(T *Obj)
   return OutputStream.str();
 }
 
-Module *ParseFacade::parseToIR(Context *Ctx, ParseSource SrcE) {
-  auto Root = new rhine::PTree(Ctx);
-  auto Driver = rhine::ParseDriver(*Root, Ctx, Debug);
+Module *ParseFacade::parseToIR(ParseSource SrcE,
+                               std::vector<ModulePass *> TransformChain)
+{
+  auto Ctx = new rhine::Context(ErrStream);
+  rhine::PTree Root(Ctx);
+  auto Driver = rhine::ParseDriver(Root, Ctx, Debug);
   switch(SrcE) {
   case ParseSource::STRING:
     if (!Driver.parseString(PrgString)) {
@@ -50,24 +53,22 @@ Module *ParseFacade::parseToIR(Context *Ctx, ParseSource SrcE) {
     }
     break;
   }
-  std::vector<ModulePass *> TransformChain =
-    { new ResolveLocals, new LambdaLifting,
-      new TypeInfer, new TypeCoercion };
-  for (auto Transform : TransformChain) {
-    Transform->runOnModule(Root->M);
-    delete Transform;
-  }
-  auto M = Root->M;
-  delete Root;
+  for (auto Transform : TransformChain)
+    Transform->runOnModule(Root.M);
+  auto M = Root.M;
   return M;
 }
 
 std::string ParseFacade::parseAction(ParseSource SrcE,
                                      PostParseAction ActionE)
 {
+  ResolveLocals ResolveL;
+  LambdaLifting LambLift;
+  TypeInfer TyInfer;
+  TypeCoercion TyCoercion;
+  auto R = parseToIR(SrcE, {&ResolveL, &LambLift, &TyInfer, &TyCoercion});
   std::string Ret;
-  auto Ctx = new rhine::Context(ErrStream);
-  auto R = parseToIR(Ctx, SrcE);
+  auto Ctx = R->getContext();
   switch(ActionE) {
   case PostParseAction::IR:
     Ret = irToPP(R);
