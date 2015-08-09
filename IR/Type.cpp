@@ -27,7 +27,9 @@ UnType::UnType(): Type(RT_UnType) {}
 UnType::~UnType() {}
 
 UnType *UnType::get(Context *K) {
-  return &K->UniqueUnType;
+  auto Uniq = &K->UniqueUnType;
+  Uniq->Kontext = K;
+  return Uniq;
 }
 
 bool UnType::classof(const Type *T) {
@@ -43,7 +45,9 @@ VoidType::VoidType(): Type(RT_VoidType) {}
 VoidType::~VoidType() {}
 
 VoidType *VoidType::get(Context *K) {
-  return &K->UniqueVoidType;
+  auto Uniq = &K->UniqueVoidType;
+  Uniq->Kontext = K;
+  return Uniq;
 }
 
 bool VoidType::classof(const Type *T) {
@@ -95,7 +99,9 @@ BoolType::BoolType(): Type(RT_BoolType) {}
 BoolType::~BoolType() {}
 
 BoolType *BoolType::get(Context *K) {
-  return &K->UniqueBoolType;
+  auto Uniq = &K->UniqueBoolType;
+  Uniq->Kontext = K;
+  return Uniq;
 }
 
 bool BoolType::classof(const Type *T) {
@@ -111,7 +117,9 @@ FloatType::FloatType(): Type(RT_FloatType) {}
 FloatType::~FloatType() {}
 
 FloatType *FloatType::get(Context *K) {
-  return &K->UniqueFloatType;
+  auto Uniq = &K->UniqueFloatType;
+  Uniq->Kontext = K;
+  return Uniq;
 }
 
 bool FloatType::classof(const Type *T) {
@@ -127,7 +135,9 @@ StringType::StringType(): Type(RT_StringType) {}
 StringType::~StringType() {}
 
 StringType *StringType::get(Context *K) {
-  return &K->UniqueStringType;
+  auto Uniq = &K->UniqueStringType;
+  Uniq->Kontext = K;
+  return Uniq;
 }
 
 bool StringType::classof(const Type *T) {
