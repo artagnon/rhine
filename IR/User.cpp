@@ -10,8 +10,7 @@ void *User::operator new(size_t Size, unsigned Us) {
   auto Start = static_cast<Use *>(Storage);
   auto End = Start + Us;
   for (unsigned Iter = 0; Iter < Us; Iter++) {
-    auto Obj = Start + Iter;
-    Obj->setOperandNumber(Iter);
+    new (Start + Iter) Use(Iter);
   }
   auto Obj = reinterpret_cast<User *>(End);
   Obj->NumOperands = Us;
@@ -20,6 +19,13 @@ void *User::operator new(size_t Size, unsigned Us) {
 
 void *User::operator new(size_t Size) {
   return ::operator new (Size);
+}
+
+void User::operator delete(void *Usr) {
+  User *Obj = static_cast<User *>(Usr);
+  Use *Storage = static_cast<Use *>(Usr) - Obj->NumOperands;
+  Use::zap(Storage, Storage + Obj->NumOperands, /* Delete */ false);
+  ::operator delete(Storage);
 }
 
 bool User::classof(const Value *V) {
@@ -44,6 +50,6 @@ void User::setOperand(unsigned i, Value *Val) {
   assert(i < NumOperands && "setOperand() out of range!");
   assert(!isa<Constant>(cast<Value>(this)) &&
          "Cannot mutate a constant with setOperand!");
-  getOperandList()[i] = Val;
+  getOperandList()[i].set(Val);
 }
 }

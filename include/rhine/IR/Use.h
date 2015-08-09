@@ -12,7 +12,7 @@ class Use {
   Use *Next;
   unsigned OperandNumber;
 public:
-  Use();
+  Use(unsigned OperandNo);
   unsigned getOperandNumber();
   void setOperandNumber(unsigned Num);
   void setVal(Value *Val_);
@@ -24,7 +24,9 @@ public:
   void addToList(Use *UseList);
   void removeFromList();
   void set(Value *V);
+  static void zap(Use *Start, const Use *Stop, bool Del);
   friend class Value;
+  friend class User;
 };
 }
 #endif

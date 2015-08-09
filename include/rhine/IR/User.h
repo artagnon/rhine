@@ -13,6 +13,7 @@ public:
   User(Type *Ty, RTValue ID, unsigned NumOps = 0, std::string N = "");
   void *operator new(size_t Size, unsigned Us);
   void *operator new(size_t Size);
+  void operator delete(void *Usr);
   static bool classof(const Value *V);
   Use *getOperandList();
   const Use *getOperandList() const;
