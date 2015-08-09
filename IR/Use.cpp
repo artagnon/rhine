@@ -56,7 +56,7 @@ void Use::swap(Use &RHS) {
 
 void Use::addToList(Use *UseList) {
   if (!UseList) {
-    Prev = nullptr;
+    Next = this;
     return;
   }
   UseList->Next = this;
@@ -65,8 +65,8 @@ void Use::addToList(Use *UseList) {
 }
 
 void Use::removeFromList() {
-  assert(Next && "Cannot remove primary Use");
-  Next->Prev = nullptr;
+  if (!Prev) Val->zapUseList();
+  else Prev->Next = nullptr;
 }
 
 void Use::set(Value *V) {

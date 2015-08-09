@@ -38,8 +38,8 @@ void ResolveLocals::runOnFunction(Function *F) {
   for (auto V : *F) {
     auto Name = V->getName();
     if (auto U = dyn_cast<UnresolvedValue>(V)) {
-      if (lookupNameinBlock(Name, F->getEntryBlock())) {
-        // std::swap(U, DefV);
+      if (auto S = lookupNameinBlock(Name, F->getEntryBlock())) {
+        U->getUse()->set(S);
       } else {
         auto SourceLoc = U->getSourceLocation();
         K->DiagPrinter->errorReport(SourceLoc, "unbound symbol " + Name);
@@ -49,14 +49,14 @@ void ResolveLocals::runOnFunction(Function *F) {
   }
 }
 
-std::vector<BasicBlock *> ResolveLocals::getAncestorBlocks(BasicBlock *BB) {
+std::vector<BasicBlock *> ResolveLocals::getBlocksInScope(BasicBlock *BB) {
   std::vector<BasicBlock *> Ret;
   Ret.push_back(BB);
   return Ret;
 }
 
 Value *ResolveLocals::lookupNameinBlock(std::string Name, BasicBlock *BB) {
-  for (auto Block: getAncestorBlocks(BB)) {
+  for (auto Block: getBlocksInScope(BB)) {
     if (auto Resolution = Map.getMapping(Name, Block))
       return Resolution->Val;
   }

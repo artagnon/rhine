@@ -47,7 +47,9 @@ public:
   virtual ~CallInst() {}
   void *operator new(size_t s, unsigned n);
   static CallInst *get(std::string FunctionName,
-                       unsigned NumOperands, Context *K);
+                       std::vector<Value *> Ops, Context *K);
+  static CallInst *get(std::string FunctionName, Value *Op, Context *K);
+  static CallInst *get(std::string FunctionName, Context *K);
   static bool classof(const Value *V);
   std::string getCallee();
   llvm::Value *toLL(llvm::Module *M) override;

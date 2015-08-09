@@ -53,9 +53,24 @@ void *CallInst::operator new(size_t s, unsigned n) {
 }
 
 CallInst *CallInst::get(std::string FunctionName,
-                        unsigned NumOps, Context *K) {
-  return new (NumOps) CallInst(FunctionName, UnType::get(K), NumOps);
+                        std::vector<Value *> Ops, Context *K) {
+  auto NumOps = Ops.size();
+  auto Obj = new (NumOps) CallInst(FunctionName, UnType::get(K), NumOps);
+  for (unsigned OpN = 0; OpN < NumOps; OpN++)
+    Obj->setOperand(OpN, Ops[OpN]);
+  return Obj;
 }
+
+CallInst *CallInst::get(std::string FunctionName, Value *Op, Context *K) {
+  std::vector<Value *> Ops = { Op };
+  return get(FunctionName, Ops, K);
+}
+
+CallInst *CallInst::get(std::string FunctionName, Context *K) {
+  std::vector<Value *> Ops;
+  return get(FunctionName, Ops, K);
+}
+
 
 bool CallInst::classof(const Value *V) {
   return V->getValID() == RT_CallInst;

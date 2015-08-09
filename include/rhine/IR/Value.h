@@ -35,7 +35,7 @@ enum RTValue {
   RT_BasicBlock,
 };
 
-class Value : public FoldingSetNode {
+class Value {
 protected:
   Type *VTy;
   Use *UseList;
@@ -58,12 +58,13 @@ public:
     V.print(Stream);
     return Stream;
   }
-  void dump();
-  void printAsOperand(raw_ostream &O, bool PrintType = true,
-                      const Module *M = nullptr) const;
+  Use *getUse() const;
+  User *getUser() const;
   void addUse(Use &U);
-  void replaceAllUsesWith(Value *V);
   bool use_empty() const;
+  void replaceAllUsesWith(Value *V);
+  void zapUseList();
+  void dump();
 protected:
   virtual void print(std::ostream &Stream) const = 0;
 private:

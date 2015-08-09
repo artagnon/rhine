@@ -3,6 +3,7 @@
 #include "rhine/Transform/TypeInfer.h"
 #include "rhine/Transform/LambdaLifting.h"
 #include "rhine/Transform/TypeCoercion.h"
+#include "rhine/Transform/ResolveLocals.h"
 #include "rhine/Runtime/GC.h"
 #include "rhine/IR.h"
 
@@ -53,6 +54,8 @@ std::string ParseFacade::parseAction(ParseSource SrcE,
     }
     break;
   }
+  auto ResolveL = ResolveLocals(&Ctx);
+  ResolveL.runOnModule(&Root.M);
   auto LambLift = LambdaLifting(&Ctx);
   LambLift.runOnModule(&Root.M);
   auto TyInfer = TypeInfer(&Ctx);

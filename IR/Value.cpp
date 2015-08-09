@@ -33,11 +33,19 @@ void Value::setName(std::string Str) {
   Name = Str;
 }
 
-bool Value::use_empty() const { return UseList == nullptr; }
+Use *Value::getUse() const {
+  return UseList;
+}
+
+User *Value::getUser() const {
+  return UseList->getUser();
+}
 
 void Value::addUse(Use &U) {
   U.addToList(UseList);
 }
+
+bool Value::use_empty() const { return UseList == nullptr; }
 
 void Value::replaceAllUsesWith(Value *New) {
   assert(New && "Value::replaceAllUsesWith(<null>) is invalid!");
@@ -47,6 +55,8 @@ void Value::replaceAllUsesWith(Value *New) {
     U.set(New);
   }
 }
+
+void Value::zapUseList() { UseList = nullptr; }
 
 __attribute__((used, noinline))
 void Value::dump() {
