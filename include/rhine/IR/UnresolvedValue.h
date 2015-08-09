@@ -1,6 +1,6 @@
 // -*- C++ -*-
-#ifndef UNRESOLVEDVALUE_H
-#define UNRESOLVEDVALUE_H
+#ifndef RHINE_UNRESOLVEDVALUE_H
+#define RHINE_UNRESOLVEDVALUE_H
 
 #include "rhine/IR/User.h"
 

@@ -18,7 +18,7 @@ public:
   virtual ~ResolveLocals() {}
   void runOnFunction(Function *F) override;
 private:
-  std::vector<BasicBlock *> getAncestorBlocks(BasicBlock *BB);
+  std::vector<BasicBlock *> getBlocksInScope(BasicBlock *BB);
   Value *lookupNameinBlock(std::string Name, BasicBlock *BB);
 };
 }

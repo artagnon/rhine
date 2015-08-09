@@ -288,26 +288,23 @@ value_expr:
                 }
         |       typed_symbol[S] TVOID
                 {
-                  auto CInst = CallInst::get($S->getName(), 0, K);
+                  auto CInst = CallInst::get($S->getName(), K);
                   CInst->setSourceLocation(@1);
                   CInst->setName(Driver->Root.getVirtualRegisterName());
                   $$ = CInst;
                 }
         |       typed_symbol[S] rvalue_list[L]
                 {
-                  auto CInst = CallInst::get($S->getName(), $L->size(), K);
+                  auto CInst = CallInst::get($S->getName(), *$L, K);
                   CInst->setSourceLocation(@1);
                   CInst->setName(Driver->Root.getVirtualRegisterName());
-                  for (unsigned OpN = 0; OpN < $L->size(); OpN++)
-                    CInst->setOperand(OpN, (*$L)[OpN]);
                   $$ = CInst;
                 }
         |       typed_symbol[S] '$' value_expr[E]
                 {
-                  auto Op = CallInst::get($S->getName(), 1, K);
+                  auto Op = CallInst::get($S->getName(), $E, K);
                   Op->setSourceLocation(@1);
                   Op->setName(Driver->Root.getVirtualRegisterName());
-                  Op->setOperand(0, $E);
                   $$ = Op;
                 }
                 ;
