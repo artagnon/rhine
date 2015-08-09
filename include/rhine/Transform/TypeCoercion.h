@@ -7,8 +7,9 @@
 
 namespace rhine {
 class TypeCoercion : public FunctionPass {
+  Context *K;
 public:
-  TypeCoercion(Context *K) : FunctionPass(K) {}
+  TypeCoercion();
   virtual ~TypeCoercion() {}
   Value *convertValue(ConstantInt *I, IntegerType *DestTy);
   Value *convertValue(Value *V, StringType *);

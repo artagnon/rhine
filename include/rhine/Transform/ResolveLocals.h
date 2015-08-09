@@ -14,7 +14,6 @@ struct ValueRef {
 
 class ResolveLocals : public FunctionPass {
 public:
-  ResolveLocals(Context *K) : FunctionPass(K) {}
   virtual ~ResolveLocals() {}
   void runOnFunction(Function *F) override;
 private:

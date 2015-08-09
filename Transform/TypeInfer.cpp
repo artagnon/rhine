@@ -3,6 +3,8 @@
 #include "rhine/Transform/Resolve.h"
 
 namespace rhine {
+TypeInfer::TypeInfer() : K(nullptr) {}
+
 Type *TypeInfer::visit(ConstantInt *V) {
   return V->getType();
 }
@@ -129,6 +131,7 @@ Type *TypeInfer::visit(MallocInst *V) {
 }
 
 void TypeInfer::runOnFunction(Function *F) {
+  K = F->getContext();
   visit(F);
 }
 }
