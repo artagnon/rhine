@@ -22,7 +22,7 @@
 
 %union {
   std::string *LiteralName;
-  class LoadInst *MallocedVar;
+  class LoadInst *MallocedV;
   class Argument *Argument;
   class ConstantInt *Integer;
   class ConstantBool *Boolean;
@@ -56,7 +56,7 @@
 %type   <Type>          type_annotation type_lit
 %type   <TyList>        type_list
 %type   <Argument>      typed_argument
-%type   <MallocedVar>   typed_symbol lvalue
+%type   <MallocedV>     typed_symbol lvalue
 
 %{
 #include "rhine/Parse/Lexer.h"
@@ -161,7 +161,7 @@ typed_argument:
 typed_symbol:
                 LITERALNAME[S] type_annotation[T]
                 {
-                  auto Sym = LoadInst::get(*$S, $T, K);
+                  auto Sym = LoadInst::get(*$S, $T);
                   Sym->setSourceLocation(@1);
                   $$ = Sym;
                 }

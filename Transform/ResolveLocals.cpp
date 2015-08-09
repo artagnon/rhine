@@ -19,27 +19,27 @@ public:
     }
   }
   ValueRef *getMapping(std::string Name, BasicBlock *Block) {
-    auto ThisVRMapping = FunctionVR[Block];
-    auto IteratorToElement = ThisVRMapping.find(Name);
-    return IteratorToElement == ThisVRMapping.end() ? nullptr :
+    auto ThisVRMap = FunctionVR[Block];
+    auto IteratorToElement = ThisVRMap.find(Name);
+    return IteratorToElement == ThisVRMap.end() ? nullptr :
       &IteratorToElement->second;
   }
 } Map;
 
 void ResolveLocals::runOnFunction(Function *F) {
-  for (auto Arg : F->args()) {
+  for (auto &Arg : F->args())
     Map.addMapping(Arg->getName(), F->getEntryBlock(), Arg);
-  }
-  for (auto V : *F) {
+  for (auto &V : *F) {
     if (auto M = dyn_cast<MallocInst>(V)) {
       Map.addMapping(M->getName(), F->getEntryBlock(), M);
     }
   }
-  for (auto V : *F) {
+  for (auto &V : *F) {
     auto Name = V->getName();
     if (auto U = dyn_cast<UnresolvedValue>(V)) {
       if (auto S = lookupNameinBlock(Name, F->getEntryBlock())) {
-        U->getUse()->set(S);
+        auto L = LoadInst::get(Name, S->getType());
+        U->getUse()->set(L);
       } else {
         auto SourceLoc = U->getSourceLocation();
         auto K = F->getContext();

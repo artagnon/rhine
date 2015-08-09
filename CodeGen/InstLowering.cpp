@@ -20,7 +20,7 @@ llvm::Value *getCalleeFunction(std::string Name, location SourceLoc,
     if (isa<llvm::Function>(Result) || isPointerToFunction(Result))
       return Result;
     else {
-      auto Sym = LoadInst::get(Name, K->getMappingTy(Name), K)->toLL(M);
+      auto Sym = LoadInst::get(Name, K->getMappingTy(Name))->toLL(M);
       if (isPointerToFunction(Sym))
         return Sym;
       K->DiagPrinter->errorReport(
