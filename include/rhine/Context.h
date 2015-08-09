@@ -35,11 +35,11 @@ public:
   llvm::FoldingSet<FunctionType> FTyCache;
   llvm::FoldingSet<PointerType> PTyCache;
   llvm::FoldingSet<IntegerType> ITyCache;
-  class UnType UniqueUnType;
-  class VoidType UniqueVoidType;
-  class BoolType UniqueBoolType;
-  class FloatType UniqueFloatType;
-  class StringType UniqueStringType;
+  UnType UniqueUnType;
+  VoidType UniqueVoidType;
+  BoolType UniqueBoolType;
+  FloatType UniqueFloatType;
+  StringType UniqueStringType;
   llvm::LLVMContext &LLContext;
   llvm::IRBuilder<> *Builder;
   DiagnosticPrinter *DiagPrinter;

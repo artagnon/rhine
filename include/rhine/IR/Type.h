@@ -35,6 +35,7 @@ enum RTType {
 
 class Type : public FoldingSetNode {
 protected:
+  Context *Kontext;
   location SourceLoc;
 public:
   Type(RTType ID);
