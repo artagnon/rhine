@@ -17,13 +17,7 @@ class ParseDriver
 {
 public:
 
-  /// construct a new parser driver context
-  ParseDriver(class PTree &Tree, Context *SharedCtx,
-              bool Debug = false) :
-      TraceScanning(Debug), TraceParsing(Debug),
-      Root(Tree), Ctx(SharedCtx)
-  {}
-
+  ParseDriver(class PTree &Tree, Context *SharedCtx, bool Debug = false);
   bool parseStream(std::istream &In,
                    const std::string &StreamName_ = "stream input");
   bool parseString(const std::string &Input,
@@ -32,7 +26,6 @@ public:
 
   bool TraceScanning;
   bool TraceParsing;
-  std::string StreamName;
   class Lexer *Lexx;
   PTree &Root;
   Context *Ctx;

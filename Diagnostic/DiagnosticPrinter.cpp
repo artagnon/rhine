@@ -33,6 +33,9 @@ public:
   }
 };
 
+DiagnosticPrinter::DiagnosticPrinter(std::ostream *ErrStream) :
+    ErrorStream(ErrStream) {}
+
 void DiagnosticPrinter::errorReport(const location &Location,
                                     const std::string &Message) {
   assert(Location.begin.filename == Location.end.filename);
