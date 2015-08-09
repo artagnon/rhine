@@ -36,7 +36,6 @@ public:
 
   template <typename T>
   std::string llToPP(T *Obj);
-
   std::string parseAction(ParseSource SrcE, PostParseAction ActionE);
   MainFTy jitAction(ParseSource SrcE, PostParseAction ActionE);
 };
