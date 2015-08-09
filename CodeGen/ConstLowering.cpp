@@ -19,7 +19,6 @@ llvm::Constant *ConstantFloat::toLL(llvm::Module *M) {
 
 llvm::Constant *Function::toLL(llvm::Module *M) {
   auto K = getContext();
-  auto Name = getName();
   auto RhFnTy = cast<FunctionType>(getType());
   auto FnTy = cast<llvm::FunctionType>(RhFnTy->toLL(M));
   if (auto FunctionCandidate =
@@ -39,7 +38,7 @@ llvm::Constant *Function::toLL(llvm::Module *M) {
   auto SEnd = ArgList.end();
   auto VEnd = K->CurrentFunction->arg_end();
   for (; S != SEnd && V != VEnd; ++S, ++V)
-    K->addMapping((*S)->getName(), nullptr, V);
+    K->addMapping((*S)->getName(), nullptr, &(*V));
 
   // Add function symbol to symbol table
   K->addMapping(Name, nullptr, K->CurrentFunction);

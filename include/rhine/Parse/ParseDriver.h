@@ -25,9 +25,9 @@ public:
   {}
 
   bool parseStream(std::istream &In,
-                   const std::string &StreamName = "stream input");
+                   const std::string &StreamName_ = "stream input");
   bool parseString(const std::string &Input,
-                   const std::string &StreamName = "string stream");
+                   const std::string &StreamName_ = "string stream");
   bool parseFile(const std::string &filename);
 
   bool TraceScanning;

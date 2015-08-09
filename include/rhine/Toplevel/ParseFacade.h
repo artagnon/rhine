@@ -6,6 +6,7 @@
 #include <iostream>
 
 #include "llvm/IR/Module.h"
+#include "rhine/Parse/ParseTree.h"
 
 typedef int (*MainFTy)();
 
@@ -36,6 +37,7 @@ public:
 
   template <typename T>
   std::string llToPP(T *Obj);
+  PTree *parseToIR(Context *Ctx, ParseSource SrcE);
   std::string parseAction(ParseSource SrcE, PostParseAction ActionE);
   MainFTy jitAction(ParseSource SrcE, PostParseAction ActionE);
 };
