@@ -37,9 +37,9 @@ std::string ParseFacade::parseAction(ParseSource SrcE,
                                      PostParseAction ActionE)
 {
   std::string Ret;
-  rhine::Context Ctx(ErrStream);
-  rhine::PTree Root(&Ctx);
-  auto Driver = rhine::ParseDriver(Root, &Ctx, Debug);
+  auto Ctx = new rhine::Context(ErrStream);
+  auto Root = new rhine::PTree(Ctx);
+  auto Driver = rhine::ParseDriver(*Root, Ctx, Debug);
   switch(SrcE) {
   case ParseSource::STRING:
     if (!Driver.parseString(PrgString)) {
@@ -54,38 +54,39 @@ std::string ParseFacade::parseAction(ParseSource SrcE,
     }
     break;
   }
-  auto ResolveL = ResolveLocals(&Ctx);
-  ResolveL.runOnModule(Root.M);
-  auto LambLift = LambdaLifting(&Ctx);
-  LambLift.runOnModule(Root.M);
-  auto TyInfer = TypeInfer(&Ctx);
-  TyInfer.runOnModule(Root.M);
-  auto TyCoerce = TypeCoercion(&Ctx);
-  TyCoerce.runOnModule(Root.M);
+  std::vector<ModulePass *> TransformChain =
+    { new ResolveLocals(Ctx), new LambdaLifting(Ctx),
+      new TypeInfer(Ctx), new TypeCoercion(Ctx) };
+  for (auto Transform : TransformChain) {
+    Transform->runOnModule(Root->M);
+    delete Transform;
+  }
   switch(ActionE) {
   case PostParseAction::IR:
-    Ret = irToPP(Root.M);
+    Ret = irToPP(Root->M);
     break;
   case PostParseAction::LL:
     if (!M)
-      M = new llvm::Module("main", Ctx.LLContext);
-    Root.M->toLL(M);
+      M = new llvm::Module("main", Ctx->LLContext);
+    Root->M->toLL(M);
     Ret = llToPP(M);
     break;
   case PostParseAction::LLDUMP:
     if (!M)
-      M = new llvm::Module("main", Ctx.LLContext);
-    Root.M->toLL(M);
+      M = new llvm::Module("main", Ctx->LLContext);
+    Root->M->toLL(M);
     M->dump();
     break;
   }
-  for (auto F : *Root.M) {
+  for (auto F : *Root->M) {
     for (auto V : *F) {
       delete V;
     }
     delete F;
   }
-  Ctx.releaseMemory();
+  Ctx->releaseMemory();
+  delete Ctx;
+  delete Root;
   return Ret;
 }
 
