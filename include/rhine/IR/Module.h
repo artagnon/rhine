@@ -16,12 +16,12 @@ using namespace llvm;
 
 namespace rhine {
 class Module {
+  Context *Kontext;
   std::vector<Function *> ContainedFs;
 public:
+  Module(Context *K);
   virtual ~Module() {}
-  Module *get() {
-    return new Module;
-  }
+  static Module *get(Context *K);
   void appendFunction(Function *F) {
     F->setParent(this);
     ContainedFs.push_back(F);
@@ -42,12 +42,9 @@ public:
   }
   void toLL(llvm::Module *M);
   typedef std::vector<Function *>::iterator iterator;
-  iterator begin() {
-    return ContainedFs.begin();
-  }
-  iterator end() {
-    return ContainedFs.end();
-  }
+  Function *front();
+  iterator begin();
+  iterator end();
 protected:
   virtual void print(std::ostream &Stream) const {
     for (auto F: ContainedFs)

@@ -37,8 +37,8 @@ std::string ParseFacade::parseAction(ParseSource SrcE,
                                      PostParseAction ActionE)
 {
   std::string Ret;
-  rhine::PTree Root;
   rhine::Context Ctx(ErrStream);
+  rhine::PTree Root(&Ctx);
   auto Driver = rhine::ParseDriver(Root, &Ctx, Debug);
   switch(SrcE) {
   case ParseSource::STRING:
@@ -55,31 +55,31 @@ std::string ParseFacade::parseAction(ParseSource SrcE,
     break;
   }
   auto ResolveL = ResolveLocals(&Ctx);
-  ResolveL.runOnModule(&Root.M);
+  ResolveL.runOnModule(Root.M);
   auto LambLift = LambdaLifting(&Ctx);
-  LambLift.runOnModule(&Root.M);
+  LambLift.runOnModule(Root.M);
   auto TyInfer = TypeInfer(&Ctx);
-  TyInfer.runOnModule(&Root.M);
+  TyInfer.runOnModule(Root.M);
   auto TyCoerce = TypeCoercion(&Ctx);
-  TyCoerce.runOnModule(&Root.M);
+  TyCoerce.runOnModule(Root.M);
   switch(ActionE) {
   case PostParseAction::IR:
-    Ret = irToPP(&Root.M);
+    Ret = irToPP(Root.M);
     break;
   case PostParseAction::LL:
     if (!M)
       M = new llvm::Module("main", Ctx.LLContext);
-    Root.M.toLL(M);
+    Root.M->toLL(M);
     Ret = llToPP(M);
     break;
   case PostParseAction::LLDUMP:
     if (!M)
       M = new llvm::Module("main", Ctx.LLContext);
-    Root.M.toLL(M);
+    Root.M->toLL(M);
     M->dump();
     break;
   }
-  for (auto F : Root.M) {
+  for (auto F : *Root.M) {
     for (auto V : *F) {
       delete V;
     }

@@ -10,6 +10,7 @@ add_library(IR
   "${CMAKE_CURRENT_SOURCE_DIR}/Constant.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/BasicBlock.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Instruction.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Module.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/User.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Use.cpp")
 set_target_properties(IR PROPERTIES

@@ -79,7 +79,7 @@ start:
 tlexpr:
                 def[D]
                 {
-                  Driver->Root.M.appendFunction($D);
+                  Driver->Root.M->appendFunction($D);
                 }
                 ;
 
