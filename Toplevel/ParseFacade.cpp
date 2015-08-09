@@ -33,7 +33,7 @@ std::string ParseFacade::llToPP(T *Obj)
   return OutputStream.str();
 }
 
-PTree *ParseFacade::parseToIR(Context *Ctx, ParseSource SrcE) {
+Module *ParseFacade::parseToIR(Context *Ctx, ParseSource SrcE) {
   auto Root = new rhine::PTree(Ctx);
   auto Driver = rhine::ParseDriver(*Root, Ctx, Debug);
   switch(SrcE) {
@@ -57,7 +57,9 @@ PTree *ParseFacade::parseToIR(Context *Ctx, ParseSource SrcE) {
     Transform->runOnModule(Root->M);
     delete Transform;
   }
-  return Root;
+  auto M = Root->M;
+  delete Root;
+  return M;
 }
 
 std::string ParseFacade::parseAction(ParseSource SrcE,
@@ -65,25 +67,25 @@ std::string ParseFacade::parseAction(ParseSource SrcE,
 {
   std::string Ret;
   auto Ctx = new rhine::Context(ErrStream);
-  auto Root = parseToIR(Ctx, SrcE);
+  auto R = parseToIR(Ctx, SrcE);
   switch(ActionE) {
   case PostParseAction::IR:
-    Ret = irToPP(Root->M);
+    Ret = irToPP(R);
     break;
   case PostParseAction::LL:
     if (!M)
       M = new llvm::Module("main", Ctx->LLContext);
-    Root->M->toLL(M);
+    R->toLL(M);
     Ret = llToPP(M);
     break;
   case PostParseAction::LLDUMP:
     if (!M)
       M = new llvm::Module("main", Ctx->LLContext);
-    Root->M->toLL(M);
+    R->toLL(M);
     M->dump();
     break;
   }
-  for (auto F : *Root->M) {
+  for (auto F : *R) {
     for (auto V : *F) {
       delete V;
     }
@@ -91,7 +93,6 @@ std::string ParseFacade::parseAction(ParseSource SrcE,
   }
   Ctx->releaseMemory();
   delete Ctx;
-  delete Root;
   return Ret;
 }
 
