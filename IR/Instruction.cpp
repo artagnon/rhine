@@ -94,7 +94,7 @@ void *MallocInst::operator new(size_t s) {
 }
 
 MallocInst *MallocInst::get(std::string N, Value *V, Context *K) {
-  auto Obj = new MallocInst(N, VoidType::get(K));
+  auto Obj = new MallocInst(N, UnType::get(K));
   Obj->setOperand(0, V);
   return Obj;
 }

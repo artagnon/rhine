@@ -1,11 +1,14 @@
 #include "rhine/IR/BasicBlock.h"
+#include "rhine/Context.h"
 
 namespace rhine {
 BasicBlock::BasicBlock(Type *Ty, std::vector<Value *> V) :
     Value(Ty, RT_BasicBlock), Parent(nullptr), ValueList(V) {}
 
+BasicBlock::~BasicBlock() {}
+
 BasicBlock *BasicBlock::get(std::vector<Value *> V, Context *K) {
-  return new (K->RhAllocator) BasicBlock(UnType::get(K), V);
+  return new BasicBlock(UnType::get(K), V);
 }
 
 bool BasicBlock::classof(const Value *V) {

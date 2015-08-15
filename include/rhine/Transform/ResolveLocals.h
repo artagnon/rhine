@@ -6,20 +6,17 @@
 #include "rhine/IR/Constant.h"
 
 namespace rhine {
-struct ValueRef {
-  Value *Val;
-  llvm::Value *LLVal;
-  ValueRef(Value *Val, llvm::Value *LLVal) : Val(Val), LLVal(LLVal) {}
-};
-
 class ResolveLocals : public FunctionPass {
+  Context *K;
 public:
   virtual ~ResolveLocals() {}
   void runOnFunction(Function *F) override;
+  void runOnModule(Module *M) override;
 private:
   std::vector<BasicBlock *> getBlocksInScope(BasicBlock *BB);
   void lookupReplaceUse(std::string Name, Use &U,
                         BasicBlock *Block);
+  void resolveOperandsOfUser(User *U, BasicBlock *BB);
   Value *lookupNameinBlock(std::string Name, BasicBlock *BB);
 };
 }

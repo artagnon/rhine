@@ -3,7 +3,6 @@
 #ifndef SYMBOLTABLE_H
 #define SYMBOLTABLE_H
 
-#include "llvm/IR/Value.h"
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/LLVMContext.h"
 #include "llvm/ADT/FoldingSet.h"
@@ -13,18 +12,22 @@
 
 #include "location.hh"
 #include "rhine/IR/Type.h"
+#include "rhine/IR/BasicBlock.h"
 #include "rhine/Diagnostic.h"
 
 namespace rhine {
-class FunctionType;
-class PointerType;
-class IntegerType;
-class Type;
+class Value;
 
 struct SymbolRef {
   class Type *Ty;
   llvm::Value *LLVal;
   SymbolRef(Type *Typ, llvm::Value *Val) : Ty(Typ), LLVal(Val) {}
+};
+
+struct ValueRef {
+  Value *Val;
+  llvm::Value *LLVal;
+  ValueRef(Value *Val, llvm::Value *LLVal) : Val(Val), LLVal(LLVal) {}
 };
 
 class Context {
@@ -40,6 +43,7 @@ public:
   BoolType UniqueBoolType;
   FloatType UniqueFloatType;
   StringType UniqueStringType;
+  BasicBlock *GlobalBBHandle;
   llvm::LLVMContext &LLContext;
   llvm::IRBuilder<> *Builder;
   DiagnosticPrinter *DiagPrinter;
@@ -47,6 +51,7 @@ public:
   llvm::Function *CurrentFunction;
 
   Context(std::ostream &ErrStream = std::cerr):
+      GlobalBBHandle(nullptr),
       LLContext(llvm::getGlobalContext()),
       Builder(new llvm::IRBuilder<>(LLContext)),
       DiagPrinter(new DiagnosticPrinter(&ErrStream)),
@@ -84,6 +89,31 @@ public:
     }
     return R->second.LLVal;
   }
+
+  class ResolutionMap {
+    typedef std::map <std::string, ValueRef> BlockVR;
+    std::map<BasicBlock *, BlockVR> FunctionVR;
+  public:
+    void addMapping(std::string Name, BasicBlock *Block,
+                    Value *Val, llvm::Value *LLVal = nullptr) {
+      auto &ThisVRMap = FunctionVR[Block];
+      auto Ret = ThisVRMap.insert(std::make_pair(Name, ValueRef(Val, LLVal)));
+      auto &NewElementInserted = Ret.second;
+      if (!NewElementInserted) {
+        auto IteratorToEquivalentKey = Ret.first;
+        auto ValueRefOfEquivalentKey = IteratorToEquivalentKey->second;
+        if (Val) ValueRefOfEquivalentKey.Val = Val;
+        if (LLVal) ValueRefOfEquivalentKey.LLVal = LLVal;
+      }
+    }
+    ValueRef *getMapping(std::string Name, BasicBlock *Block) {
+      auto &ThisVRMap = FunctionVR[Block];
+      auto IteratorToElement = ThisVRMap.find(Name);
+      return IteratorToElement == ThisVRMap.end() ? nullptr :
+        &IteratorToElement->second;
+    }
+  };
+  ResolutionMap Map;
 };
 }
 

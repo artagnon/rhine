@@ -1,4 +1,5 @@
 #include "rhine/IR/Value.h"
+#include "rhine/IR/Use.h"
 #include <iostream>
 
 namespace rhine {
@@ -36,7 +37,7 @@ void Value::setName(std::string Str) {
   Name = Str;
 }
 
-Use *Value::getUse() const {
+Value::operator Use *() const {
   return UseList;
 }
 

@@ -75,10 +75,7 @@ Type *TypeInfer::visit(IfInst *V) {
         V->getSourceLocation(), "mismatched true/false block types");
     exit(1);
   }
-  if (isa<ReturnInst>(TrueBlock->back()))
-    V->setType(VoidType::get(K));
-  else
-    V->setType(TrueTy);
+  V->setType(TrueTy);
   return TrueTy;
 }
 
@@ -129,16 +126,19 @@ Type *TypeInfer::visit(CallInst *V) {
 }
 
 Type *TypeInfer::visit(ReturnInst *V) {
-  if (V->getVal())
-    return visit(V->getVal());
-  return VoidType::get(K);
+  if (!V->getVal())
+    return VoidType::get(K);
+  auto Ty = visit(V->getVal());
+  V->setType(Ty);
+  return Ty;
 }
 
 Type *TypeInfer::visit(MallocInst *V) {
   auto Ty = visit(V->getVal());
   assert (!isa<UnType>(Ty) && "Unable to type infer MallocInst");
   K->addMapping(V->getName(), Ty);
-  return V->getType();
+  V->setType(Ty);
+  return VoidType::get(K);
 }
 
 void TypeInfer::runOnFunction(Function *F) {

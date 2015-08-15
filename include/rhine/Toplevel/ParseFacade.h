@@ -38,6 +38,7 @@ public:
 
   template <typename T>
   std::string llToPP(T *Obj);
+
   Module *parseToIR(ParseSource SrcE, std::vector<ModulePass *> TransformChain);
   std::string parseAction(ParseSource SrcE, PostParseAction ActionE);
   MainFTy jitAction(ParseSource SrcE, PostParseAction ActionE);
