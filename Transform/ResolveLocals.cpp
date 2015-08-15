@@ -1,31 +1,10 @@
-#include "rhine/IR.h"
+#include "rhine/Context.h"
+#include "rhine/IR/BasicBlock.h"
+#include "rhine/IR/Constant.h"
+#include "rhine/IR/Value.h"
 #include "rhine/Transform/ResolveLocals.h"
 
 namespace rhine {
-class ResolutionMap {
-  typedef std::map <std::string, ValueRef> BlockVR;
-  std::map<BasicBlock *, BlockVR> FunctionVR;
-public:
-  void addMapping(std::string Name, BasicBlock *Block,
-                  Value *Val, llvm::Value *LLVal = nullptr) {
-    auto &ThisVRMap = FunctionVR[Block];
-    auto Ret = ThisVRMap.insert(std::make_pair(Name, ValueRef(Val, LLVal)));
-    auto &NewElementInserted = Ret.second;
-    if (!NewElementInserted) {
-      auto IteratorToEquivalentKey = Ret.first;
-      auto ValueRefOfEquivalentKey = IteratorToEquivalentKey->second;
-      if (Val) ValueRefOfEquivalentKey.Val = Val;
-      if (LLVal) ValueRefOfEquivalentKey.LLVal = LLVal;
-    }
-  }
-  ValueRef *getMapping(std::string Name, BasicBlock *Block) {
-    auto &ThisVRMap = FunctionVR[Block];
-    auto IteratorToElement = ThisVRMap.find(Name);
-    return IteratorToElement == ThisVRMap.end() ? nullptr :
-      &IteratorToElement->second;
-  }
-} Map;
-
 void ResolveLocals::lookupReplaceUse(std::string Name, Use &U,
                                      BasicBlock *Block) {
   if (auto S = lookupNameinBlock(Name, Block)) {
@@ -39,36 +18,40 @@ void ResolveLocals::lookupReplaceUse(std::string Name, Use &U,
   }
 }
 
-void ResolveLocals::runOnFunction(Function *F) {
-  for (auto &Arg : F->args())
-    Map.addMapping(Arg->getName(), F->getEntryBlock(), Arg);
-  for (auto &V : *F) {
-    if (auto M = dyn_cast<MallocInst>(V)) {
-      Map.addMapping(M->getName(), F->getEntryBlock(), M);
-    }
-  }
-  for (auto &V : *F) {
+void ResolveLocals::resolveOperandsOfUser(User *U, BasicBlock *BB) {
+  for (Use &ThisUse : U->operands()) {
+    Value *V = ThisUse;
+    if (auto W = dyn_cast<User>(V))
+      resolveOperandsOfUser(W, BB);
     auto Name = V->getName();
-    auto U = cast<User>(V);
-    for (Use &ThisUse : U->operands()) {
-      Value *V = ThisUse;
-      if (isa<UnresolvedValue>(V))
-        lookupReplaceUse(Name, ThisUse, F->getEntryBlock());
-    }
+    if (isa<UnresolvedValue>(V))
+      lookupReplaceUse(Name, ThisUse, BB);
   }
 }
 
-std::vector<BasicBlock *> ResolveLocals::getBlocksInScope(BasicBlock *BB) {
-  std::vector<BasicBlock *> Ret;
-  Ret.push_back(BB);
-  return Ret;
+void ResolveLocals::runOnFunction(Function *F) {
+  K = F->getContext();
+  for (auto &Arg : F->args())
+    K->Map.addMapping(Arg->getName(), F->getEntryBlock(), Arg);
+  for (auto &V : *F) {
+    if (auto M = dyn_cast<MallocInst>(V)) {
+      K->Map.addMapping(M->getName(), F->getEntryBlock(), M);
+    }
+  }
+  for (auto &V : *F)
+    resolveOperandsOfUser(cast<User>(V), F->getEntryBlock());
+}
+
+void ResolveLocals::runOnModule(Module *M) {
+  // for (auto &F : *M)
+  //   K->Map.addMapping(F->getName(), K->GlobalBBHandle, F);
+  for (auto &F : *M)
+    runOnFunction(F);
 }
 
 Value *ResolveLocals::lookupNameinBlock(std::string Name, BasicBlock *BB) {
-  for (auto Block: getBlocksInScope(BB)) {
-    if (auto Resolution = Map.getMapping(Name, Block))
-      return Resolution->Val;
-  }
+  if (auto Resolution = K->Map.getMapping(Name, BB))
+    return Resolution->Val;
   return nullptr;
 }
 }

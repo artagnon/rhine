@@ -66,7 +66,7 @@ std::string ParseFacade::parseAction(ParseSource SrcE,
   LambdaLifting LambLift;
   TypeInfer TyInfer;
   TypeCoercion TyCoercion;
-  auto R = parseToIR(SrcE, { &ResolveL, &LambLift, &TyInfer, &TyCoercion});
+  auto R = parseToIR(SrcE, {/* &ResolveL, */ &LambLift, &TyInfer, &TyCoercion});
   std::string Ret;
   auto Ctx = R->getContext();
   switch(ActionE) {

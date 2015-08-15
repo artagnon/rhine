@@ -105,9 +105,9 @@ TEST(CodeGen, FunctionCall)
 {
   std::string SourcePrg =
     "def foom [] ret 2;\n"
-    "def main [] ret foom;";
+    "def main [] ret $ foom ();";
   std::string ExpectedPP =
-    "ret i32 ()* @foom";
+    "ret i32 %rhv0";
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }
 

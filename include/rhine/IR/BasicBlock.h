@@ -11,6 +11,7 @@ class BasicBlock : public Value {
 public:
   std::vector<Value *> ValueList;
   BasicBlock(Type *Ty, std::vector<Value *> V);
+  virtual ~BasicBlock();
   static BasicBlock *get(std::vector<Value *> V, Context *K);
   static bool classof(const Value *V);
   llvm::Value *toLL(llvm::Module *M);

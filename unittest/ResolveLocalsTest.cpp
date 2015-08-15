@@ -18,7 +18,7 @@ TEST(ResolveLocals, Basic)
     "}";
   auto Pf = ParseFacade(SourcePrg);
   ResolveLocals ResolveL;
-  auto Module = Pf.parseToIR(ParseSource::STRING, {&ResolveL});
+  auto Module = Pf.parseToIR(ParseSource::STRING, { &ResolveL });
   auto MainF = Module->front();
   rhine::Value *Decl = nullptr,
     *FirstInstance = nullptr,
@@ -27,17 +27,33 @@ TEST(ResolveLocals, Basic)
     ASSERT_EQ(dyn_cast<UnresolvedValue>(V), nullptr);
     if (auto D = dyn_cast<MallocInst>(V))
       Decl = D;
-    if (auto A = dyn_cast<AddInst>(V))
-      if (auto U = dyn_cast<rhine::LoadInst>(A->getOperand(0)))
-        if (auto C = dyn_cast<rhine::ConstantInt>(A->getOperand(1))) {
+    if (auto A = dyn_cast<AddInst>(V)) {
+      auto Op0 = A->getOperand(0);
+      auto Op1 = A->getOperand(1);
+      if (auto U = dyn_cast<rhine::LoadInst>(Op0))
+        if (auto C = dyn_cast<rhine::ConstantInt>(Op1)) {
           if (C->getVal() == 3)
             FirstInstance = U;
           else
             SecondInstance = U;
         }
+    }
   }
   ASSERT_NE(Decl, nullptr);
   ASSERT_NE(FirstInstance, nullptr);
   ASSERT_NE(SecondInstance, nullptr);
   ASSERT_NE(FirstInstance, SecondInstance);
+}
+
+TEST(ResolveLocals, SymbolResolution)
+{
+  std::string SourcePrg = "def main [var ~Int] ret var;";
+  auto Pf = ParseFacade(SourcePrg);
+  ResolveLocals ResolveL;
+  auto Module = Pf.parseToIR(ParseSource::STRING, { &ResolveL });
+  auto Expected =
+    "def main [var ~Int] ~Fn(Int -> UnType) {\n"
+    "ret var ~UnType\n"
+    "}";
+  EXPECT_PRED_FORMAT2(::testing::IsSubstring, Expected, Pf.irToPP(Module));
 }

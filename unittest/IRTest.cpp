@@ -4,10 +4,10 @@
 using namespace rhine;
 
 TEST(IR, ConstantInt) {
-  std::string SourcePrg = "def foo [] 3;";
+  std::string SourcePrg = "def foo [] ret 3;";
   std::string ExpectedPP =
     "def foo [] ~Fn(() -> Int) {\n"
-    "3 ~Int\n"
+    "ret 3 ~Int\n"
     "}";
   EXPECT_TRANSFORM_PP(SourcePrg, ExpectedPP);
 }
@@ -26,20 +26,20 @@ TEST(IR, AddTwoInt)
 
 TEST(IR, ConstantString)
 {
-  std::string SourcePrg = "def foo [] 'moo!';";
+  std::string SourcePrg = "def foo [] ret 'moo!';";
   std::string ExpectedPP =
     "def foo [] ~Fn(() -> String) {\n"
-    "'moo!' ~String\n"
+    "ret 'moo!' ~String\n"
     "}";
   EXPECT_TRANSFORM_PP(SourcePrg, ExpectedPP);
 }
 
 TEST(IR, TypePropagation)
 {
-  std::string SourcePrg = "def id [var ~Int] var;\n";
+  std::string SourcePrg = "def id [var ~Int] ret var;\n";
   std::string ExpectedPP =
     "def id [var ~Int] ~Fn(Int -> Int) {\n"
-    "var ~Int\n"
+    "ret var ~Int\n"
     "}";
   EXPECT_TRANSFORM_PP(SourcePrg, ExpectedPP);
 }
@@ -57,12 +57,12 @@ TEST(IR, BindPropagation) {
   std::string SourcePrg =
     "def bsym [] {\n"
     "  sym = 3;\n"
-    "  sym;\n"
+    "  ret sym;\n"
     "}";
   std::string ExpectedPP =
     "def bsym [] ~Fn(() -> Int) {\n"
     "sym = 3 ~Int\n"
-    "sym ~Int\n"
+    "ret sym ~Int\n"
     "}";
   EXPECT_TRANSFORM_PP(SourcePrg, ExpectedPP);
 }
@@ -71,20 +71,20 @@ TEST(IR, Comment) {
   std::string SourcePrg =
     "def foo []\n"
     "  // Strip this out\n"
-    "  3;";
+    "  ret 3;";
   std::string ExpectedPP =
     "def foo [] ~Fn(() -> Int) {\n"
-    "3 ~Int\n"
+    "ret 3 ~Int\n"
     "}";
   EXPECT_TRANSFORM_PP(SourcePrg, ExpectedPP);
 }
 
 TEST(IR, TwoArguments)
 {
-  std::string SourcePrg = "def foo [a ~Int b ~Int] a + b;";
+  std::string SourcePrg = "def foo [a ~Int b ~Int] ret $ a + b;";
   std::string ExpectedPP =
     "foo [a ~Int b ~Int] ~Fn(Int -> Int -> Int) {\n"
-    "+ ~Fn(Int -> Int -> Int)\n"
+    "ret + ~Fn(Int -> Int -> Int)\n"
     "a ~Int\n"
     "b ~Int\n"
     "}";

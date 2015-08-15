@@ -8,14 +8,16 @@
 #include <sstream>
 
 #include "location.hh"
-#include "rhine/Context.h"
 #include "rhine/IR/Type.h"
-#include "rhine/IR/Use.h"
 
 using namespace std;
 using namespace llvm;
 
 namespace rhine {
+class Use;
+class User;
+class Context;
+
 enum RTValue {
   RT_User,
   RT_UnresolvedValue,
@@ -59,7 +61,7 @@ public:
     V.print(Stream);
     return Stream;
   }
-  Use *getUse() const;
+  operator Use *() const;
   User *getUser() const;
   void addUse(Use &U);
   bool use_empty() const;
