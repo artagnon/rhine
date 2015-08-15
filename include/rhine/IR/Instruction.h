@@ -58,9 +58,8 @@ protected:
 };
 
 class MallocInst : public Instruction {
-  Value *Val;
 public:
-  MallocInst(std::string N, Type *Ty, Value *V);
+  MallocInst(std::string N, Type *Ty);
   virtual ~MallocInst() {}
   void *operator new(size_t s);
   static MallocInst *get(std::string N, Value *V, Context *K);
@@ -78,6 +77,18 @@ public:
   virtual ~LoadInst() {}
   void *operator new(size_t s);
   static LoadInst *get(std::string N, Type *T);
+  static bool classof(const Value *V);
+  llvm::Value *toLL(llvm::Module *M) override;
+protected:
+  void print(std::ostream &Stream) const override;
+};
+
+class ReturnInst : public Instruction {
+public:
+  ReturnInst(Type *T, RTValue ID = RT_ReturnInst);
+  virtual ~ReturnInst() {}
+  void *operator new(size_t s);
+  static ReturnInst *get(Type *T);
   static bool classof(const Value *V);
   llvm::Value *toLL(llvm::Module *M) override;
 protected:

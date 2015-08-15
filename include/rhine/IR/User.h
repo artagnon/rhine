@@ -17,6 +17,12 @@ public:
   static bool classof(const Value *V);
   Use *getOperandList();
   const Use *getOperandList() const;
+  typedef Use* op_iterator;
+  op_iterator op_begin() { return getOperandList(); }
+  op_iterator op_end() { return getOperandList() + NumOperands; }
+  iterator_range<op_iterator> operands() {
+    return iterator_range<op_iterator>(op_begin(), op_end());
+  }
   Value *getOperand(unsigned i) const;
   void setOperand(unsigned i, Value *Val);
 };

@@ -23,6 +23,10 @@ class User *Use::getUser() {
   return reinterpret_cast<User *>(this - OperandNumber);
 }
 
+Value *Use::getVal() const {
+  return Val;
+}
+
 Value *Use::operator=(Value *RHS) {
   setVal(RHS);
   return RHS;

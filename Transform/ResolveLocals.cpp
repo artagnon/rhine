@@ -26,6 +26,19 @@ public:
   }
 } Map;
 
+void ResolveLocals::lookupReplaceUse(std::string Name, Use &U,
+                                     BasicBlock *Block) {
+  if (auto S = lookupNameinBlock(Name, Block)) {
+    auto L = LoadInst::get(Name, S->getType());
+    U.set(L);
+  } else {
+    auto SourceLoc = U->getSourceLocation();
+    auto K = Block->getContext();
+    K->DiagPrinter->errorReport(SourceLoc, "unbound symbol " + Name);
+    exit(1);
+  }
+}
+
 void ResolveLocals::runOnFunction(Function *F) {
   for (auto &Arg : F->args())
     Map.addMapping(Arg->getName(), F->getEntryBlock(), Arg);
@@ -36,17 +49,11 @@ void ResolveLocals::runOnFunction(Function *F) {
   }
   for (auto &V : *F) {
     auto Name = V->getName();
-    if (auto U = dyn_cast<UnresolvedValue>(V)) {
-      if (auto S = lookupNameinBlock(Name, F->getEntryBlock())) {
-        auto L = LoadInst::get(Name, S->getType());
-        if (auto ThisUse = U->getUse())
-          ThisUse->set(L);
-      } else {
-        auto SourceLoc = U->getSourceLocation();
-        auto K = F->getContext();
-        K->DiagPrinter->errorReport(SourceLoc, "unbound symbol " + Name);
-        exit(1);
-      }
+    auto U = cast<User>(V);
+    for (Use &ThisUse : U->operands()) {
+      Value *V = ThisUse;
+      if (isa<UnresolvedValue>(V))
+        lookupReplaceUse(Name, ThisUse, F->getEntryBlock());
     }
   }
 }

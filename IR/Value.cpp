@@ -41,6 +41,7 @@ Use *Value::getUse() const {
 }
 
 User *Value::getUser() const {
+  if (!UseList) return nullptr;
   return UseList->getUser();
 }
 
