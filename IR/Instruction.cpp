@@ -134,6 +134,40 @@ void LoadInst::print(std::ostream &Stream) const {
   Stream << Name << " ~" << *getType();
 }
 
+ReturnInst::ReturnInst(Type *Ty, bool IsNotVoid) :
+    Instruction(Ty, RT_ReturnInst, IsNotVoid) {}
+
+void *ReturnInst::operator new(size_t s, unsigned NumberOfArgs) {
+  return User::operator new(s, NumberOfArgs);
+}
+
+ReturnInst *ReturnInst::get(Value *V, Context *K) {
+  if (!V)
+    return new (0) ReturnInst(VoidType::get(K), false);
+  auto Obj = new (1) ReturnInst(V->getType(), true);
+  Obj->setOperand(0, V);
+  return Obj;
+}
+
+bool ReturnInst::classof(const Value *V) {
+  return V->getValID() == RT_ReturnInst;
+}
+
+void ReturnInst::setVal(Value *V) {
+  setOperand(0, V);
+}
+
+Value *ReturnInst::getVal() {
+  auto Operands = getOperands();
+  if (Operands.size())
+    return Operands[0];
+  return nullptr;
+}
+
+void ReturnInst::print(std::ostream &Stream) const {
+  Stream << "ret " << *getOperands()[0];
+}
+
 IfInst::IfInst(Type *Ty, Value * Conditional_,
                BasicBlock *TrueBB_, BasicBlock *FalseBB_):
     Instruction(Ty, RT_IfInst, 3), Conditional(Conditional_),

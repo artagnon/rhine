@@ -66,15 +66,20 @@ Type *TypeInfer::visit(AddInst *V) {
 }
 
 Type *TypeInfer::visit(IfInst *V) {
-   auto TrueTy = typeInferBB(V->getTrueBB());
-   auto FalseTy = typeInferBB(V->getFalseBB());
-   if (TrueTy != FalseTy) {
-     K->DiagPrinter->errorReport(
-         V->getSourceLocation(), "mismatched true/false block types");
-     exit(1);
-   }
-   V->setType(TrueTy);
-   return TrueTy;
+  auto TrueBlock = V->getTrueBB();
+  auto FalseBlock = V->getFalseBB();
+  auto TrueTy = typeInferBB(TrueBlock);
+  auto FalseTy = typeInferBB(FalseBlock);
+  if (TrueTy != FalseTy) {
+    K->DiagPrinter->errorReport(
+        V->getSourceLocation(), "mismatched true/false block types");
+    exit(1);
+  }
+  if (isa<ReturnInst>(TrueBlock->back()))
+    V->setType(VoidType::get(K));
+  else
+    V->setType(TrueTy);
+  return TrueTy;
 }
 
 Type *TypeInfer::visit(LoadInst *V) {
@@ -121,6 +126,12 @@ Type *TypeInfer::visit(CallInst *V) {
   K->DiagPrinter->errorReport(
       V->getSourceLocation(), "untyped function " + Callee);
   exit(1);
+}
+
+Type *TypeInfer::visit(ReturnInst *V) {
+  if (V->getVal())
+    return visit(V->getVal());
+  return VoidType::get(K);
 }
 
 Type *TypeInfer::visit(MallocInst *V) {

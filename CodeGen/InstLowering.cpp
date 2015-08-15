@@ -105,6 +105,13 @@ llvm::Value *LoadInst::toLL(llvm::Module *M) {
   exit(1);
 }
 
+llvm::Value *ReturnInst::toLL(llvm::Module *M) {
+  auto B = getContext()->Builder;
+  if (auto ReturnVal = getVal())
+    return B->CreateRet(ReturnVal->toLL(M));
+  return B->CreateRet(nullptr);
+}
+
 llvm::Value *IfInst::toLL(llvm::Module *M) {
   auto K = getContext();
   auto TrueBB = llvm::BasicBlock::Create(

@@ -40,7 +40,8 @@
 %start start
 
 %token                  DEF IF ELSE AND OR ARROW
-%token                  TINT TBOOL TSTRING TFUNCTION TVOID
+%token                  TINT TBOOL TSTRING FUNCTION
+%token                  TVOID RET
 %token                  END       0
 %token  <LiteralName>   LITERALNAME
 %token  <Integer>       INTEGER
@@ -201,7 +202,7 @@ type_lit:
                   STy->setSourceLocation(@1);
                   $$ = STy;
                 }
-        |       TFUNCTION '(' type_list[A] ARROW type_lit[R] ')'
+        |       FUNCTION '(' type_list[A] ARROW type_lit[R] ')'
                 {
                   auto FTy = FunctionType::get($R, *$A, $A->isVariadic(), K);
                   auto PTy = PointerType::get(FTy, K);
@@ -305,6 +306,24 @@ value_expr:
                   auto Op = CallInst::get($S->getName(), $E, K);
                   Op->setSourceLocation(@1);
                   Op->setName(Driver->Root.getVirtualRegisterName());
+                  $$ = Op;
+                }
+        |       RET rvalue[R]
+                {
+                  auto Op = ReturnInst::get($R, K);
+                  Op->setSourceLocation(@1);
+                  $$ = Op;
+                }
+        |       RET TVOID
+                {
+                  auto Op = ReturnInst::get(nullptr, K);
+                  Op->setSourceLocation(@1);
+                  $$ = Op;
+                }
+        |       RET '$' value_expr[E]
+                {
+                  auto Op = ReturnInst::get($E, K);
+                  Op->setSourceLocation(@1);
                   $$ = Op;
                 }
                 ;

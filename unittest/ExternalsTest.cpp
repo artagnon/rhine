@@ -71,7 +71,7 @@ TEST(Externals, ToStringExecution)
 TEST(Externals, FunctionPointer) {
   std::string SourcePrg =
     "def mallocRet [] {\n"
-    "  malloc;\n"
+    "  ret malloc;\n"
     "}";
   std::string ExpectedPP =
     "define i8* (i64)* @mallocRet() gc \"rhgc\" {\n"

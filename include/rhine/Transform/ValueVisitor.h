@@ -21,6 +21,7 @@ protected:
     if (auto C = dyn_cast<MallocInst>(V)) { return visit(C); }
     if (auto C = dyn_cast<LoadInst>(V)) { return visit(C); }
     if (auto C = dyn_cast<CallInst>(V)) { return visit(C); }
+    if (auto C = dyn_cast<ReturnInst>(V)) { return visit(C); }
     assert(0 && "Unknown ValueVisitor dispatch");
   }
   virtual R visit(ConstantInt *I) = 0;
@@ -34,6 +35,7 @@ protected:
   virtual R visit(MallocInst *B) = 0;
   virtual R visit(LoadInst *S) = 0;
   virtual R visit(CallInst *C) = 0;
+  virtual R visit(ReturnInst *C) = 0;
 };
 }
 

@@ -17,7 +17,7 @@ TEST(Execution, FunctionArgument) {
 
 TEST(Execution, DollarOperator) {
   std::string SourcePrg =
-    "def foo [x ~Int] '2';\n"
+    "def foo [x ~Int] ret '2';\n"
     "def main [] print $ foo 3;";
   std::string ExpectedOut = "2";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);

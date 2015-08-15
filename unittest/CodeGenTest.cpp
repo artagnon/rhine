@@ -5,7 +5,7 @@ using namespace rhine;
 
 TEST(CodeGen, DefunStm)
 {
-  std::string SourcePrg = "def foo [] 3 + 2;";
+  std::string SourcePrg = "def foo [] ret $ 3 + 2;";
   std::string ExpectedPP =
     "define i32 @foo() gc \"rhgc\" {\n"
     "entry:\n"
@@ -20,7 +20,7 @@ TEST(CodeGen, DefunCompoundStm)
     "def foo []\n"
     "{\n"
     "  3 + 2;\n"
-    "  4 + 5;\n"
+    "  ret $ 4 + 5;\n"
     "}";
   std::string ExpectedPP =
     "define i32 @foo() gc \"rhgc\" {\n"
@@ -33,8 +33,8 @@ TEST(CodeGen, DefunCompoundStm)
 TEST(CodeGen, MultipleDefun)
 {
   std::string SourcePrg =
-    "def foo [] 2;\n"
-    "def bar [] 3;\n";
+    "def foo [] ret 2;\n"
+    "def bar [] ret 3;\n";
   std::string ExpectedPP =
     "define i32 @foo() gc \"rhgc\" {\n"
     "entry:\n"
@@ -50,7 +50,7 @@ TEST(CodeGen, MultipleDefun)
 TEST(CodeGen, TypeAnnotation)
 {
   std::string SourcePrg =
-    "def id [var ~Int] 0;\n";
+    "def id [var ~Int] ret 0;\n";
   std::string ExpectedPP =
     "define i32 @id(i32) gc \"rhgc\" {\n"
     "entry:\n"
@@ -62,7 +62,7 @@ TEST(CodeGen, TypeAnnotation)
 TEST(CodeGen, FunctionArgBinding)
 {
   std::string SourcePrg =
-    "def id [var ~Int] var ~Int;\n";
+    "def id [var ~Int] ret var ~Int;\n";
   std::string ExpectedPP =
     "define i32 @id(i32) gc \"rhgc\" {\n"
     "entry:\n"
@@ -74,7 +74,7 @@ TEST(CodeGen, FunctionArgBinding)
 TEST(CodeGen, TypePropagation)
 {
   std::string SourcePrg =
-    "def id [var ~Int] var;\n";
+    "def id [var ~Int] ret var;\n";
   std::string ExpectedPP =
     "define i32 @id(i32) gc \"rhgc\" {\n"
     "entry:\n"
@@ -87,7 +87,7 @@ TEST(CodeGen, BindPropagation) {
   std::string SourcePrg =
     "def bsym [] {"
     "  Sym = 3;\n"
-    "  Sym;\n"
+    "  ret Sym;\n"
     "}";
   std::string ExpectedPP =
     "define i32 @bsym() gc \"rhgc\" {\n"
@@ -104,8 +104,8 @@ TEST(CodeGen, BindPropagation) {
 TEST(CodeGen, FunctionCall)
 {
   std::string SourcePrg =
-    "def foom [] 2;\n"
-    "def main [] foom;";
+    "def foom [] ret 2;\n"
+    "def main [] ret foom;";
   std::string ExpectedPP =
     "ret i32 ()* @foom";
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
@@ -114,7 +114,7 @@ TEST(CodeGen, FunctionCall)
 TEST(CodeGen, VoidLowering)
 {
   std::string SourcePrg =
-    "def id [] Var = 3;\n";
+    "def id [] { Var = 3; ret (); }\n";
   std::string ExpectedPP =
     "define void @id() gc \"rhgc\" {\n"
     "entry:\n"
@@ -129,8 +129,8 @@ TEST(CodeGen, VoidLowering)
 TEST(CodeGen, MultipleArguments)
 {
   std::string SourcePrg =
-    "def foo [a ~Int b ~Int] a + b;\n"
-    "def main [] foo 3 2;";
+    "def foo [a ~Int b ~Int] ret $ a + b;\n"
+    "def main [] ret $ foo 3 2;";
   std::string ExpectedPP =
     "define i32 @foo(i32, i32) gc \"rhgc\" {\n"
     "entry:\n"
@@ -148,7 +148,7 @@ TEST(CodeGen, MultipleArguments)
 TEST(CodeGen, ArgumentTypesChaining)
 {
   std::string SourcePrg =
-    "def boom [addfn ~Fn(Int -> Int -> Int)] addfn 2 4;";
+    "def boom [addfn ~Fn(Int -> Int -> Int)] ret $ addfn 2 4;";
   std::string ExpectedPP =
     "define i32 @boom(i32 (i32, i32)*)";
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);

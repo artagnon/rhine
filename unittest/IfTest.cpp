@@ -3,7 +3,7 @@
 
 using namespace rhine;
 
-TEST(If, BasicCodeGen)
+TEST(If, DISABLED_BasicCodeGen)
 {
   std::string SourcePrg =
     "def main [] { if (false) 2; else 3; }";
