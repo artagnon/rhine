@@ -8,13 +8,13 @@
 
 using namespace rhine;
 
-TEST(ResolveLocals, DISABLED_Basic)
+TEST(ResolveLocals, Basic)
 {
   std::string SourcePrg =
     "def main [] {\n"
-    "  moo = 3;\n"
-    "  moo;\n"
-    "  moo + 2\n;"
+    "  Moo = 3;\n"
+    "  Moo + 3;\n"
+    "  Moo + 2;\n"
     "}";
   auto Pf = ParseFacade(SourcePrg);
   ResolveLocals ResolveL;
@@ -24,13 +24,17 @@ TEST(ResolveLocals, DISABLED_Basic)
     *FirstInstance = nullptr,
     *SecondInstance = nullptr;
   for (auto V : *MainF) {
+    ASSERT_EQ(dyn_cast<UnresolvedValue>(V), nullptr);
     if (auto D = dyn_cast<MallocInst>(V))
       Decl = D;
-    if (auto U = dyn_cast<UnresolvedValue>(V))
-      FirstInstance = U;
     if (auto A = dyn_cast<AddInst>(V))
-      if (auto U = dyn_cast<UnresolvedValue>(A->getOperand(0)))
-        SecondInstance = U;
+      if (auto U = dyn_cast<rhine::LoadInst>(A->getOperand(0)))
+        if (auto C = dyn_cast<rhine::ConstantInt>(A->getOperand(1))) {
+          if (C->getVal() == 3)
+            FirstInstance = U;
+          else
+            SecondInstance = U;
+        }
   }
   ASSERT_NE(Decl, nullptr);
   ASSERT_NE(FirstInstance, nullptr);

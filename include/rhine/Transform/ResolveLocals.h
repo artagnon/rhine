@@ -18,6 +18,8 @@ public:
   void runOnFunction(Function *F) override;
 private:
   std::vector<BasicBlock *> getBlocksInScope(BasicBlock *BB);
+  void lookupReplaceUse(std::string Name, Use &U,
+                        BasicBlock *Block);
   Value *lookupNameinBlock(std::string Name, BasicBlock *BB);
 };
 }

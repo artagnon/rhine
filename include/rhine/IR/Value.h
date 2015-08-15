@@ -31,6 +31,7 @@ enum RTValue {
   RT_CallInst,
   RT_MallocInst,
   RT_LoadInst,
+  RT_ReturnInst,
   RT_IfInst,
   RT_BasicBlock,
 };
