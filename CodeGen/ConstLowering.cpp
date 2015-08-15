@@ -1,5 +1,6 @@
 #include "rhine/Context.h"
 #include "rhine/IR/Constant.h"
+#include "rhine/IR/Instruction.h"
 
 namespace rhine {
 llvm::Constant *ConstantInt::toLL(llvm::Module *M) {
@@ -46,8 +47,10 @@ llvm::Constant *Function::toLL(llvm::Module *M) {
     llvm::BasicBlock::Create(K->Builder->getContext(),
                              "entry", K->CurrentFunction);
   K->Builder->SetInsertPoint(BB);
-  auto LastLL = getVal()->toLL(M);
-  K->Builder->CreateRet(LastLL);
+  auto Block = getVal();
+  Block->toLL(M);
+  if (!isa<ReturnInst>(Block->back()))
+    K->Builder->CreateRet(nullptr);
   return K->CurrentFunction;
 }
 }

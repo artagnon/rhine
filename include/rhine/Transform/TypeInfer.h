@@ -27,6 +27,7 @@ public:
   Type *visit(MallocInst *B) override;
   Type *visit(LoadInst *S) override;
   Type *visit(CallInst *C) override;
+  Type *visit(ReturnInst *C) override;
 };
 }
 

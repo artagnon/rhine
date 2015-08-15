@@ -85,11 +85,13 @@ protected:
 
 class ReturnInst : public Instruction {
 public:
-  ReturnInst(Type *T, RTValue ID = RT_ReturnInst);
+  ReturnInst(Type *Ty, bool IsNotVoid);
   virtual ~ReturnInst() {}
-  void *operator new(size_t s);
-  static ReturnInst *get(Type *T);
+  void *operator new(size_t s, unsigned NumberOfArgs);
+  static ReturnInst *get(Value *V, Context *K);
   static bool classof(const Value *V);
+  void setVal(Value *V);
+  Value *getVal();
   llvm::Value *toLL(llvm::Module *M) override;
 protected:
   void print(std::ostream &Stream) const override;

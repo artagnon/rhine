@@ -67,11 +67,12 @@ SPTAB   [ \t]+
 "&&" { return T::AND; }
 "||" { return T::OR; }
 "->" { return T::ARROW; }
+"Fn" { return T::FUNCTION; }
+"ret" { return T::RET; }
 
 "Int" { return T::TINT; }
 "Bool" { return T::TBOOL; }
 "String" { return T::TSTRING; }
-"Fn" { return T::TFUNCTION; }
 "()" { return T::TVOID; }
 
 "true" {

@@ -9,7 +9,7 @@ TEST(FunctionPointer, BasicCodeGen) {
     "  3;\n"
     "}\n"
     "def caller [] {\n"
-    "  callee;\n"
+    "  ret callee;\n"
     "}";
   std::string ExpectedPP =
     "define i32 ()* @caller() gc \"rhgc\" {\n"
@@ -22,10 +22,10 @@ TEST(FunctionPointer, BasicCodeGen) {
 TEST(FunctionPointer, BasicExecution) {
   std::string SourcePrg =
     "def callee [] {\n"
-    "  3;\n"
+    "  ret 3;\n"
     "}\n"
     "def main [] {\n"
-    "  callee;\n"
+    "  ret callee;\n"
     "}";
   std::string ExpectedOut = "";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
@@ -34,7 +34,7 @@ TEST(FunctionPointer, BasicExecution) {
 TEST(FunctionPointer, Externals) {
   std::string SourcePrg =
     "def main [] {\n"
-    "  malloc;\n"
+    "  ret malloc;\n"
     "}";
   std::string ExpectedOut = "";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
@@ -58,7 +58,7 @@ TEST(FunctionPointer, PassCustomFunction)
 {
   std::string SourcePrg =
     "def bar [addfn ~Fn(Int -> Int -> Int)] print $ addfn 2 4;\n"
-    "def addCandidate [A ~Int B ~Int] A + B;\n"
+    "def addCandidate [A ~Int B ~Int] ret $ A + B;\n"
     "def main [] bar addCandidate;";
   std::string ExpectedOut = "6";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
@@ -68,8 +68,8 @@ TEST(FunctionPointer, DISABLED_CondAssign)
 {
   std::string SourcePrg =
     "def bar [arithFn ~Fn(Int -> Int -> Int)] print $ arithFn 2 4;\n"
-    "def addCandidate [A ~Int B ~Int] A + B;\n"
-    "def subCandidate [A ~Int B ~Int] A - B;\n"
+    "def addCandidate [A ~Int B ~Int] ret $ A + B;\n"
+    "def subCandidate [A ~Int B ~Int] ret $ A - B;\n"
     "def main [] if(false) bar addCandidate; else bar subCandidate;";
   std::string ExpectedOut = "";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
