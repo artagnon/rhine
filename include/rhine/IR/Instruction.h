@@ -98,21 +98,17 @@ protected:
 };
 
 class IfInst : public Instruction {
-  Value *Conditional;
-  BasicBlock *TrueBB;
-  BasicBlock *FalseBB;
 public:
-  IfInst(Type *Ty, Value * Conditional_,
-         BasicBlock *TrueBB_, BasicBlock *FalseBB_);
+  IfInst(Type *Ty);
   virtual ~IfInst() {}
   void *operator new(size_t s);
   static IfInst *get(Value * Conditional, BasicBlock *TrueBB,
                      BasicBlock *FalseBB, Context *K);
   static bool classof(const Value *V);
-  Value *getConditional();
+  Value *getConditional() const;
   void setConditional(Value *C);
-  BasicBlock *getTrueBB();
-  BasicBlock *getFalseBB();
+  BasicBlock *getTrueBB() const;
+  BasicBlock *getFalseBB() const;
   llvm::Value *toLL(llvm::Module *M) override;
 protected:
   void print(std::ostream &Stream) const override;

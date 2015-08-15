@@ -168,10 +168,8 @@ void ReturnInst::print(std::ostream &Stream) const {
   Stream << "ret " << *getOperands()[0];
 }
 
-IfInst::IfInst(Type *Ty, Value * Conditional_,
-               BasicBlock *TrueBB_, BasicBlock *FalseBB_):
-    Instruction(Ty, RT_IfInst, 3), Conditional(Conditional_),
-    TrueBB(TrueBB_), FalseBB(FalseBB_) {}
+IfInst::IfInst(Type *Ty):
+    Instruction(Ty, RT_IfInst, 3) {}
 
 void *IfInst::operator new(size_t s) {
   return User::operator new(s, 3);
@@ -179,36 +177,39 @@ void *IfInst::operator new(size_t s) {
 
 IfInst *IfInst::get(Value * Conditional, BasicBlock *TrueBB,
                     BasicBlock *FalseBB, Context *K) {
-  return new IfInst(UnType::get(K), Conditional,
-                    TrueBB, FalseBB);
+  auto Obj = new IfInst(UnType::get(K));
+  Obj->setOperand(0, Conditional);
+  Obj->setOperand(1, TrueBB);
+  Obj->setOperand(2, FalseBB);
+  return Obj;
 }
 
 bool IfInst::classof(const Value *V) {
   return V->getValID() == RT_IfInst;
 }
 
-Value *IfInst::getConditional() {
-  return Conditional;
+Value *IfInst::getConditional() const {
+  return getOperand(0);
 }
 
 void IfInst::setConditional(Value *C)
 {
-  Conditional = C;
+  setOperand(0, C);
 }
 
-BasicBlock *IfInst::getTrueBB() {
-  return TrueBB;
+BasicBlock *IfInst::getTrueBB() const {
+  return cast<BasicBlock>(getOperand(1));
 }
-BasicBlock *IfInst::getFalseBB() {
-  return FalseBB;
+BasicBlock *IfInst::getFalseBB() const {
+  return cast<BasicBlock>(getOperand(2));
 }
 
 void IfInst::print(std::ostream &Stream) const {
-  Stream << "if (" << *Conditional << ") {" << std::endl;
-  for (auto V: *TrueBB)
+  Stream << "if (" << *getConditional() << ") {" << std::endl;
+  for (auto V: *getTrueBB())
     Stream << *V << std::endl;
   Stream << "} else {" << std::endl;
-  for (auto V: *FalseBB)
+  for (auto V: *getFalseBB())
     Stream << *V << std::endl;
   Stream << "}";
 }
