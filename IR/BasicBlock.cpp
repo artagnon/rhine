@@ -1,4 +1,5 @@
 #include "rhine/IR/BasicBlock.h"
+#include "rhine/IR/Module.h"
 #include "rhine/Context.h"
 
 namespace rhine {
@@ -8,7 +9,7 @@ BasicBlock::BasicBlock(Type *Ty, std::vector<Value *> V) :
 BasicBlock::~BasicBlock() {}
 
 BasicBlock *BasicBlock::get(std::vector<Value *> V, Context *K) {
-  return new BasicBlock(UnType::get(K), V);
+  return new (K->RhAllocator) BasicBlock(UnType::get(K), V);
 }
 
 bool BasicBlock::classof(const Value *V) {
@@ -31,7 +32,11 @@ Value *BasicBlock::back() {
   return ValueList.back();
 }
 
-Function *BasicBlock::getParent() const {
+void BasicBlock::setParent(Module *M) {
+  Parent = M;
+}
+
+Module *BasicBlock::getParent() const {
   return Parent;
 }
 

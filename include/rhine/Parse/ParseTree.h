@@ -33,10 +33,13 @@ public:
 
 class PTree {
 public:
-  PTree(Context *K) : M(Module::get(K)), VirtualRegisterNumber(0) {}
   Module *M;
+  PTree(Context *K) : M(Module::get(K)), VirtualRegisterNumber(0) {}
   std::string getVirtualRegisterName() {
     return "rhv" + std::to_string(VirtualRegisterNumber++);
+  }
+  void appendFunction(Function *F) {
+    M->appendFunction(F);
   }
 private:
   unsigned VirtualRegisterNumber;

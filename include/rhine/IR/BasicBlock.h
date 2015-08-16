@@ -6,8 +6,10 @@
 #include "rhine/IR/Value.h"
 
 namespace rhine {
+class Module;
+
 class BasicBlock : public Value {
-  Function *Parent;
+  Module *Parent;
 public:
   std::vector<Value *> ValueList;
   BasicBlock(Type *Ty, std::vector<Value *> V);
@@ -20,7 +22,8 @@ public:
   iterator end();
   unsigned size();
   Value *back();
-  Function *getParent() const;
+  void setParent(Module *M);
+  Module *getParent() const;
 protected:
   virtual void print(std::ostream &Stream) const;
 };
