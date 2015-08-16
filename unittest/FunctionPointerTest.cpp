@@ -43,7 +43,7 @@ TEST(FunctionPointer, DISABLED_Externals) {
 TEST(FunctionPointer, PassPrint)
 {
   std::string SourcePrg =
-    "def bar [printfn ~Fn(String -> & -> ())] printfn '12';\n"
+    "def bar [printfn ~Fn(String -> & -> Void)] printfn '12';\n"
     "def main [] bar print;";
   std::string ExpectedPP =
     "define void @bar(void (i8*, ...)*) gc \"rhgc\" {\n"

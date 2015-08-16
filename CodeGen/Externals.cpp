@@ -1,5 +1,6 @@
-#include "rhine/IR.h"
 #include "rhine/Externals.h"
+#include "rhine/IR/Constant.h"
+#include "rhine/IR/Type.h"
 
 #include "llvm/IR/Type.h"
 #include "llvm/ADT/ArrayRef.h"
@@ -10,25 +11,21 @@
 using namespace llvm;
 
 namespace rhine {
-Externals::Externals(Context *K_) : K(K_) {
-  PrintTy =
+Externals::Externals(Context *K) : K(K) {
+  auto PrintTy =
     FunctionType::get(VoidType::get(K), {StringType::get(K)}, true, K);
-  MallocTy =
+  auto MallocTy =
     FunctionType::get(StringType::get(K), {IntegerType::get(64, K)}, false, K);
-  ToStringTy =
+  auto ToStringTy =
     FunctionType::get(StringType::get(K), {IntegerType::get(32, K)}, false, K);
-  auto PrintTyPtr = PointerType::get(PrintTy, K);
-  auto MallocTyPtr = PointerType::get(MallocTy, K);
-  auto ToStringTyPtr = PointerType::get(ToStringTy, K);
-
-  ExternalsMapping.insert(
-      std::make_pair("print", ExternalsRef(PrintTyPtr, &Externals::print)));
-  ExternalsMapping.insert(
-      std::make_pair("println", ExternalsRef(PrintTyPtr, &Externals::println)));
-  ExternalsMapping.insert(
-      std::make_pair("malloc", ExternalsRef(MallocTyPtr, &Externals::malloc)));
-  ExternalsMapping.insert(
-      std::make_pair("toString", ExternalsRef(ToStringTyPtr, &Externals::toString)));
+  PrintProto = Prototype::get(PrintTy);
+  PrintProto->setName("print");
+  PrintlnProto = Prototype::get(PrintTy);
+  PrintlnProto->setName("println");
+  MallocProto = Prototype::get(MallocTy);
+  MallocProto->setName("malloc");
+  ToStringProto = Prototype::get(ToStringTy);
+  ToStringProto->setName("toString");
 }
 
 Externals *Externals::get(Context *K) {
@@ -37,43 +34,36 @@ Externals *Externals::get(Context *K) {
   return K->ExternalsCache;
 }
 
+Prototype *Externals::getMappingProto(std::string S) {
+  if (S == "print") return PrintProto;
+  else if (S == "println") return PrintlnProto;
+  else if (S == "malloc") return MallocProto;
+  else if (S == "toString") return ToStringProto;
+  return nullptr;
+}
+
 PointerType *Externals::getMappingTy(std::string S) {
-  auto V = ExternalsMapping.find(S);
-  return V == ExternalsMapping.end() ? nullptr : V->second.FTy;
+  if (auto Proto = getMappingProto(S))
+    return PointerType::get(Proto->getType(), K);
+  return nullptr;
 }
 
 llvm::Constant *Externals::getMappingVal(std::string S, llvm::Module *M) {
-  auto V = ExternalsMapping.find(S);
-  return V == ExternalsMapping.end() ? nullptr : THIS_FPTR(V->second.FHandle)(M);
-}
+  if (auto Proto = getMappingProto(S)) {
+    auto FTy = cast<llvm::FunctionType>(Proto->getType()->toLL(M));
 
-llvm::Constant *Externals::print(llvm::Module *M) {
-  // getOrInsertFunction::
-  //
-  // Look up the specified function in the module symbol table.
-  // Four possibilities: 1. If it does not exist, add a prototype for the function
-  // and return it. 2. If it exists, and has a local linkage, the existing
-  // function is renamed and a new one is inserted. 3. Otherwise, if the existing
-  // function has the correct prototype, return the existing function. 4. Finally,
-  // the function exists but has the wrong prototype: return the function with a
-  // constantexpr cast to the right prototype.
-  auto FTy = cast<llvm::FunctionType>(PrintTy->toLL(M));
-  return M->getOrInsertFunction("std_Void_print__String", FTy);
-}
-
-llvm::Constant *Externals::println(llvm::Module *M) {
-  auto FTy = cast<llvm::FunctionType>(PrintTy->toLL(M));
-  return M->getOrInsertFunction("std_Void_println__String", FTy);
-}
-
-llvm::Constant *Externals::malloc(llvm::Module *M) {
-  auto FTy = cast<llvm::FunctionType>(MallocTy->toLL(M));
-  return M->getOrInsertFunction("std_String_malloc__Int", FTy);
-}
-
-llvm::Constant *Externals::toString(llvm::Module *M) {
-  auto FTy = cast<llvm::FunctionType>(ToStringTy->toLL(M));
-  return M->getOrInsertFunction("std_String_toString__Int", FTy);
+    // getOrInsertFunction::
+    //
+    // Look up the specified function in the module symbol table.
+    // Four possibilities: 1. If it does not exist, add a prototype for the function
+    // and return it. 2. If it exists, and has a local linkage, the existing
+    // function is renamed and a new one is inserted. 3. Otherwise, if the existing
+    // function has the correct prototype, return the existing function. 4. Finally,
+    // the function exists but has the wrong prototype: return the function with a
+    // constantexpr cast to the right prototype.
+    return M->getOrInsertFunction(Proto->getMangledName(), FTy);
+  }
+  return nullptr;
 }
 
 extern "C" {
