@@ -17,6 +17,7 @@
 
 namespace rhine {
 class Value;
+class Externals;
 
 struct SymbolRef {
   class Type *Ty;
@@ -47,7 +48,7 @@ public:
   llvm::LLVMContext &LLContext;
   llvm::IRBuilder<> *Builder;
   DiagnosticPrinter *DiagPrinter;
-  struct Externals *ExternalsCache;
+  Externals *ExternalsCache;
   llvm::Function *CurrentFunction;
 
   Context(std::ostream &ErrStream = std::cerr):

@@ -59,7 +59,7 @@ bool VoidType::classof(const Type *T) {
 }
 
 void VoidType::print(std::ostream &Stream) const {
-  Stream << "()";
+  Stream << "Void";
 }
 
 IntegerType::IntegerType(Context *K, unsigned Width):
@@ -214,7 +214,7 @@ void FunctionType::print(std::ostream &Stream) const {
     if (isVariadic())
       Stream << "&";
     else
-      Stream << "()";
+      Stream << "Void";
   } else {
     Stream << *ArgumentTypes[0];
     for (auto ATy = std::next(std::begin(ArgumentTypes));

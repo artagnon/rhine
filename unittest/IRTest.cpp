@@ -6,7 +6,7 @@ using namespace rhine;
 TEST(IR, ConstantInt) {
   std::string SourcePrg = "def foo [] ret 3;";
   std::string ExpectedPP =
-    "def foo [] ~Fn(() -> Int) {\n"
+    "def foo [] ~Fn(Void -> Int) {\n"
     "ret 3 ~Int\n"
     "}";
   EXPECT_TRANSFORM_PP(SourcePrg, ExpectedPP);
@@ -16,7 +16,7 @@ TEST(IR, AddTwoInt)
 {
   std::string SourcePrg = "def foo [] 3 + 2;";
   std::string ExpectedPP =
-    "def foo [] ~Fn(() -> Int) {\n"
+    "def foo [] ~Fn(Void -> Int) {\n"
     "+ ~Fn(Int -> Int -> Int)\n"
     "3 ~Int\n"
     "2 ~Int\n"
@@ -28,7 +28,7 @@ TEST(IR, ConstantString)
 {
   std::string SourcePrg = "def foo [] ret 'moo!';";
   std::string ExpectedPP =
-    "def foo [] ~Fn(() -> String) {\n"
+    "def foo [] ~Fn(Void -> String) {\n"
     "ret 'moo!' ~String\n"
     "}";
   EXPECT_TRANSFORM_PP(SourcePrg, ExpectedPP);
@@ -47,7 +47,7 @@ TEST(IR, TypePropagation)
 TEST(IR, MallocInst) {
   std::string SourcePrg = "def bsym [] sym = 3;";
   std::string ExpectedPP =
-    "def bsym [] ~Fn(() -> ()) {\n"
+    "def bsym [] ~Fn(Void -> Void) {\n"
     "sym = 3 ~Int\n"
     "}";
   EXPECT_TRANSFORM_PP(SourcePrg, ExpectedPP);
@@ -60,7 +60,7 @@ TEST(IR, BindPropagation) {
     "  ret sym;\n"
     "}";
   std::string ExpectedPP =
-    "def bsym [] ~Fn(() -> Int) {\n"
+    "def bsym [] ~Fn(Void -> Int) {\n"
     "sym = 3 ~Int\n"
     "ret sym ~Int\n"
     "}";
@@ -73,7 +73,7 @@ TEST(IR, Comment) {
     "  // Strip this out\n"
     "  ret 3;";
   std::string ExpectedPP =
-    "def foo [] ~Fn(() -> Int) {\n"
+    "def foo [] ~Fn(Void -> Int) {\n"
     "ret 3 ~Int\n"
     "}";
   EXPECT_TRANSFORM_PP(SourcePrg, ExpectedPP);
@@ -95,8 +95,8 @@ TEST(IR, TypePropagationCallInst)
 {
   std::string SourcePrg = "def id [var ~String] println var;\n";
   std::string ExpectedPP =
-    "def id [var ~String] ~Fn(String -> ()) {\n"
-    "println ~Fn(String -> & -> ())*\n"
+    "def id [var ~String] ~Fn(String -> Void) {\n"
+    "println ~Fn(String -> & -> Void)*\n"
     "var ~String\n"
     "}";
   EXPECT_TRANSFORM_PP(SourcePrg, ExpectedPP);
@@ -107,7 +107,7 @@ TEST(IR, IfBasic)
   std::string SourcePrg =
     "def main [] { if (0) 2; else 3; }";
   std::string ExpectedPP =
-    "def main [] ~Fn(() -> Int) {\n"
+    "def main [] ~Fn(Void -> Int) {\n"
     "if (0 ~Int) {\n"
     "2 ~Int\n"
     "} else {\n"

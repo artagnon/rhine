@@ -57,6 +57,8 @@ Type *TypeInfer::visit(Function *V) {
 }
 
 Type *TypeInfer::visit(Prototype *V) {
+  if (auto F = dyn_cast<Function>(V))
+    return visit(F);
   auto PTy = PointerType::get(V->getType(), K);
   K->addMapping(V->getName(), PTy);
   return PTy;

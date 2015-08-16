@@ -86,6 +86,7 @@ public:
   Module *getParent();
   void setName(std::string N);
   std::string getName();
+  std::string getMangledName();
   void setArguments(std::vector<Argument *> L);
   void setVariadicRest(Argument *Rest);
   std::vector<Argument *> getArguments();

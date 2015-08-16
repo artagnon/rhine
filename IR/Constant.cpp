@@ -103,6 +103,18 @@ std::string Prototype::getName() {
   return Name;
 }
 
+std::string Prototype::getMangledName() {
+  std::ostringstream Scratch;
+  auto FTy = cast<FunctionType>(VTy);
+  Scratch << "std_" << *FTy->getRTy() << "_" << Name << "__";
+  auto ATys = FTy->getATys();
+  Scratch << *ATys.front();
+  ATys.erase(ATys.begin());
+  for (auto ATy : ATys)
+    Scratch << "_" << *ATy;
+  return Scratch.str();
+}
+
 void Prototype::setArguments(std::vector<Argument *> L) {
   ArgumentList = L;
 }
