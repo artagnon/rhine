@@ -56,6 +56,12 @@ Type *TypeInfer::visit(Function *V) {
   return PTy;
 }
 
+Type *TypeInfer::visit(Prototype *V) {
+  auto PTy = PointerType::get(V->getType(), K);
+  K->addMapping(V->getName(), PTy);
+  return PTy;
+}
+
 Type *TypeInfer::visit(AddInst *V) {
   typeInferValueList(V->getOperands());
   auto LType = V->getOperand(0)->getType();

@@ -21,6 +21,7 @@ public:
   Type *visit(ConstantFloat *F) override;
   Type *visit(GlobalString *G) override;
   Type *visit(Function *F) override;
+  Type *visit(Prototype *P) override;
   Type *visit(AddInst *A) override;
   Type *visit(IfInst *F) override;
   Type *visit(Argument *A) override;

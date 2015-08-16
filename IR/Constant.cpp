@@ -72,39 +72,42 @@ void ConstantFloat::print(std::ostream &Stream) const {
   Stream << Val << " ~" << *getType();
 }
 
-Function::Function(FunctionType *FTy) :
-    User(FTy, RT_Function), ParentModule(nullptr),
-    VariadicRestLoadInst(nullptr), Val(nullptr) {}
+Prototype::Prototype(FunctionType *FTy, RTValue RTy) :
+    User(FTy, RTy), ParentModule(nullptr),
+    VariadicRestLoadInst(nullptr) {}
 
-Function *Function::get(FunctionType *FTy, Context *K) {
-  return new Function(FTy);
+Prototype::~Prototype() {}
+
+Prototype *Prototype::get(FunctionType *FTy) {
+  return new Prototype(FTy);
 }
 
-bool Function::classof(const Value *V) {
-  return V->getValID() == RT_Function;
+bool Prototype::classof(const Value *V) {
+  return V->getValID() >= RT_Prototype &&
+    V->getValID() <= RT_Function;
 }
 
-void Function::setParent(Module *Parent) {
+void Prototype::setParent(Module *Parent) {
   ParentModule = Parent;
 }
 
-Module *Function::getParent() {
+Module *Prototype::getParent() {
   return ParentModule;
 }
 
-void Function::setName(std::string N) {
+void Prototype::setName(std::string N) {
   Name = N;
 }
 
-std::string Function::getName() {
+std::string Prototype::getName() {
   return Name;
 }
 
-void Function::setArguments(std::vector<Argument *> L) {
+void Prototype::setArguments(std::vector<Argument *> L) {
   ArgumentList = L;
 }
 
-void Function::setVariadicRest(Argument *Rest) {
+void Prototype::setVariadicRest(Argument *Rest) {
   if (!Rest)
     return;
   assert(cast<FunctionType>(VTy)->isVariadic() &&
@@ -112,8 +115,57 @@ void Function::setVariadicRest(Argument *Rest) {
   VariadicRestLoadInst = Rest;
 }
 
-std::vector<Argument *> Function::getArguments() {
+std::vector<Argument *> Prototype::getArguments() {
   return ArgumentList;
+}
+
+Prototype::arg_iterator Prototype::arg_begin() {
+  return ArgumentList.begin();
+}
+
+Prototype::arg_iterator Prototype::arg_end() {
+  return ArgumentList.end();
+}
+
+iterator_range<Prototype::arg_iterator> Prototype::args() {
+  return iterator_range<Prototype::arg_iterator>(arg_begin(), arg_end());
+}
+
+void Prototype::emitArguments(std::ostream &Stream) const {
+  Stream << " [";
+  if (ArgumentList.size()) {
+    auto Terminator = *ArgumentList.rbegin();
+    for (auto A: ArgumentList) {
+      Stream << *A;
+      if (A != Terminator)
+        Stream << " ";
+    }
+  }
+  if (VariadicRestLoadInst) {
+    if (ArgumentList.size())
+      Stream << " ";
+    Stream << "&" << *VariadicRestLoadInst;
+  }
+  Stream << "]";
+}
+
+void Prototype::print(std::ostream &Stream) const {
+  Stream << "def " << Name;
+  emitArguments(Stream);
+  Stream << " ~" << *getType();
+}
+
+Function::Function(FunctionType *FTy) :
+    Prototype(FTy, RT_Function), Val(nullptr) {}
+
+Function::~Function() {}
+
+Function *Function::get(FunctionType *FTy) {
+  return new Function(FTy);
+}
+
+bool Function::classof(const Value *V) {
+  return V->getValID() == RT_Function;
 }
 
 void Function::setBody(BasicBlock *Body) {
@@ -134,36 +186,6 @@ BasicBlock::iterator Function::begin() {
 
 BasicBlock::iterator Function::end() {
   return Val->end();
-}
-
-Function::arg_iterator Function::arg_begin() {
-  return ArgumentList.begin();
-}
-
-Function::arg_iterator Function::arg_end() {
-  return ArgumentList.end();
-}
-
-iterator_range<Function::arg_iterator> Function::args() {
-  return iterator_range<Function::arg_iterator>(arg_begin(), arg_end());
-}
-
-void Function::emitArguments(std::ostream &Stream) const {
-  Stream << " [";
-  if (ArgumentList.size()) {
-    auto Terminator = *ArgumentList.rbegin();
-    for (auto A: ArgumentList) {
-      Stream << *A;
-      if (A != Terminator)
-        Stream << " ";
-    }
-  }
-  if (VariadicRestLoadInst) {
-    if (ArgumentList.size())
-      Stream << " ";
-    Stream << "&" << *VariadicRestLoadInst;
-  }
-  Stream << "]";
 }
 
 void Function::print(std::ostream &Stream) const {

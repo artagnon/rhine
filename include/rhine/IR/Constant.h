@@ -41,7 +41,7 @@ public:
   unsigned getBitwidth();
   llvm::Constant *toLL(llvm::Module *M);
 protected:
-  virtual void print(std::ostream &Stream) const;
+  virtual void print(std::ostream &Stream) const override;
 };
 
 class ConstantBool : public Constant {
@@ -54,7 +54,7 @@ public:
   float getVal();
   llvm::Constant *toLL(llvm::Module *M);
 protected:
-  virtual void print(std::ostream &Stream) const;
+  virtual void print(std::ostream &Stream) const override;
 };
 
 class ConstantFloat : public Constant {
@@ -67,19 +67,20 @@ public:
   float getVal();
   llvm::Constant *toLL(llvm::Module *M);
 protected:
-  virtual void print(std::ostream &Stream) const;
+  virtual void print(std::ostream &Stream) const override;
 };
 
-class Function : public User {
-  Module *ParentModule;
+class Prototype : public User {
+protected:
   std::string Name;
+private:
+  Module *ParentModule;
   std::vector<Argument *> ArgumentList;
   Argument *VariadicRestLoadInst;
-  BasicBlock *Val;
 public:
-  Function(FunctionType *FTy);
-  virtual ~Function() {}
-  static Function *get(FunctionType *FTy, Context *K);
+  Prototype(FunctionType *FTy, RTValue RTy = RT_Prototype);
+  virtual ~Prototype();
+  static Prototype *get(FunctionType *FTy);
   static bool classof(const Value *V);
   void setParent(Module *Parent);
   Module *getParent();
@@ -88,11 +89,6 @@ public:
   void setArguments(std::vector<Argument *> L);
   void setVariadicRest(Argument *Rest);
   std::vector<Argument *> getArguments();
-  void setBody(BasicBlock *Body);
-  BasicBlock *getVal();
-  BasicBlock *getEntryBlock();
-  BasicBlock::iterator begin();
-  BasicBlock::iterator end();
   typedef std::vector<Argument *>::iterator arg_iterator;
   arg_iterator arg_begin();
   arg_iterator arg_end();
@@ -100,8 +96,24 @@ public:
   llvm::Constant *toLL(llvm::Module *M);
 protected:
   virtual void print(std::ostream &Stream) const;
-private:
   void emitArguments(std::ostream &Stream) const;
+};
+
+class Function : public Prototype {
+  BasicBlock *Val;
+public:
+  Function(FunctionType *FTy);
+  virtual ~Function();
+  static Function *get(FunctionType *FTy);
+  static bool classof(const Value *V);
+  void setBody(BasicBlock *Body);
+  BasicBlock *getVal();
+  BasicBlock *getEntryBlock();
+  BasicBlock::iterator begin();
+  BasicBlock::iterator end();
+  llvm::Constant *toLL(llvm::Module *M);
+protected:
+  virtual void print(std::ostream &Stream) const override;
 };
 }
 

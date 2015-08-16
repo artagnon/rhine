@@ -18,6 +18,10 @@ llvm::Constant *ConstantFloat::toLL(llvm::Module *M) {
   return llvm::ConstantFP::get(LLTy, getVal());
 }
 
+llvm::Constant *Prototype::toLL(llvm::Module *M) {
+  assert(0 && "Don't know how to lower prototypes yet");
+}
+
 llvm::Constant *Function::toLL(llvm::Module *M) {
   auto K = getContext();
   auto RhFnTy = cast<FunctionType>(getType());
