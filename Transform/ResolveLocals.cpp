@@ -19,6 +19,8 @@ void ResolveLocals::lookupReplaceUse(std::string Name, Use &U,
     }
     else if (isa<Argument>(S)) {
       U.set(S);
+    } else if (isa<Prototype>(S)) {
+      U.set(S);
     }
   } else {
     auto SourceLoc = U->getSourceLocation();
@@ -65,6 +67,8 @@ Value *ResolveLocals::lookupNameinBlock(std::string Name, BasicBlock *BB) {
     return Resolution->Val;
   if (auto Resolution = K->Map.getMapping(Name, K->GlobalBBHandle))
     return Resolution->Val;
+  if (auto Resolution = Externals::get(K)->getMappingProto(Name))
+    return Resolution;
   return nullptr;
 }
 }

@@ -107,7 +107,7 @@ TEST(CodeGen, FunctionCall)
     "def foom [] ret 2;\n"
     "def main [] ret $ foom ();";
   std::string ExpectedPP =
-    "ret i32 %rhv0";
+    "ret i32 %foom";
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }
 
@@ -139,8 +139,8 @@ TEST(CodeGen, MultipleArguments)
     "}\n\n"
     "define i32 @main() gc \"rhgc\" {\n"
     "entry:\n"
-    "  %rhv1 = call i32 @foo(i32 3, i32 2)\n"
-    "  ret i32 %rhv1\n"
+    "  %foo = call i32 @foo(i32 3, i32 2)\n"
+    "  ret i32 %foo\n"
     "}";
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }

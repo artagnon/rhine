@@ -53,7 +53,7 @@ TEST(ResolveLocals, SymbolResolution)
   auto Module = Pf.parseToIR(ParseSource::STRING, { &ResolveL });
   auto Expected =
     "def main [var ~Int] ~Fn(Int -> UnType) {\n"
-    "ret var ~UnType\n"
+    "ret var ~Int\n"
     "}";
   EXPECT_PRED_FORMAT2(::testing::IsSubstring, Expected, Pf.irToPP(Module));
 }

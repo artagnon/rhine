@@ -1,7 +1,10 @@
-#include "rhine/IR.h"
+#include "rhine/IR/UnresolvedValue.h"
 #include "rhine/Transform/LambdaLifting.h"
 
 namespace rhine {
+class Function;
+class MallocInst;
+
 void LambdaLifting::runOnFunction(Function *F) {
   auto M = F->getParent();
   std::transform(
@@ -14,7 +17,7 @@ void LambdaLifting::runOnFunction(Function *F) {
             assert(It != M->end() && "Function parent not set");
             M->insertFunction(It, Fn);
             auto K = F->getContext();
-            auto Sym = LoadInst::get(Fn->getName(), UnType::get(K));
+            auto Sym = UnresolvedValue::get(Fn->getName(), UnType::get(K));
             B->setVal(Sym);
           }
         }

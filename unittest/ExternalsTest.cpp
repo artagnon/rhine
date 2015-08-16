@@ -56,7 +56,7 @@ TEST(Externals, ToString)
   std::string SourcePrg =
     "def main [] toString 2;";
   std::string ExpectedPP =
-    "%rhv0 = call i8* @std_String_toString__Int(i32 2)";
+    "%toString = call i8* @std_String_toString__Int(i32 2)";
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }
 

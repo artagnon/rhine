@@ -22,7 +22,7 @@
 
 %union {
   std::string *LiteralName;
-  class LoadInst *MallocedV;
+  class UnresolvedValue *UnresolvedV;
   class Argument *Argument;
   class ConstantInt *Integer;
   class ConstantBool *Boolean;
@@ -57,7 +57,7 @@
 %type   <Type>          type_annotation type_lit
 %type   <TyList>        type_list
 %type   <Argument>      typed_argument
-%type   <MallocedV>     typed_symbol lvalue
+%type   <UnresolvedV>   typed_symbol lvalue
 
 %{
 #include "rhine/Parse/Lexer.h"
@@ -166,7 +166,7 @@ typed_argument:
 typed_symbol:
                 LITERALNAME[S] type_annotation[T]
                 {
-                  auto Sym = LoadInst::get(*$S, $T);
+                  auto Sym = UnresolvedValue::get(*$S, $T);
                   Sym->setSourceLocation(@1);
                   $$ = Sym;
                 }
@@ -293,21 +293,21 @@ value_expr:
                 }
         |       typed_symbol[S] TVOID
                 {
-                  auto CInst = CallInst::get($S->getName(), K);
+                  auto CInst = CallInst::get($S, {});
                   CInst->setSourceLocation(@1);
                   CInst->setName(Driver->Root.getVirtualRegisterName());
                   $$ = CInst;
                 }
         |       typed_symbol[S] rvalue_list[L]
                 {
-                  auto CInst = CallInst::get($S->getName(), *$L, K);
+                  auto CInst = CallInst::get($S, *$L);
                   CInst->setSourceLocation(@1);
                   CInst->setName(Driver->Root.getVirtualRegisterName());
                   $$ = CInst;
                 }
         |       typed_symbol[S] '$' value_expr[E]
                 {
-                  auto Op = CallInst::get($S->getName(), $E, K);
+                  auto Op = CallInst::get($S, {$E});
                   Op->setSourceLocation(@1);
                   Op->setName(Driver->Root.getVirtualRegisterName());
                   $$ = Op;

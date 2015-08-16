@@ -41,17 +41,15 @@ protected:
 };
 
 class CallInst : public Instruction {
-  std::string Callee;
+  Value *Callee;
 public:
-  CallInst(std::string FunctionName, Type *Ty, unsigned NumOps);
+  CallInst(Value *Callee, unsigned NumOps);
   virtual ~CallInst() {}
   void *operator new(size_t s, unsigned n);
-  static CallInst *get(std::string FunctionName,
-                       std::vector<Value *> Ops, Context *K);
-  static CallInst *get(std::string FunctionName, Value *Op, Context *K);
-  static CallInst *get(std::string FunctionName, Context *K);
+  static CallInst *get(Value *Callee,
+                       std::vector<Value *> Ops);
   static bool classof(const Value *V);
-  std::string getCallee();
+  Value *getCallee();
   llvm::Value *toLL(llvm::Module *M) override;
 protected:
   void print(std::ostream &Stream) const override;

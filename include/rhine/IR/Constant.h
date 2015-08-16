@@ -71,8 +71,6 @@ protected:
 };
 
 class Prototype : public User {
-protected:
-  std::string Name;
 private:
   Module *ParentModule;
   std::vector<Argument *> ArgumentList;

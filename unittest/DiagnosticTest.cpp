@@ -19,8 +19,8 @@ TEST(Diagnostic, BareDefun)
 
 TEST(Diagnostic, UnboundVariable)
 {
-  std::string SourcePrg = "def unboundVar [] var ~Int;";
-  std::string ExpectedErr = "string stream:1:19: error: unbound symbol var";
+  std::string SourcePrg = "def unboundVar [] ret var ~Int;";
+  std::string ExpectedErr = "string stream:1:23: error: unbound symbol var";
   EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
 }
 

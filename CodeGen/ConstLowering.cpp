@@ -1,6 +1,7 @@
 #include "rhine/Context.h"
 #include "rhine/IR/Constant.h"
 #include "rhine/IR/Instruction.h"
+#include "rhine/Externals.h"
 
 namespace rhine {
 llvm::Constant *ConstantInt::toLL(llvm::Module *M) {
@@ -19,7 +20,7 @@ llvm::Constant *ConstantFloat::toLL(llvm::Module *M) {
 }
 
 llvm::Constant *Prototype::toLL(llvm::Module *M) {
-  assert(0 && "Don't know how to lower prototypes yet");
+  return Externals::get(getContext())->getMappingVal(Name, M);
 }
 
 llvm::Constant *Function::toLL(llvm::Module *M) {
