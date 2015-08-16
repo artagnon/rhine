@@ -45,43 +45,31 @@ void AddInst::print(std::ostream &Stream) const {
     Stream << std::endl << *O;
 }
 
-CallInst::CallInst(std::string FunctionName, Type *Ty, unsigned NumOps) :
-    Instruction(Ty, RT_CallInst, NumOps), Callee(FunctionName) {}
+CallInst::CallInst(Value *Callee, unsigned NumOps) :
+    Instruction(Callee->getType(), RT_CallInst, NumOps), Callee(Callee) {}
 
 void *CallInst::operator new(size_t s, unsigned n) {
   return User::operator new(s, n);
 }
 
-CallInst *CallInst::get(std::string FunctionName,
-                        std::vector<Value *> Ops, Context *K) {
+CallInst *CallInst::get(Value *Callee, std::vector<Value *> Ops) {
   auto NumOps = Ops.size();
-  auto Obj = new (NumOps) CallInst(FunctionName, UnType::get(K), NumOps);
+  auto Obj = new (NumOps) CallInst(Callee, NumOps);
   for (unsigned OpN = 0; OpN < NumOps; OpN++)
     Obj->setOperand(OpN, Ops[OpN]);
   return Obj;
 }
 
-CallInst *CallInst::get(std::string FunctionName, Value *Op, Context *K) {
-  std::vector<Value *> Ops = { Op };
-  return get(FunctionName, Ops, K);
-}
-
-CallInst *CallInst::get(std::string FunctionName, Context *K) {
-  std::vector<Value *> Ops;
-  return get(FunctionName, Ops, K);
-}
-
-
 bool CallInst::classof(const Value *V) {
   return V->getValID() == RT_CallInst;
 }
 
-std::string CallInst::getCallee() {
+Value *CallInst::getCallee() {
   return Callee;
 }
 
 void CallInst::print(std::ostream &Stream) const {
-  Stream << Callee << " ~" << *getType();
+  Stream << Callee->getName() << " ~" << *getType();
   for (auto O: getOperands())
     Stream << std::endl << *O;
 }

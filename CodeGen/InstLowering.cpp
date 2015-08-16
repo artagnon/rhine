@@ -14,44 +14,17 @@ bool isPointerToFunction(llvm::Value *Candidate) {
   return false;
 }
 
-llvm::Value *getCalleeFunction(std::string Name, location SourceLoc,
-                               llvm::Module *M, Context *K) {
-  if (auto Result = K->getMappingVal(Name)) {
-    if (isa<llvm::Function>(Result) || isPointerToFunction(Result))
-      return Result;
-    else {
-      auto Sym = LoadInst::get(Name, K->getMappingTy(Name))->toLL(M);
-      if (isPointerToFunction(Sym))
-        return Sym;
-      K->DiagPrinter->errorReport(
-          SourceLoc, Name + " was not declared as a function");
-      exit(1);
-    }
-  } else if (auto FCandidate = Externals::get(K)->getMappingVal(Name, M)) {
-    if (auto CalleeCandidate = dyn_cast<llvm::Function>(FCandidate))
-      return CalleeCandidate;
-    else {
-      K->DiagPrinter->errorReport(
-          SourceLoc, Name + " was declared with different signature earlier");
-      exit(1);
-    }
-  }
-  K->DiagPrinter->errorReport(
-      SourceLoc, "unable to look up function " + Name);
-  exit(1);
-}
-
 llvm::Value *CallInst::toLL(llvm::Module *M) {
   auto K = getContext();
-  auto CalleeFn = getCalleeFunction(Callee, SourceLoc, M, K);
   auto RTy = cast<FunctionType>(cast<PointerType>(VTy)->getCTy())->getRTy();
-
-  if (!getOperands().size()) {
-    if (isa<VoidType>(RTy)) {
-      K->Builder->CreateCall(CalleeFn);
-      return nullptr;
-    }
-    return K->Builder->CreateCall(CalleeFn, llvm::None, Name);
+  auto Name = getCallee()->getName();
+  auto CalleeFn = K->getMappingVal(Name);
+  if (!CalleeFn)
+    CalleeFn = Externals::get(K)->getMappingVal(Name, M);
+  if (!CalleeFn) {
+    K->DiagPrinter->errorReport(SourceLoc,
+                                "unable to lookup function " + Name);
+    exit(1);
   }
 
   // Prepare arguments to call
