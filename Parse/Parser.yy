@@ -80,7 +80,7 @@ start:
 tlexpr:
                 def[D]
                 {
-                  Driver->Root.M->appendFunction($D);
+                  Driver->Root.appendFunction($D);
                 }
                 ;
 
@@ -124,13 +124,17 @@ def:
 compound_stm:
                 '{' stm_list[L] '}'
                 {
-                  $$ = BasicBlock::get(*$L, K);
+                  auto BB = BasicBlock::get(*$L, K);
+                  BB->setParent(Driver->Root.M);
+                  $$ = BB;
                 }
         |       expression_or_branch[E]
                 {
                   std::vector<Value *> StmList;
                   StmList.push_back($E);
-                  $$ = BasicBlock::get(StmList, K);
+                  auto BB = BasicBlock::get(StmList, K);
+                  BB->setParent(Driver->Root.M);
+                  $$ = BB;
                 }
 argument_list:
                 typed_argument[S]

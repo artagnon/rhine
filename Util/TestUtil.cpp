@@ -5,21 +5,16 @@
 namespace rhine {
 void EXPECT_TRANSFORM_PP(std::string &SourcePrg, std::string &ExpectedPP)
 {
-  std::ostringstream Scratch;
-  auto Pf = ParseFacade(SourcePrg, Scratch);
+  auto Pf = ParseFacade(SourcePrg);
   auto Source = Pf.parseAction(ParseSource::STRING, PostParseAction::IR);
-  auto Err = Scratch.str();
   EXPECT_PRED_FORMAT2(::testing::IsSubstring, ExpectedPP.c_str(),
                       Source.c_str());
 }
 
 void EXPECT_PARSE_PP(std::string SourcePrg, std::string ExpectedPP)
 {
-  std::ostringstream Scratch;
-  auto Pf = ParseFacade(SourcePrg, Scratch);
+  auto Pf = ParseFacade(SourcePrg);
   auto Source = Pf.parseAction(ParseSource::STRING, PostParseAction::LL);
-  auto ActualErr = Scratch.str();
-  ASSERT_STREQ("", ActualErr.c_str());
   EXPECT_PRED_FORMAT2(::testing::IsSubstring, ExpectedPP.c_str(),
                       Source.c_str());
 }

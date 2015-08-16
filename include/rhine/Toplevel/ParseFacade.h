@@ -29,9 +29,9 @@ class ParseFacade {
   std::ostream &ErrStream;
   bool Debug;
 public:
-  ParseFacade(std::string &PrgString_, std::ostream &ErrStream_ = std::cerr,
-              llvm::Module *M_ = nullptr, bool Debug_ = false):
-      PrgString(PrgString_), M(M_), ErrStream(ErrStream_), Debug(Debug_) {}
+  ParseFacade(std::string &PrgString, std::ostream &ErrStream = std::cerr,
+              llvm::Module *M = nullptr, bool Debug = false):
+      PrgString(PrgString), M(M), ErrStream(ErrStream), Debug(Debug) {}
 
   template <typename T>
   std::string irToPP(T *Obj);

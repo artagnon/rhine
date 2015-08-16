@@ -31,7 +31,7 @@ TEST(FunctionPointer, BasicExecution) {
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
 
-TEST(FunctionPointer, Externals) {
+TEST(FunctionPointer, DISABLED_Externals) {
   std::string SourcePrg =
     "def main [] {\n"
     "  ret malloc;\n"

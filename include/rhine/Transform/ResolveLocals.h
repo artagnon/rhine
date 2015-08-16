@@ -9,7 +9,8 @@ namespace rhine {
 class ResolveLocals : public FunctionPass {
   Context *K;
 public:
-  virtual ~ResolveLocals() {}
+  ResolveLocals();
+  virtual ~ResolveLocals();
   void runOnFunction(Function *F) override;
   void runOnModule(Module *M) override;
 private:
