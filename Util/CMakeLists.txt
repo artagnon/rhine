@@ -11,5 +11,4 @@ set_target_properties(Util PROPERTIES
   COMPILE_FLAGS "${LLVM_CXXFLAGS}")
 target_link_libraries(Util
   gtest_main
-  CodeGen
   Toplevel)

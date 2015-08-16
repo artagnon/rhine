@@ -97,7 +97,7 @@ fn_decl:
                     ATys.push_back(Sym->getType());
                   auto FTy = FunctionType::get($T, ATys, VariadicRest, K);
                   FTy->setSourceLocation(@4);
-                  auto Fn = Function::get(FTy, K);
+                  auto Fn = Function::get(FTy);
                   Fn->setSourceLocation(@1);
                   Fn->setName(*$N);
                   Fn->setArguments(*$A);
@@ -108,7 +108,7 @@ fn_decl:
                 {
                   auto FTy = FunctionType::get($T, K);
                   FTy->setSourceLocation(@3);
-                  auto Fn = Function::get(FTy, K);
+                  auto Fn = Function::get(FTy);
                   Fn->setSourceLocation(@1);
                   Fn->setName(*$N);
                   $$ = Fn;
@@ -355,7 +355,7 @@ lambda_expr:
                     ATys.push_back(Sym->getType());
                   auto FTy = FunctionType::get(UnType::get(K), ATys, false, K);
                   FTy->setSourceLocation(@4);
-                  auto Fn = Function::get(FTy, K);
+                  auto Fn = Function::get(FTy);
                   Fn->setSourceLocation(@1);
                   Fn->setArguments(*$A);
                   Fn->setBody($B);

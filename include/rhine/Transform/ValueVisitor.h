@@ -15,6 +15,7 @@ protected:
     if (auto C = dyn_cast<ConstantFloat>(V)) { return visit(C); }
     if (auto C = dyn_cast<GlobalString>(V)) { return visit(C); }
     if (auto C = dyn_cast<Function>(V)) { return visit(C); }
+    if (auto C = dyn_cast<Prototype>(V)) { return visit(C); }
     if (auto C = dyn_cast<AddInst>(V)) { return visit(C); }
     if (auto C = dyn_cast<IfInst>(V)) { return visit(C); }
     if (auto C = dyn_cast<Argument>(V)) { return visit(C); }
@@ -29,6 +30,7 @@ protected:
   virtual R visit(ConstantFloat *F) = 0;
   virtual R visit(GlobalString *G) = 0;
   virtual R visit(Function *F) = 0;
+  virtual R visit(Prototype *P) = 0;
   virtual R visit(AddInst *A) = 0;
   virtual R visit(IfInst *F) = 0;
   virtual R visit(Argument *A) = 0;
