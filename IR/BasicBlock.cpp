@@ -40,6 +40,10 @@ Module *BasicBlock::getParent() const {
   return Parent;
 }
 
+BasicBlock *BasicBlock::getPredecessor() const {
+  return nullptr;
+}
+
 void BasicBlock::print(std::ostream &Stream) const {
   for (auto V: ValueList)
     Stream << *V << std::endl;

@@ -1,16 +1,15 @@
 #include "rhine/IR/UnresolvedValue.h"
 
 namespace rhine {
-UnresolvedValue::UnresolvedValue(std::string N, Type *T, RTValue ValID) :
-    User(T, ValID, 0, N) {}
+UnresolvedValue::UnresolvedValue(std::string N, Type *T) :
+    User(T, RT_UnresolvedValue, 0, N) {}
 
 UnresolvedValue *UnresolvedValue::get(std::string N, Type *T) {
   return new UnresolvedValue(N, T);
 }
 
 bool UnresolvedValue::classof(const Value *V) {
-  return V->getValID() >= RT_UnresolvedValue &&
-    V->getValID() <= RT_Argument;
+  return V->getValID() == RT_UnresolvedValue;
 }
 
 void UnresolvedValue::print(std::ostream &Stream) const {
@@ -18,7 +17,7 @@ void UnresolvedValue::print(std::ostream &Stream) const {
 }
 
 Argument::Argument(std::string N, Type *T) :
-    UnresolvedValue(N, T, RT_Argument) {}
+    User(T, RT_Argument, 0, N) {}
 
 Argument *Argument::get(std::string N, Type *T, Context *K) {
   return new Argument(N, T);

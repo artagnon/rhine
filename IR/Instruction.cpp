@@ -45,8 +45,8 @@ void AddInst::print(std::ostream &Stream) const {
     Stream << std::endl << *O;
 }
 
-CallInst::CallInst(Value *Callee, unsigned NumOps) :
-    Instruction(Callee->getType(), RT_CallInst, NumOps), Callee(Callee) {}
+CallInst::CallInst(Type *Ty, unsigned NumOps) :
+    Instruction(Ty, RT_CallInst, NumOps) {}
 
 void *CallInst::operator new(size_t s, unsigned n) {
   return User::operator new(s, n);
@@ -54,7 +54,9 @@ void *CallInst::operator new(size_t s, unsigned n) {
 
 CallInst *CallInst::get(Value *Callee, std::vector<Value *> Ops) {
   auto NumOps = Ops.size();
-  auto Obj = new (NumOps) CallInst(Callee, NumOps);
+  auto Obj = new (NumOps + 1) CallInst(Callee->getType(), NumOps);
+  Obj->NumAllocatedOps = NumOps + 1;
+  Obj->setOperand(-1, Callee);
   for (unsigned OpN = 0; OpN < NumOps; OpN++)
     Obj->setOperand(OpN, Ops[OpN]);
   return Obj;
@@ -64,12 +66,22 @@ bool CallInst::classof(const Value *V) {
   return V->getValID() == RT_CallInst;
 }
 
-Value *CallInst::getCallee() {
-  return Callee;
+Value *CallInst::getCallee() const {
+  return getOperand(-1);
+}
+
+Value *CallInst::getOperand(int i) const {
+  assert(i < (int)NumOperands && "getOperand() out of range!");
+  return getOperandList()[i + 1];
+}
+
+void CallInst::setOperand(int i, Value *Val) {
+  assert(i < (int)NumOperands && "setOperand() out of range!");
+  getOperandList()[i + 1].set(Val);
 }
 
 void CallInst::print(std::ostream &Stream) const {
-  Stream << Callee->getName() << " ~" << *getType();
+  Stream << getCallee()->getName() << " ~" << *getType();
   for (auto O: getOperands())
     Stream << std::endl << *O;
 }

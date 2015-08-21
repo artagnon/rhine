@@ -15,7 +15,7 @@ llvm::Value *UnresolvedValue::toLL(llvm::Module *M) {
 llvm::Value *Argument::toLL(llvm::Module *M) {
   auto K = getContext();
   auto Name = getName();
-  if (auto Result = K->getMappingVal(Name))
+  if (auto Result = K->Map.getl(this))
     return Result;
   else if (auto Result = Externals::get(K)->getMappingVal(Name, M))
     return Result;

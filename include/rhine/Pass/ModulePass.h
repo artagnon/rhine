@@ -2,9 +2,9 @@
 #ifndef RHINE_MODULETRANSFORM_H
 #define RHINE_MODULETRANSFORM_H
 
-#include "rhine/IR.h"
-
 namespace rhine {
+class Module;
+
 class ModulePass {
 public:
   virtual ~ModulePass() {}

@@ -20,7 +20,7 @@ void Use::setVal(Value *V) {
 }
 
 class User *Use::getUser() {
-  return reinterpret_cast<User *>(this - OperandNumber);
+  return reinterpret_cast<User *>(this - OperandNumber - 1);
 }
 
 Value *Use::getVal() const {

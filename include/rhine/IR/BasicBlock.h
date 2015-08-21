@@ -24,6 +24,7 @@ public:
   Value *back();
   void setParent(Module *M);
   Module *getParent() const;
+  BasicBlock *getPredecessor() const;
 protected:
   virtual void print(std::ostream &Stream) const;
 };

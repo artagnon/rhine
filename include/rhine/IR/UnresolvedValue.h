@@ -7,7 +7,7 @@
 namespace rhine {
 class UnresolvedValue : public User {
 public:
-  UnresolvedValue(std::string N, Type *T, RTValue ValID = RT_UnresolvedValue);
+  UnresolvedValue(std::string N, Type *T);
   virtual ~UnresolvedValue() {}
   static UnresolvedValue *get(std::string N, Type *T);
   static bool classof(const Value *V);
@@ -16,7 +16,7 @@ protected:
   virtual void print(std::ostream &Stream) const override;
 };
 
-class Argument : public UnresolvedValue {
+class Argument : public User {
 public:
   Argument(std::string N, Type *T);
   virtual ~Argument() {}

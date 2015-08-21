@@ -3,9 +3,10 @@
 #define RHINE_RESOLVELOCALS_H
 
 #include "rhine/Pass/FunctionPass.h"
-#include "rhine/IR/Constant.h"
 
 namespace rhine {
+class UnresolvedValue;
+
 class ResolveLocals : public FunctionPass {
   Context *K;
 public:
@@ -15,10 +16,10 @@ public:
   void runOnModule(Module *M) override;
 private:
   std::vector<BasicBlock *> getBlocksInScope(BasicBlock *BB);
-  void lookupReplaceUse(std::string Name, Use &U,
+  void lookupReplaceUse(UnresolvedValue *V, Use &U,
                         BasicBlock *Block);
   void resolveOperandsOfUser(User *U, BasicBlock *BB);
-  Value *lookupNameinBlock(std::string Name, BasicBlock *BB);
+  Value *lookupNameinBlock(Value *V, BasicBlock *BB);
 };
 }
 

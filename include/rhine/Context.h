@@ -25,12 +25,6 @@ struct SymbolRef {
   SymbolRef(Type *Typ, llvm::Value *Val) : Ty(Typ), LLVal(Val) {}
 };
 
-struct ValueRef {
-  Value *Val;
-  llvm::Value *LLVal;
-  ValueRef(Value *Val, llvm::Value *LLVal) : Val(Val), LLVal(LLVal) {}
-};
-
 class Context {
   std::map <std::string, SymbolRef> SymbolMapping;
 
@@ -44,7 +38,6 @@ public:
   BoolType UniqueBoolType;
   FloatType UniqueFloatType;
   StringType UniqueStringType;
-  BasicBlock *GlobalBBHandle;
   llvm::LLVMContext &LLContext;
   llvm::IRBuilder<> *Builder;
   DiagnosticPrinter *DiagPrinter;
@@ -52,7 +45,6 @@ public:
   llvm::Function *CurrentFunction;
 
   Context(std::ostream &ErrStream = std::cerr):
-      GlobalBBHandle(nullptr),
       LLContext(llvm::getGlobalContext()),
       Builder(new llvm::IRBuilder<>(LLContext)),
       DiagPrinter(new DiagnosticPrinter(&ErrStream)),
@@ -91,29 +83,23 @@ public:
     return R->second.LLVal;
   }
 
+  struct ValueRef {
+    Value *Val;
+    llvm::Value *LLVal;
+    ValueRef(Value *Val, llvm::Value *LLVal) : Val(Val), LLVal(LLVal) {}
+  };
+
   class ResolutionMap {
     typedef std::map <std::string, ValueRef> BlockVR;
     std::map<BasicBlock *, BlockVR> FunctionVR;
+    Value *searchOneBlock(Value *Val, BasicBlock *Block);
   public:
-    void addMapping(std::string Name, BasicBlock *Block,
-                    Value *Val, llvm::Value *LLVal = nullptr) {
-      auto &ThisVRMap = FunctionVR[Block];
-      auto Ret = ThisVRMap.insert(std::make_pair(Name, ValueRef(Val, LLVal)));
-      auto &NewElementInserted = Ret.second;
-      if (!NewElementInserted) {
-        auto IteratorToEquivalentKey = Ret.first;
-        auto ValueRefOfEquivalentKey = IteratorToEquivalentKey->second;
-        if (Val) ValueRefOfEquivalentKey.Val = Val;
-        if (LLVal) ValueRefOfEquivalentKey.LLVal = LLVal;
-      }
-    }
-    ValueRef *getMapping(std::string Name, BasicBlock *Block) {
-      auto &ThisVRMap = FunctionVR[Block];
-      auto IteratorToElement = ThisVRMap.find(Name);
-      return IteratorToElement == ThisVRMap.end() ? nullptr :
-        &IteratorToElement->second;
-    }
+    void add(Value *Val, BasicBlock *Block = nullptr,
+             llvm::Value *LLVal = nullptr);
+    Value *get(Value *Val, BasicBlock *Block = nullptr);
+    llvm::Value *getl(Value *Val, BasicBlock *Block = nullptr);
   };
+
   ResolutionMap Map;
 };
 }

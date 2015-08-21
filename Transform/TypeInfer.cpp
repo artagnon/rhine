@@ -1,6 +1,8 @@
-#include "rhine/IR.h"
+#include "rhine/IR/Constant.h"
+#include "rhine/IR/BasicBlock.h"
+#include "rhine/IR/Instruction.h"
+#include "rhine/IR/GlobalValue.h"
 #include "rhine/Transform/TypeInfer.h"
-#include "rhine/Transform/Resolve.h"
 
 namespace rhine {
 TypeInfer::TypeInfer() : K(nullptr) {}
@@ -45,23 +47,27 @@ Type *TypeInfer::typeInferBB(BasicBlock *BB) {
 }
 
 Type *TypeInfer::visit(Function *V) {
-  typeInferValueList(V->getArguments());
-  auto LastTy = typeInferValueList(V->getVal()->ValueList);
-  assert(LastTy && "Function has null body");
-  auto FTy = FunctionType::get(
-      LastTy, cast<FunctionType>(V->getType())->getATys(), false, K);
-  auto PTy = PointerType::get(FTy, K);
-  V->setType(FTy);
-  K->addMapping(V->getName(), PTy);
-  return PTy;
+  auto FTy = cast<FunctionType>(V->getType());
+  if (isa<UnType>(FTy->getRTy())) {
+    auto LastTy = typeInferValueList(V->getVal()->ValueList);
+    assert(LastTy && "Function has null body");
+    FTy = FunctionType::get(LastTy, FTy->getATys(), false, K);
+    V->setType(FTy);
+  }
+  if (V->getUser())
+    V->setType(PointerType::get(FTy, K));
+  K->Map.add(V);
+  return FTy;
 }
 
 Type *TypeInfer::visit(Prototype *V) {
   if (auto F = dyn_cast<Function>(V))
     return visit(F);
-  auto PTy = PointerType::get(V->getType(), K);
-  K->addMapping(V->getName(), PTy);
-  return PTy;
+  auto FTy = V->getType();
+  if (V->getUser())
+    V->setType(PointerType::get(FTy, K));
+  K->Map.add(V);
+  return FTy;
 }
 
 Type *TypeInfer::visit(AddInst *V) {
@@ -88,49 +94,42 @@ Type *TypeInfer::visit(IfInst *V) {
 }
 
 Type *TypeInfer::visit(LoadInst *V) {
-  auto Name = V->getName();
-  auto VTy = V->getType();
-  if (auto Ty = Resolve::resolveLoadInstTy(Name, VTy, K)) {
+  if (auto W = K->Map.get(V)) {
+    auto Ty = W->getType();
     V->setType(Ty);
-    K->addMapping(Name, Ty);
+    K->Map.add(V);
     return Ty;
   }
-  K->DiagPrinter->errorReport(
-      V->getSourceLocation(), "untyped symbol " + Name);
+  K->DiagPrinter->errorReport(V->getSourceLocation(),
+                              "untyped symbol " + V->getName());
   exit(1);
 }
 
 Type *TypeInfer::visit(Argument *V) {
-  auto Name = V->getName();
-  auto VTy = V->getType();
-  if (auto Ty = Resolve::resolveLoadInstTy(Name, VTy, K)) {
+  if (auto W = K->Map.get(V)) {
+    auto Ty = W->getType();
     V->setType(Ty);
-    K->addMapping(Name, Ty);
     return Ty;
   }
-  K->DiagPrinter->errorReport(
-      V->getSourceLocation(), "untyped argument " + Name);
+  K->DiagPrinter->errorReport(V->getSourceLocation(),
+                              "untyped argument " + V->getName());
   exit(1);
 }
 
 Type *TypeInfer::visit(CallInst *V) {
   typeInferValueList(V->getOperands());
   auto Callee = V->getCallee();
-  auto VTy = V->getType();
-  if (auto SymTy = Resolve::resolveLoadInstTy(Callee->getName(), VTy, K)) {
-    if (auto PTy = dyn_cast<PointerType>(SymTy)) {
-      if (auto Ty = dyn_cast<FunctionType>(PTy->getCTy())) {
-        V->setType(PTy);
-        return Ty->getRTy();
-      }
-    }
-    auto NotTypedAsFunction =
-      Callee->getName() + " was not typed as a function";
-    K->DiagPrinter->errorReport(V->getSourceLocation(), NotTypedAsFunction);
-    exit(1);
+  auto CalleeTy = visit(Callee);
+  assert(!isa<UnresolvedValue>(Callee));
+  if (auto PTy = dyn_cast<PointerType>(CalleeTy))
+    CalleeTy = PTy->getCTy();
+  if (auto Ty = dyn_cast<FunctionType>(CalleeTy)) {
+    V->setType(PointerType::get(Ty, K));
+    return Ty->getRTy();
   }
-  K->DiagPrinter->errorReport(
-      V->getSourceLocation(), "untyped function " + Callee->getName());
+  auto NotTypedAsFunction =
+    Callee->getName() + " was not typed as a function";
+  K->DiagPrinter->errorReport(V->getSourceLocation(), NotTypedAsFunction);
   exit(1);
 }
 
@@ -143,10 +142,9 @@ Type *TypeInfer::visit(ReturnInst *V) {
 }
 
 Type *TypeInfer::visit(MallocInst *V) {
-  auto Ty = visit(V->getVal());
-  assert (!isa<UnType>(Ty) && "Unable to type infer MallocInst");
-  K->addMapping(V->getName(), Ty);
-  V->setType(Ty);
+  V->setType(visit(V->getVal()));
+  assert (!V->isUnTyped() && "Unable to type infer MallocInst");
+  K->Map.add(V);
   return VoidType::get(K);
 }
 

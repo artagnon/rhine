@@ -3,7 +3,7 @@
 
 namespace rhine {
 User::User(Type *Ty, RTValue ID, unsigned NumOps, std::string N) :
-    Value(Ty, ID, N), NumOperands(NumOps) {}
+    Value(Ty, ID, N), NumOperands(NumOps), NumAllocatedOps(NumOps) {}
 
 void *User::operator new(size_t Size, unsigned Us) {
   void *Storage = ::operator new (Us * sizeof(Use) + Size);
@@ -13,7 +13,6 @@ void *User::operator new(size_t Size, unsigned Us) {
     new (Start + Iter) Use(Iter);
   }
   auto Obj = reinterpret_cast<User *>(End);
-  Obj->NumOperands = Us;
   return Obj;
 }
 
@@ -23,8 +22,8 @@ void *User::operator new(size_t Size) {
 
 void User::operator delete(void *Usr) {
   User *Obj = static_cast<User *>(Usr);
-  Use *Storage = static_cast<Use *>(Usr) - Obj->NumOperands;
-  Use::zap(Storage, Storage + Obj->NumOperands, /* Delete */ false);
+  Use *Storage = static_cast<Use *>(Usr) - Obj->NumAllocatedOps;
+  Use::zap(Storage, Storage + Obj->NumAllocatedOps, /* Delete */ false);
   ::operator delete(Storage);
 }
 
@@ -34,20 +33,20 @@ bool User::classof(const Value *V) {
 }
 
 Use *User::getOperandList() {
-  return reinterpret_cast<Use *>(this) - NumOperands;
+  return reinterpret_cast<Use *>(this) - NumAllocatedOps;
 }
 
 const Use *User::getOperandList() const {
   return const_cast<User *>(this)->getOperandList();
 }
 
-Value *User::getOperand(unsigned i) const {
-  assert(i < NumOperands && "getOperand() out of range!");
+Value *User::getOperand(int i) const {
+  assert(i < (int)NumOperands && "getOperand() out of range!");
   return getOperandList()[i];
 }
 
-void User::setOperand(unsigned i, Value *Val) {
-  assert(i < NumOperands && "setOperand() out of range!");
+void User::setOperand(int i, Value *Val) {
+  assert(i < (int)NumOperands && "setOperand() out of range!");
   assert(!isa<Constant>(cast<Value>(this)) &&
          "Cannot mutate a constant with setOperand!");
   getOperandList()[i].set(Val);
