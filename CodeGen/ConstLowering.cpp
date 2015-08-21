@@ -41,12 +41,12 @@ llvm::Constant *Function::toLL(llvm::Module *M) {
   auto ArgList = getArguments();
   auto S = ArgList.begin();
   for (auto &Arg : K->CurrentFunction->args()) {
-    K->addMapping((*S)->getName(), nullptr, &Arg);
+    K->Map.add(*S, nullptr, &Arg);
     ++S;
   }
 
   // Add function symbol to symbol table
-  K->addMapping(Name, nullptr, K->CurrentFunction);
+  K->Map.add(this, nullptr, K->CurrentFunction);
 
   llvm::BasicBlock *BB =
     llvm::BasicBlock::Create(K->Builder->getContext(),

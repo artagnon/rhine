@@ -67,7 +67,6 @@ SPTAB   [ \t]+
 "&&" { return T::AND; }
 "||" { return T::OR; }
 "->" { return T::ARROW; }
-"Fn" { return T::FUNCTION; }
 "ret" { return T::RET; }
 
 "Int" { return T::TINT; }
@@ -75,6 +74,7 @@ SPTAB   [ \t]+
 "String" { return T::TSTRING; }
 "()" { return T::TVOID; }
 "Void" { return T::TVOID; }
+"Fn" { return T::TFUNCTION; }
 
 "true" {
   auto B = ConstantBool::get(true, K);

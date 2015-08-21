@@ -16,13 +16,15 @@
 #include "rhine/IR/User.h"
 
 namespace rhine {
+class Use;
+
 class Instruction : public User {
 public:
   Instruction(Type *Ty, RTValue ID, unsigned NumOps, std::string Name = "");
   virtual ~Instruction() {}
   static bool classof(const Value *V);
-  std::vector<Value *> getOperands() const;
-  void setOperands(std::vector<Value *> Ops);
+  virtual std::vector<Value *> getOperands() const;
+  virtual void setOperands(std::vector<Value *> Ops);
   virtual llvm::Value *toLL(llvm::Module *M) = 0;
 protected:
   virtual void print(std::ostream &Stream) const = 0;
@@ -41,15 +43,15 @@ protected:
 };
 
 class CallInst : public Instruction {
-  Value *Callee;
 public:
-  CallInst(Value *Callee, unsigned NumOps);
+  CallInst(Type *Ty, unsigned NumOps);
   virtual ~CallInst() {}
   void *operator new(size_t s, unsigned n);
-  static CallInst *get(Value *Callee,
-                       std::vector<Value *> Ops);
+  static CallInst *get(Value *Callee, std::vector<Value *> Ops);
   static bool classof(const Value *V);
-  Value *getCallee();
+  Value *getCallee() const;
+  Value *getOperand(int i) const override;
+  void setOperand(int i, Value *Val) override;
   llvm::Value *toLL(llvm::Module *M) override;
 protected:
   void print(std::ostream &Stream) const override;

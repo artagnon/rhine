@@ -29,6 +29,10 @@ void Value::setType(Type *T) {
   VTy = T;
 }
 
+bool Value::isUnTyped() {
+  return VTy == UnType::get(getContext());
+}
+
 std::string Value::getName() const {
   return Name;
 }

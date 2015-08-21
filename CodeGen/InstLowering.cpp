@@ -18,7 +18,7 @@ llvm::Value *CallInst::toLL(llvm::Module *M) {
   auto K = getContext();
   auto RTy = cast<FunctionType>(cast<PointerType>(VTy)->getCTy())->getRTy();
   auto Name = getCallee()->getName();
-  auto CalleeFn = K->getMappingVal(Name);
+  auto CalleeFn = K->Map.getl(getCallee());
   if (!CalleeFn)
     CalleeFn = Externals::get(K)->getMappingVal(Name, M);
   if (!CalleeFn) {
@@ -61,13 +61,13 @@ llvm::Value *MallocInst::toLL(llvm::Module *M) {
   auto CastSlot = K->Builder->CreateBitCast(
       Slot, llvm::PointerType::get(Ty, 0));
   K->Builder->CreateStore(V, CastSlot);
-  K->addMapping(Name, nullptr, CastSlot);
+  K->Map.add(this, nullptr, CastSlot);
   return nullptr;
 }
 
 llvm::Value *LoadInst::toLL(llvm::Module *M) {
   auto K = getContext();
-  if (auto Result = K->getMappingVal(Name)) {
+  if (auto Result = K->Map.getl(this)) {
     if (isa<llvm::BitCastInst>(Result))
       return K->Builder->CreateLoad(Result, Name + "Load");
     return Result;

@@ -55,6 +55,7 @@ public:
   RTValue getValID() const;
   Type *getType() const;
   void setType(Type *T);
+  bool isUnTyped();
   std::string getName() const;
   void setName(std::string Str);
   virtual llvm::Value *toLL(llvm::Module *M) = 0;

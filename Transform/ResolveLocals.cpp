@@ -1,7 +1,9 @@
 #include "rhine/Context.h"
 #include "rhine/IR/BasicBlock.h"
 #include "rhine/IR/Constant.h"
-#include "rhine/IR/Value.h"
+#include "rhine/IR/Module.h"
+#include "rhine/IR/Instruction.h"
+#include "rhine/IR/UnresolvedValue.h"
 #include "rhine/Transform/ResolveLocals.h"
 #include "rhine/Externals.h"
 
@@ -10,11 +12,14 @@ ResolveLocals::ResolveLocals() : K(nullptr) {}
 
 ResolveLocals::~ResolveLocals() {}
 
-void ResolveLocals::lookupReplaceUse(std::string Name, Use &U,
+void ResolveLocals::lookupReplaceUse(UnresolvedValue *V, Use &U,
                                      BasicBlock *Block) {
-  if (auto S = lookupNameinBlock(Name, Block)) {
+  auto Name = V->getName();
+  auto K = V->getContext();
+  if (auto S = K->Map.get(V, Block)) {
     if (isa<MallocInst>(S) || isa<Function>(S)) {
       auto Replacement = LoadInst::get(Name, UnType::get(K));
+      Replacement->setSourceLocation(V->getSourceLocation());
       U.set(Replacement);
     }
     else if (isa<Argument>(S)) {
@@ -35,18 +40,17 @@ void ResolveLocals::resolveOperandsOfUser(User *U, BasicBlock *BB) {
     Value *V = ThisUse;
     if (auto W = dyn_cast<User>(V))
       resolveOperandsOfUser(W, BB);
-    auto Name = V->getName();
-    if (isa<UnresolvedValue>(V))
-      lookupReplaceUse(Name, ThisUse, BB);
+    if (auto R = dyn_cast<UnresolvedValue>(V))
+      lookupReplaceUse(R, ThisUse, BB);
   }
 }
 
 void ResolveLocals::runOnFunction(Function *F) {
   for (auto &Arg : F->args())
-    K->Map.addMapping(Arg->getName(), F->getEntryBlock(), Arg);
+    K->Map.add(Arg, F->getEntryBlock());
   for (auto &V : *F) {
     if (auto M = dyn_cast<MallocInst>(V)) {
-      K->Map.addMapping(M->getName(), F->getEntryBlock(), M);
+      K->Map.add(M, F->getEntryBlock());
     }
   }
   for (auto &V : *F)
@@ -55,20 +59,58 @@ void ResolveLocals::runOnFunction(Function *F) {
 
 void ResolveLocals::runOnModule(Module *M) {
   K = M->getContext();
-  K->GlobalBBHandle = BasicBlock::get({}, K);
   for (auto &F : *M)
-    K->Map.addMapping(F->getName(), K->GlobalBBHandle, F);
+    K->Map.add(F);
   for (auto &F : *M)
     runOnFunction(F);
 }
 
-Value *ResolveLocals::lookupNameinBlock(std::string Name, BasicBlock *BB) {
-  if (auto Resolution = K->Map.getMapping(Name, BB))
-    return Resolution->Val;
-  if (auto Resolution = K->Map.getMapping(Name, K->GlobalBBHandle))
-    return Resolution->Val;
-  if (auto Resolution = Externals::get(K)->getMappingProto(Name))
-    return Resolution;
-  return nullptr;
+using KR = Context::ResolutionMap;
+typedef Context::ValueRef ValueRef;
+
+void KR::add(Value *Val, BasicBlock *Block, llvm::Value *LLVal) {
+  assert(!isa<UnresolvedValue>(Val));
+  auto Name = Val->getName();
+  auto &ThisVRMap = FunctionVR[Block];
+  auto Ret = ThisVRMap.insert(std::make_pair(Name, ValueRef(Val, LLVal)));
+  auto &NewElementInserted = Ret.second;
+  if (!NewElementInserted) {
+    auto IteratorToEquivalentKey = Ret.first;
+    auto &ValueRefOfEquivalentKey = IteratorToEquivalentKey->second;
+    ValueRefOfEquivalentKey.Val = Val;
+    if (LLVal) ValueRefOfEquivalentKey.LLVal = LLVal;
+  }
+}
+
+Value *KR::searchOneBlock(Value *Val, BasicBlock *Block)
+{
+  auto Name = Val->getName();
+  auto &ThisVRMap = FunctionVR[Block];
+  auto IteratorToElement = ThisVRMap.find(Name);
+  if (IteratorToElement == ThisVRMap.end())
+    return nullptr;
+  else
+    return IteratorToElement->second.Val;
+}
+
+Value *KR::get(Value *Val, BasicBlock *Block) {
+  if (!Val->isUnTyped() && !isa<UnresolvedValue>(Val))
+    return Val;
+  for (; Block; Block = Block->getPredecessor()) {
+    if (auto Result = searchOneBlock(Val, Block))
+      return Result;
+  }
+  if (auto Result = searchOneBlock(Val, nullptr))
+    return Result;
+  auto Ext = Externals::get(Val->getContext());
+  return Ext->getMappingProto(Val->getName());
+}
+
+llvm::Value *KR::getl(Value *Val, BasicBlock *Block) {
+  auto Name = Val->getName();
+  auto &ThisVRMap = FunctionVR[Block];
+  auto IteratorToElement = ThisVRMap.find(Name);
+  return IteratorToElement == ThisVRMap.end() ? nullptr :
+    IteratorToElement->second.LLVal;
 }
 }

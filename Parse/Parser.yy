@@ -40,7 +40,7 @@
 %start start
 
 %token                  DEF IF ELSE AND OR ARROW
-%token                  TINT TBOOL TSTRING FUNCTION
+%token                  TINT TBOOL TSTRING TFUNCTION
 %token                  TVOID RET
 %token                  END       0
 %token  <LiteralName>   LITERALNAME
@@ -206,7 +206,7 @@ type_lit:
                   STy->setSourceLocation(@1);
                   $$ = STy;
                 }
-        |       FUNCTION '(' type_list[A] ARROW type_lit[R] ')'
+        |       TFUNCTION '(' type_list[A] ARROW type_lit[R] ')'
                 {
                   auto FTy = FunctionType::get($R, *$A, $A->isVariadic(), K);
                   auto PTy = PointerType::get(FTy, K);
@@ -281,6 +281,7 @@ value_expr:
                 rvalue[V]
                 {
                   $$ = $V;
+                  $V->setSourceLocation(@1);
                 }
         |       rvalue[L] '+' rvalue[R]
                 {
