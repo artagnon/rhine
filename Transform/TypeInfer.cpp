@@ -46,6 +46,10 @@ Type *TypeInfer::typeInferBB(BasicBlock *BB) {
   return visit(BB->back());
 }
 
+Type *TypeInfer::visit(Prototype *V) {
+  return V->getType();
+}
+
 Type *TypeInfer::visit(Function *V) {
   auto FTy = cast<FunctionType>(V->getType());
   if (isa<UnType>(FTy->getRTy())) {
@@ -54,20 +58,14 @@ Type *TypeInfer::visit(Function *V) {
     FTy = FunctionType::get(LastTy, FTy->getATys(), false, K);
     V->setType(FTy);
   }
-  if (V->getUser())
-    V->setType(PointerType::get(FTy, K));
   K->Map.add(V);
   return FTy;
 }
 
-Type *TypeInfer::visit(Prototype *V) {
-  if (auto F = dyn_cast<Function>(V))
-    return visit(F);
-  auto FTy = V->getType();
-  if (V->getUser())
-    V->setType(PointerType::get(FTy, K));
-  K->Map.add(V);
-  return FTy;
+Type *TypeInfer::visit(Pointer *V) {
+  auto Ty = PointerType::get(visit(V->getVal()), K);
+  V->setType(Ty);
+  return Ty;
 }
 
 Type *TypeInfer::visit(AddInst *V) {
@@ -100,8 +98,9 @@ Type *TypeInfer::visit(LoadInst *V) {
     K->Map.add(V);
     return Ty;
   }
+  auto Name = V->getVal()->getName();
   K->DiagPrinter->errorReport(V->getSourceLocation(),
-                              "untyped symbol " + V->getName());
+                              "untyped symbol " + Name);
   exit(1);
 }
 
@@ -121,8 +120,11 @@ Type *TypeInfer::visit(CallInst *V) {
   auto Callee = V->getCallee();
   auto CalleeTy = visit(Callee);
   assert(!isa<UnresolvedValue>(Callee));
-  if (auto PTy = dyn_cast<PointerType>(CalleeTy))
-    CalleeTy = PTy->getCTy();
+  if (auto P = dyn_cast<Pointer>(Callee))
+    Callee = P->getVal();
+  else if (auto PTy = dyn_cast<PointerType>(CalleeTy))
+    Callee->setType(PTy->getCTy());
+  CalleeTy = Callee->getType();
   if (auto Ty = dyn_cast<FunctionType>(CalleeTy)) {
     V->setType(PointerType::get(Ty, K));
     return Ty->getRTy();

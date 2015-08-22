@@ -3,7 +3,7 @@
 #ifndef INSTRUCTION_H
 #define INSTRUCTION_H
 
-#include "llvm/IR/DerivedTypes.h"
+#include "llvm/IR/Value.h"
 
 #include <string>
 #include <vector>
@@ -37,7 +37,7 @@ public:
   void *operator new(size_t s);
   static AddInst *get(Context *K);
   static bool classof(const Value *V);
-  llvm::Value *toLL(llvm::Module *M) override;
+  virtual llvm::Value *toLL(llvm::Module *M) override;
 protected:
   void print(std::ostream &Stream) const override;
 };
@@ -52,7 +52,7 @@ public:
   Value *getCallee() const;
   Value *getOperand(int i) const override;
   void setOperand(int i, Value *Val) override;
-  llvm::Value *toLL(llvm::Module *M) override;
+  virtual llvm::Value *toLL(llvm::Module *M) override;
 protected:
   void print(std::ostream &Stream) const override;
 };
@@ -66,19 +66,20 @@ public:
   static bool classof(const Value *V);
   void setVal(Value *V);
   Value *getVal();
-  llvm::Value *toLL(llvm::Module *M) override;
+  virtual llvm::Value *toLL(llvm::Module *M) override;
 protected:
   void print(std::ostream &Stream) const override;
 };
 
 class LoadInst : public Instruction {
 public:
-  LoadInst(std::string N, Type *T, RTValue ID = RT_LoadInst);
+  LoadInst(Value *V, std::string Name);
   virtual ~LoadInst() {}
   void *operator new(size_t s);
-  static LoadInst *get(std::string N, Type *T);
+  static LoadInst *get(Value *V, std::string Name);
+  Value *getVal() const;
   static bool classof(const Value *V);
-  llvm::Value *toLL(llvm::Module *M) override;
+  virtual llvm::Value *toLL(llvm::Module *M) override;
 protected:
   void print(std::ostream &Stream) const override;
 };
@@ -92,7 +93,7 @@ public:
   static bool classof(const Value *V);
   void setVal(Value *V);
   Value *getVal();
-  llvm::Value *toLL(llvm::Module *M) override;
+  virtual llvm::Value *toLL(llvm::Module *M) override;
 protected:
   void print(std::ostream &Stream) const override;
 };
@@ -109,7 +110,7 @@ public:
   void setConditional(Value *C);
   BasicBlock *getTrueBB() const;
   BasicBlock *getFalseBB() const;
-  llvm::Value *toLL(llvm::Module *M) override;
+  virtual llvm::Value *toLL(llvm::Module *M) override;
 protected:
   void print(std::ostream &Stream) const override;
 };

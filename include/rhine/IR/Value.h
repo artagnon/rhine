@@ -29,6 +29,7 @@ enum RTValue {
   RT_ConstantFloat,
   RT_Prototype,
   RT_Function,
+  RT_Pointer,
   RT_Instruction,
   RT_AddInst,
   RT_CallInst,

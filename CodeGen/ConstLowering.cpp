@@ -58,4 +58,9 @@ llvm::Constant *Function::toLL(llvm::Module *M) {
     K->Builder->CreateRet(nullptr);
   return K->CurrentFunction;
 }
+
+llvm::Value *Pointer::toLL(llvm::Module *M) {
+  auto K = getContext();
+  return K->Map.getl(getVal());
+}
 }

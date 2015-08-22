@@ -3,16 +3,16 @@
 #include "rhine/IR/Value.h"
 
 namespace rhine {
-Use::Use(unsigned OperandNo) :
+Use::Use(unsigned Dist) :
     Val(nullptr), Prev(nullptr),
-    Next(nullptr), OperandNumber(OperandNo) {}
+    Next(nullptr), DistToUser(Dist) {}
 
 unsigned Use::getOperandNumber() {
-  return OperandNumber;
+  return DistToUser;
 }
 
 void Use::setOperandNumber(unsigned Num) {
-  OperandNumber = Num;
+  DistToUser = Num;
 }
 
 void Use::setVal(Value *V) {
@@ -20,7 +20,7 @@ void Use::setVal(Value *V) {
 }
 
 class User *Use::getUser() {
-  return reinterpret_cast<User *>(this - OperandNumber - 1);
+  return reinterpret_cast<User *>(this + DistToUser);
 }
 
 Value *Use::getVal() const {
@@ -60,7 +60,7 @@ void Use::swap(Use &RHS) {
   }
 }
 
-void Use::addToList(Use *UseList) {
+void Use::addToList(Use *&UseList) {
   if (!UseList) {
     UseList = this;
     return;
