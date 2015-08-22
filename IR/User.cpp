@@ -10,7 +10,7 @@ void *User::operator new(size_t Size, unsigned Us) {
   auto Start = static_cast<Use *>(Storage);
   auto End = Start + Us;
   for (unsigned Iter = 0; Iter < Us; Iter++) {
-    new (Start + Iter) Use(Iter);
+    new (Start + Iter) Use(Us - Iter);
   }
   auto Obj = reinterpret_cast<User *>(End);
   return Obj;

@@ -10,9 +10,9 @@ class Use {
   Value *Val;
   Use *Prev;
   Use *Next;
-  unsigned OperandNumber;
+  unsigned DistToUser;
 public:
-  Use(unsigned OperandNo);
+  Use(unsigned Dist);
   unsigned getOperandNumber();
   void setOperandNumber(unsigned Num);
   void setVal(Value *Val_);
@@ -22,7 +22,7 @@ public:
   Value *operator->();
   operator Value *() const;
   void swap(Use &RHS);
-  void addToList(Use *UseList);
+  void addToList(Use *&UseList);
   void removeFromList();
   void set(Value *V);
   static void zap(Use *Start, const Use *Stop, bool Del);

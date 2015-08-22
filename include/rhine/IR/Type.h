@@ -67,7 +67,7 @@ public:
   static bool classof(const Type *T);
   virtual llvm::Type *toLL(llvm::Module *M) override;
 protected:
-  virtual void print(std::ostream &Stream) const;
+  virtual void print(std::ostream &Stream) const override;
   friend class Context;
 };
 
@@ -79,7 +79,7 @@ public:
   static bool classof(const Type *T);
   virtual llvm::Type *toLL(llvm::Module *M) override;
 protected:
-  virtual void print(std::ostream &Stream) const;
+  virtual void print(std::ostream &Stream) const override;
   friend class Context;
 };
 
@@ -92,10 +92,10 @@ public:
   static bool classof(const Type *T);
   static inline void Profile(FoldingSetNodeID &ID, const unsigned &W);
   void Profile(FoldingSetNodeID &ID);
-  llvm::Type *toLL(llvm::Module *M);
+  virtual llvm::Type *toLL(llvm::Module *M) override;
 protected:
   unsigned Bitwidth;
-  virtual void print(std::ostream &Stream) const;
+  virtual void print(std::ostream &Stream) const override;
 };
 
 class BoolType : public Type {
@@ -104,9 +104,9 @@ public:
   virtual ~BoolType();
   static BoolType *get(Context *K);
   static bool classof(const Type *T);
-  llvm::Type *toLL(llvm::Module *M);
+  virtual llvm::Type *toLL(llvm::Module *M) override;
 protected:
-  virtual void print(std::ostream &Stream) const;
+  virtual void print(std::ostream &Stream) const override;
   friend class Context;
 };
 
@@ -116,9 +116,9 @@ public:
   virtual ~FloatType();
   static FloatType *get(Context *K);
   static bool classof(const Type *T);
-  llvm::Type *toLL(llvm::Module *M);
+  virtual llvm::Type *toLL(llvm::Module *M) override;
 protected:
-  virtual void print(std::ostream &Stream) const;
+  virtual void print(std::ostream &Stream) const override;
   friend class Context;
 };
 
@@ -128,9 +128,9 @@ public:
   virtual ~StringType();
   static StringType *get(Context *K);
   static bool classof(const Type *T);
-  llvm::Type *toLL(llvm::Module *M);
+  virtual llvm::Type *toLL(llvm::Module *M) override;
 protected:
-  virtual void print(std::ostream &Stream) const;
+  virtual void print(std::ostream &Stream) const override;
   friend class Context;
 };
 
@@ -152,9 +152,9 @@ public:
   std::vector<Type *> getATys();
   Type *getRTy();
   bool isVariadic() const;
-  llvm::Type *toLL(llvm::Module *M);
+  virtual llvm::Type *toLL(llvm::Module *M) override;
 protected:
-  virtual void print(std::ostream &Stream) const;
+  virtual void print(std::ostream &Stream) const override;
 };
 
 class PointerType : public Type {
@@ -167,9 +167,9 @@ public:
   static inline void Profile(FoldingSetNodeID &ID, const Type *CTy);
   void Profile(FoldingSetNodeID &ID);
   Type *getCTy();
-  llvm::Type *toLL(llvm::Module *M);
+  virtual llvm::Type *toLL(llvm::Module *M) override;
 protected:
-  virtual void print(std::ostream &Stream) const;
+  virtual void print(std::ostream &Stream) const override;
 };
 }
 

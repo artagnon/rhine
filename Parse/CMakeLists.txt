@@ -21,6 +21,6 @@ add_library(Parse
   "${CMAKE_CURRENT_SOURCE_DIR}/ParseDriver.cpp")
 set_target_properties(Parse PROPERTIES
   LINKER_LANGUAGE CXX
-  COMPILE_FLAGS "${LLVM_CXXFLAGS} -Wno-deprecated-register -Wno-sign-compare")
+  COMPILE_FLAGS "${LLVM_CXXFLAGS} -Wno-deprecated-register -Wno-sign-compare -fexceptions")
 target_link_libraries(Parse
   Diagnostic)

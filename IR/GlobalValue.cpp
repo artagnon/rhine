@@ -2,7 +2,13 @@
 
 namespace rhine {
 GlobalString::GlobalString(std::string Val, Context *K) :
-    User(StringType::get(K), RT_GlobalString), Val(Val) {}
+    User(StringType::get(K), RT_GlobalString, 1), Val(Val) {}
+
+GlobalString::~GlobalString() {}
+
+void *GlobalString::operator new(size_t s) {
+  return User::operator new(s, 0);
+}
 
 GlobalString *GlobalString::get(std::string Val, Context *K) {
   return new GlobalString(Val, K);

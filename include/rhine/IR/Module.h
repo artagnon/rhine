@@ -41,7 +41,7 @@ public:
     M.print(Stream);
     return Stream;
   }
-  void toLL(llvm::Module *M);
+  virtual void toLL(llvm::Module *M);
   typedef std::vector<Function *>::iterator iterator;
   Function *front();
   iterator begin();

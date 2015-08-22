@@ -26,7 +26,7 @@ public:
   Constant(Type *Ty, RTValue ID);
   virtual ~Constant() {}
   static bool classof(const Value *V);
-  llvm::Constant *toLL(llvm::Module *M) = 0;
+  virtual llvm::Constant *toLL(llvm::Module *M) = 0;
 protected:
   virtual void print(std::ostream &Stream) const = 0;
 };
@@ -37,9 +37,9 @@ public:
   ConstantInt(int Val, unsigned Bitwidth, Context *K);
   static ConstantInt *get(int Val, unsigned Bitwidth, Context *K);
   static bool classof(const Value *V);
-  int getVal();
-  unsigned getBitwidth();
-  llvm::Constant *toLL(llvm::Module *M);
+  int getVal() const;
+  unsigned getBitwidth() const;
+  virtual llvm::Constant *toLL(llvm::Module *M) override;
 protected:
   virtual void print(std::ostream &Stream) const override;
 };
@@ -51,8 +51,8 @@ public:
   virtual ~ConstantBool() {}
   static ConstantBool *get(bool Val, Context *K);
   static bool classof(const Value *V);
-  float getVal();
-  llvm::Constant *toLL(llvm::Module *M);
+  float getVal() const;
+  virtual llvm::Constant *toLL(llvm::Module *M) override;
 protected:
   virtual void print(std::ostream &Stream) const override;
 };
@@ -64,8 +64,8 @@ public:
   virtual ~ConstantFloat() {}
   static ConstantFloat *get(float Val, Context *K);
   static bool classof(const Value *V);
-  float getVal();
-  llvm::Constant *toLL(llvm::Module *M);
+  float getVal() const;
+  virtual llvm::Constant *toLL(llvm::Module *M) override;
 protected:
   virtual void print(std::ostream &Stream) const override;
 };
@@ -81,20 +81,20 @@ public:
   static Prototype *get(FunctionType *FTy);
   static bool classof(const Value *V);
   void setParent(Module *Parent);
-  Module *getParent();
+  Module *getParent() const;
   void setName(std::string N);
-  std::string getName();
-  std::string getMangledName();
+  std::string getName() const;
+  std::string getMangledName() const;
   void setArguments(std::vector<Argument *> L);
   void setVariadicRest(Argument *Rest);
-  std::vector<Argument *> getArguments();
+  std::vector<Argument *> getArguments() const;
   typedef std::vector<Argument *>::iterator arg_iterator;
   arg_iterator arg_begin();
   arg_iterator arg_end();
   iterator_range<arg_iterator> args();
-  llvm::Constant *toLL(llvm::Module *M);
+  virtual llvm::Constant *toLL(llvm::Module *M) override;
 protected:
-  virtual void print(std::ostream &Stream) const;
+  virtual void print(std::ostream &Stream) const override;
   void emitArguments(std::ostream &Stream) const;
 };
 
@@ -106,11 +106,25 @@ public:
   static Function *get(FunctionType *FTy);
   static bool classof(const Value *V);
   void setBody(BasicBlock *Body);
-  BasicBlock *getVal();
-  BasicBlock *getEntryBlock();
+  BasicBlock *getVal() const;
+  BasicBlock *getEntryBlock() const;
   BasicBlock::iterator begin();
   BasicBlock::iterator end();
-  llvm::Constant *toLL(llvm::Module *M);
+  virtual llvm::Constant *toLL(llvm::Module *M) override;
+protected:
+  virtual void print(std::ostream &Stream) const override;
+};
+
+class Pointer : public User {
+  Value *Val;
+public:
+  Pointer(Value *V, Type *Ty);
+  virtual ~Pointer();
+  static Pointer *get(Value *V);
+  static bool classof(const Value *V);
+  void setVal(Value *V);
+  Value *getVal() const;
+  virtual llvm::Value *toLL(llvm::Module *M) override;
 protected:
   virtual void print(std::ostream &Stream) const override;
 };

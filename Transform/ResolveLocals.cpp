@@ -17,15 +17,17 @@ void ResolveLocals::lookupReplaceUse(UnresolvedValue *V, Use &U,
   auto Name = V->getName();
   auto K = V->getContext();
   if (auto S = K->Map.get(V, Block)) {
-    if (isa<MallocInst>(S) || isa<Function>(S)) {
-      auto Replacement = LoadInst::get(Name, UnType::get(K));
+    if (auto M = dyn_cast<MallocInst>(S)) {
+      auto Replacement = LoadInst::get(M->getVal(), Name);
       Replacement->setSourceLocation(V->getSourceLocation());
       U.set(Replacement);
     }
     else if (isa<Argument>(S)) {
       U.set(S);
     } else if (isa<Prototype>(S)) {
-      U.set(S);
+      auto Replacement = Pointer::get(S);
+      Replacement->setSourceLocation(S->getSourceLocation());
+      U.set(Replacement);
     }
   } else {
     auto SourceLoc = U->getSourceLocation();

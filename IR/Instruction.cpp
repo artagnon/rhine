@@ -40,7 +40,7 @@ bool AddInst::classof(const Value *V) {
 }
 
 void AddInst::print(std::ostream &Stream) const {
-  Stream << "+ ~" << *getType();
+  Stream << "+ ~" << *VTy;
   for (auto O: getOperands())
     Stream << std::endl << *O;
 }
@@ -81,7 +81,7 @@ void CallInst::setOperand(int i, Value *Val) {
 }
 
 void CallInst::print(std::ostream &Stream) const {
-  Stream << getCallee()->getName() << " ~" << *getType();
+  Stream << getCallee()->getName() << " ~" << *VTy;
   for (auto O: getOperands())
     Stream << std::endl << *O;
 }
@@ -115,23 +115,29 @@ void MallocInst::print(std::ostream &Stream) const {
   Stream << Name << " = " << *getOperands()[0];
 }
 
-LoadInst::LoadInst(std::string N, Type *T, RTValue ID) :
-    Instruction(T, ID, 0, N) {}
-
-void *LoadInst::operator new(size_t s) {
-  return User::operator new (s);
+LoadInst::LoadInst(Value *V, std::string Name) :
+    Instruction(V->getType(), RT_LoadInst, 1, Name) {
+  setOperand(0, V);
 }
 
-LoadInst *LoadInst::get(std::string N, Type *T) {
-  return new LoadInst(N, T);
+void *LoadInst::operator new(size_t s) {
+  return User::operator new (s, 1);
+}
+
+LoadInst *LoadInst::get(Value *V, std::string Name) {
+  return new LoadInst(V, Name);
 }
 
 bool LoadInst::classof(const Value *V) {
   return V->getValID() == RT_LoadInst;
 }
 
+Value *LoadInst::getVal() const {
+  return getOperands()[0];
+}
+
 void LoadInst::print(std::ostream &Stream) const {
-  Stream << Name << " ~" << *getType();
+  Stream << Name << " ~" << *VTy;
 }
 
 ReturnInst::ReturnInst(Type *Ty, bool IsNotVoid) :

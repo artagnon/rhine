@@ -20,11 +20,11 @@ bool ConstantInt::classof(const Value *V) {
   return V->getValID() == RT_ConstantInt;
 }
 
-int ConstantInt::getVal() {
+int ConstantInt::getVal() const {
   return Val;
 }
 
-unsigned ConstantInt::getBitwidth() {
+unsigned ConstantInt::getBitwidth() const {
   if (auto ITy = dyn_cast<IntegerType>(VTy))
     return ITy->getBitwidth();
   assert(0 && "ConstantInt of non IntegerType type");
@@ -45,7 +45,7 @@ bool ConstantBool::classof(const Value *V) {
   return V->getValID() == RT_ConstantBool;
 }
 
-float ConstantBool::getVal() {
+float ConstantBool::getVal() const {
   return Val;
 }
 
@@ -64,7 +64,7 @@ bool ConstantFloat::classof(const Value *V) {
   return V->getValID() == RT_ConstantFloat;
 }
 
-float ConstantFloat::getVal() {
+float ConstantFloat::getVal() const {
   return Val;
 }
 
@@ -91,7 +91,7 @@ void Prototype::setParent(Module *Parent) {
   ParentModule = Parent;
 }
 
-Module *Prototype::getParent() {
+Module *Prototype::getParent() const {
   return ParentModule;
 }
 
@@ -99,11 +99,11 @@ void Prototype::setName(std::string N) {
   Name = N;
 }
 
-std::string Prototype::getName() {
+std::string Prototype::getName() const {
   return Name;
 }
 
-std::string Prototype::getMangledName() {
+std::string Prototype::getMangledName() const {
   std::ostringstream Scratch;
   auto FTy = cast<FunctionType>(VTy);
   Scratch << "std_" << *FTy->getRTy() << "_" << Name << "__";
@@ -127,7 +127,7 @@ void Prototype::setVariadicRest(Argument *Rest) {
   VariadicRestLoadInst = Rest;
 }
 
-std::vector<Argument *> Prototype::getArguments() {
+std::vector<Argument *> Prototype::getArguments() const {
   return ArgumentList;
 }
 
@@ -184,11 +184,11 @@ void Function::setBody(BasicBlock *Body) {
   Val = Body;
 }
 
-BasicBlock *Function::getVal() {
+BasicBlock *Function::getVal() const {
   return Val;
 }
 
-BasicBlock *Function::getEntryBlock() {
+BasicBlock *Function::getEntryBlock() const {
   return Val;
 }
 
@@ -207,5 +207,32 @@ void Function::print(std::ostream &Stream) const {
   for (auto V: Val->ValueList)
     Stream << std::endl << *V;
   Stream << std::endl << "}";
+}
+
+Pointer::Pointer(Value *V, Type *Ty) :
+    User(Ty, RT_Pointer, 0, V->getName()), Val(V) {}
+
+Pointer::~Pointer() {}
+
+Pointer *Pointer::get(Value *V) {
+  auto K = V->getContext();
+  auto Ty = PointerType::get(V->getType(), K);
+  return new Pointer(V, Ty);
+}
+
+bool Pointer::classof(const Value *V) {
+  return V->getValID() == RT_Pointer;
+}
+
+void Pointer::setVal(Value *V) {
+  Val = V;
+}
+
+Value *Pointer::getVal() const {
+  return Val;
+}
+
+void Pointer::print(std::ostream &Stream) const {
+  Stream << *Val << "*" << std::endl;
 }
 }
