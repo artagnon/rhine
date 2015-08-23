@@ -23,8 +23,6 @@ public:
   Instruction(Type *Ty, RTValue ID, unsigned NumOps, std::string Name = "");
   virtual ~Instruction() {}
   static bool classof(const Value *V);
-  virtual std::vector<Value *> getOperands() const;
-  virtual void setOperands(std::vector<Value *> Ops);
   virtual llvm::Value *toLL(llvm::Module *M) = 0;
 protected:
   virtual void print(std::ostream &Stream) const = 0;
