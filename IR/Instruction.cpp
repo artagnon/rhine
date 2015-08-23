@@ -10,21 +10,6 @@ bool Instruction::classof(const Value *V) {
     V->getValID() <= RT_IfInst;
 }
 
-std::vector<Value *> Instruction::getOperands() const {
-  std::vector<Value *> OpV;
-  for (unsigned OpN = 0; OpN < NumOperands; OpN++) {
-    OpV.push_back(getOperand(OpN));
-  }
-  return OpV;
-}
-
-void Instruction::setOperands(std::vector<Value *> Ops) {
-  assert(Ops.size() == NumOperands && "Incorrect number passed to setOperands()");
-  for (unsigned OpN = 0; OpN < NumOperands; OpN++) {
-    setOperand(OpN, Ops[OpN]);
-  }
-}
-
 AddInst::AddInst(Type *Ty) : Instruction(Ty, RT_AddInst, 2) {}
 
 void *AddInst::operator new(size_t s) {

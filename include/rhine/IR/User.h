@@ -18,14 +18,16 @@ public:
   static bool classof(const Value *V);
   Use *getOperandList();
   const Use *getOperandList() const;
+  virtual Value *getOperand(int i) const;
+  virtual void setOperand(int i, Value *Val);
+  virtual std::vector<Value *> getOperands() const;
+  virtual void setOperands(std::vector<Value *> Ops);
   typedef Use* op_iterator;
   op_iterator op_begin() { return getOperandList(); }
   op_iterator op_end() { return getOperandList() + NumAllocatedOps; }
   iterator_range<op_iterator> operands() {
     return iterator_range<op_iterator>(op_begin(), op_end());
   }
-  virtual Value *getOperand(int i) const;
-  virtual void setOperand(int i, Value *Val);
 };
 }
 

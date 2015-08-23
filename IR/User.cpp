@@ -53,4 +53,19 @@ void User::setOperand(int i, Value *Val) {
          "Cannot mutate a constant with setOperand!");
   getOperandList()[i].set(Val);
 }
+
+std::vector<Value *> User::getOperands() const {
+  std::vector<Value *> OpV;
+  for (unsigned OpN = 0; OpN < NumOperands; OpN++) {
+    OpV.push_back(getOperand(OpN));
+  }
+  return OpV;
+}
+
+void User::setOperands(std::vector<Value *> Ops) {
+  assert(Ops.size() == NumOperands && "Incorrect number passed to setOperands()");
+  for (unsigned OpN = 0; OpN < NumOperands; OpN++) {
+    setOperand(OpN, Ops[OpN]);
+  }
+}
 }
