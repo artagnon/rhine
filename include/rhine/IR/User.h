@@ -23,8 +23,13 @@ public:
   virtual std::vector<Value *> getOperands() const;
   virtual void setOperands(std::vector<Value *> Ops);
   typedef Use* op_iterator;
+  op_iterator use_begin() { return getOperandList(); }
+  op_iterator use_end() { return getOperandList() + NumAllocatedOps; }
   op_iterator op_begin() { return getOperandList(); }
-  op_iterator op_end() { return getOperandList() + NumAllocatedOps; }
+  op_iterator op_end() { return getOperandList() + NumOperands; }
+  iterator_range<op_iterator> uses() {
+    return iterator_range<op_iterator>(use_begin(), use_end());
+  }
   iterator_range<op_iterator> operands() {
     return iterator_range<op_iterator>(op_begin(), op_end());
   }
