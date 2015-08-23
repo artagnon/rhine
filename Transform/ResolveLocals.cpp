@@ -44,7 +44,7 @@ void ResolveLocals::lookupReplaceUse(UnresolvedValue *V, Use &U,
 }
 
 void ResolveLocals::resolveOperandsOfUser(User *U, BasicBlock *BB) {
-  for (Use &ThisUse : U->operands()) {
+  for (Use &ThisUse : U->uses()) {
     Value *V = ThisUse;
     if (auto R = dyn_cast<UnresolvedValue>(V))
       lookupReplaceUse(R, ThisUse, BB);
