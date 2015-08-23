@@ -2,6 +2,8 @@
 #include "gtest/gtest.h"
 
 #include "rhine/IR/Value.h"
+#include "rhine/IR/Module.h"
+#include "rhine/IR/Constant.h"
 #include "rhine/IR/Instruction.h"
 #include "rhine/IR/UnresolvedValue.h"
 #include "rhine/Transform/ResolveLocals.h"

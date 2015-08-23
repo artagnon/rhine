@@ -12,6 +12,10 @@ bool Constant::classof(const Value *V) {
 ConstantInt::ConstantInt(int Val, unsigned Bitwidth, Context *K) :
     Constant(IntegerType::get(Bitwidth, K), RT_ConstantInt), Val(Val) {}
 
+void *ConstantInt::operator new(size_t s) {
+  return User::operator new(s);
+}
+
 ConstantInt *ConstantInt::get(int Val, unsigned Bitwidth, Context *K) {
   return new ConstantInt(Val, Bitwidth, K);
 }
@@ -37,6 +41,10 @@ void ConstantInt::print(std::ostream &Stream) const {
 ConstantBool::ConstantBool(bool Val, Context *K) :
     Constant(BoolType::get(K), RT_ConstantBool), Val(Val) {}
 
+void *ConstantBool::operator new(size_t s) {
+  return User::operator new(s);
+}
+
 ConstantBool *ConstantBool::get(bool Val, Context *K) {
   return new ConstantBool(Val, K);
 }
@@ -55,6 +63,10 @@ void ConstantBool::print(std::ostream &Stream) const {
 
 ConstantFloat::ConstantFloat(float Val, Context *K) :
     Constant(FloatType::get(K), RT_ConstantFloat), Val(Val) {}
+
+void *ConstantFloat::operator new(size_t s) {
+  return User::operator new(s);
+}
 
 ConstantFloat *ConstantFloat::get(float Val, Context *K) {
   return new ConstantFloat(Val, K);
@@ -78,6 +90,10 @@ Prototype::Prototype(FunctionType *FTy, RTValue RTy) :
 
 Prototype::~Prototype() {}
 
+void *Prototype::operator new(size_t s) {
+  return User::operator new(s);
+}
+
 Prototype *Prototype::get(FunctionType *FTy) {
   return new Prototype(FTy);
 }
@@ -93,14 +109,6 @@ void Prototype::setParent(Module *Parent) {
 
 Module *Prototype::getParent() const {
   return ParentModule;
-}
-
-void Prototype::setName(std::string N) {
-  Name = N;
-}
-
-std::string Prototype::getName() const {
-  return Name;
 }
 
 std::string Prototype::getMangledName() const {
@@ -172,6 +180,10 @@ Function::Function(FunctionType *FTy) :
 
 Function::~Function() {}
 
+void *Function::operator new(size_t s) {
+  return User::operator new(s);
+}
+
 Function *Function::get(FunctionType *FTy) {
   return new Function(FTy);
 }
@@ -213,6 +225,10 @@ Pointer::Pointer(Value *V, Type *Ty) :
     User(Ty, RT_Pointer, 0, V->getName()), Val(V) {}
 
 Pointer::~Pointer() {}
+
+void *Pointer::operator new(size_t s) {
+  return User::operator new(s);
+}
 
 Pointer *Pointer::get(Value *V) {
   auto K = V->getContext();

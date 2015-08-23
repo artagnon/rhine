@@ -12,7 +12,6 @@ include_directories("${PROJECT_SOURCE_DIR}/include")
 include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 add_flex_bison_dependency(Lexx Parseyy)
 
-find_package(LLVM REQUIRED native mcjit)
 include_directories(${LLVM_INCLUDE_DIRS})
 link_directories(${LLVM_LIBRARY_DIRS})
 add_library(Parse

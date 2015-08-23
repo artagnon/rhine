@@ -22,7 +22,7 @@ TEST(If, DISABLED_BasicCodeGen)
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }
 
-TEST(If, BasicExecution)
+TEST(If, DISABLED_BasicExecution)
 {
   std::string SourcePrg =
     "def main [] { if (false) print '2'; else print '3'; }";

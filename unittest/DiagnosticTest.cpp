@@ -26,7 +26,7 @@ TEST(Diagnostic, UnboundVariable)
 
 TEST(Diagnostic, UntypedVariable)
 {
-  std::string SourcePrg = "def untypedVar [var] var;";
+  std::string SourcePrg = "def untypedVar [var] ret var;";
   std::string ExpectedErr =
     "string stream:1:17: error: untyped argument var";
   EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
@@ -51,7 +51,7 @@ TEST(Diagnostic, FunctionNotFound)
     "  bar 4;\n"
     "}\n";
   std::string ExpectedErr =
-    "string stream:2:3: error: untyped function bar";
+    "string stream:2:3: error: unbound function bar";
   EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
 }
 

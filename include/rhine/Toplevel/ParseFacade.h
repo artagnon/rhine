@@ -6,12 +6,13 @@
 #include <iostream>
 
 #include "llvm/IR/Module.h"
-#include "rhine/IR/Module.h"
-#include "rhine/Pass/ModulePass.h"
 
 typedef int (*MainFTy)();
 
 namespace rhine {
+class ModulePass;
+class Module;
+
 enum class ParseSource {
   STRING,
   FILE
@@ -25,13 +26,14 @@ enum class PostParseAction {
 
 class ParseFacade {
   std::string &PrgString;
-  llvm::Module *M;
+  llvm::Module *ProgramModule;
   std::ostream &ErrStream;
   bool Debug;
 public:
   ParseFacade(std::string &PrgString, std::ostream &ErrStream = std::cerr,
-              llvm::Module *M = nullptr, bool Debug = false):
-      PrgString(PrgString), M(M), ErrStream(ErrStream), Debug(Debug) {}
+              llvm::Module *ProgramModule = nullptr, bool Debug = false):
+      PrgString(PrgString), ProgramModule(ProgramModule),
+      ErrStream(ErrStream), Debug(Debug) {}
 
   template <typename T>
   std::string irToPP(T *Obj);

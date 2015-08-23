@@ -1,5 +1,6 @@
 #include "rhine/Toplevel/ParseFacade.h"
 #include "rhine/Parse/ParseDriver.h"
+#include "rhine/Parse/ParseTree.h"
 #include "rhine/Transform/TypeInfer.h"
 #include "rhine/Transform/LambdaLifting.h"
 #include "rhine/Transform/TypeCoercion.h"
@@ -55,8 +56,7 @@ Module *ParseFacade::parseToIR(ParseSource SrcE,
   }
   for (auto Transform : TransformChain)
     Transform->runOnModule(Root.M);
-  auto M = Root.M;
-  return M;
+  return Root.M;
 }
 
 std::string ParseFacade::parseAction(ParseSource SrcE,
@@ -66,27 +66,27 @@ std::string ParseFacade::parseAction(ParseSource SrcE,
   LambdaLifting LambLift;
   TypeInfer TyInfer;
   TypeCoercion TyCoercion;
-  auto R = parseToIR(SrcE, {&LambLift, &ResolveL, &TyInfer, &TyCoercion});
+  auto TransformedIR = parseToIR(SrcE, {&LambLift, &ResolveL, &TyInfer, &TyCoercion});
   std::string Ret;
-  auto Ctx = R->getContext();
+  auto Ctx = TransformedIR->getContext();
   switch(ActionE) {
   case PostParseAction::IR:
-    Ret = irToPP(R);
+    Ret = irToPP(TransformedIR);
     break;
   case PostParseAction::LL:
-    if (!M)
-      M = new llvm::Module("main", Ctx->LLContext);
-    R->toLL(M);
-    Ret = llToPP(M);
+    if (!ProgramModule)
+      ProgramModule = new llvm::Module("main", Ctx->LLContext);
+    TransformedIR->toLL(ProgramModule);
+    Ret = llToPP(ProgramModule);
     break;
   case PostParseAction::LLDUMP:
-    if (!M)
-      M = new llvm::Module("main", Ctx->LLContext);
-    R->toLL(M);
-    M->dump();
+    if (!ProgramModule)
+      ProgramModule = new llvm::Module("main", Ctx->LLContext);
+    TransformedIR->toLL(ProgramModule);
+    ProgramModule->dump();
     break;
   }
-  for (auto F : *R) {
+  for (auto F : *TransformedIR) {
     for (auto V : *F) {
       delete V;
     }
@@ -101,10 +101,15 @@ MainFTy ParseFacade::jitAction(ParseSource SrcE, PostParseAction ActionE) {
   LLVMInitializeNativeTarget();
   LLVMInitializeNativeAsmPrinter();
 
-  auto Owner = make_unique<llvm::Module>("main", llvm::getGlobalContext());
-  M = Owner.get();
+  auto UniqueModule = make_unique<llvm::Module>("main", llvm::getGlobalContext());
+  ProgramModule = UniqueModule.get();
   parseAction(SrcE, ActionE);
-  auto EE = EngineBuilder(std::move(Owner)).create();
+
+  std::string ErrorStr;
+  auto EE = EngineBuilder(std::move(UniqueModule))
+    .setEngineKind(llvm::EngineKind::Either)
+    .setErrorStr(&ErrorStr)
+    .create();
   assert(EE && "Error creating MCJIT with EngineBuilder");
   union {
     uint64_t raw;

@@ -1,6 +1,6 @@
 include_directories("${PROJECT_SOURCE_DIR}/include")
 include_directories("${PROJECT_BINARY_DIR}/Parse")
-find_package(LLVM REQUIRED native mcjit)
+find_package(LLVM REQUIRED)
 link_directories(${LLVM_LIBRARY_DIRS})
 add_library(IR
   "${CMAKE_CURRENT_SOURCE_DIR}/Value.cpp"

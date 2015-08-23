@@ -32,24 +32,31 @@ void ResolveLocals::lookupReplaceUse(UnresolvedValue *V, Use &U,
   } else {
     auto SourceLoc = U->getSourceLocation();
     auto K = Block->getContext();
-    K->DiagPrinter->errorReport(SourceLoc, "unbound symbol " + Name);
-    exit(1);
+    switch (U->getUser()->getValID()) {
+    case RT_CallInst:
+      K->DiagPrinter->errorReport(SourceLoc, "unbound function " + Name);
+      exit(1);
+    default:
+      K->DiagPrinter->errorReport(SourceLoc, "unbound symbol " + Name);
+      exit(1);
+    }
   }
 }
 
 void ResolveLocals::resolveOperandsOfUser(User *U, BasicBlock *BB) {
   for (Use &ThisUse : U->operands()) {
     Value *V = ThisUse;
-    if (auto W = dyn_cast<User>(V))
-      resolveOperandsOfUser(W, BB);
     if (auto R = dyn_cast<UnresolvedValue>(V))
       lookupReplaceUse(R, ThisUse, BB);
+    if (auto W = dyn_cast<User>(V))
+      resolveOperandsOfUser(W, BB);
   }
 }
 
 void ResolveLocals::runOnFunction(Function *F) {
-  for (auto &Arg : F->args())
+  for (auto &Arg : F->args()) {
     K->Map.add(Arg, F->getEntryBlock());
+  }
   for (auto &V : *F) {
     if (auto M = dyn_cast<MallocInst>(V)) {
       K->Map.add(M, F->getEntryBlock());
