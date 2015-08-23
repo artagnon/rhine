@@ -4,7 +4,7 @@
 #include "rhine/IR/Module.h"
 #include "rhine/IR/Instruction.h"
 #include "rhine/IR/UnresolvedValue.h"
-#include "rhine/Transform/ResolveLocals.h"
+#include "rhine/Transform/Resolve.h"
 #include "rhine/Externals.h"
 
 namespace rhine {

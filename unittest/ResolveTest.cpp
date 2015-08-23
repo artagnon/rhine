@@ -6,7 +6,7 @@
 #include "rhine/IR/Constant.h"
 #include "rhine/IR/Instruction.h"
 #include "rhine/IR/UnresolvedValue.h"
-#include "rhine/Transform/ResolveLocals.h"
+#include "rhine/Transform/Resolve.h"
 
 using namespace rhine;
 
