@@ -62,7 +62,7 @@ Module *ParseFacade::parseToIR(ParseSource SrcE,
 std::string ParseFacade::parseAction(ParseSource SrcE,
                                      PostParseAction ActionE)
 {
-  ResolveLocals ResolveL;
+  Resolve ResolveL;
   LambdaLifting LambLift;
   TypeInfer TyInfer;
   TypeCoercion TyCoercion;

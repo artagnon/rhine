@@ -8,11 +8,11 @@
 #include "rhine/Externals.h"
 
 namespace rhine {
-ResolveLocals::ResolveLocals() : K(nullptr) {}
+Resolve::Resolve() : K(nullptr) {}
 
-ResolveLocals::~ResolveLocals() {}
+Resolve::~Resolve() {}
 
-void ResolveLocals::lookupReplaceUse(UnresolvedValue *V, Use &U,
+void Resolve::lookupReplaceUse(UnresolvedValue *V, Use &U,
                                      BasicBlock *Block) {
   auto Name = V->getName();
   auto K = V->getContext();
@@ -43,7 +43,7 @@ void ResolveLocals::lookupReplaceUse(UnresolvedValue *V, Use &U,
   }
 }
 
-void ResolveLocals::resolveOperandsOfUser(User *U, BasicBlock *BB) {
+void Resolve::resolveOperandsOfUser(User *U, BasicBlock *BB) {
   for (Use &ThisUse : U->uses()) {
     Value *V = ThisUse;
     if (auto R = dyn_cast<UnresolvedValue>(V))
@@ -53,7 +53,7 @@ void ResolveLocals::resolveOperandsOfUser(User *U, BasicBlock *BB) {
   }
 }
 
-void ResolveLocals::runOnFunction(Function *F) {
+void Resolve::runOnFunction(Function *F) {
   for (auto &Arg : F->args()) {
     K->Map.add(Arg, F->getEntryBlock());
   }
@@ -66,7 +66,7 @@ void ResolveLocals::runOnFunction(Function *F) {
     resolveOperandsOfUser(cast<User>(V), F->getEntryBlock());
 }
 
-void ResolveLocals::runOnModule(Module *M) {
+void Resolve::runOnModule(Module *M) {
   K = M->getContext();
   for (auto &F : *M)
     K->Map.add(F);

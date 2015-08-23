@@ -7,11 +7,11 @@
 namespace rhine {
 class UnresolvedValue;
 
-class ResolveLocals : public FunctionPass {
+class Resolve : public FunctionPass {
   Context *K;
 public:
-  ResolveLocals();
-  virtual ~ResolveLocals();
+  Resolve();
+  virtual ~Resolve();
   void runOnFunction(Function *F) override;
   void runOnModule(Module *M) override;
 private:

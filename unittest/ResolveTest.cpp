@@ -19,7 +19,7 @@ TEST(Resolve, Basic)
     "  Moo + 2;\n"
     "}";
   auto Pf = ParseFacade(SourcePrg);
-  ResolveLocals ResolveL;
+  Resolve ResolveL;
   auto Module = Pf.parseToIR(ParseSource::STRING, { &ResolveL });
   auto MainF = Module->front();
   rhine::Value *Decl = nullptr,
@@ -51,7 +51,7 @@ TEST(Resolve, SymbolResolution)
 {
   std::string SourcePrg = "def main [var ~Int] ret var;";
   auto Pf = ParseFacade(SourcePrg);
-  ResolveLocals ResolveL;
+  Resolve ResolveL;
   auto Module = Pf.parseToIR(ParseSource::STRING, { &ResolveL });
   auto Expected =
     "def main [var ~Int] ~Fn(Int -> UnType) {\n"
