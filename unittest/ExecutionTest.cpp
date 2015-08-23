@@ -5,7 +5,7 @@ using namespace rhine;
 
 TEST(Execution, FunctionArgument) {
   std::string SourcePrg =
-    "def printid [var ~ String] {\n"
+    "def printid [var ~String] {\n"
     "  print var;\n"
     "}\n"
     "def main [] {\n"
