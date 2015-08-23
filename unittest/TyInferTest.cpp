@@ -3,7 +3,7 @@
 
 using namespace rhine;
 
-TEST(TyInfer, DISABLED_CallInst) {
+TEST(TyInfer, CallInst) {
   std::string SourcePrg =
     "def mallocCall [] {\n"
     "  ret $ malloc 8;\n"
@@ -11,8 +11,8 @@ TEST(TyInfer, DISABLED_CallInst) {
   std::string ExpectedPP =
     "define i8* @mallocCall() gc \"rhgc\" {\n"
     "entry:\n"
-    "  %rhv0 = call i8* @std_String_malloc__Int(i64 8)\n"
-    "  ret i8* %rhv0\n"
+    "  %malloc = call i8* @std_String_malloc__Int(i64 8)\n"
+    "  ret i8* %malloc\n"
     "}\n";
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }

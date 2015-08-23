@@ -16,8 +16,6 @@ add_library(IR
 set_target_properties(IR PROPERTIES
   LINKER_LANGUAGE CXX
   COMPILE_FLAGS "${LLVM_CXXFLAGS}")
-target_link_libraries(IR
-  ${LLVM_LDFLAGS}
-  ${LLVM_LIBRARIES})
+target_link_libraries(IR)
 add_dependencies(IR
   Parse)

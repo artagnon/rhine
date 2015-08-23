@@ -52,6 +52,8 @@ void TypeCoercion::convertOperands(User *U, std::vector<Type *> Tys) {
   for (Use &ThisUse : U->operands()) {
     Value *V = ThisUse;
     ThisUse.set(convertValue(V, Tys[It++]));
+    if (auto Inst = dyn_cast<Instruction>(V))
+      transformInstruction(Inst);
   }
 }
 
@@ -84,17 +86,21 @@ void TypeCoercion::transformInstruction(Instruction *I) {
     assertActualFormalCount(Inst, FTy);
     convertOperands(cast<User>(Inst), FTy->getATys());
   }
-  if (auto Inst = dyn_cast<IfInst>(I)) {
+  else if (auto Inst = dyn_cast<IfInst>(I)) {
     auto Cond = Inst->getConditional();
     Use *CondUse = *Cond;
     CondUse->set(convertValue(Cond, BoolType::get(K)));
+  }
+  else if (auto Inst = dyn_cast<ReturnInst>(I)) {
+    convertOperands(cast<User>(Inst), { I->getType() });
   }
 }
 
 void TypeCoercion::runOnFunction(Function *F) {
   K = F->getContext();
-  for (auto &V : *F)
+  for (auto &V : *F) {
     if (auto I = dyn_cast<Instruction>(V))
-        transformInstruction(I);
+      transformInstruction(I);
+  }
 }
 }
