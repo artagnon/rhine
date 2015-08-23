@@ -71,11 +71,13 @@ Value *CallInst::getCallee() const {
 }
 
 Value *CallInst::getOperand(int i) const {
+  assert(i > -2 && "getOperand() below -1!");
   assert(i < (int)NumOperands && "getOperand() out of range!");
   return getOperandList()[i + 1];
 }
 
 void CallInst::setOperand(int i, Value *Val) {
+  assert(i > -2 && "setOperand() below -1!");
   assert(i < (int)NumOperands && "setOperand() out of range!");
   getOperandList()[i + 1].set(Val);
 }
@@ -108,11 +110,11 @@ void MallocInst::setVal(Value *V) {
 }
 
 Value *MallocInst::getVal() {
-  return getOperands()[0];
+  return getOperand(0);
 }
 
 void MallocInst::print(std::ostream &Stream) const {
-  Stream << Name << " = " << *getOperands()[0];
+  Stream << Name << " = " << *getOperand(0);
 }
 
 LoadInst::LoadInst(Value *V, std::string Name) :
@@ -133,7 +135,7 @@ bool LoadInst::classof(const Value *V) {
 }
 
 Value *LoadInst::getVal() const {
-  return getOperands()[0];
+  return getOperand(0);
 }
 
 void LoadInst::print(std::ostream &Stream) const {
@@ -171,7 +173,7 @@ Value *ReturnInst::getVal() {
 }
 
 void ReturnInst::print(std::ostream &Stream) const {
-  Stream << "ret " << *getOperands()[0];
+  Stream << "ret " << *getOperand(0);
 }
 
 IfInst::IfInst(Type *Ty):
@@ -181,7 +183,7 @@ void *IfInst::operator new(size_t s) {
   return User::operator new(s, 3);
 }
 
-IfInst *IfInst::get(Value * Conditional, BasicBlock *TrueBB,
+IfInst *IfInst::get(Value *Conditional, BasicBlock *TrueBB,
                     BasicBlock *FalseBB, Context *K) {
   auto Obj = new IfInst(UnType::get(K));
   Obj->setOperand(0, Conditional);

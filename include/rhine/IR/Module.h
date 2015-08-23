@@ -46,6 +46,7 @@ public:
   Function *front();
   iterator begin();
   iterator end();
+  void dump();
 protected:
   virtual void print(std::ostream &Stream) const {
     for (auto F: ContainedFs)

@@ -41,11 +41,13 @@ const Use *User::getOperandList() const {
 }
 
 Value *User::getOperand(int i) const {
+  assert(i > -1 && "getOperand() given negative value!");
   assert(i < (int)NumOperands && "getOperand() out of range!");
   return getOperandList()[i];
 }
 
 void User::setOperand(int i, Value *Val) {
+  assert(i > -1 && "setOperand() given negative value!");
   assert(i < (int)NumOperands && "setOperand() out of range!");
   assert(!isa<Constant>(cast<Value>(this)) &&
          "Cannot mutate a constant with setOperand!");

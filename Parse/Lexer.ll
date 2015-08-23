@@ -2,6 +2,10 @@
 %{
 #include "rhine/Parse/ParseDriver.h"
 #include "rhine/Parse/Lexer.h"
+#include "rhine/IR/Constant.h"
+#include "rhine/IR/GlobalValue.h"
+
+class yyFlexLexer;
 
 #define YY_USER_ACTION yylloc->columns(yyleng);
 #define K Driver->Ctx
@@ -41,7 +45,7 @@ SPTAB   [ \t]+
 <str>(\"|\') {
   BEGIN(INITIAL);
   *string_buf_ptr = '\0';
-  auto C = GlobalString::get(std::string(string_buf), K);
+  auto C = GlobalString::get(string_buf, K);
   yylval->String = C;
   return T::STRING;
 }

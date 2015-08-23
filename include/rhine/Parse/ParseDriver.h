@@ -6,12 +6,10 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "rhine/Parse/ParseTree.h"
-#include "rhine/Context.h"
 
 namespace rhine {
-
-using namespace rhine;
+class Context;
+class PTree;
 
 class ParseDriver
 {

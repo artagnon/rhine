@@ -61,6 +61,9 @@ llvm::Constant *Function::toLL(llvm::Module *M) {
 
 llvm::Value *Pointer::toLL(llvm::Module *M) {
   auto K = getContext();
-  return K->Map.getl(getVal());
+  auto Name = getVal()->getName();
+  if (auto Val = K->Map.getl(getVal()))
+    return Val;
+  return Externals::get(K)->getMappingVal(Name, M);
 }
 }

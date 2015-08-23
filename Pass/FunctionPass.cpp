@@ -1,4 +1,4 @@
-#include "rhine/IR.h"
+#include "rhine/IR/Module.h"
 #include "rhine/Pass/FunctionPass.h"
 
 namespace rhine {

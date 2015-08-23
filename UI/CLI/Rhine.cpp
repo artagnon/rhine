@@ -49,8 +49,8 @@ int main(int argc, char *argv[]) {
     for (std::string Line; std::getline(std::cin, Line);)
       Input += Line;
     auto FHandle = rhine::jitFacade(Input, Options[DEBUG], true);
-    delete Options;
-    delete Buffer;
+    delete[] Options;
+    delete[] Buffer;
     FHandle();
     return 0;
   }
@@ -61,8 +61,8 @@ int main(int argc, char *argv[]) {
   }
 
   auto FHandle = rhine::jitFacade(Parse.nonOption(0), Options[DEBUG]);
-  delete Options;
-  delete Buffer;
+  delete[] Options;
+  delete[] Buffer;
   FHandle();
   return 0;
 }

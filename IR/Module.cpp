@@ -20,4 +20,9 @@ Module::iterator Module::begin() {
 Module::iterator Module::end() {
   return ContainedFs.end();
 }
+
+__attribute__((used, noinline))
+void Module::dump() {
+  std::cout << *this << std::endl;
+}
 }

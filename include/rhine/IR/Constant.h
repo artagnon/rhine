@@ -35,6 +35,7 @@ class ConstantInt : public Constant {
   int Val;
 public:
   ConstantInt(int Val, unsigned Bitwidth, Context *K);
+  void *operator new(size_t s);
   static ConstantInt *get(int Val, unsigned Bitwidth, Context *K);
   static bool classof(const Value *V);
   int getVal() const;
@@ -49,6 +50,7 @@ class ConstantBool : public Constant {
 public:
   ConstantBool(bool Val, Context *K);
   virtual ~ConstantBool() {}
+  void *operator new(size_t s);
   static ConstantBool *get(bool Val, Context *K);
   static bool classof(const Value *V);
   float getVal() const;
@@ -58,10 +60,11 @@ protected:
 };
 
 class ConstantFloat : public Constant {
-public:
   float Val;
+public:
   ConstantFloat(float Val, Context *K);
   virtual ~ConstantFloat() {}
+  void *operator new(size_t s);
   static ConstantFloat *get(float Val, Context *K);
   static bool classof(const Value *V);
   float getVal() const;
@@ -78,12 +81,11 @@ private:
 public:
   Prototype(FunctionType *FTy, RTValue RTy = RT_Prototype);
   virtual ~Prototype();
+  void *operator new(size_t s);
   static Prototype *get(FunctionType *FTy);
   static bool classof(const Value *V);
   void setParent(Module *Parent);
   Module *getParent() const;
-  void setName(std::string N);
-  std::string getName() const;
   std::string getMangledName() const;
   void setArguments(std::vector<Argument *> L);
   void setVariadicRest(Argument *Rest);
@@ -103,6 +105,7 @@ class Function : public Prototype {
 public:
   Function(FunctionType *FTy);
   virtual ~Function();
+  void *operator new(size_t s);
   static Function *get(FunctionType *FTy);
   static bool classof(const Value *V);
   void setBody(BasicBlock *Body);
@@ -120,6 +123,7 @@ class Pointer : public User {
 public:
   Pointer(Value *V, Type *Ty);
   virtual ~Pointer();
+  void *operator new(size_t s);
   static Pointer *get(Value *V);
   static bool classof(const Value *V);
   void setVal(Value *V);
