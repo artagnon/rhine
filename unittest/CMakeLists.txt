@@ -11,10 +11,10 @@ add_executable(UnitTest
   "${CMAKE_CURRENT_SOURCE_DIR}/FunctionPointerTest.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/IfTest.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/LambdaTest.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ResolveTest.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ExternalsTest.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/TyInferTest.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/TyCoerceTest.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ResolveLocalsTest.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/DiagnosticTest.cpp")
 set_target_properties(UnitTest PROPERTIES
   LINKER_LANGUAGE CXX
