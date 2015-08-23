@@ -47,42 +47,54 @@ Value *TypeCoercion::convertValue(Value *V, Type *Ty) {
   return V;
 }
 
+void TypeCoercion::convertOperands(User *U, std::vector<Type *> Tys) {
+  int It = 0;
+  for (Use &ThisUse : U->operands()) {
+    Value *V = ThisUse;
+    ThisUse.set(convertValue(V, Tys[It++]));
+  }
+}
+
+void TypeCoercion::assertActualFormalCount(CallInst *Inst, FunctionType *FTy) {
+  auto OpSize = Inst->getOperands().size();
+  auto ASize = FTy->getATys().size();
+  auto SourceLoc = Inst->getSourceLocation();
+  if (OpSize != ASize) {
+    K->DiagPrinter->errorReport(
+        SourceLoc, "CallInst arguments size mismatch: " +
+        std::to_string(OpSize) + " versus " + std::to_string(ASize));
+    exit(1);
+  }
+}
+
+FunctionType *computeFunctionType(CallInst *Inst) {
+  FunctionType *FTy;
+  if (auto BareFTy = dyn_cast<FunctionType>(Inst->getType())) {
+    FTy = BareFTy;
+  } else {
+    auto PTy = cast<PointerType>(Inst->getType());
+    FTy = cast<FunctionType>(PTy->getCTy());
+  }
+  return FTy;
+}
+
+void TypeCoercion::transformInstruction(Instruction *I) {
+  if (auto Inst = dyn_cast<CallInst>(I)) {
+    auto FTy = computeFunctionType(Inst);
+    assertActualFormalCount(Inst, FTy);
+    convertOperands(cast<User>(Inst), FTy->getATys());
+  }
+  if (auto Inst = dyn_cast<IfInst>(I)) {
+    auto Cond = Inst->getConditional();
+    Use *CondUse = *Cond;
+    CondUse->set(convertValue(Cond, BoolType::get(K)));
+  }
+}
+
 void TypeCoercion::runOnFunction(Function *F) {
   K = F->getContext();
-  std::transform(
-      F->begin(), F->end(), F->begin(),
-      [this](Value *V) -> Value * {
-        if (auto C = dyn_cast<CallInst>(V)) {
-          FunctionType *FTy;
-          if (auto BareFTy = dyn_cast<FunctionType>(C->getType())) {
-            FTy = BareFTy;
-          } else {
-            auto PTy = cast<PointerType>(C->getType());
-            FTy = cast<FunctionType>(PTy->getCTy());
-          }
-          auto OpSize = C->getOperands().size();
-          auto ASize = FTy->getATys().size();
-          auto SourceLoc = C->getSourceLocation();
-          if (OpSize != ASize) {
-            K->DiagPrinter->errorReport(
-                SourceLoc, "CallInst arguments size mismatch: " +
-                std::to_string(OpSize) + " versus " + std::to_string(ASize));
-            exit(1);
-          }
-          std::vector<Value *> TransformedOperands;
-          for (unsigned long It = 0; It < ASize; It++)
-            TransformedOperands.push_back(
-                convertValue(C->getOperand(It), FTy->getATy(It)));
-          C->setOperands(TransformedOperands);
-          return C;
-        }
-        if (auto I = dyn_cast<IfInst>(V)) {
-          auto ConvertedConditional =
-            convertValue(I->getConditional(), BoolType::get(K));
-          I->setConditional(ConvertedConditional);
-          return I;
-        }
-        return V;
-      });
+  for (auto &V : *F)
+    if (auto I = dyn_cast<Instruction>(V))
+        transformInstruction(I);
 }
 }

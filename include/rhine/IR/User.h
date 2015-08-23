@@ -25,8 +25,10 @@ public:
   typedef Use* op_iterator;
   op_iterator use_begin() { return getOperandList(); }
   op_iterator use_end() { return getOperandList() + NumAllocatedOps; }
-  op_iterator op_begin() { return getOperandList(); }
-  op_iterator op_end() { return getOperandList() + NumOperands; }
+  op_iterator op_begin() {
+    return getOperandList() + NumAllocatedOps - NumOperands;
+  }
+  op_iterator op_end() { return getOperandList() + NumAllocatedOps; }
   iterator_range<op_iterator> uses() {
     return iterator_range<op_iterator>(use_begin(), use_end());
   }
