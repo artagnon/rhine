@@ -48,6 +48,7 @@ void Resolve::resolveOperandsOfUser(User *U, BasicBlock *BB) {
     Value *V = ThisUse;
     if (auto R = dyn_cast<UnresolvedValue>(V))
       lookupReplaceUse(R, ThisUse, BB);
+
     if (auto W = dyn_cast<User>(V))
       resolveOperandsOfUser(W, BB);
   }

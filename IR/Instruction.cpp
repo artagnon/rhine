@@ -30,8 +30,8 @@ void AddInst::print(std::ostream &Stream) const {
     Stream << std::endl << *O;
 }
 
-CallInst::CallInst(Type *Ty, unsigned NumOps) :
-    Instruction(Ty, RT_CallInst, NumOps) {}
+CallInst::CallInst(Type *Ty, unsigned NumOps, std::string N) :
+    Instruction(Ty, RT_CallInst, NumOps, N) {}
 
 void *CallInst::operator new(size_t s, unsigned n) {
   return User::operator new(s, n);
@@ -39,7 +39,8 @@ void *CallInst::operator new(size_t s, unsigned n) {
 
 CallInst *CallInst::get(Value *Callee, std::vector<Value *> Ops) {
   auto NumOps = Ops.size();
-  auto Obj = new (NumOps + 1) CallInst(Callee->getType(), NumOps);
+  auto Name = Callee->getName();
+  auto Obj = new (NumOps + 1) CallInst(Callee->getType(), NumOps, Name);
   Obj->NumAllocatedOps = NumOps + 1;
   Obj->setOperand(-1, Callee);
   for (unsigned OpN = 0; OpN < NumOps; OpN++)

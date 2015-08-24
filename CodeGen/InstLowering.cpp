@@ -6,26 +6,10 @@
 #include "rhine/Externals.h"
 
 namespace rhine {
-bool isPointerToFunction(llvm::Value *Candidate) {
-  if (auto PTy = dyn_cast<llvm::PointerType>(Candidate->getType())) {
-    if (isa<llvm::FunctionType>(PTy->getElementType()))
-      return true;
-  }
-  return false;
-}
-
 llvm::Value *CallInst::toLL(llvm::Module *M) {
   auto K = getContext();
   auto RTy = cast<FunctionType>(cast<PointerType>(VTy)->getCTy())->getRTy();
-  auto Name = getCallee()->getName();
-  auto CalleeFn = K->Map.getl(getCallee());
-  if (!CalleeFn)
-    CalleeFn = Externals::get(K)->getMappingVal(Name, M);
-  if (!CalleeFn) {
-    K->DiagPrinter->errorReport(SourceLoc,
-                                "unable to lookup function " + Name);
-    exit(1);
-  }
+  auto CalleeFn = getCallee()->toLL(M);
 
   // Prepare arguments to call
   std::vector<llvm::Value *> LLOps;
@@ -68,9 +52,7 @@ llvm::Value *MallocInst::toLL(llvm::Module *M) {
 llvm::Value *LoadInst::toLL(llvm::Module *M) {
   auto K = getContext();
   if (auto Result = K->Map.getl(this)) {
-    if (isa<llvm::BitCastInst>(Result))
-      return K->Builder->CreateLoad(Result, Name + "Load");
-    return Result;
+    return K->Builder->CreateLoad(Result, Name + "Load");
   } else if (auto Result = Externals::get(K)->getMappingVal(Name, M))
     return Result;
   K->DiagPrinter->errorReport(
