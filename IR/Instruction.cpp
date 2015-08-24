@@ -55,18 +55,6 @@ Value *CallInst::getCallee() const {
   return getOperand(-1);
 }
 
-Value *CallInst::getOperand(int i) const {
-  assert(i > -2 && "getOperand() below -1!");
-  assert(i < (int)NumOperands && "getOperand() out of range!");
-  return getOperandList()[i + 1];
-}
-
-void CallInst::setOperand(int i, Value *Val) {
-  assert(i > -2 && "setOperand() below -1!");
-  assert(i < (int)NumOperands && "setOperand() out of range!");
-  getOperandList()[i + 1].set(Val);
-}
-
 void CallInst::print(std::ostream &Stream) const {
   Stream << getCallee()->getName() << " ~" << *VTy;
   for (auto O: getOperands())

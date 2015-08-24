@@ -48,8 +48,6 @@ public:
   static CallInst *get(Value *Callee, std::vector<Value *> Ops);
   static bool classof(const Value *V);
   Value *getCallee() const;
-  Value *getOperand(int i) const override;
-  void setOperand(int i, Value *Val) override;
   virtual llvm::Value *toLL(llvm::Module *M) override;
 protected:
   void print(std::ostream &Stream) const override;

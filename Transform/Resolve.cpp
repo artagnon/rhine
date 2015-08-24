@@ -54,14 +54,13 @@ void Resolve::resolveOperandsOfUser(User *U, BasicBlock *BB) {
 }
 
 void Resolve::runOnFunction(Function *F) {
-  for (auto &Arg : F->args()) {
+  for (auto &Arg : F->args())
     K->Map.add(Arg, F->getEntryBlock());
-  }
-  for (auto &V : *F) {
-    if (auto M = dyn_cast<MallocInst>(V)) {
+
+  for (auto &V : *F)
+    if (auto M = dyn_cast<MallocInst>(V))
       K->Map.add(M, F->getEntryBlock());
-    }
-  }
+
   for (auto &V : *F)
     resolveOperandsOfUser(cast<User>(V), F->getEntryBlock());
 }
