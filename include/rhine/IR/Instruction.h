@@ -42,7 +42,7 @@ protected:
 
 class CallInst : public Instruction {
 public:
-  CallInst(Type *Ty, unsigned NumOps);
+  CallInst(Type *Ty, unsigned NumOps, std::string N);
   virtual ~CallInst() {}
   void *operator new(size_t s, unsigned n);
   static CallInst *get(Value *Callee, std::vector<Value *> Ops);

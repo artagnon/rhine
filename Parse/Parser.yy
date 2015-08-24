@@ -296,21 +296,18 @@ value_expr:
                 {
                   auto CInst = CallInst::get($S, {});
                   CInst->setSourceLocation(@1);
-                  CInst->setName(Driver->Root.getVirtualRegisterName());
                   $$ = CInst;
                 }
         |       typed_symbol[S] rvalue_list[L]
                 {
                   auto CInst = CallInst::get($S, *$L);
                   CInst->setSourceLocation(@1);
-                  CInst->setName(Driver->Root.getVirtualRegisterName());
                   $$ = CInst;
                 }
         |       typed_symbol[S] '$' value_expr[E]
                 {
                   auto Op = CallInst::get($S, {$E});
                   Op->setSourceLocation(@1);
-                  Op->setName(Driver->Root.getVirtualRegisterName());
                   $$ = Op;
                 }
         |       RET rvalue[R]
