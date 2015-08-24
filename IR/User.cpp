@@ -41,17 +41,19 @@ const Use *User::getOperandList() const {
 }
 
 Value *User::getOperand(int i) const {
-  assert(i > -1 && "getOperand() given negative value!");
+  int Offset = NumAllocatedOps - NumOperands;
+  assert(i >= -Offset && "getOperand() given negative value!");
   assert(i < (int)NumOperands && "getOperand() out of range!");
-  return getOperandList()[i];
+  return getOperandList()[i + Offset];
 }
 
 void User::setOperand(int i, Value *Val) {
-  assert(i > -1 && "setOperand() given negative value!");
+  int Offset = NumAllocatedOps - NumOperands;
+  assert(i >= -Offset && "setOperand() given negative value!");
   assert(i < (int)NumOperands && "setOperand() out of range!");
   assert(!isa<Constant>(cast<Value>(this)) &&
          "Cannot mutate a constant with setOperand!");
-  getOperandList()[i].set(Val);
+  getOperandList()[i + Offset].set(Val);
 }
 
 std::vector<Value *> User::getOperands() const {
