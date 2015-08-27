@@ -176,7 +176,7 @@ void Prototype::print(std::ostream &Stream) const {
 }
 
 Function::Function(FunctionType *FTy) :
-    Prototype(FTy, RT_Function), Val(nullptr) {}
+    Prototype(FTy, RT_Function) {}
 
 Function::~Function() {}
 
@@ -192,31 +192,35 @@ bool Function::classof(const Value *V) {
   return V->getValID() == RT_Function;
 }
 
-void Function::setBody(BasicBlock *Body) {
-  Val = Body;
+void Function::push_back(BasicBlock *NewBB) {
+  Val.push_back(NewBB);
 }
 
-BasicBlock *Function::getVal() const {
-  return Val;
+BasicBlock *Function::front() const {
+  return Val.front();
+}
+
+BasicBlock *Function::back() const {
+  return Val.back();
 }
 
 BasicBlock *Function::getEntryBlock() const {
-  return Val;
+  return Val.front();
 }
 
-BasicBlock::iterator Function::begin() {
-  return Val->begin();
+Function::iterator Function::begin() {
+  return Val.begin();
 }
 
-BasicBlock::iterator Function::end() {
-  return Val->end();
+Function::iterator Function::end() {
+  return Val.end();
 }
 
 void Function::print(std::ostream &Stream) const {
   Stream << "def " << Name;
   emitArguments(Stream);
   Stream << " ~" << *getType() << " {";
-  for (auto V: Val->ValueList)
+  for (auto V: *Val.front())
     Stream << std::endl << *V;
   Stream << std::endl << "}";
 }

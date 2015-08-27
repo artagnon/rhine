@@ -53,7 +53,7 @@ Type *TypeInfer::visit(Prototype *V) {
 Type *TypeInfer::visit(Function *V) {
   auto FTy = cast<FunctionType>(V->getType());
   if (isa<UnType>(FTy->getRTy())) {
-    auto LastTy = typeInferValueList(V->getVal()->ValueList);
+    auto LastTy = typeInferValueList(V->front()->ValueList);
     assert(LastTy && "Function has null body");
     FTy = FunctionType::get(LastTy, FTy->getATys(), false, K);
     V->setType(FTy);

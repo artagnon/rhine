@@ -2,19 +2,19 @@
 #ifndef RHINE_RESOLVELOCALS_H
 #define RHINE_RESOLVELOCALS_H
 
-#include "rhine/Pass/FunctionPass.h"
+#include "rhine/Pass/ModulePass.h"
 
 namespace rhine {
 class UnresolvedValue;
 
-class Resolve : public FunctionPass {
+class Resolve : public ModulePass {
   Context *K;
 public:
   Resolve();
   virtual ~Resolve();
-  void runOnFunction(Function *F) override;
-  void runOnModule(Module *M) override;
+  virtual void runOnModule(Module *M) override;
 private:
+  virtual void runOnFunction(Function *F) override;
   std::vector<BasicBlock *> getBlocksInScope(BasicBlock *BB);
   void lookupReplaceUse(UnresolvedValue *V, Use &U,
                         BasicBlock *Block);

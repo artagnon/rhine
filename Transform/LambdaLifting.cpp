@@ -7,8 +7,9 @@ class MallocInst;
 
 void LambdaLifting::runOnFunction(Function *F) {
   auto M = F->getParent();
+  auto BB = F->front();
   std::transform(
-      F->begin(), F->end(), F->begin(),
+      BB->begin(), BB->end(), BB->begin(),
       [this, F, M](Value *V) {
         if (auto B = dyn_cast<MallocInst>(V)) {
           if (auto Fn = dyn_cast<Function>(B->getVal())) {
