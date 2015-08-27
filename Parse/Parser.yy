@@ -117,7 +117,7 @@ fn_decl:
 def:
                 fn_decl[F] compound_stm[L]
                 {
-                  $F->setBody($L);
+                  $F->push_back($L);
                   $$ = $F;
                 }
                 ;
@@ -356,7 +356,7 @@ lambda_expr:
                   auto Fn = Function::get(FTy);
                   Fn->setSourceLocation(@1);
                   Fn->setArguments(*$A);
-                  Fn->setBody($B);
+                  Fn->push_back($B);
                   $$ = Fn;
                 }
                 ;

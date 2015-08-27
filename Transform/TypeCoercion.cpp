@@ -98,7 +98,7 @@ void TypeCoercion::transformInstruction(Instruction *I) {
 
 void TypeCoercion::runOnFunction(Function *F) {
   K = F->getContext();
-  for (auto &V : *F) {
+  for (auto &V : *F->front()) {
     if (auto I = dyn_cast<Instruction>(V))
       transformInstruction(I);
   }

@@ -52,7 +52,7 @@ llvm::Constant *Function::toLL(llvm::Module *M) {
     llvm::BasicBlock::Create(K->Builder->getContext(),
                              "entry", K->CurrentFunction);
   K->Builder->SetInsertPoint(BB);
-  auto Block = getVal();
+  auto Block = front();
   Block->toLL(M);
   if (!isa<ReturnInst>(Block->back()))
     K->Builder->CreateRet(nullptr);

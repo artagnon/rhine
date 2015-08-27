@@ -101,18 +101,20 @@ protected:
 };
 
 class Function : public Prototype {
-  BasicBlock *Val;
+  std::vector<BasicBlock *> Val;
 public:
   Function(FunctionType *FTy);
   virtual ~Function();
   void *operator new(size_t s);
   static Function *get(FunctionType *FTy);
   static bool classof(const Value *V);
-  void setBody(BasicBlock *Body);
-  BasicBlock *getVal() const;
+  void push_back(BasicBlock *NewBB);
+  BasicBlock *front() const;
+  BasicBlock *back() const;
   BasicBlock *getEntryBlock() const;
-  BasicBlock::iterator begin();
-  BasicBlock::iterator end();
+  typedef std::vector<BasicBlock *>::iterator iterator;
+  iterator begin();
+  iterator end();
   virtual llvm::Constant *toLL(llvm::Module *M) override;
 protected:
   virtual void print(std::ostream &Stream) const override;
