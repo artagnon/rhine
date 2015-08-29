@@ -105,7 +105,7 @@ Value *KR::searchOneBlock(Value *Val, BasicBlock *Block)
 Value *KR::get(Value *Val, BasicBlock *Block) {
   if (!Val->isUnTyped() && !isa<UnresolvedValue>(Val))
     return Val;
-  for (; Block; Block = Block->getPredecessor()) {
+  for (; Block; Block = Block->getUniquePredecessor()) {
     if (auto Result = searchOneBlock(Val, Block))
       return Result;
   }

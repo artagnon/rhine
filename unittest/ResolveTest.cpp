@@ -10,7 +10,7 @@
 
 using namespace rhine;
 
-TEST(Resolve, Basic)
+TEST(Resolve, UnresolvedReplacement)
 {
   std::string SourcePrg =
     "def main [] {\n"
@@ -47,7 +47,7 @@ TEST(Resolve, Basic)
   ASSERT_NE(FirstInstance, SecondInstance);
 }
 
-TEST(Resolve, SymbolResolution)
+TEST(Resolve, ArgumentSymbolReplacement)
 {
   std::string SourcePrg = "def main [var ~Int] ret var;";
   auto Pf = ParseFacade(SourcePrg);

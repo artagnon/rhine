@@ -16,12 +16,50 @@ bool BasicBlock::classof(const Value *V) {
   return V->getValID() == RT_BasicBlock;
 }
 
-BasicBlock::iterator BasicBlock::begin() {
+BasicBlock::value_iterator BasicBlock::begin() {
   return ValueList.begin();
 }
 
-BasicBlock::iterator BasicBlock::end() {
+BasicBlock::value_iterator BasicBlock::end() {
   return ValueList.end();
+}
+
+BasicBlock::bb_iterator BasicBlock::pred_begin() {
+  return Predecessors.begin();
+}
+
+BasicBlock::bb_iterator BasicBlock::pred_end() {
+  return Predecessors.end();
+}
+
+BasicBlock::bb_iterator BasicBlock::succ_begin() {
+  return Successors.begin();
+}
+
+BasicBlock::bb_iterator BasicBlock::succ_end() {
+  return Successors.end();
+}
+
+void BasicBlock::addPredecessors(std::vector<BasicBlock *> Preds) {
+  for (auto B: Preds)
+    Predecessors.push_back(B);
+}
+
+void BasicBlock::removePredecessor(BasicBlock *Pred) {
+  auto It = std::remove(Predecessors.begin(), Predecessors.end(), Pred);
+  assert(It != Predecessors.end() && "Can't find predecessor to remove");
+  Predecessors.erase(It, Predecessors.end());
+}
+
+void BasicBlock::addSuccessors(std::vector<BasicBlock *> Succs) {
+  for (auto B: Succs)
+    Successors.push_back(B);
+}
+
+void BasicBlock::removeSuccessor(BasicBlock *Succ) {
+  auto It = std::remove(Successors.begin(), Successors.end(), Succ);
+  assert(It != Predecessors.end() && "Can't find successor to remove");
+  Successors.erase(It, Successors.end());
 }
 
 unsigned BasicBlock::size() {
@@ -32,15 +70,15 @@ Value *BasicBlock::back() {
   return ValueList.back();
 }
 
-void BasicBlock::setParent(Module *M) {
-  Parent = M;
+void BasicBlock::setParent(Function *F) {
+  Parent = F;
 }
 
-Module *BasicBlock::getParent() const {
+Function *BasicBlock::getParent() const {
   return Parent;
 }
 
-BasicBlock *BasicBlock::getPredecessor() const {
+BasicBlock *BasicBlock::getUniquePredecessor() const {
   return nullptr;
 }
 
