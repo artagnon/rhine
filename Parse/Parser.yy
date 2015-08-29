@@ -117,6 +117,7 @@ fn_decl:
 def:
                 fn_decl[F] compound_stm[L]
                 {
+                  $L->setParent($F);
                   $F->push_back($L);
                   $$ = $F;
                 }
@@ -125,7 +126,6 @@ compound_stm:
                 '{' stm_list[L] '}'
                 {
                   auto BB = BasicBlock::get(*$L, K);
-                  BB->setParent(Driver->Root.M);
                   $$ = BB;
                 }
         |       expression_or_branch[E]
@@ -133,7 +133,6 @@ compound_stm:
                   std::vector<Value *> StmList;
                   StmList.push_back($E);
                   auto BB = BasicBlock::get(StmList, K);
-                  BB->setParent(Driver->Root.M);
                   $$ = BB;
                 }
 argument_list:
