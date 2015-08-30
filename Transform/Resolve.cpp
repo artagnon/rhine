@@ -70,6 +70,8 @@ void Resolve::runOnFunction(Function *F) {
 
 void Resolve::runOnModule(Module *M) {
   K = M->getContext();
+  for (auto P : Externals::get(K)->getProtos())
+    K->Map.add(P);
   for (auto &F : *M)
     K->Map.add(F);
   for (auto &F : *M)
@@ -113,8 +115,7 @@ Value *KR::get(Value *Val, BasicBlock *Block) {
   }
   if (auto Result = searchOneBlock(Val, nullptr))
     return Result;
-  auto Ext = Externals::get(Val->getContext());
-  return Ext->getMappingProto(Val->getName());
+  return nullptr;
 }
 
 llvm::Value *KR::getl(Value *Val, BasicBlock *Block) {
