@@ -18,14 +18,10 @@ Externals::Externals(Context *K) : K(K) {
     FunctionType::get(StringType::get(K), {IntegerType::get(64, K)}, false, K);
   auto ToStringTy =
     FunctionType::get(StringType::get(K), {IntegerType::get(32, K)}, false, K);
-  PrintProto = Prototype::get(PrintTy);
-  PrintProto->setName("print");
-  PrintlnProto = Prototype::get(PrintTy);
-  PrintlnProto->setName("println");
-  MallocProto = Prototype::get(MallocTy);
-  MallocProto->setName("malloc");
-  ToStringProto = Prototype::get(ToStringTy);
-  ToStringProto->setName("toString");
+  PrintProto = Prototype::get("print", PrintTy);
+  PrintlnProto = Prototype::get("println", PrintTy);
+  MallocProto = Prototype::get("malloc", MallocTy);
+  ToStringProto = Prototype::get("toString", ToStringTy);
 }
 
 Externals *Externals::get(Context *K) {

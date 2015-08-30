@@ -79,10 +79,10 @@ private:
   std::vector<Argument *> ArgumentList;
   Argument *VariadicRestLoadInst;
 public:
-  Prototype(FunctionType *FTy, RTValue RTy = RT_Prototype);
+  Prototype(std::string Name, FunctionType *FTy, RTValue RTy = RT_Prototype);
   virtual ~Prototype();
   void *operator new(size_t s);
-  static Prototype *get(FunctionType *FTy);
+  static Prototype *get(std::string Name, FunctionType *FTy);
   static bool classof(const Value *V);
   void setParent(Module *Parent);
   Module *getParent() const;
@@ -104,10 +104,10 @@ protected:
 class Function : public Prototype {
   std::vector<BasicBlock *> Val;
 public:
-  Function(FunctionType *FTy);
+  Function(std::string Name, FunctionType *FTy);
   virtual ~Function();
   void *operator new(size_t s);
-  static Function *get(FunctionType *FTy);
+  static Function *get(std::string Name, FunctionType *FTy);
   static bool classof(const Value *V);
   virtual std::string getMangledName() const override;
   void push_back(BasicBlock *NewBB);
