@@ -3,12 +3,12 @@
 
 using namespace rhine;
 
-TEST(If, DISABLED_BasicCodeGen)
+TEST(If, BasicCodeGen)
 {
   std::string SourcePrg =
     "def main [] { if (false) 2; else 3; }";
   std::string ExpectedPP =
-    "define i32 @main() gc \"rhgc\" {\n"
+    "define void @main() gc \"rhgc\" {\n"
     "entry:\n"
     "  br i1 false, label %true, label %false\n\n"
     "true:                                             ; preds = %entry\n"
@@ -17,12 +17,12 @@ TEST(If, DISABLED_BasicCodeGen)
     "  br label %merge\n\n"
     "merge:                                            ; preds = %false, %true\n"
     "  %iftmp = phi i32 [ 2, %true ], [ 3, %false ]\n"
-    "  ret i32 %iftmp\n"
+    "  ret void\n"
     "}";
   EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
 }
 
-TEST(If, DISABLED_BasicExecution)
+TEST(If, BasicExecution)
 {
   std::string SourcePrg =
     "def main [] { if (false) print '2'; else print '3'; }";
