@@ -58,12 +58,14 @@ void Resolve::runOnFunction(Function *F) {
   for (auto &Arg : F->args())
     K->Map.add(Arg, F->getEntryBlock());
 
-  for (auto &V : *F->front())
-    if (auto M = dyn_cast<MallocInst>(V))
-      K->Map.add(M, F->getEntryBlock());
+  for (auto &BB : *F)
+    for (auto &V : *BB)
+      if (auto M = dyn_cast<MallocInst>(V))
+        K->Map.add(M, F->getEntryBlock());
 
-  for (auto &V : *F->front())
-    resolveOperandsOfUser(cast<User>(V), F->getEntryBlock());
+  for (auto &BB : *F)
+    for (auto &V : *BB)
+      resolveOperandsOfUser(cast<User>(V), F->getEntryBlock());
 }
 
 void Resolve::runOnModule(Module *M) {
