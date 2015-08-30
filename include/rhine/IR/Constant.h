@@ -86,7 +86,8 @@ public:
   static bool classof(const Value *V);
   void setParent(Module *Parent);
   Module *getParent() const;
-  std::string getMangledName() const;
+  virtual std::string getMangledName() const;
+  llvm::Function *getOrInsert(llvm::Module *M);
   void setArguments(std::vector<Argument *> L);
   void setVariadicRest(Argument *Rest);
   std::vector<Argument *> getArguments() const;
@@ -108,6 +109,7 @@ public:
   void *operator new(size_t s);
   static Function *get(FunctionType *FTy);
   static bool classof(const Value *V);
+  virtual std::string getMangledName() const override;
   void push_back(BasicBlock *NewBB);
   BasicBlock *front() const;
   BasicBlock *back() const;

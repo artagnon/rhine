@@ -192,6 +192,10 @@ bool Function::classof(const Value *V) {
   return V->getValID() == RT_Function;
 }
 
+std::string Function::getMangledName() const {
+  return Name;
+}
+
 void Function::push_back(BasicBlock *NewBB) {
   Val.push_back(NewBB);
 }

@@ -51,16 +51,6 @@ PointerType *Externals::getMappingTy(std::string S) {
 llvm::Constant *Externals::getMappingVal(std::string S, llvm::Module *M) {
   if (auto Proto = getMappingProto(S)) {
     auto FTy = cast<llvm::FunctionType>(Proto->getType()->toLL(M));
-
-    // getOrInsertFunction::
-    //
-    // Look up the specified function in the module symbol table.
-    // Four possibilities: 1. If it does not exist, add a prototype for the function
-    // and return it. 2. If it exists, and has a local linkage, the existing
-    // function is renamed and a new one is inserted. 3. Otherwise, if the existing
-    // function has the correct prototype, return the existing function. 4. Finally,
-    // the function exists but has the wrong prototype: return the function with a
-    // constantexpr cast to the right prototype.
     return M->getOrInsertFunction(Proto->getMangledName(), FTy);
   }
   return nullptr;
