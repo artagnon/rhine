@@ -11,7 +11,6 @@ class PointerType;
 class Context;
 
 class Externals {
-  Context *K;
   Prototype *PrintProto;
   Prototype *PrintlnProto;
   Prototype *MallocProto;
@@ -20,8 +19,8 @@ class Externals {
 public:
   Externals(Context *K);
   static Externals *get(Context *K);
+  std::vector<Prototype *> getProtos() const;
   Prototype *getMappingProto(std::string S);
-  PointerType *getMappingTy(std::string S);
   llvm::Constant *getMappingVal(std::string S, llvm::Module *M);
 };
 }

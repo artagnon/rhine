@@ -25,9 +25,11 @@ Value *TypeCoercion::convertValue(Value *V, StringType *) {
     if (dyn_cast<StringType>(FTy->getRTy()))
       return V;
   }
-  auto toStringF = Externals::get(K)->getMappingProto("toString");
-  auto Op = CallInst::get(toStringF, {V});
-  Op->setType(Externals::get(K)->getMappingTy("toString"));
+  auto ToStringTy =
+    FunctionType::get(StringType::get(K), {IntegerType::get(32, K)}, false, K);
+  auto ToStringF = K->Map.get(Prototype::get("toString", ToStringTy));
+  auto Op = CallInst::get(ToStringF, {V});
+  Op->setType(PointerType::get(ToStringTy, K));
   return Op;
 }
 

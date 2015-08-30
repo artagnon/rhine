@@ -11,7 +11,7 @@
 using namespace llvm;
 
 namespace rhine {
-Externals::Externals(Context *K) : K(K) {
+Externals::Externals(Context *K) {
   auto PrintTy =
     FunctionType::get(VoidType::get(K), {StringType::get(K)}, true, K);
   auto MallocTy =
@@ -30,17 +30,15 @@ Externals *Externals::get(Context *K) {
   return K->ExternalsCache;
 }
 
+std::vector<Prototype *> Externals::getProtos() const {
+  return { PrintProto, PrintlnProto, MallocProto, ToStringProto };
+}
+
 Prototype *Externals::getMappingProto(std::string S) {
   if (S == "print") return PrintProto;
   else if (S == "println") return PrintlnProto;
   else if (S == "malloc") return MallocProto;
   else if (S == "toString") return ToStringProto;
-  return nullptr;
-}
-
-PointerType *Externals::getMappingTy(std::string S) {
-  if (auto Proto = getMappingProto(S))
-    return PointerType::get(Proto->getType(), K);
   return nullptr;
 }
 

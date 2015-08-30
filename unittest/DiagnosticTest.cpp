@@ -68,3 +68,14 @@ TEST(Diagnostic, DanglingBraceWithStatement)
   std::string ExpectedErr = "string stream:1:16: error: syntax error";
   EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
 }
+
+TEST(Diagnostic, DISABLED_MismatchedArgument)
+{
+  std::string SourcePrg =
+    "def main [] {\n"
+    "  toString '4';\n"
+    "}\n";
+  std::string ExpectedErr =
+    "error: no overloaded instance of toString takes String argument";
+  EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
+}
