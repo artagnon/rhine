@@ -84,8 +84,8 @@ void ConstantFloat::print(std::ostream &Stream) const {
   Stream << Val << " ~" << *getType();
 }
 
-Prototype::Prototype(FunctionType *FTy, RTValue RTy) :
-    User(FTy, RTy), ParentModule(nullptr),
+Prototype::Prototype(std::string Name, FunctionType *FTy, RTValue RTy) :
+    User(FTy, RTy, 0, Name), ParentModule(nullptr),
     VariadicRestLoadInst(nullptr) {}
 
 Prototype::~Prototype() {}
@@ -94,8 +94,8 @@ void *Prototype::operator new(size_t s) {
   return User::operator new(s);
 }
 
-Prototype *Prototype::get(FunctionType *FTy) {
-  return new Prototype(FTy);
+Prototype *Prototype::get(std::string Name, FunctionType *FTy) {
+  return new Prototype(Name, FTy);
 }
 
 bool Prototype::classof(const Value *V) {
@@ -175,8 +175,8 @@ void Prototype::print(std::ostream &Stream) const {
   Stream << " ~" << *getType();
 }
 
-Function::Function(FunctionType *FTy) :
-    Prototype(FTy, RT_Function) {}
+Function::Function(std::string Name, FunctionType *FTy) :
+    Prototype(Name, FTy, RT_Function) {}
 
 Function::~Function() {}
 
@@ -184,8 +184,8 @@ void *Function::operator new(size_t s) {
   return User::operator new(s);
 }
 
-Function *Function::get(FunctionType *FTy) {
-  return new Function(FTy);
+Function *Function::get(std::string Name, FunctionType *FTy) {
+  return new Function(Name, FTy);
 }
 
 bool Function::classof(const Value *V) {
