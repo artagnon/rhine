@@ -90,8 +90,10 @@ std::string ParseFacade::parseAction(ParseSource SrcE,
     break;
   }
   for (auto F : *TransformedIR) {
-    for (auto V : *F->front()) {
-      delete V;
+    for (auto BB : *F) {
+      for (auto V : *BB)
+        delete V;
+      delete BB;
     }
     delete F;
   }
