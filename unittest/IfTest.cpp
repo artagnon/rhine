@@ -29,3 +29,16 @@ TEST(If, BasicExecution)
   std::string ExpectedOut = "3";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
+
+TEST(If, DISABLED_CondAssign)
+{
+  std::string SourcePrg =
+    "def main [] {\n"
+    "  Handle = 0;\n"
+    "  if (false) Handle = 2;\n"
+    "  else Handle = 3;\n"
+    "  ret Handle;\n"
+    "}";
+  std::string ExpectedOut = "3";
+  EXPECT_OUTPUT(SourcePrg, ExpectedOut);
+}
