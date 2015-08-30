@@ -31,7 +31,7 @@ Type *TypeInfer::typeInferValueList(std::vector<T> V) {
                    return L;
                  });
   if (!V.size())
-    return nullptr;
+    return VoidType::get(K);
   return visit(V.back());
 }
 
@@ -53,7 +53,9 @@ Type *TypeInfer::visit(Prototype *V) {
 Type *TypeInfer::visit(Function *V) {
   auto FTy = cast<FunctionType>(V->getType());
   if (isa<UnType>(FTy->getRTy())) {
-    auto LastTy = typeInferValueList(V->front()->ValueList);
+    Type *LastTy = nullptr;
+    for (auto BB : *V)
+      LastTy = typeInferValueList(BB->ValueList);
     assert(LastTy && "Function has null body");
     FTy = FunctionType::get(LastTy, FTy->getATys(), false, K);
     V->setType(FTy);

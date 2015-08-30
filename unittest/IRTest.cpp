@@ -107,7 +107,7 @@ TEST(IR, IfBasic)
   std::string SourcePrg =
     "def main [] { if (0) 2; else 3; }";
   std::string ExpectedPP =
-    "def main [] ~Fn(Void -> Int) {\n"
+    "def main [] ~Fn(Void -> Void) {\n"
     "if (0 ~Int) {\n"
     "2 ~Int\n"
     "} else {\n"

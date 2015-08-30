@@ -32,7 +32,7 @@ TEST(TyCoerce, IntTyToString) {
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
 
-TEST(TyCoerce, DISABLED_NestedBB)
+TEST(TyCoerce, InsideIf)
 {
   std::string SourcePrg =
     "def main [] { if (false) print 2; else print 3; }";
