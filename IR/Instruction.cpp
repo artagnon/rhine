@@ -116,6 +116,38 @@ void LoadInst::print(std::ostream &Stream) const {
   Stream << Name << " ~" << *VTy;
 }
 
+StoreInst::StoreInst(Value *MallocedValue, Value *NewValue) :
+    Instruction(MallocedValue->getType(), RT_StoreInst, 2) {
+  assert(MallocedValue->getType() == NewValue->getType() &&
+         "Type mismatch in store");
+  setOperand(0, MallocedValue);
+  setOperand(1, NewValue);
+}
+
+void *StoreInst::operator new(size_t s) {
+  return User::operator new (s, 2);
+}
+
+StoreInst *StoreInst::get(Value *MallocedValue, Value *NewValue) {
+  return new StoreInst(MallocedValue, NewValue);
+}
+
+bool StoreInst::classof(const Value *V) {
+  return V->getValID() == RT_StoreInst;
+}
+
+Value *StoreInst::getMallocedValue() const {
+  return getOperand(0);
+}
+
+Value *StoreInst::getNewValue() const {
+  return getOperand(1);
+}
+
+void StoreInst::print(std::ostream &Stream) const {
+  Stream << *getMallocedValue() << " = " << *getNewValue();
+}
+
 ReturnInst::ReturnInst(Type *Ty, bool IsNotVoid) :
     Instruction(Ty, RT_ReturnInst, IsNotVoid) {}
 

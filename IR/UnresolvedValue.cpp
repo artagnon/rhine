@@ -1,4 +1,5 @@
 #include "rhine/IR/UnresolvedValue.h"
+#include "rhine/IR/Type.h"
 
 namespace rhine {
 UnresolvedValue::UnresolvedValue(std::string N, Type *T) :

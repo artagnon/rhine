@@ -1,4 +1,3 @@
-#include "llvm/ADT/None.h"
 #include "llvm/IR/DataLayout.h"
 
 #include "rhine/Context.h"
@@ -46,6 +45,10 @@ llvm::Value *MallocInst::toLL(llvm::Module *M) {
       Slot, llvm::PointerType::get(Ty, 0));
   K->Builder->CreateStore(V, CastSlot);
   K->Map.add(this, nullptr, CastSlot);
+  return nullptr;
+}
+
+llvm::Value *StoreInst::toLL(llvm::Module *M) {
   return nullptr;
 }
 

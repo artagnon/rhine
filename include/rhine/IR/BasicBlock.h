@@ -4,6 +4,7 @@
 #define RHINE_BASICBLOCK_H
 
 #include "rhine/IR/Value.h"
+#include <vector>
 
 namespace rhine {
 class Function;

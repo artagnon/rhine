@@ -4,6 +4,7 @@
 
 #include "rhine/IR/Value.h"
 #include "rhine/IR/Use.h"
+#include <vector>
 
 namespace rhine {
 class User : public Value {

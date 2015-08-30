@@ -8,7 +8,6 @@
 #include <sstream>
 
 #include "location.hh"
-#include "rhine/IR/Type.h"
 
 using namespace std;
 using namespace llvm;
@@ -16,6 +15,7 @@ using namespace llvm;
 namespace rhine {
 class Use;
 class User;
+class Type;
 class Context;
 
 enum RTValue {
@@ -35,6 +35,7 @@ enum RTValue {
   RT_CallInst,
   RT_MallocInst,
   RT_LoadInst,
+  RT_StoreInst,
   RT_ReturnInst,
   RT_IfInst,
   RT_BasicBlock,

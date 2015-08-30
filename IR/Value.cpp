@@ -1,4 +1,5 @@
 #include "rhine/IR/Value.h"
+#include "rhine/IR/Type.h"
 #include "rhine/IR/Use.h"
 #include <iostream>
 

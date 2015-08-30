@@ -80,6 +80,20 @@ protected:
   void print(std::ostream &Stream) const override;
 };
 
+class StoreInst : public Instruction {
+public:
+  StoreInst(Value *MallocedValue, Value *NewValue);
+  virtual ~StoreInst() {}
+  void *operator new(size_t s);
+  static StoreInst *get(Value *MallocedValue, Value *NewValue);
+  Value *getMallocedValue() const;
+  Value *getNewValue() const;
+  static bool classof(const Value *V);
+  virtual llvm::Value *toLL(llvm::Module *M) override;
+protected:
+  void print(std::ostream &Stream) const override;
+};
+
 class ReturnInst : public Instruction {
 public:
   ReturnInst(Type *Ty, bool IsNotVoid);

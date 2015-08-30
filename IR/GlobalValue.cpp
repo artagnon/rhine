@@ -1,4 +1,5 @@
 #include "rhine/IR/GlobalValue.h"
+#include "rhine/IR/Type.h"
 
 namespace rhine {
 GlobalString::GlobalString(std::string Val, Context *K) :
