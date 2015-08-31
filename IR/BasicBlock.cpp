@@ -32,12 +32,20 @@ BasicBlock::bb_iterator BasicBlock::pred_end() {
   return Predecessors.end();
 }
 
+iterator_range<BasicBlock::bb_iterator> BasicBlock::preds() {
+  return iterator_range<BasicBlock::bb_iterator>(pred_begin(), pred_end());
+}
+
 BasicBlock::bb_iterator BasicBlock::succ_begin() {
   return Successors.begin();
 }
 
 BasicBlock::bb_iterator BasicBlock::succ_end() {
   return Successors.end();
+}
+
+iterator_range<BasicBlock::bb_iterator> BasicBlock::succs() {
+  return iterator_range<BasicBlock::bb_iterator>(succ_begin(), succ_end());
 }
 
 void BasicBlock::addPredecessors(std::vector<BasicBlock *> Preds) {
@@ -79,6 +87,8 @@ Function *BasicBlock::getParent() const {
 }
 
 BasicBlock *BasicBlock::getUniquePredecessor() const {
+  if (Predecessors.size() == 1)
+    return Predecessors[0];
   return nullptr;
 }
 

@@ -7,6 +7,8 @@
 #include "rhine/Transform/Resolve.h"
 #include "rhine/Externals.h"
 
+#include <list>
+
 namespace rhine {
 Resolve::Resolve() : K(nullptr) {}
 
@@ -106,15 +108,24 @@ Value *KR::searchOneBlock(Value *Val, BasicBlock *Block)
     return IteratorToElement->second.Val;
 }
 
+std::list<BasicBlock *> flattenPredecessors(BasicBlock *Block) {
+  static std::list<BasicBlock *> AllPreds;
+  if (!Block) return AllPreds;
+  AllPreds.push_back(Block);
+  for (auto Pred : Block->preds())
+    flattenPredecessors(Pred);
+  return AllPreds;
+}
+
 Value *KR::get(Value *Val, BasicBlock *Block) {
   if (!Val->isUnTyped() && !isa<UnresolvedValue>(Val))
     return Val;
-  for (; Block; Block = Block->getUniquePredecessor()) {
-    if (auto Result = searchOneBlock(Val, Block))
+  auto UniqPreds = flattenPredecessors(Block);
+  UniqPreds.unique();
+  UniqPreds.push_back(nullptr); // Global
+  for (auto BB : UniqPreds)
+    if (auto Result = searchOneBlock(Val, BB))
       return Result;
-  }
-  if (auto Result = searchOneBlock(Val, nullptr))
-    return Result;
   return nullptr;
 }
 
