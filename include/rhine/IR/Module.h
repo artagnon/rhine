@@ -19,35 +19,37 @@ class Module {
   Context *Kontext;
   std::vector<Function *> ContainedFs;
 public:
+  /// Context is all that is required to initialize
   Module(Context *K);
   virtual ~Module() {}
   static Module *get(Context *K);
   Context *getContext();
-  void appendFunction(Function *F) {
-    F->setParent(this);
-    ContainedFs.push_back(F);
-  }
-  void insertFunction(std::vector<Function *>::iterator It, Function *F) {
-    F->setParent(this);
-    ContainedFs.insert(It, F);
-  }
-  std::vector<Function *> getVal() {
-    return ContainedFs;
-  }
-  void setVal(std::vector<Function *> Fs) {
-    ContainedFs = Fs;
-  }
+
+  /// Append, or insert given an iterator
+  void appendFunction(Function *F);
+  void insertFunction(std::vector<Function *>::iterator It, Function *F);
+
+  /// Get or set ContainedFs
+  std::vector<Function *> getVal() const;
+  void setVal(std::vector<Function *> Fs);
+
+  /// Implemented by print
   friend ostream &operator<<(ostream &Stream, const Module &M) {
     M.print(Stream);
     return Stream;
   }
   virtual void toLL(llvm::Module *M);
   typedef std::vector<Function *>::iterator iterator;
+
+  /// std methods that pass through to the underlying ContainedFs
   Function *front();
   iterator begin();
   iterator end();
+
+  /// While in lldb
   void dump();
 protected:
+  /// std ostream writer, for debugging
   virtual void print(std::ostream &Stream) const {
     for (auto F: ContainedFs)
       Stream << *F << std::endl;

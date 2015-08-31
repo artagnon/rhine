@@ -15,7 +15,7 @@ Resolve::Resolve() : K(nullptr) {}
 Resolve::~Resolve() {}
 
 void Resolve::lookupReplaceUse(UnresolvedValue *V, Use &U,
-                                     BasicBlock *Block) {
+                               BasicBlock *Block) {
   auto Name = V->getName();
   auto K = V->getContext();
   if (auto S = K->Map.get(V, Block)) {
@@ -63,11 +63,11 @@ void Resolve::runOnFunction(Function *F) {
   for (auto &BB : *F)
     for (auto &V : *BB)
       if (auto M = dyn_cast<MallocInst>(V))
-        K->Map.add(M, F->getEntryBlock());
+        K->Map.add(M, BB);
 
   for (auto &BB : *F)
     for (auto &V : *BB)
-      resolveOperandsOfUser(cast<User>(V), F->getEntryBlock());
+      resolveOperandsOfUser(cast<User>(V), BB);
 }
 
 void Resolve::runOnModule(Module *M) {
