@@ -35,8 +35,10 @@ public:
   typedef std::vector<BasicBlock *>::iterator bb_iterator;
   bb_iterator pred_begin();
   bb_iterator pred_end();
+  iterator_range<bb_iterator> preds();
   bb_iterator succ_begin();
   bb_iterator succ_end();
+  iterator_range<bb_iterator> succs();
 
   // Methods to add and remove a single predecessor or successor
   void addPredecessors(std::vector<BasicBlock *> Preds);

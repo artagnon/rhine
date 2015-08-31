@@ -94,12 +94,8 @@ Type *TypeInfer::visit(IfInst *V) {
 }
 
 Type *TypeInfer::visit(LoadInst *V) {
-  if (auto W = K->Map.get(V)) {
-    auto Ty = W->getType();
-    V->setType(Ty);
-    K->Map.add(V);
-    return Ty;
-  }
+  if (!V->isUnTyped())
+    return V->getType();
   auto Name = V->getVal()->getName();
   K->DiagPrinter->errorReport(V->getSourceLocation(),
                               "untyped symbol " + Name);
@@ -107,11 +103,8 @@ Type *TypeInfer::visit(LoadInst *V) {
 }
 
 Type *TypeInfer::visit(Argument *V) {
-  if (auto W = K->Map.get(V)) {
-    auto Ty = W->getType();
-    V->setType(Ty);
-    return Ty;
-  }
+  if (!V->isUnTyped())
+    return V->getType();
   K->DiagPrinter->errorReport(V->getSourceLocation(),
                               "untyped argument " + V->getName());
   exit(1);
