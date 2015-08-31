@@ -24,11 +24,11 @@ TEST(Diagnostic, UnboundVariable)
   EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
 }
 
-TEST(Diagnostic, UntypedVariable)
+TEST(Diagnostic, UntypedArgument)
 {
-  std::string SourcePrg = "def untypedVar [var] ret var;";
+  std::string SourcePrg = "def untypedVar [Arg] ret Arg;";
   std::string ExpectedErr =
-    "string stream:1:17: error: untyped argument var";
+    "string stream:1:17: error: untyped argument Arg";
   EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
 }
 
@@ -69,7 +69,7 @@ TEST(Diagnostic, DanglingBraceWithStatement)
   EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
 }
 
-TEST(Diagnostic, DISABLED_MismatchedArgument)
+TEST(Diagnostic, DISABLED_MissingOverloadedInstance)
 {
   std::string SourcePrg =
     "def main [] {\n"

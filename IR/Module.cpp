@@ -9,6 +9,24 @@ Module *Module::get(Context *K) {
 
 Context *Module::getContext() { return Kontext; }
 
+void Module::appendFunction(Function *F) {
+  F->setParent(this);
+  ContainedFs.push_back(F);
+}
+
+void Module::insertFunction(std::vector<Function *>::iterator It, Function *F) {
+  F->setParent(this);
+  ContainedFs.insert(It, F);
+}
+
+std::vector<Function *> Module::getVal() const {
+  return ContainedFs;
+}
+
+void Module::setVal(std::vector<Function *> Fs) {
+  ContainedFs = Fs;
+}
+
 Function *Module::front() {
   return ContainedFs.front();
 }

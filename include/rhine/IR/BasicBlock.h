@@ -19,19 +19,19 @@ class BasicBlock : public Value {
 public:
   std::vector<Value *> ValueList;
 
-  // Standard methods
+  /// Standard methods
   BasicBlock(Type *Ty, std::vector<Value *> V);
   virtual ~BasicBlock();
   static BasicBlock *get(std::vector<Value *> V, Context *K);
   static bool classof(const Value *V);
   llvm::Value *toLL(llvm::Module *M);
 
-  // Iterator over all the instructions in this BB
+  /// Iterator over all the instructions in this BB
   typedef std::vector<Value *>::iterator value_iterator;
   value_iterator begin();
   value_iterator end();
 
-  // Iterate over Predecessors and Successors of this BB
+  /// Iterate over Predecessors and Successors of this BB
   typedef std::vector<BasicBlock *>::iterator bb_iterator;
   bb_iterator pred_begin();
   bb_iterator pred_end();
@@ -40,25 +40,25 @@ public:
   bb_iterator succ_end();
   iterator_range<bb_iterator> succs();
 
-  // Methods to add and remove a single predecessor or successor
+  /// Methods to add and remove a single predecessor or successor
   void addPredecessors(std::vector<BasicBlock *> Preds);
   void removePredecessor(BasicBlock *Pred);
   void addSuccessors(std::vector<BasicBlock *> Succs);
   void removeSuccessor(BasicBlock *Succ);
 
-  // Proxy for std methods acting on ValueList
+  /// Proxy for std methods acting on ValueList
   unsigned size();
   Value *back();
 
-  // Acessors to Parent function
+  /// Acessors to Parent function
   void setParent(Function *F);
   Function *getParent() const;
 
-  // Quick method to grab unique predecessor (if any)
+  /// Quick method to grab unique predecessor (if any)
   BasicBlock *getUniquePredecessor() const;
 
 protected:
-  // std ostream writer, for debugging
+  /// std ostream writer, for debugging
   virtual void print(std::ostream &Stream) const;
 };
 }
