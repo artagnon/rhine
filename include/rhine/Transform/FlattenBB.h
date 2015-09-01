@@ -13,7 +13,7 @@ class FlattenBB : public FunctionPass {
 public:
   FlattenBB();
   virtual ~FlattenBB();
-  void cleaveBB(BasicBlock *Cleavee);
+  void cleaveBB(BasicBlock *Cleavee, Function *Parent);
   virtual void runOnFunction(Function *F) override;
 };
 }

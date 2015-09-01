@@ -115,7 +115,6 @@ fn_decl:
 def:
                 fn_decl[F] compound_stm[L]
                 {
-                  $L->setParent($F);
                   $F->push_back($L);
                   $$ = $F;
                 }
