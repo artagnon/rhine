@@ -16,7 +16,7 @@ TEST(FunctionPointer, BasicCodeGen) {
     "entry:\n"
     "  ret i32 ()* @callee\n"
     "}\n";
-  EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
+  EXPECT_LL(SourcePrg, ExpectedPP);
 }
 
 TEST(FunctionPointer, BasicExecution) {
@@ -49,7 +49,7 @@ TEST(FunctionPointer, PassPrint)
     "define void @bar(void (i8*, ...)*) gc \"rhgc\" {\n"
     "entry:\n"
     "  call void (i8*, ...) %0(i8* getelementptr";
-  EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
+  EXPECT_LL(SourcePrg, ExpectedPP);
   std::string ExpectedOut = "12";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }

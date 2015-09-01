@@ -10,7 +10,7 @@ TEST(Externals, Print) {
     "}";
   std::string ExpectedPP =
     "call void (i8*, ...) @std_Void_print__String";
-  EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
+  EXPECT_LL(SourcePrg, ExpectedPP);
   std::string ExpectedOut = "43";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
@@ -26,7 +26,7 @@ TEST(Externals, ExternalsCaching) {
     "(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @0, i32 0, i32 0))\n"
     "  call void (i8*, ...) @std_Void_print__String"
     "(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @1, i32 0, i32 0))";
-  EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
+  EXPECT_LL(SourcePrg, ExpectedPP);
 }
 
 TEST(Externals, Malloc) {
@@ -37,7 +37,7 @@ TEST(Externals, Malloc) {
     "}";
   std::string ExpectedPP =
     "call i8* @std_String_malloc__Int(i64 8)";
-  EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
+  EXPECT_LL(SourcePrg, ExpectedPP);
   std::string ExpectedOut = "3";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
@@ -57,7 +57,7 @@ TEST(Externals, ToString)
     "def main [] toString 2;";
   std::string ExpectedPP =
     "%toString = call i8* @std_String_toString__Int(i32 2)";
-  EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
+  EXPECT_LL(SourcePrg, ExpectedPP);
 }
 
 TEST(Externals, ToStringExecution)
@@ -78,5 +78,5 @@ TEST(Externals, FunctionPointer) {
     "entry:\n"
     "  ret i8* (i64)* @std_String_malloc__Int\n"
     "}\n";
-  EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
+  EXPECT_LL(SourcePrg, ExpectedPP);
 }
