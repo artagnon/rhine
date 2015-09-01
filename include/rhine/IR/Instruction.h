@@ -19,10 +19,19 @@ namespace rhine {
 class Use;
 
 class Instruction : public User {
+  BasicBlock *Parent;
 public:
+  /// Number of operands required to initalize properly; NumAllocatedOps and
+  /// NumOperands are initialized to this value
   Instruction(Type *Ty, RTValue ID, unsigned NumOps, std::string Name = "");
+
   virtual ~Instruction() {}
   static bool classof(const Value *V);
+
+  /// Back pointer to parent isn't present in Value, just Instruction
+  BasicBlock *getParent() const;
+  void setParent(BasicBlock *P);
+
   virtual llvm::Value *toLL(llvm::Module *M) = 0;
 protected:
   virtual void print(std::ostream &Stream) const = 0;
@@ -30,10 +39,17 @@ protected:
 
 class AddInst : public Instruction {
 public:
-  AddInst(Type *Ty);
+  /// We can explicitly request a particular type from two possibly-different
+  /// types being added
+  AddInst(Type *Ty, Value *Op0, Value *Op1);
+
   virtual ~AddInst() {}
-  void *operator new(size_t s);
-  static AddInst *get(Context *K);
+
+  /// Allocate a constant two operands
+  void *operator new(size_t S);
+
+  /// Context inferred from Op0
+  static AddInst *get(Value *Op0, Value *Op1);
   static bool classof(const Value *V);
   virtual llvm::Value *toLL(llvm::Module *M) override;
 protected:
@@ -44,7 +60,7 @@ class CallInst : public Instruction {
 public:
   CallInst(Type *Ty, unsigned NumOps, std::string N);
   virtual ~CallInst() {}
-  void *operator new(size_t s, unsigned n);
+  void *operator new(size_t S, unsigned n);
   static CallInst *get(Value *Callee, std::vector<Value *> Ops);
   static bool classof(const Value *V);
   Value *getCallee() const;
@@ -57,11 +73,14 @@ class MallocInst : public Instruction {
 public:
   MallocInst(std::string N, Type *Ty);
   virtual ~MallocInst() {}
-  void *operator new(size_t s);
+  void *operator new(size_t S);
   static MallocInst *get(std::string N, Value *V, Context *K);
   static bool classof(const Value *V);
-  void setVal(Value *V);
+
+  /// Operand0 manipulators
   Value *getVal();
+  void setVal(Value *V);
+
   virtual llvm::Value *toLL(llvm::Module *M) override;
 protected:
   void print(std::ostream &Stream) const override;
@@ -69,9 +88,11 @@ protected:
 
 class LoadInst : public Instruction {
 public:
+  /// Load a Value, while naming yourself Name
   LoadInst(Value *V, std::string Name);
+
   virtual ~LoadInst() {}
-  void *operator new(size_t s);
+  void *operator new(size_t S);
   static LoadInst *get(Value *V, std::string Name);
   Value *getVal() const;
   static bool classof(const Value *V);
@@ -82,12 +103,20 @@ protected:
 
 class StoreInst : public Instruction {
 public:
+  /// A socket and plug; they better fit well
   StoreInst(Value *MallocedValue, Value *NewValue);
+
   virtual ~StoreInst() {}
-  void *operator new(size_t s);
+
+  /// Allocate a constant two operands
+  void *operator new(size_t S);
+
   static StoreInst *get(Value *MallocedValue, Value *NewValue);
+
+  /// Get operands 0 and 1 respectively
   Value *getMallocedValue() const;
   Value *getNewValue() const;
+
   static bool classof(const Value *V);
   virtual llvm::Value *toLL(llvm::Module *M) override;
 protected:
@@ -98,11 +127,17 @@ class ReturnInst : public Instruction {
 public:
   ReturnInst(Type *Ty, bool IsNotVoid);
   virtual ~ReturnInst() {}
-  void *operator new(size_t s, unsigned NumberOfArgs);
+
+  /// Really N can either be 0 or 1; We don't do funky multi-output functions
+  void *operator new(size_t S, unsigned N);
+
   static ReturnInst *get(Value *V, Context *K);
   static bool classof(const Value *V);
-  void setVal(Value *V);
+
+  /// For single operand functions, {get,set}Val serves an obvious purpose
   Value *getVal();
+  void setVal(Value *V);
+
   virtual llvm::Value *toLL(llvm::Module *M) override;
 protected:
   void print(std::ostream &Stream) const override;
@@ -112,14 +147,19 @@ class IfInst : public Instruction {
 public:
   IfInst(Type *Ty);
   virtual ~IfInst() {}
-  void *operator new(size_t s);
-  static IfInst *get(Value * Conditional, BasicBlock *TrueBB,
+
+  /// Constant 3 operands
+  void *operator new(size_t S);
+  static IfInst *get(Value *Conditional, BasicBlock *TrueBB,
                      BasicBlock *FalseBB, Context *K);
+
   static bool classof(const Value *V);
+
+  /// Getters for the 3 operands, in order
   Value *getConditional() const;
-  void setConditional(Value *C);
   BasicBlock *getTrueBB() const;
   BasicBlock *getFalseBB() const;
+
   virtual llvm::Value *toLL(llvm::Module *M) override;
 protected:
   void print(std::ostream &Stream) const override;
