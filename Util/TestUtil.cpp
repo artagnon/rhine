@@ -3,7 +3,7 @@
 #include <string>
 
 namespace rhine {
-void EXPECT_TRANSFORM_PP(std::string &SourcePrg, std::string &ExpectedPP)
+void EXPECT_IR(std::string &SourcePrg, std::string &ExpectedPP)
 {
   auto Pf = ParseFacade(SourcePrg);
   auto Source = Pf.parseAction(ParseSource::STRING, PostParseAction::IR);
@@ -11,7 +11,7 @@ void EXPECT_TRANSFORM_PP(std::string &SourcePrg, std::string &ExpectedPP)
                       Source.c_str());
 }
 
-void EXPECT_PARSE_PP(std::string SourcePrg, std::string ExpectedPP)
+void EXPECT_LL(std::string &SourcePrg, std::string &ExpectedPP)
 {
   auto Pf = ParseFacade(SourcePrg);
   auto Source = Pf.parseAction(ParseSource::STRING, PostParseAction::LL);

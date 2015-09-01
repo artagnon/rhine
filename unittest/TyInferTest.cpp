@@ -14,5 +14,5 @@ TEST(TyInfer, CallInst) {
     "  %malloc = call i8* @std_String_malloc__Int(i64 8)\n"
     "  ret i8* %malloc\n"
     "}\n";
-  EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
+  EXPECT_LL(SourcePrg, ExpectedPP);
 }

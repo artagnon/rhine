@@ -19,7 +19,7 @@ TEST(Lambda, BasicCodeGen)
     "  store i32 (i32)* @lambda, i32 (i32)** %0\n"
     "  ret void\n"
     "}";
-  EXPECT_PARSE_PP(SourcePrg, ExpectedPP);
+  EXPECT_LL(SourcePrg, ExpectedPP);
 }
 
 TEST(Lambda, BasicExecution)

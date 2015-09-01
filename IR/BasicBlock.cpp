@@ -1,10 +1,15 @@
 #include "rhine/IR/BasicBlock.h"
+#include "rhine/IR/Instruction.h"
 #include "rhine/IR/Module.h"
 #include "rhine/Context.h"
 
 namespace rhine {
 BasicBlock::BasicBlock(Type *Ty, std::vector<Value *> V) :
-    Value(Ty, RT_BasicBlock), Parent(nullptr), ValueList(V) {}
+    Value(Ty, RT_BasicBlock), Parent(nullptr), ValueList(V) {
+  for (auto L : V)
+    if (auto Inst = dyn_cast<Instruction>(L))
+      Inst->setParent(this);
+}
 
 BasicBlock::~BasicBlock() {}
 
