@@ -282,11 +282,9 @@ value_expr:
                 }
         |       rvalue[L] '+' rvalue[R]
                 {
-                  auto Op = AddInst::get(K);
+                  auto Op = AddInst::get($L, $R);
                   Op->setSourceLocation(@1);
                   Op->setName(Driver->Root.getVirtualRegisterName());
-                  Op->setOperand(0, $L);
-                  Op->setOperand(1, $R);
                   $$ = Op;
                 }
         |       typed_symbol[S] TVOID

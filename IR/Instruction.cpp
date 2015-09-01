@@ -10,14 +10,27 @@ bool Instruction::classof(const Value *V) {
     V->getValID() <= RT_IfInst;
 }
 
-AddInst::AddInst(Type *Ty) : Instruction(Ty, RT_AddInst, 2) {}
-
-void *AddInst::operator new(size_t s) {
-  return User::operator new(s, 2);
+BasicBlock *Instruction::getParent() const {
+  return Parent;
 }
 
-AddInst *AddInst::get(Context *K) {
-  return new AddInst(UnType::get(K));
+void Instruction::setParent(BasicBlock *P) {
+  Parent = P;
+}
+
+AddInst::AddInst(Type *Ty, Value *Op0, Value *Op1) :
+    Instruction(Ty, RT_AddInst, 2) {
+  setOperand(0, Op0);
+  setOperand(1, Op1);
+}
+
+void *AddInst::operator new(size_t S) {
+  return User::operator new(S, 2);
+}
+
+AddInst *AddInst::get(Value *Op0, Value *Op1) {
+  auto K = Op0->getContext();
+  return new AddInst(UnType::get(K), Op0, Op1);
 }
 
 bool AddInst::classof(const Value *V) {
@@ -33,8 +46,8 @@ void AddInst::print(std::ostream &Stream) const {
 CallInst::CallInst(Type *Ty, unsigned NumOps, std::string N) :
     Instruction(Ty, RT_CallInst, NumOps, N) {}
 
-void *CallInst::operator new(size_t s, unsigned n) {
-  return User::operator new(s, n);
+void *CallInst::operator new(size_t S, unsigned N) {
+  return User::operator new(S, N);
 }
 
 CallInst *CallInst::get(Value *Callee, std::vector<Value *> Ops) {
@@ -65,8 +78,8 @@ void CallInst::print(std::ostream &Stream) const {
 MallocInst::MallocInst(std::string N, Type *Ty) :
     Instruction(Ty, RT_MallocInst, 1, N) {}
 
-void *MallocInst::operator new(size_t s) {
-  return User::operator new(s, 1);
+void *MallocInst::operator new(size_t S) {
+  return User::operator new(S, 1);
 }
 
 MallocInst *MallocInst::get(std::string N, Value *V, Context *K) {
@@ -96,8 +109,8 @@ LoadInst::LoadInst(Value *V, std::string Name) :
   setOperand(0, V);
 }
 
-void *LoadInst::operator new(size_t s) {
-  return User::operator new (s, 1);
+void *LoadInst::operator new(size_t S) {
+  return User::operator new (S, 1);
 }
 
 LoadInst *LoadInst::get(Value *V, std::string Name) {
@@ -124,8 +137,8 @@ StoreInst::StoreInst(Value *MallocedValue, Value *NewValue) :
   setOperand(1, NewValue);
 }
 
-void *StoreInst::operator new(size_t s) {
-  return User::operator new (s, 2);
+void *StoreInst::operator new(size_t S) {
+  return User::operator new (S, 2);
 }
 
 StoreInst *StoreInst::get(Value *MallocedValue, Value *NewValue) {
@@ -151,8 +164,8 @@ void StoreInst::print(std::ostream &Stream) const {
 ReturnInst::ReturnInst(Type *Ty, bool IsNotVoid) :
     Instruction(Ty, RT_ReturnInst, IsNotVoid) {}
 
-void *ReturnInst::operator new(size_t s, unsigned NumberOfArgs) {
-  return User::operator new(s, NumberOfArgs);
+void *ReturnInst::operator new(size_t S, unsigned N) {
+  return User::operator new(S, N);
 }
 
 ReturnInst *ReturnInst::get(Value *V, Context *K) {
@@ -185,8 +198,8 @@ void ReturnInst::print(std::ostream &Stream) const {
 IfInst::IfInst(Type *Ty):
     Instruction(Ty, RT_IfInst, 3) {}
 
-void *IfInst::operator new(size_t s) {
-  return User::operator new(s, 3);
+void *IfInst::operator new(size_t S) {
+  return User::operator new(S, 3);
 }
 
 IfInst *IfInst::get(Value *Conditional, BasicBlock *TrueBB,
@@ -204,11 +217,6 @@ bool IfInst::classof(const Value *V) {
 
 Value *IfInst::getConditional() const {
   return getOperand(0);
-}
-
-void IfInst::setConditional(Value *C)
-{
-  setOperand(0, C);
 }
 
 BasicBlock *IfInst::getTrueBB() const {
