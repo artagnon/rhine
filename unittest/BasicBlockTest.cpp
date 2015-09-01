@@ -17,5 +17,5 @@ TEST(BasicBlock, SetInstructionParent)
   auto Module = Pf.parseToIR(ParseSource::STRING, { });
   for (auto BB : *Module->front())
     for (auto Inst : *BB)
-      ASSERT_TRUE(cast<rhine::Instruction>(Inst)->getParent() == BB);
+      ASSERT_EQ(cast<rhine::Instruction>(Inst)->getParent(), BB);
 }

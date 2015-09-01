@@ -27,5 +27,5 @@ TEST(Module, SetFunctionParent)
   auto Pf = ParseFacade(SourcePrg);
   auto Module = Pf.parseToIR(ParseSource::STRING, { });
   for (auto F : *Module)
-    ASSERT_TRUE(F->getParent() == Module);
+    ASSERT_EQ(F->getParent(), Module);
 }

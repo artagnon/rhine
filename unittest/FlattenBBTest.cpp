@@ -38,3 +38,18 @@ TEST(FlattenBB, PredSucc)
     ASSERT_EQ(std::distance(BB->succ_begin(), BB->succ_end()), *NumSuccsIt++);
   }
 }
+
+TEST(FlattenBB, SetBasicBlockParent)
+{
+  std::string SourcePrg =
+    "def main [] {\n"
+    "  if(false) 3; else 4;\n"
+    "}";
+  auto Pf = ParseFacade(SourcePrg);
+  FlattenBB Flatten;
+  auto Module = Pf.parseToIR(ParseSource::STRING, { &Flatten });
+  auto MainF = Module->front();
+  for (auto BB : *MainF) {
+    ASSERT_EQ(BB->getParent(), MainF);
+  }
+}
