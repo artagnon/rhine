@@ -20,7 +20,7 @@ void Resolve::lookupReplaceUse(UnresolvedValue *V, Use &U,
   auto K = V->getContext();
   if (auto S = K->Map.get(V, Block)) {
     if (auto M = dyn_cast<MallocInst>(S)) {
-      auto Replacement = LoadInst::get(M->getVal(), Name);
+      auto Replacement = LoadInst::get(M);
       Replacement->setSourceLocation(V->getSourceLocation());
       U.set(Replacement);
     }
@@ -81,31 +81,39 @@ void Resolve::runOnModule(Module *M) {
 }
 
 using KR = Context::ResolutionMap;
-typedef Context::ValueRef ValueRef;
 
-void KR::add(Value *Val, BasicBlock *Block, llvm::Value *LLVal) {
+void KR::add(Value *Val, BasicBlock *Block) {
   assert(!isa<UnresolvedValue>(Val));
-  auto Name = Val->getName();
-  auto &ThisVRMap = FunctionVR[Block];
-  auto Ret = ThisVRMap.insert(std::make_pair(Name, ValueRef(Val, LLVal)));
-  auto &NewElementInserted = Ret.second;
+  auto &ThisResolutionMap = FunctionResolutionMap[Block];
+  auto Ret = ThisResolutionMap.insert(std::make_pair(Val->getName(), Val));
+  bool NewElementInserted = Ret.second;
   if (!NewElementInserted) {
     auto IteratorToEquivalentKey = Ret.first;
-    auto &ValueRefOfEquivalentKey = IteratorToEquivalentKey->second;
-    ValueRefOfEquivalentKey.Val = Val;
-    if (LLVal) ValueRefOfEquivalentKey.LLVal = LLVal;
+    auto &ValueOfEquivalentKey = IteratorToEquivalentKey->second;
+    assert(ValueOfEquivalentKey == Val &&
+           "Inserting conflicting values into ResolutionMap");
   }
 }
 
-Value *KR::searchOneBlock(Value *Val, BasicBlock *Block)
-{
+void KR::add(Value *Val, llvm::Value *LLVal) {
+  assert(!isa<UnresolvedValue>(Val));
+  auto Ret = LoweringMap.insert(std::make_pair(Val, LLVal));
+  bool NewElementInserted = Ret.second;
+  if (!NewElementInserted) {
+    auto IteratorToEquivalentKey = Ret.first;
+    auto &ValueOfEquivalentKey = IteratorToEquivalentKey->second;
+    assert(ValueOfEquivalentKey == LLVal &&
+           "Inserting conflicting values into LoweringMap");
+  }
+}
+
+Value *KR::searchOneBlock(Value *Val, BasicBlock *Block) {
   auto Name = Val->getName();
-  auto &ThisVRMap = FunctionVR[Block];
-  auto IteratorToElement = ThisVRMap.find(Name);
-  if (IteratorToElement == ThisVRMap.end())
+  auto &ThisResolutionMap = FunctionResolutionMap[Block];
+  auto IteratorToElement = ThisResolutionMap.find(Name);
+  if (IteratorToElement == ThisResolutionMap.end())
     return nullptr;
-  else
-    return IteratorToElement->second.Val;
+  return IteratorToElement->second;
 }
 
 std::list<BasicBlock *> flattenPredecessors(BasicBlock *Block) {
@@ -129,11 +137,9 @@ Value *KR::get(Value *Val, BasicBlock *Block) {
   return nullptr;
 }
 
-llvm::Value *KR::getl(Value *Val, BasicBlock *Block) {
-  auto Name = Val->getName();
-  auto &ThisVRMap = FunctionVR[Block];
-  auto IteratorToElement = ThisVRMap.find(Name);
-  return IteratorToElement == ThisVRMap.end() ? nullptr :
-    IteratorToElement->second.LLVal;
+llvm::Value *KR::getl(Value *Val) {
+  auto IteratorToElement = LoweringMap.find(Val);
+  return IteratorToElement == LoweringMap.end() ? nullptr :
+    IteratorToElement->second;
 }
 }

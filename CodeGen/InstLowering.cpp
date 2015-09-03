@@ -44,7 +44,7 @@ llvm::Value *MallocInst::toLL(llvm::Module *M) {
   auto CastSlot = K->Builder->CreateBitCast(
       Slot, llvm::PointerType::get(Ty, 0));
   K->Builder->CreateStore(V, CastSlot);
-  K->Map.add(this, nullptr, CastSlot);
+  K->Map.add(this, CastSlot);
   return nullptr;
 }
 
@@ -54,12 +54,12 @@ llvm::Value *StoreInst::toLL(llvm::Module *M) {
 
 llvm::Value *LoadInst::toLL(llvm::Module *M) {
   auto K = getContext();
-  if (auto Result = K->Map.getl(this)) {
+  if (auto Result = K->Map.getl(getVal())) {
     return K->Builder->CreateLoad(Result, Name + "Load");
   } else if (auto Result = Externals::get(K)->getMappingVal(Name, M))
     return Result;
-  K->DiagPrinter->errorReport(
-      SourceLoc, "unbound symbol " + Name);
+  auto Error = "unable to find " + Name + " to load";
+  K->DiagPrinter->errorReport(SourceLoc, Error);
   exit(1);
 }
 

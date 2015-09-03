@@ -326,7 +326,7 @@ value_expr:
 assign_expr:
                 lvalue[L] '=' value_expr[E]
                 {
-                  auto Op = MallocInst::get($L->getName(), $E, K);
+                  auto Op = MallocInst::get($L->getName(), $E);
                   Op->setSourceLocation(@1);
                   $$ = Op;
                 }
@@ -334,7 +334,7 @@ assign_expr:
 lambda_assign:
                 lvalue[L] '=' lambda_expr[E]
                 {
-                  auto Op = MallocInst::get($L->getName(), $E, K);
+                  auto Op = MallocInst::get($L->getName(), $E);
                   Op->setSourceLocation(@1);
                   $$ = Op;
                 }
