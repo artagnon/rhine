@@ -50,21 +50,16 @@ public:
     ITyCache.clear();
   }
 
-  struct ValueRef {
-    Value *Val;
-    llvm::Value *LLVal;
-    ValueRef(Value *Val, llvm::Value *LLVal) : Val(Val), LLVal(LLVal) {}
-  };
-
   class ResolutionMap {
-    typedef std::map <std::string, ValueRef> BlockVR;
-    std::map<BasicBlock *, BlockVR> FunctionVR;
+    typedef std::map<std::string, Value *> BlockResolutionMap;
+    std::map<BasicBlock *, BlockResolutionMap> FunctionResolutionMap;
+    std::map<Value *, llvm::Value *> LoweringMap;
     Value *searchOneBlock(Value *Val, BasicBlock *Block);
   public:
-    void add(Value *Val, BasicBlock *Block = nullptr,
-             llvm::Value *LLVal = nullptr);
+    void add(Value *Val, BasicBlock *Block = nullptr);
+    void add(Value *Val, llvm::Value *LLVal);
     Value *get(Value *Val, BasicBlock *Block = nullptr);
-    llvm::Value *getl(Value *Val, BasicBlock *Block = nullptr);
+    llvm::Value *getl(Value *Val);
   };
 
   ResolutionMap Map;

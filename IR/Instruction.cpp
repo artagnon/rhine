@@ -75,17 +75,17 @@ void CallInst::print(std::ostream &Stream) const {
     Stream << std::endl << *O;
 }
 
-MallocInst::MallocInst(std::string N, Type *Ty) :
-    Instruction(Ty, RT_MallocInst, 1, N) {}
+MallocInst::MallocInst(std::string N, Value *V) :
+    Instruction(V->getType(), RT_MallocInst, 1, N) {
+  setOperand(0, V);
+}
 
 void *MallocInst::operator new(size_t S) {
   return User::operator new(S, 1);
 }
 
-MallocInst *MallocInst::get(std::string N, Value *V, Context *K) {
-  auto Obj = new MallocInst(N, UnType::get(K));
-  Obj->setOperand(0, V);
-  return Obj;
+MallocInst *MallocInst::get(std::string N, Value *V) {
+  return new MallocInst(N, V);
 }
 
 bool MallocInst::classof(const Value *V) {
@@ -104,17 +104,17 @@ void MallocInst::print(std::ostream &Stream) const {
   Stream << Name << " = " << *getOperand(0);
 }
 
-LoadInst::LoadInst(Value *V, std::string Name) :
-    Instruction(V->getType(), RT_LoadInst, 1, Name) {
-  setOperand(0, V);
+LoadInst::LoadInst(MallocInst *M) :
+    Instruction(M->getType(), RT_LoadInst, 1, M->getName()) {
+  setOperand(0, M);
 }
 
 void *LoadInst::operator new(size_t S) {
   return User::operator new (S, 1);
 }
 
-LoadInst *LoadInst::get(Value *V, std::string Name) {
-  return new LoadInst(V, Name);
+LoadInst *LoadInst::get(MallocInst *M) {
+  return new LoadInst(M);
 }
 
 bool LoadInst::classof(const Value *V) {

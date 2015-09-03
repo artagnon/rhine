@@ -71,10 +71,10 @@ protected:
 
 class MallocInst : public Instruction {
 public:
-  MallocInst(std::string N, Type *Ty);
+  MallocInst(std::string N, Value *V);
   virtual ~MallocInst() {}
   void *operator new(size_t S);
-  static MallocInst *get(std::string N, Value *V, Context *K);
+  static MallocInst *get(std::string N, Value *V);
   static bool classof(const Value *V);
 
   /// Operand0 manipulators
@@ -88,12 +88,12 @@ protected:
 
 class LoadInst : public Instruction {
 public:
-  /// Load a Value, while naming yourself Name
-  LoadInst(Value *V, std::string Name);
+  /// Load an existing MallocInst
+  LoadInst(MallocInst *M);
 
   virtual ~LoadInst() {}
   void *operator new(size_t S);
-  static LoadInst *get(Value *V, std::string Name);
+  static LoadInst *get(MallocInst *M);
   Value *getVal() const;
   static bool classof(const Value *V);
   virtual llvm::Value *toLL(llvm::Module *M) override;

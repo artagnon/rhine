@@ -55,18 +55,18 @@ llvm::Constant *Function::toLL(llvm::Module *M) {
   auto ArgList = getArguments();
   auto S = ArgList.begin();
   for (auto &Arg : K->CurrentFunction->args()) {
-    K->Map.add(*S, nullptr, &Arg);
+    K->Map.add(*S, &Arg);
     ++S;
   }
 
-  // Add function symbol to symbol table
-  K->Map.add(this, nullptr, K->CurrentFunction);
+  // Add function symbol to symbol table, global scope
+  K->Map.add(this, K->CurrentFunction);
 
-  llvm::BasicBlock *BB =
+  llvm::BasicBlock *EntryBB =
     llvm::BasicBlock::Create(K->Builder->getContext(),
                              "entry", K->CurrentFunction);
-  K->Builder->SetInsertPoint(BB);
-  auto Block = front();
+  K->Builder->SetInsertPoint(EntryBB);
+  auto Block = getEntryBlock();
   Block->toLL(M);
   if (!isa<ReturnInst>(Block->back()))
     K->Builder->CreateRet(nullptr);
