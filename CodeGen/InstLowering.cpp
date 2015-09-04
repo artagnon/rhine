@@ -77,7 +77,7 @@ llvm::Value *IfInst::toLL(llvm::Module *M) {
   auto FalseBB = llvm::BasicBlock::Create(
       K->LLContext, "false", K->CurrentFunction);
   auto MergeBB = llvm::BasicBlock::Create(
-      K->LLContext, "merge", K->CurrentFunction);
+      K->LLContext, "phi", K->CurrentFunction);
   auto Conditional = getConditional()->toLL(M);
   K->Builder->CreateCondBr(Conditional, TrueBB, FalseBB);
 

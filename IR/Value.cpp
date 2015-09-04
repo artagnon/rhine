@@ -6,8 +6,10 @@
 namespace rhine {
 Value::Value(Type *VTy, RTValue ID, std::string N) :
     VTy(VTy), UseList(nullptr), Name(N), ValID(ID) {
+  static std::string DummyStr = "";
   SourceLoc.begin.line = SourceLoc.end.line = 0;
   SourceLoc.begin.column = SourceLoc.end.column = 0;
+  SourceLoc.begin.filename = SourceLoc.end.filename = &DummyStr;
 }
 
 Context *Value::getContext() { return VTy->getContext(); }

@@ -1,14 +1,7 @@
-#include "rhine/Toplevel/ParseFacade.h"
+#include "rhine/TestUtil.h"
 #include "gtest/gtest.h"
 
 using namespace rhine;
-
-void EXPECT_COMPILE_DEATH(std::string &SourcePrg, std::string &ExpectedErr)
-{
-  auto Pf = ParseFacade(SourcePrg);
-  EXPECT_DEATH(
-      Pf.parseAction(ParseSource::STRING, PostParseAction::LL), ExpectedErr);
-}
 
 TEST(Diagnostic, BareDefun)
 {
@@ -19,8 +12,8 @@ TEST(Diagnostic, BareDefun)
 
 TEST(Diagnostic, UnboundVariable)
 {
-  std::string SourcePrg = "def unboundVar [] ret var ~Int;";
-  std::string ExpectedErr = "string stream:1:23: error: unbound symbol var";
+  std::string SourcePrg = "def unboundVar [] ret Var ~Int;";
+  std::string ExpectedErr = "string stream:1:23: error: unbound symbol Var";
   EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
 }
 

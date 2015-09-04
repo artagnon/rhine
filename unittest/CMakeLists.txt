@@ -10,6 +10,7 @@ add_executable(UnitTest
   "${CMAKE_CURRENT_SOURCE_DIR}/ExecutionTest.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/FunctionPointerTest.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/IfTest.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/StoreTest.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/FlattenBBTest.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/BasicBlockTest.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ModuleTest.cpp"
