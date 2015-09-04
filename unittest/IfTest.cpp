@@ -7,19 +7,19 @@ TEST(If, BasicCodeGen)
 {
   std::string SourcePrg =
     "def main [] { if (false) 2; else 3; }";
-  std::string ExpectedPP =
+  std::string ExpectedLL =
     "define void @main() gc \"rhgc\" {\n"
     "entry:\n"
     "  br i1 false, label %true, label %false\n\n"
     "true:                                             ; preds = %entry\n"
-    "  br label %merge\n\n"
+    "  br label %phi\n\n"
     "false:                                            ; preds = %entry\n"
-    "  br label %merge\n\n"
-    "merge:                                            ; preds = %false, %true\n"
+    "  br label %phi\n\n"
+    "phi:                                              ; preds = %false, %true\n"
     "  %iftmp = phi i32 [ 2, %true ], [ 3, %false ]\n"
     "  ret void\n"
     "}";
-  EXPECT_LL(SourcePrg, ExpectedPP);
+  EXPECT_LL(SourcePrg, ExpectedLL);
 }
 
 TEST(If, BasicExecution)
@@ -30,15 +30,17 @@ TEST(If, BasicExecution)
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
 
-TEST(If, DISABLED_CondAssign)
+TEST(If, DISABLED_LifeAfterPhi)
 {
   std::string SourcePrg =
     "def main [] {\n"
-    "  Handle = 0;\n"
-    "  if (false) Handle = 2;\n"
-    "  else Handle = 3;\n"
-    "  ret Handle;\n"
-    "}";
-  std::string ExpectedOut = "3";
+    "  if (true) {\n"
+    "     Moo = 2;\n"
+    "  } else {\n"
+    "     Foo = 4;\n"
+    "  }\n"
+    "  print 2;\n"
+    "}\n";
+  std::string ExpectedOut = "2";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }

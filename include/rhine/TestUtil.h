@@ -15,6 +15,7 @@ namespace rhine {
 void EXPECT_IR(std::string &SourcePrg, std::string &ExpectedPP);
 void EXPECT_LL(std::string &SourcePrg, std::string &ExpectedPP);
 void EXPECT_OUTPUT(std::string &SourcePrg, std::string &ExpectedOut);
+void EXPECT_COMPILE_DEATH(std::string &SourcePrg, std::string &ExpectedErr);
 }
 
 #endif

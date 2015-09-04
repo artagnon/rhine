@@ -59,3 +59,18 @@ TEST(Resolve, ArgumentSymbolReplacement)
     "}";
   EXPECT_PRED_FORMAT2(::testing::IsSubstring, Expected, Pf.irToPP(Module));
 }
+
+TEST(Resolve, DISABLED_OutOfScope)
+{
+  std::string SourcePrg =
+    "def main [] {\n"
+    "  if (true) {\n"
+    "     Moo = 2;\n"
+    "  } else {\n"
+    "     Foo = 4;\n"
+    "  }\n"
+    "  print Moo;\n"
+    "}\n";
+  std::string ExpectedErr = "error: unbound symbol Moo";
+  EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
+}

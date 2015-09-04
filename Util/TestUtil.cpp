@@ -28,4 +28,11 @@ void EXPECT_OUTPUT(std::string &SourcePrg, std::string &ExpectedOut)
   std::string ActualOut = testing::internal::GetCapturedStdout();
   EXPECT_STREQ(ExpectedOut.c_str(), ActualOut.c_str());
 }
+
+void EXPECT_COMPILE_DEATH(std::string &SourcePrg, std::string &ExpectedErr)
+{
+  auto Pf = ParseFacade(SourcePrg);
+  EXPECT_DEATH(
+      Pf.parseAction(ParseSource::STRING, PostParseAction::LL), ExpectedErr);
+}
 }

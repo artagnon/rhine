@@ -256,11 +256,15 @@ expression_or_branch:
                 }
         |       IF '(' value_expr[V] ')' compound_stm[T] ELSE compound_stm[F]
                 {
-                  $$ = IfInst::get($V, $T, $F, K);
+                  auto Inst = IfInst::get($V, $T, $F, K);
+                  Inst->setSourceLocation(@1);
+                  $$ = Inst;
                 }
         |       IF '(' assign_expr[A] ')' compound_stm[T] ELSE compound_stm[F]
                 {
-                  $$ = IfInst::get($A, $T, $F, K);
+                  auto Inst = IfInst::get($A, $T, $F, K);
+                  Inst->setSourceLocation(@1);
+                  $$ = Inst;
                 }
                 ;
 expression:
