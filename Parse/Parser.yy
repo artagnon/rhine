@@ -122,15 +122,13 @@ def:
 compound_stm:
                 '{' stm_list[L] '}'
                 {
-                  auto BB = BasicBlock::get(*$L, K);
-                  $$ = BB;
+                  $$ = BasicBlock::get("entry", *$L, K);
                 }
         |       expression_or_branch[E]
                 {
                   std::vector<Value *> StmList;
                   StmList.push_back($E);
-                  auto BB = BasicBlock::get(StmList, K);
-                  $$ = BB;
+                  $$ = BasicBlock::get("entry", StmList, K);
                 }
 argument_list:
                 typed_argument[S]

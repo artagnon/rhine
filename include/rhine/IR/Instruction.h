@@ -160,6 +160,8 @@ public:
   BasicBlock *getTrueBB() const;
   BasicBlock *getFalseBB() const;
 
+  /// Picks up the ball after the phi statement to toLL() the rest of the
+  /// function
   virtual llvm::Value *toLL(llvm::Module *M) override;
 protected:
   void print(std::ostream &Stream) const override;

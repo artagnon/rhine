@@ -114,6 +114,7 @@ public:
   BasicBlock *front() const;
   BasicBlock *back() const;
   BasicBlock *getEntryBlock() const;
+  BasicBlock *getExitBlock() const;
   typedef std::vector<BasicBlock *>::iterator iterator;
   iterator begin();
   iterator end();

@@ -25,7 +25,7 @@ TEST(Resolve, UnresolvedReplacement)
   rhine::Value *Decl = nullptr,
     *FirstInstance = nullptr,
     *SecondInstance = nullptr;
-  for (auto V : *MainF->front()) {
+  for (auto V : *MainF->getEntryBlock()) {
     ASSERT_EQ(dyn_cast<UnresolvedValue>(V), nullptr);
     if (auto D = dyn_cast<MallocInst>(V))
       Decl = D;

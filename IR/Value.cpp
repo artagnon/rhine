@@ -12,6 +12,11 @@ Value::Value(Type *VTy, RTValue ID, std::string N) :
   SourceLoc.begin.filename = SourceLoc.end.filename = &DummyStr;
 }
 
+bool Value::classof(const Value *V) {
+  return V->getValID() >= RT_UnresolvedValue &&
+    V->getValID() <= RT_BasicBlock;
+}
+
 Context *Value::getContext() { return VTy->getContext(); }
 
 void Value::setSourceLocation(location SrcLoc) {

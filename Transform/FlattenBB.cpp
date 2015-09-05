@@ -21,7 +21,7 @@ void FlattenBB::cleaveBB(BasicBlock *Cleavee, Function *Parent) {
   auto TrueBB = BranchInst->getTrueBB();
   auto FalseBB = BranchInst->getFalseBB();
   auto StartInst = std::next(It);
-  auto NewBB = BasicBlock::get(
+  auto NewBB = BasicBlock::get("exit",
       std::vector<Value *>(StartInst, Cleavee->end()), K);
   Cleavee->ValueList.erase(StartInst, Cleavee->end());
 
@@ -46,6 +46,8 @@ void FlattenBB::cleaveBB(BasicBlock *Cleavee, Function *Parent) {
 
 void FlattenBB::runOnFunction(Function *F) {
   K = F->getContext();
-  cleaveBB(F->getEntryBlock(), F);
+  auto EntryBlock = F->getEntryBlock();
+  EntryBlock->setParent(F);
+  cleaveBB(EntryBlock, F);
 }
 }

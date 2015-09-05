@@ -200,16 +200,12 @@ void Function::push_back(BasicBlock *NewBB) {
   Val.push_back(NewBB);
 }
 
-BasicBlock *Function::front() const {
-  return Val.front();
-}
-
-BasicBlock *Function::back() const {
-  return Val.back();
-}
-
 BasicBlock *Function::getEntryBlock() const {
   return Val.front();
+}
+
+BasicBlock *Function::getExitBlock() const {
+  return Val.back();
 }
 
 Function::iterator Function::begin() {

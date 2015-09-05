@@ -30,7 +30,7 @@ TEST(If, BasicExecution)
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
 
-TEST(If, DISABLED_LifeAfterPhi)
+TEST(If, LifeAfterPhi)
 {
   std::string SourcePrg =
     "def main [] {\n"
