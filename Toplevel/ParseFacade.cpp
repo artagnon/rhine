@@ -69,7 +69,7 @@ std::string ParseFacade::parseAction(ParseSource SrcE,
   TypeInfer TyInfer;
   TypeCoercion TyCoercion;
   auto TransformedIR = parseToIR(SrcE, {
-      &Flatten, &LambLift, &ResolveL, &TyInfer, &TyCoercion});
+      &LambLift, &Flatten, &ResolveL, &TyInfer, &TyCoercion});
   std::string Ret;
   auto Ctx = TransformedIR->getContext();
   switch(ActionE) {

@@ -31,6 +31,10 @@ Function *Module::front() {
   return ContainedFs.front();
 }
 
+Function *Module::back() {
+  return ContainedFs.back();
+}
+
 Module::iterator Module::begin() {
   return ContainedFs.begin();
 }

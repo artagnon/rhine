@@ -62,13 +62,9 @@ llvm::Constant *Function::toLL(llvm::Module *M) {
   // Add function symbol to symbol table, global scope
   K->Map.add(this, K->CurrentFunction);
 
-  llvm::BasicBlock *EntryBB =
-    llvm::BasicBlock::Create(K->Builder->getContext(),
-                             "entry", K->CurrentFunction);
-  K->Builder->SetInsertPoint(EntryBB);
-  auto Block = getEntryBlock();
-  Block->toLL(M);
-  if (!isa<ReturnInst>(Block->back()))
+  getEntryBlock()->toLL(M);
+  auto ExitBlock = getExitBlock();
+  if (!ExitBlock->size() || !isa<ReturnInst>(ExitBlock->back()))
     K->Builder->CreateRet(nullptr);
   return K->CurrentFunction;
 }

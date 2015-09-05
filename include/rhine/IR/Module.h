@@ -3,8 +3,6 @@
 #ifndef MODULE_H
 #define MODULE_H
 
-#include "llvm/IR/Module.h"
-
 #include <vector>
 #include <sstream>
 
@@ -43,6 +41,7 @@ public:
 
   /// std methods that pass through to the underlying ContainedFs
   Function *front();
+  Function *back();
   iterator begin();
   iterator end();
 

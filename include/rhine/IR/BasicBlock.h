@@ -20,11 +20,20 @@ public:
   std::vector<Value *> ValueList;
 
   /// Standard methods
-  BasicBlock(Type *Ty, std::vector<Value *> V);
+  BasicBlock(Type *Ty, std::string Name, std::vector<Value *> V);
   virtual ~BasicBlock();
-  static BasicBlock *get(std::vector<Value *> V, Context *K);
+  static BasicBlock *get(std::string Name, std::vector<Value *> V, Context *K);
   static bool classof(const Value *V);
-  llvm::Value *toLL(llvm::Module *M);
+
+  /// When the entry block is toLL()'ed, and a branch instruction is found, the
+  /// branch instruction takes over the responsibility of lowering its case
+  /// blocks _and_ the merge block with the phi
+  virtual llvm::Value *toLL(llvm::Module *M) override;
+
+  /// Special methods to generate just the BasicBlock, and lower just the
+  /// ValueList (choosing last value after evaluating all values)
+  llvm::BasicBlock *toContainerLL(llvm::Module *M);
+  llvm::Value *toValuesLL(llvm::Module *M);
 
   /// Iterator over all the instructions in this BB
   typedef std::vector<Value *>::iterator value_iterator;
@@ -54,8 +63,9 @@ public:
   void setParent(Function *F);
   Function *getParent() const;
 
-  /// Quick method to grab unique predecessor (if any)
+  /// Quick method to grab unique predecessor/successor (if any)
   BasicBlock *getUniquePredecessor() const;
+  BasicBlock *getUniqueSuccessor() const;
 
 protected:
   /// std ostream writer, for debugging

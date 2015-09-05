@@ -72,22 +72,23 @@ llvm::Value *ReturnInst::toLL(llvm::Module *M) {
 
 llvm::Value *IfInst::toLL(llvm::Module *M) {
   auto K = getContext();
-  auto TrueBB = llvm::BasicBlock::Create(
-      K->LLContext, "true", K->CurrentFunction);
-  auto FalseBB = llvm::BasicBlock::Create(
-      K->LLContext, "false", K->CurrentFunction);
-  auto MergeBB = llvm::BasicBlock::Create(
-      K->LLContext, "phi", K->CurrentFunction);
+  auto BranchBB = K->Builder->GetInsertBlock();
+  auto TrueBB = getTrueBB()->toContainerLL(M);
+  auto FalseBB = getFalseBB()->toContainerLL(M);
+  auto ContinueBB = getTrueBB()->getUniqueSuccessor();
+  auto MergeBB = ContinueBB->toContainerLL(M);
+  MergeBB->setName("phi");
   auto Conditional = getConditional()->toLL(M);
+  K->Builder->SetInsertPoint(BranchBB);
   K->Builder->CreateCondBr(Conditional, TrueBB, FalseBB);
 
   K->Builder->SetInsertPoint(TrueBB);
-  auto TrueV = getTrueBB()->toLL(M);
+  auto TrueV = getTrueBB()->toValuesLL(M);
   K->Builder->CreateBr(MergeBB);
   TrueBB = K->Builder->GetInsertBlock();
 
   K->Builder->SetInsertPoint(FalseBB);
-  auto FalseV = getFalseBB()->toLL(M);
+  auto FalseV = getFalseBB()->toValuesLL(M);
   K->Builder->CreateBr(MergeBB);
   FalseBB = K->Builder->GetInsertBlock();
 
@@ -96,8 +97,7 @@ llvm::Value *IfInst::toLL(llvm::Module *M) {
     auto PN = K->Builder->CreatePHI(VTy->toLL(M), 2, "iftmp");
     PN->addIncoming(TrueV, TrueBB);
     PN->addIncoming(FalseV, FalseBB);
-    return PN;
   }
-  return nullptr;
+  return ContinueBB->toValuesLL(M);
 }
 }

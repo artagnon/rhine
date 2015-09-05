@@ -4,8 +4,8 @@
 #include "rhine/Context.h"
 
 namespace rhine {
-BasicBlock::BasicBlock(Type *Ty, std::vector<Value *> V) :
-    Value(Ty, RT_BasicBlock), Parent(nullptr), ValueList(V) {
+BasicBlock::BasicBlock(Type *Ty, std::string Name, std::vector<Value *> V) :
+    Value(Ty, RT_BasicBlock, Name), Parent(nullptr), ValueList(V) {
   for (auto L : V)
     if (auto Inst = dyn_cast<Instruction>(L))
       Inst->setParent(this);
@@ -13,8 +13,9 @@ BasicBlock::BasicBlock(Type *Ty, std::vector<Value *> V) :
 
 BasicBlock::~BasicBlock() {}
 
-BasicBlock *BasicBlock::get(std::vector<Value *> V, Context *K) {
-  return new BasicBlock(UnType::get(K), V);
+BasicBlock *BasicBlock::get(std::string Name, std::vector<Value *> V,
+                            Context *K) {
+  return new BasicBlock(UnType::get(K), Name, V);
 }
 
 bool BasicBlock::classof(const Value *V) {
@@ -94,6 +95,12 @@ Function *BasicBlock::getParent() const {
 BasicBlock *BasicBlock::getUniquePredecessor() const {
   if (Predecessors.size() == 1)
     return Predecessors[0];
+  return nullptr;
+}
+
+BasicBlock *BasicBlock::getUniqueSuccessor() const {
+  if (Successors.size() == 1)
+    return Successors[0];
   return nullptr;
 }
 
