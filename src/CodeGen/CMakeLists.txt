@@ -1,6 +1,7 @@
-include_directories("${PROJECT_SOURCE_DIR}/include")
-include_directories("${PROJECT_BINARY_DIR}/Parse")
 find_package(LLVM REQUIRED native mcjit)
+
+include_directories("${PROJECT_SOURCE_DIR}/include")
+include_directories("${PROJECT_BINARY_DIR}/src/Parse")
 link_directories(${LLVM_LIBRARY_DIRS})
 add_library(CodeGen
   "${CMAKE_CURRENT_SOURCE_DIR}/TypeLowering.cpp"

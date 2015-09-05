@@ -1,6 +1,7 @@
 find_package(LLVM REQUIRED)
+
 include_directories("${PROJECT_SOURCE_DIR}/include")
-include_directories("${PROJECT_BINARY_DIR}/Parse")
+include_directories("${PROJECT_BINARY_DIR}/src/Parse")
 include_directories("${LLVM_INCLUDE_DIRS}")
 
 add_library(Toplevel
