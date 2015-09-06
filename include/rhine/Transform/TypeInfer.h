@@ -12,15 +12,13 @@ public:
   TypeInfer();
   virtual ~TypeInfer() {}
   void runOnFunction(Function *F) override;
-  template <typename T>
-  Type *typeInferValueList(std::vector<T> V);
-  Type *typeInferBB(BasicBlock *BB);
   using ValueVisitor<Type *>::visit;
   Type *visit(ConstantInt *V) override;
   Type *visit(ConstantBool *V) override;
   Type *visit(ConstantFloat *V) override;
   Type *visit(GlobalString *V) override;
   Type *visit(Prototype *V) override;
+  Type *visit(BasicBlock *BB) override;
   Type *visit(Function *V) override;
   Type *visit(Pointer *V) override;
   Type *visit(AddInst *V) override;

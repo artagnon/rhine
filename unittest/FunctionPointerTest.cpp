@@ -70,7 +70,7 @@ TEST(FunctionPointer, DISABLED_CondAssign)
     "def bar [arithFn ~Fn(Int -> Int -> Int)] print $ arithFn 2 4;\n"
     "def addCandidate [A ~Int B ~Int] ret $ A + B;\n"
     "def subCandidate [A ~Int B ~Int] ret $ A - B;\n"
-    "def main [] if(false) bar addCandidate; else bar subCandidate;";
+    "def main [] if (false) bar addCandidate; else bar subCandidate;";
   std::string ExpectedOut = "";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
