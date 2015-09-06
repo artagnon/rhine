@@ -16,20 +16,21 @@ public:
   Type *typeInferValueList(std::vector<T> V);
   Type *typeInferBB(BasicBlock *BB);
   using ValueVisitor<Type *>::visit;
-  Type *visit(ConstantInt *I) override;
-  Type *visit(ConstantBool *B) override;
-  Type *visit(ConstantFloat *F) override;
-  Type *visit(GlobalString *G) override;
-  Type *visit(Prototype *P) override;
-  Type *visit(Function *F) override;
-  Type *visit(Pointer *P) override;
-  Type *visit(AddInst *A) override;
-  Type *visit(IfInst *F) override;
-  Type *visit(Argument *A) override;
-  Type *visit(MallocInst *B) override;
-  Type *visit(LoadInst *S) override;
-  Type *visit(CallInst *C) override;
-  Type *visit(ReturnInst *C) override;
+  Type *visit(ConstantInt *V) override;
+  Type *visit(ConstantBool *V) override;
+  Type *visit(ConstantFloat *V) override;
+  Type *visit(GlobalString *V) override;
+  Type *visit(Prototype *V) override;
+  Type *visit(Function *V) override;
+  Type *visit(Pointer *V) override;
+  Type *visit(AddInst *V) override;
+  Type *visit(IfInst *V) override;
+  Type *visit(Argument *V) override;
+  Type *visit(MallocInst *V) override;
+  Type *visit(LoadInst *V) override;
+  Type *visit(StoreInst *V) override;
+  Type *visit(CallInst *V) override;
+  Type *visit(ReturnInst *V) override;
 };
 }
 

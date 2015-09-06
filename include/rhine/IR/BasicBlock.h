@@ -59,6 +59,10 @@ public:
   unsigned size();
   Value *back();
 
+  template <class ForwardIterator, class T>
+  void replace(ForwardIterator First, ForwardIterator Last,
+               const T& OldValue, const T& NewValue);
+
   /// Acessors to Parent function
   void setParent(Function *F);
   Function *getParent() const;

@@ -3,15 +3,20 @@
 
 using namespace rhine;
 
-TEST(Store, DISABLED_Basic)
+TEST(Store, Basic)
 {
   std::string SourcePrg =
     "def main [] {\n"
     "  Handle = 0;\n"
     "  Handle = 2;\n"
+    "  print Handle;\n"
     "}";
-  std::string ExpectedLL = "store";
+  std::string ExpectedLL =
+    "  store i32 0, i32* %0\n"
+    "  store i32 2, i32* %0";
+  std::string ExpectedOut = "2";
   EXPECT_LL(SourcePrg, ExpectedLL);
+  EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
 
 TEST(Store, DISABLED_CondAssign)

@@ -37,6 +37,7 @@ protected:
     case RT_Argument: return visit(dyn_cast<Argument>(V)); break;
     case RT_MallocInst: return visit(dyn_cast<MallocInst>(V)); break;
     case RT_LoadInst: return visit(dyn_cast<LoadInst>(V)); break;
+    case RT_StoreInst: return visit(dyn_cast<StoreInst>(V)); break;
     case RT_CallInst: return visit(dyn_cast<CallInst>(V)); break;
     case RT_ReturnInst: return visit(dyn_cast<ReturnInst>(V)); break;
     default: assert(0 && "Unknown ValueVisitor dispatch");
@@ -54,6 +55,7 @@ protected:
   virtual R visit(Argument *A) = 0;
   virtual R visit(MallocInst *B) = 0;
   virtual R visit(LoadInst *S) = 0;
+  virtual R visit(StoreInst *S) = 0;
   virtual R visit(CallInst *C) = 0;
   virtual R visit(ReturnInst *C) = 0;
 };
