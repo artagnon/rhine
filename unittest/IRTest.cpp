@@ -24,6 +24,18 @@ TEST(IR, AddTwoInt)
   EXPECT_IR(SourcePrg, ExpectedIR);
 }
 
+TEST(IR, SubTwoInt)
+{
+  std::string SourcePrg = "def foo [] 3 - 2;";
+  std::string ExpectedIR =
+    "def foo [] ~Fn(Void -> Int) {\n"
+    "- ~Fn(Int -> Int -> Int)\n"
+    "3 ~Int\n"
+    "2 ~Int\n"
+    "}";
+  EXPECT_IR(SourcePrg, ExpectedIR);
+}
+
 TEST(IR, ConstantString)
 {
   std::string SourcePrg = "def foo [] ret 'moo!';";

@@ -97,7 +97,7 @@ SPTAB   [ \t]+
   return T::LITERALNAME;
 }
 
-[\[ \] \( \) + * ; { } $ ~ = \\ \&] {
+[\[ \] \( \) + \- * ; { } $ ~ = \\ \&] {
   return static_cast<P::token_type>(*yytext);
 }
 

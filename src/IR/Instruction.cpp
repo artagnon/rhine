@@ -43,6 +43,33 @@ void AddInst::print(std::ostream &Stream) const {
     Stream << std::endl << *O;
 }
 
+SubInst::SubInst(Type *Ty, Value *Op0, Value *Op1) :
+    Instruction(Ty, RT_SubInst, 2) {
+  setOperand(0, Op0);
+  setOperand(1, Op1);
+}
+
+SubInst::~SubInst() {}
+
+void *SubInst::operator new(size_t S) {
+  return User::operator new(S, 2);
+}
+
+SubInst *SubInst::get(Value *Op0, Value *Op1) {
+  auto K = Op0->getContext();
+  return new SubInst(UnType::get(K), Op0, Op1);
+}
+
+bool SubInst::classof(const Value *V) {
+  return V->getValID() == RT_SubInst;
+}
+
+void SubInst::print(std::ostream &Stream) const {
+  Stream << "- ~" << *VTy;
+  for (auto O: getOperands())
+    Stream << std::endl << *O;
+}
+
 CallInst::CallInst(Type *Ty, unsigned NumOps, std::string N) :
     Instruction(Ty, RT_CallInst, NumOps, N) {}
 

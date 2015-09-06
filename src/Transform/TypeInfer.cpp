@@ -63,6 +63,16 @@ Type *TypeInfer::visit(AddInst *V) {
   return LType;
 }
 
+Type *TypeInfer::visit(SubInst *V) {
+  for (auto Op : V->operands())
+    visit(Op);
+  auto LType = V->getOperand(0)->getType();
+  assert(LType == V->getOperand(1)->getType() &&
+         "SubInst with operands of different types");
+  V->setType(FunctionType::get(LType, {LType, LType}, false, K));
+  return LType;
+}
+
 Type *TypeInfer::visit(IfInst *V) {
   auto TrueBlock = V->getTrueBB();
   auto FalseBlock = V->getFalseBB();

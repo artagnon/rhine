@@ -12,6 +12,7 @@ class GlobalString;
 class Function;
 class Prototype;
 class AddInst;
+class SubInst;
 class IfInst;
 class Argument;
 class MallocInst;
@@ -33,6 +34,7 @@ protected:
     case RT_Function: return visit(dyn_cast<Function>(V)); break;
     case RT_Pointer: return visit(dyn_cast<Pointer>(V)); break;
     case RT_AddInst: return visit(dyn_cast<AddInst>(V)); break;
+    case RT_SubInst: return visit(dyn_cast<SubInst>(V)); break;
     case RT_IfInst: return visit(dyn_cast<IfInst>(V)); break;
     case RT_Argument: return visit(dyn_cast<Argument>(V)); break;
     case RT_MallocInst: return visit(dyn_cast<MallocInst>(V)); break;
@@ -52,6 +54,7 @@ protected:
   virtual R visit(Function *F) = 0;
   virtual R visit(Pointer *P) = 0;
   virtual R visit(AddInst *A) = 0;
+  virtual R visit(SubInst *A) = 0;
   virtual R visit(IfInst *F) = 0;
   virtual R visit(Argument *A) = 0;
   virtual R visit(MallocInst *B) = 0;

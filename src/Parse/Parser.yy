@@ -289,6 +289,13 @@ value_expr:
                   Op->setName(Driver->Root.getVirtualRegisterName());
                   $$ = Op;
                 }
+        |       rvalue[L] '-' rvalue[R]
+                {
+                  auto Op = SubInst::get($L, $R);
+                  Op->setSourceLocation(@1);
+                  Op->setName(Driver->Root.getVirtualRegisterName());
+                  $$ = Op;
+                }
         |       typed_symbol[S] TVOID
                 {
                   auto CInst = CallInst::get($S, {});

@@ -29,6 +29,13 @@ llvm::Value *AddInst::toLL(llvm::Module *M) {
   return K->Builder->CreateAdd(Op0, Op1);
 }
 
+llvm::Value *SubInst::toLL(llvm::Module *M) {
+  auto K = getContext();
+  auto Op0 = getOperand(0)->toLL(M);
+  auto Op1 = getOperand(1)->toLL(M);
+  return K->Builder->CreateSub(Op0, Op1);
+}
+
 llvm::Value *MallocInst::toLL(llvm::Module *M) {
   auto K = getContext();
   auto V = getVal()->toLL(M);
