@@ -102,6 +102,14 @@ Type *TypeInfer::visit(LoadInst *V) {
   exit(1);
 }
 
+Type *TypeInfer::visit(StoreInst *V) {
+  if (!V->isUnTyped())
+    return V->getType();
+  K->DiagPrinter->errorReport(V->getSourceLocation(),
+                              "untyped store " + V->getName());
+  exit(1);
+}
+
 Type *TypeInfer::visit(Argument *V) {
   if (!V->isUnTyped())
     return V->getType();

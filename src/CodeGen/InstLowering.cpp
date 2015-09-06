@@ -49,7 +49,14 @@ llvm::Value *MallocInst::toLL(llvm::Module *M) {
 }
 
 llvm::Value *StoreInst::toLL(llvm::Module *M) {
-  return nullptr;
+  auto K = getContext();
+  if (auto MValue = K->Map.getl(getMallocedValue())) {
+    auto NewValue = getNewValue()->toLL(M);
+    return K->Builder->CreateStore(NewValue, MValue);
+  }
+  auto Error = "unable to find " + Name + " to store into";
+  K->DiagPrinter->errorReport(SourceLoc, Error);
+  exit(1);
 }
 
 llvm::Value *LoadInst::toLL(llvm::Module *M) {

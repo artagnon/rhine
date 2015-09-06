@@ -61,9 +61,16 @@ void Resolve::runOnFunction(Function *F) {
     K->Map.add(Arg, F->getEntryBlock());
 
   for (auto &BB : *F)
-    for (auto &V : *BB)
-      if (auto M = dyn_cast<MallocInst>(V))
-        K->Map.add(M, BB);
+    for (auto It = BB->begin(); It != BB->end(); ++It) {
+      auto &V = *It;
+      if (auto M = dyn_cast<MallocInst>(V)) {
+        if (auto OldValue = K->Map.get(V, BB)) {
+          auto NewInst = StoreInst::get(OldValue, M->getVal());
+          std::replace(It, It + 1, V, cast<Value>(NewInst));
+        } else
+          K->Map.add(M, BB);
+      }
+    }
 
   for (auto &BB : *F)
     for (auto &V : *BB)
@@ -126,8 +133,6 @@ std::list<BasicBlock *> flattenPredecessors(BasicBlock *Block) {
 }
 
 Value *KR::get(Value *Val, BasicBlock *Block) {
-  if (!Val->isUnTyped() && !isa<UnresolvedValue>(Val))
-    return Val;
   auto UniqPreds = flattenPredecessors(Block);
   UniqPreds.unique();
   UniqPreds.push_back(nullptr); // Global
