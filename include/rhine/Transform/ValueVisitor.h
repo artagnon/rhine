@@ -40,6 +40,7 @@ protected:
     case RT_StoreInst: return visit(dyn_cast<StoreInst>(V)); break;
     case RT_CallInst: return visit(dyn_cast<CallInst>(V)); break;
     case RT_ReturnInst: return visit(dyn_cast<ReturnInst>(V)); break;
+    case RT_BasicBlock: return visit(dyn_cast<BasicBlock>(V)); break;
     default: assert(0 && "Unknown ValueVisitor dispatch");
     }
   }
@@ -58,6 +59,7 @@ protected:
   virtual R visit(StoreInst *S) = 0;
   virtual R visit(CallInst *C) = 0;
   virtual R visit(ReturnInst *C) = 0;
+  virtual R visit(BasicBlock *BB) = 0;
 };
 }
 

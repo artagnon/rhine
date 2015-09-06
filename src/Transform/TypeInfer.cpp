@@ -23,27 +23,11 @@ Type *TypeInfer::visit(GlobalString *V) {
   return V->getType();
 }
 
-template <typename T>
-Type *TypeInfer::typeInferValueList(std::vector<T> V) {
-  std::transform(V.begin(), V.end(), V.begin(),
-                 [this](T L) -> T {
-                   visit(L);
-                   return L;
-                 });
-  if (!V.size())
-    return VoidType::get(K);
-  return visit(V.back());
-}
-
-Type *TypeInfer::typeInferBB(BasicBlock *BB) {
-  std::transform(BB->begin(), BB->end(), BB->begin(),
-                 [this](Value *L) -> Value * {
-                   visit(L);
-                   return L;
-                 });
-  if (!BB->size())
-    return nullptr;
-  return visit(BB->back());
+Type *TypeInfer::visit(BasicBlock *BB) {
+  Type *LastTy = VoidType::get(K);
+  for (auto V: *BB)
+    LastTy = visit(V);
+  return LastTy;
 }
 
 Type *TypeInfer::visit(Prototype *V) {
@@ -53,10 +37,9 @@ Type *TypeInfer::visit(Prototype *V) {
 Type *TypeInfer::visit(Function *V) {
   auto FTy = cast<FunctionType>(V->getType());
   if (isa<UnType>(FTy->getRTy())) {
-    Type *LastTy = nullptr;
+    Type *LastTy = VoidType::get(K);
     for (auto BB : *V)
-      LastTy = typeInferValueList(BB->ValueList);
-    assert(LastTy && "Function has null body");
+      LastTy = visit(BB);
     FTy = FunctionType::get(LastTy, FTy->getATys(), false, K);
     V->setType(FTy);
   }
@@ -71,7 +54,8 @@ Type *TypeInfer::visit(Pointer *V) {
 }
 
 Type *TypeInfer::visit(AddInst *V) {
-  typeInferValueList(V->getOperands());
+  for (auto Op : V->operands())
+    visit(Op);
   auto LType = V->getOperand(0)->getType();
   assert(LType == V->getOperand(1)->getType() &&
          "AddInst with operands of different types");
@@ -82,8 +66,8 @@ Type *TypeInfer::visit(AddInst *V) {
 Type *TypeInfer::visit(IfInst *V) {
   auto TrueBlock = V->getTrueBB();
   auto FalseBlock = V->getFalseBB();
-  auto TrueTy = typeInferBB(TrueBlock);
-  auto FalseTy = typeInferBB(FalseBlock);
+  auto TrueTy = visit(TrueBlock);
+  auto FalseTy = visit(FalseBlock);
   if (TrueTy != FalseTy) {
     K->DiagPrinter->errorReport(
         V->getSourceLocation(), "mismatched true/false block types");
@@ -115,7 +99,8 @@ Type *TypeInfer::visit(Argument *V) {
 }
 
 Type *TypeInfer::visit(CallInst *V) {
-  typeInferValueList(V->getOperands());
+  for (auto Op : V->operands())
+    visit(Op);
   auto Callee = V->getCallee();
   auto CalleeTy = visit(Callee);
   assert(!isa<UnresolvedValue>(Callee));
