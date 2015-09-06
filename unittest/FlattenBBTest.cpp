@@ -1,6 +1,7 @@
-#include "rhine/TestUtil.h"
+#include "rhine/Util/TestUtil.h"
 #include "gtest/gtest.h"
 
+#include "rhine/IR/Module.h"
 #include "rhine/Transform/LambdaLifting.h"
 #include "rhine/Transform/FlattenBB.h"
 

@@ -7,8 +7,6 @@
 #include "rhine/Transform/TypeCoercion.h"
 #include "rhine/Transform/Resolve.h"
 #include "rhine/Runtime/GC.h"
-#include "rhine/IR.h"
-
 #include "llvm/ExecutionEngine/ExecutionEngine.h"
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/IR/Module.h"

@@ -10,10 +10,9 @@
 #include <cstdlib>
 #include <map>
 
-#include "location.hh"
 #include "rhine/IR/Type.h"
 #include "rhine/IR/BasicBlock.h"
-#include "rhine/Diagnostic.h"
+#include "rhine/Diagnostic/Diagnostic.h"
 
 namespace rhine {
 class Value;

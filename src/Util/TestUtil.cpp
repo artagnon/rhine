@@ -1,4 +1,4 @@
-#include "rhine/TestUtil.h"
+#include "rhine/Util/TestUtil.h"
 
 #include <string>
 
