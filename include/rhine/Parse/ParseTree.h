@@ -3,13 +3,18 @@
 #ifndef PARSETREE_H
 #define PARSETREE_H
 
-#include "rhine/IR.h"
+#include "rhine/IR/Module.h"
 #include <vector>
 
 using namespace std;
 
 namespace rhine {
-class ArgumentList : public std::vector<class Argument *> {
+class Argument;
+class Type;
+class Function;
+class Context;
+
+class ArgumentList : public std::vector<Argument *> {
   bool VariadicFlag = false;
 public:
   bool isVariadic() {
@@ -20,7 +25,7 @@ public:
   }
 };
 
-class TypeList : public std::vector<class Type *> {
+class TypeList : public std::vector<Type *> {
   bool VariadicFlag = false;
 public:
   bool isVariadic() {

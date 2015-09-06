@@ -1,9 +1,10 @@
+#include "rhine/IR/Module.h"
+#include "rhine/IR/Constant.h"
+#include "rhine/IR/Instruction.h"
 #include "rhine/IR/UnresolvedValue.h"
 #include "rhine/Transform/LambdaLifting.h"
 
 namespace rhine {
-class Function;
-class MallocInst;
 
 void LambdaLifting::runOnFunction(Function *F) {
   auto M = F->getParent();

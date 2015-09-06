@@ -60,10 +60,11 @@
 %type   <UnresolvedV>   typed_symbol lvalue
 
 %{
+#include "rhine/IR/IR.h"
 #include "rhine/Parse/Lexer.h"
 #include "rhine/Parse/ParseDriver.h"
 #include "rhine/Parse/ParseTree.h"
-#include "rhine/Diagnostic.h"
+#include "rhine/Diagnostic/Diagnostic.h"
 
 #undef yylex
 #define yylex Driver->Lexx->lex

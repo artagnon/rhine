@@ -5,7 +5,7 @@
 #include <unistd.h>
 
 #include "location.hh"
-#include "rhine/Diagnostic.h"
+#include "rhine/Diagnostic/Diagnostic.h"
 
 namespace rhine {
 #define ANSI_COLOR_RED     "\x1b[31;1m"
