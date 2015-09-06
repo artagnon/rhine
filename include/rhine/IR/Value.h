@@ -32,6 +32,7 @@ enum RTValue {
   RT_Pointer,
   RT_Instruction,
   RT_AddInst,
+  RT_SubInst,
   RT_CallInst,
   RT_MallocInst,
   RT_LoadInst,

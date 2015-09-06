@@ -22,6 +22,7 @@ public:
   Type *visit(Function *V) override;
   Type *visit(Pointer *V) override;
   Type *visit(AddInst *V) override;
+  Type *visit(SubInst *V) override;
   Type *visit(IfInst *V) override;
   Type *visit(Argument *V) override;
   Type *visit(MallocInst *V) override;
