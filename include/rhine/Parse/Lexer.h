@@ -1,25 +1,22 @@
 // -*- C++ -*-
-
-#ifndef LEXER_H
-#define LEXER_H
+#ifndef RHINE_LEXER_H
+#define RHINE_LEXER_H
 
 // Flex expects the signature of yylex to be defined in the macro YY_DECL, and
 // the C++ parser expects it to be declared. We can factor both as follows.
 
-#include "Parser.hpp"
+#include "rhine/Parse/Parser.h"
 #include "rhine/Parse/ParseDriver.h"
 
-typedef rhine::Parser P;
-typedef P::token T;
+using P = rhine::Parser;
+using T = P::Token;
 
 #define yyterminate() return T::END
 
-#define	YY_DECL		       			\
-    P::token_type				\
-    rhine::Lexer::lex(                          \
-      P::semantic_type *yylval,                 \
-      P::location_type *yylloc                  \
-    )
+#define	YY_DECL                                   \
+  T rhine::Lexer::lex(                            \
+      P::Semantic *yylval,                        \
+      P::Location *yylloc)
 
 #ifndef __FLEX_LEXER_H
 #include <FlexLexer.h>
@@ -41,8 +38,8 @@ public:
     *yyout << msg << std::endl;
   }
   virtual ~Lexer() {}
-  virtual P::token_type lex(P::semantic_type* yylval,
-                            P::location_type* yylloc);
+  virtual T lex(P::Semantic* yylval,
+                P::Location* yylloc);
   ParseDriver *Driver;
 };
 }
