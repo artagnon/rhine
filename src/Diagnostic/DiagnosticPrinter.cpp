@@ -4,8 +4,10 @@
 #include <cassert>
 #include <unistd.h>
 
-#include "location.hh"
+#include "rhine/Parse/Parser.h"
 #include "rhine/Diagnostic/Diagnostic.h"
+
+using Location = rhine::Parser::Location;
 
 namespace rhine {
 #define ANSI_COLOR_RED     "\x1b[31;1m"
@@ -36,15 +38,15 @@ public:
 DiagnosticPrinter::DiagnosticPrinter(std::ostream *ErrStream) :
     ErrorStream(ErrStream) {}
 
-void DiagnosticPrinter::errorReport(const location &Location,
+void DiagnosticPrinter::errorReport(const Location &Loc,
                                     const std::string &Message) {
-  assert(Location.begin.filename == Location.end.filename);
-  assert(Location.begin.line == Location.end.line);
+  assert(Loc.Begin.Filename == Loc.End.Filename);
+  assert(Loc.Begin.Line == Loc.End.Line);
 
   std::istream *InStream;
   std::string ScriptPath;
   std::istringstream Iss(StringStreamInput);
-  std::ifstream InFile(*Location.begin.filename);
+  std::ifstream InFile(*Loc.Begin.Filename);
 
   if (!StringStreamInput.empty()) {
     InStream = &Iss;
@@ -52,27 +54,27 @@ void DiagnosticPrinter::errorReport(const location &Location,
     if (!InFile)
       *ErrorStream << ColorCode(ANSI_COLOR_RED) << "fatal: "
                    << ColorCode(ANSI_COLOR_WHITE)
-                   << "Unable to open file" << *Location.begin.filename
+                   << "Unable to open file" << *Loc.Begin.Filename
                    << ColorCode(ANSI_COLOR_RESET) << std::endl;
     InStream = &InFile;
   }
-  *ErrorStream << ColorCode(ANSI_COLOR_WHITE) << *Location.begin.filename << ":"
-               << Location.begin.line << ":" << Location.begin.column << ": "
+  *ErrorStream << ColorCode(ANSI_COLOR_WHITE) << *Loc.Begin.Filename << ":"
+               << Loc.Begin.Line << ":" << Loc.Begin.Column << ": "
                << ColorCode(ANSI_COLOR_RED) << "error: "
                << ColorCode(ANSI_COLOR_WHITE) << Message
                << ColorCode(ANSI_COLOR_RESET) << std::endl;
 
   std::string FaultyLine;
-  for (unsigned int i = 0; i < Location.begin.line; i++)
+  for (unsigned int i = 0; i < Loc.Begin.Line; i++)
     std::getline(*InStream, FaultyLine);
 
   *ErrorStream << FaultyLine << std::endl << std::setfill(' ')
-               << std::setw(Location.begin.column)
+               << std::setw(Loc.Begin.Column)
                << ColorCode(ANSI_COLOR_GREEN) << '^';
-  unsigned int end_col = Location.end.column > 0 ? Location.end.column - 1 : 0;
-  if (end_col != Location.begin.column)
+  unsigned int end_col = Loc.End.Column > 0 ? Loc.End.Column - 1 : 0;
+  if (end_col != Loc.Begin.Column)
     *ErrorStream << std::setfill('~')
-                 << std::setw(end_col - Location.begin.column) << '~';
+                 << std::setw(end_col - Loc.Begin.Column) << '~';
   *ErrorStream << ColorCode(ANSI_COLOR_RESET) << std::endl;
 }
 }

@@ -7,10 +7,11 @@
 #include <string>
 #include <sstream>
 
-#include "location.hh"
+#include "rhine/Parse/Parser.h"
 
 using namespace std;
 using namespace llvm;
+using Location = rhine::Parser::Location;
 
 namespace rhine {
 class Use;
@@ -46,7 +47,7 @@ class Value {
 protected:
   Type *VTy;
   Use *UseList;
-  location SourceLoc;
+  Location SourceLoc;
   std::string Name;
 public:
   Value(Type *VTy, RTValue ID, std::string N = "");
@@ -54,8 +55,8 @@ public:
   Value *get() = delete;
   static bool classof(const Value *V);
   Context *getContext();
-  void setSourceLocation(location SrcLoc);
-  location getSourceLocation();
+  void setSourceLocation(Location SrcLoc);
+  Location getSourceLocation();
   RTValue getValID() const;
   Type *getType() const;
   void setType(Type *T);

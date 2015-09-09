@@ -14,10 +14,11 @@
 #include <vector>
 #include <sstream>
 
-#include "location.hh"
+#include "rhine/Parse/Parser.h"
 
 using namespace std;
 using namespace llvm;
+using Location = rhine::Parser::Location;
 
 namespace rhine {
 class Context;
@@ -36,7 +37,7 @@ enum RTType {
 class Type : public FoldingSetNode {
 protected:
   Context *Kontext;
-  location SourceLoc;
+  Location SourceLoc;
   Type(RTType ID);
 public:
   Type(Context *K, RTType ID);
@@ -44,8 +45,8 @@ public:
   RTType getTyID() const;
   static Type *get() = delete;
   Context *getContext();
-  void setSourceLocation(location SrcLoc);
-  location getSourceLocation();
+  void setSourceLocation(Location SrcLoc);
+  Location getSourceLocation();
   friend ostream &operator<<(ostream &Stream, const Type &T) {
     T.print(Stream);
     return Stream;

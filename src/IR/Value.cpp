@@ -3,13 +3,15 @@
 #include "rhine/IR/Use.h"
 #include <iostream>
 
+using Location = rhine::Parser::Location;
+
 namespace rhine {
 Value::Value(Type *VTy, RTValue ID, std::string N) :
     VTy(VTy), UseList(nullptr), Name(N), ValID(ID) {
   static std::string DummyStr = "";
-  SourceLoc.begin.line = SourceLoc.end.line = 0;
-  SourceLoc.begin.column = SourceLoc.end.column = 0;
-  SourceLoc.begin.filename = SourceLoc.end.filename = &DummyStr;
+  SourceLoc.Begin.Line = SourceLoc.End.Line = 0;
+  SourceLoc.Begin.Column = SourceLoc.End.Column = 0;
+  SourceLoc.Begin.Filename = SourceLoc.End.Filename = &DummyStr;
 }
 
 bool Value::classof(const Value *V) {
@@ -19,11 +21,11 @@ bool Value::classof(const Value *V) {
 
 Context *Value::getContext() { return VTy->getContext(); }
 
-void Value::setSourceLocation(location SrcLoc) {
+void Value::setSourceLocation(Location SrcLoc) {
   SourceLoc = SrcLoc;
 }
 
-location Value::getSourceLocation() {
+Location Value::getSourceLocation() {
   return SourceLoc;
 }
 

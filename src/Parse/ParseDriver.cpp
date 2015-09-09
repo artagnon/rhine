@@ -5,7 +5,6 @@
 #include "rhine/Parse/ParseDriver.h"
 #include "rhine/Parse/Lexer.h"
 #include "rhine/Context.h"
-#include "Parser.hpp"
 
 namespace rhine {
 ParseDriver::ParseDriver(class PTree &Tree, Context *SharedCtx, bool Debug) :
@@ -20,7 +19,7 @@ bool ParseDriver::parseStream(std::istream &In,
   Lexx = &Lex;
 
   Parser Parseyy(this);
-  Parseyy.set_debug_level(TraceParsing);
+  // Parseyy.set_debug_level(TraceParsing);
   return !Parseyy.parse();
 }
 

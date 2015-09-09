@@ -2,6 +2,8 @@
 #include "rhine/Context.h"
 #include <iostream>
 
+using Location = rhine::Parser::Location;
+
 namespace rhine {
 Type::Type(RTType ID) : TyID(ID) {}
 
@@ -13,11 +15,11 @@ Context *Type::getContext() { return Kontext; }
 
 RTType Type::getTyID() const { return TyID; }
 
-void Type::setSourceLocation(location SrcLoc) {
+void Type::setSourceLocation(Location SrcLoc) {
   SourceLoc = SrcLoc;
 }
 
-location Type::getSourceLocation() {
+Location Type::getSourceLocation() {
   return SourceLoc;
 }
 

@@ -13,7 +13,7 @@ public:
   std::string StringStreamInput;
 
   DiagnosticPrinter(std::ostream *ErrStream);
-  void errorReport(const class location &Location,
+  void errorReport(const class rhine::Parser::Location &Loca,
                    const std::string &Message);
 };
 }
