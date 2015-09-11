@@ -94,7 +94,6 @@ public:
   // Current state
   int CurTok;
   Semantic CurSema;
-  Location SavedLoc;
   Location CurLoc;
   bool CurStatus;
 
@@ -105,10 +104,11 @@ public:
   void getTok();
   Type *parseOptionalTypeAnnotation();
   std::vector<UnresolvedValue *> parseArgumentList();
+  Value *parseLiteral();
   Value *parseSingleStm();
   BasicBlock *parseCompoundBody();
   Function *parseFnDecl();
-  void parseToplevelForm();
+  void parseToplevelForms();
 
   // The main driver; sets Driver->Root and returns success status
   bool parse();

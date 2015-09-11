@@ -127,9 +127,7 @@ compound_stm:
                 }
         |       expression_or_branch[E]
                 {
-                  std::vector<Value *> StmList;
-                  StmList.push_back($E);
-                  $$ = BasicBlock::get("entry", StmList, K);
+                  $$ = BasicBlock::get("entry", { $E }, K);
                 }
 argument_list:
                 typed_argument[S]
