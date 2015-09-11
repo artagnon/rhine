@@ -20,7 +20,7 @@ bool ParseDriver::parseStream(std::istream &In,
 
   Parser Parseyy(this);
   // Parseyy.set_debug_level(TraceParsing);
-  return !Parseyy.parse();
+  return Parseyy.parse();
 }
 
 bool ParseDriver::parseFile(const std::string &Filename) {

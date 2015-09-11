@@ -6,6 +6,12 @@
 #include "rhine/Parse/ParseDriver.h"
 
 namespace rhine {
+class BasicBlock;
+class Function;
+class UnresolvedValue;
+class Type;
+class Value;
+
 class Parser {
 public:
   enum Token {
@@ -34,7 +40,10 @@ public:
     unsigned Line;
     unsigned Column;
     Position() :
-        Filename(nullptr), Line(1u), Column(1u) {}
+        Line(1u), Column(1u) {
+      static std::string Dummy;
+      Filename = &Dummy;
+    }
     void lines (int Count = 1)
     {
       Column = 1u;
@@ -81,8 +90,28 @@ public:
   };
 
   ParseDriver *Driver;
+
+  // Current state
+  int CurTok;
+  Semantic CurSema;
+  Location SavedLoc;
+  Location CurLoc;
+  bool CurStatus;
+
+  // All necessary information will be scooped out of the driver
   Parser(ParseDriver *Dri);
-  int parse();
+  virtual ~Parser();
+
+  void getTok();
+  Type *parseOptionalTypeAnnotation();
+  std::vector<UnresolvedValue *> parseArgumentList();
+  Value *parseSingleStm();
+  BasicBlock *parseCompoundBody();
+  Function *parseFnDecl();
+  void parseToplevelForm();
+
+  // The main driver; sets Driver->Root and returns success status
+  bool parse();
 };
 }
 
