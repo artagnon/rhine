@@ -9,6 +9,7 @@ namespace rhine {
 class BasicBlock;
 class Function;
 class UnresolvedValue;
+class Instruction;
 class Type;
 class Value;
 
@@ -97,20 +98,32 @@ public:
   Location CurLoc;
   bool CurStatus;
 
-  // All necessary information will be scooped out of the driver
+  /// All necessary information will be scooped out of the driver
   Parser(ParseDriver *Dri);
   virtual ~Parser();
 
+  /// The main reader which consumes a token from the lexer, setting CurSema and
+  /// CurLoc for people to construct objects.
   void getTok();
+
+  /// The master error reporter that calls out to DiagPrinter with CurLoc and
+  /// ErrStr, and sets CurStatus; does nothing if Optional is true
+  void writeError(std::string ErrStr, bool Optional = false);
+
+  /// The functions all assume that CurTok is primed for them to read, and do
+  /// not getTok() at start; they do, however, make sure that CurTok is primed
+  /// for the next person at the end of their operation. This works out really
+  /// well for callers who "parse, but oh no, we don't handle this".
   Type *parseOptionalTypeAnnotation();
   std::vector<UnresolvedValue *> parseArgumentList();
-  Value *parseLiteral();
+  Value *parseRvalue(bool Optional = false);
+  Instruction *parseArithOp(Value *Op0, bool Optional = false);
   Value *parseSingleStm();
   BasicBlock *parseCompoundBody();
   Function *parseFnDecl();
   void parseToplevelForms();
 
-  // The main driver; sets Driver->Root and returns success status
+  /// The main driver; sets Driver->Root and returns success status
   bool parse();
 };
 }
