@@ -116,7 +116,7 @@ Type *Parser::parseTypeAnnotation(bool Optional) {
 
 std::vector<Argument *> Parser::parseArgumentList() {
   std::vector<Argument *> ArgumentList;
-  while (CurTok != ']') {
+  while (CurTok != ')') {
     auto ArgLoc = CurLoc;
     auto ArgSema = CurSema;
     if (!getTok(LITERALNAME)) {
@@ -128,7 +128,8 @@ std::vector<Argument *> Parser::parseArgumentList() {
     Arg->setSourceLocation(ArgLoc);
     ArgumentList.push_back(Arg);
   }
-  getTok();
+  if (!getTok(')'))
+    writeError("expected ')' to end function argument list");
   return ArgumentList;
 }
 
@@ -220,10 +221,14 @@ Instruction *Parser::parseCall(Value *Callee, bool Optional) {
     Inst->setSourceLocation(CallLoc);
     return Inst;
   }
-  if (getTok(TVOID)) {
-    auto Inst = CallInst::get(Callee, {});
-    Inst->setSourceLocation(CallLoc);
-    return Inst;
+  if (getTok('(')) {
+    if (getTok(')')) {
+      auto Inst = CallInst::get(Callee, {});
+      Inst->setSourceLocation(CallLoc);
+      return Inst;
+    }
+    writeError("expecting '()'");
+    return nullptr;
   }
   writeError("expecting first call argument or '()' for Void", Optional);
   return nullptr;
@@ -253,11 +258,13 @@ Value *Parser::parseSingleStm() {
       Ret->setSourceLocation(RetLoc);
       return Ret;
     }
-    if (getTok(TVOID)) {
-      getSemiTerm("return statement");
-      auto Ret = ReturnInst::get({}, K);
-      Ret->setSourceLocation(RetLoc);
-      return Ret;
+    if (getTok('(')) {
+      if (getTok(')')) {
+        getSemiTerm("return statement");
+        auto Ret = ReturnInst::get({}, K);
+        Ret->setSourceLocation(RetLoc);
+        return Ret;
+      }
     }
     writeError("'ret' must be followed by an rtoken, '$', or '()'");
   }
@@ -316,8 +323,8 @@ Function *Parser::parseFcnDecl(bool Optional) {
     return nullptr;
   }
   auto FcnName = *FcnSema.LiteralName;
-  if (!getTok('[')) {
-    writeError("expected '[' to start function argument list");
+  if (!getTok('(')) {
+    writeError("expected '(' to start function argument list");
     return nullptr;
   }
   auto ArgList = parseArgumentList();

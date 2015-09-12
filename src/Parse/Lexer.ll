@@ -76,7 +76,6 @@ SPTAB   [ \t]+
 "Int" { return T::TINT; }
 "Bool" { return T::TBOOL; }
 "String" { return T::TSTRING; }
-"()" { return T::TVOID; }
 "Void" { return T::TVOID; }
 "Fn" { return T::TFUNCTION; }
 

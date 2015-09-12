@@ -13,7 +13,7 @@ using namespace rhine;
 TEST(Resolve, UnresolvedReplacement)
 {
   std::string SourcePrg =
-    "def main [] {\n"
+    "def main() {\n"
     "  Moo = 3;\n"
     "  Moo + 3;\n"
     "  Moo + 2;\n"
@@ -49,7 +49,7 @@ TEST(Resolve, UnresolvedReplacement)
 
 TEST(Resolve, ArgumentSymbolReplacement)
 {
-  std::string SourcePrg = "def main [var ~Int] ret var;";
+  std::string SourcePrg = "def main(var ~Int) ret var;";
   auto Pf = ParseFacade(SourcePrg);
   Resolve ResolveL;
   auto Module = Pf.parseToIR(ParseSource::STRING, { &ResolveL });
@@ -63,7 +63,7 @@ TEST(Resolve, ArgumentSymbolReplacement)
 TEST(Resolve, DISABLED_OutOfScope)
 {
   std::string SourcePrg =
-    "def main [] {\n"
+    "def main() {\n"
     "  if (true) {\n"
     "     Moo = 2;\n"
     "  } else {\n"

@@ -4,7 +4,7 @@
 using namespace rhine;
 
 TEST(IR, ConstantInt) {
-  std::string SourcePrg = "def foo [] ret 3;";
+  std::string SourcePrg = "def foo() ret 3;";
   std::string ExpectedIR =
     "def foo [] ~Fn(Void -> Int) {\n"
     "ret 3 ~Int\n"
@@ -14,7 +14,7 @@ TEST(IR, ConstantInt) {
 
 TEST(IR, AddTwoInt)
 {
-  std::string SourcePrg = "def foo [] 3 + 2;";
+  std::string SourcePrg = "def foo() 3 + 2;";
   std::string ExpectedIR =
     "def foo [] ~Fn(Void -> Int) {\n"
     "+ ~Fn(Int -> Int -> Int)\n"
@@ -26,7 +26,7 @@ TEST(IR, AddTwoInt)
 
 TEST(IR, SubTwoInt)
 {
-  std::string SourcePrg = "def foo [] 3 - 2;";
+  std::string SourcePrg = "def foo() 3 - 2;";
   std::string ExpectedIR =
     "def foo [] ~Fn(Void -> Int) {\n"
     "- ~Fn(Int -> Int -> Int)\n"
@@ -38,7 +38,7 @@ TEST(IR, SubTwoInt)
 
 TEST(IR, DISABLED_FcnTypeSpecifier)
 {
-  std::string SourcePrg = "def foo [] ~Fn(Void -> Int) { ret $ 3 - 2; }";
+  std::string SourcePrg = "def foo() ~Fn(Void -> Int) { ret $ 3 - 2; }";
   std::string ExpectedIR =
     "def foo [] ~Fn(Void -> Int) {\n"
     "- ~Fn(Int -> Int -> Int)\n"
@@ -50,7 +50,7 @@ TEST(IR, DISABLED_FcnTypeSpecifier)
 
 TEST(IR, ConstantString)
 {
-  std::string SourcePrg = "def foo [] ret 'moo!';";
+  std::string SourcePrg = "def foo() ret 'moo!';";
   std::string ExpectedIR =
     "def foo [] ~Fn(Void -> String) {\n"
     "ret 'moo!' ~String\n"
@@ -60,7 +60,7 @@ TEST(IR, ConstantString)
 
 TEST(IR, TypePropagation)
 {
-  std::string SourcePrg = "def id [var ~Int] ret var;";
+  std::string SourcePrg = "def id(var ~Int) ret var;";
   std::string ExpectedIR =
     "def id [var ~Int] ~Fn(Int -> Int) {\n"
     "ret var ~Int\n"
@@ -69,7 +69,7 @@ TEST(IR, TypePropagation)
 }
 
 TEST(IR, MallocInst) {
-  std::string SourcePrg = "def bsym [] sym = 3;";
+  std::string SourcePrg = "def bsym() sym = 3;";
   std::string ExpectedIR =
     "def bsym [] ~Fn(Void -> Void) {\n"
     "sym = 3 ~Int\n"
@@ -79,7 +79,7 @@ TEST(IR, MallocInst) {
 
 TEST(IR, BindPropagation) {
   std::string SourcePrg =
-    "def bsym [] {\n"
+    "def bsym() {\n"
     "  sym = 3;\n"
     "  ret sym;\n"
     "}";
@@ -93,7 +93,7 @@ TEST(IR, BindPropagation) {
 
 TEST(IR, Comment) {
   std::string SourcePrg =
-    "def foo []\n"
+    "def foo()\n"
     "  // Strip this out\n"
     "  ret 3;";
   std::string ExpectedIR =
@@ -105,7 +105,7 @@ TEST(IR, Comment) {
 
 TEST(IR, TwoArguments)
 {
-  std::string SourcePrg = "def foo [a ~Int b ~Int] ret $ a + b;";
+  std::string SourcePrg = "def foo(a ~Int b ~Int) ret $ a + b;";
   std::string ExpectedIR =
     "foo [a ~Int b ~Int] ~Fn(Int -> Int -> Int) {\n"
     "ret + ~Fn(Int -> Int -> Int)\n"
@@ -117,7 +117,7 @@ TEST(IR, TwoArguments)
 
 TEST(IR, TypePropagationCallInst)
 {
-  std::string SourcePrg = "def id [var ~String] println var;\n";
+  std::string SourcePrg = "def id(var ~String) println var;\n";
   std::string ExpectedIR =
     "def id [var ~String] ~Fn(String -> Void) {\n"
     "println ~Fn(String -> & -> Void)*\n"
@@ -129,7 +129,7 @@ TEST(IR, TypePropagationCallInst)
 TEST(IR, DISABLED_IfBasic)
 {
   std::string SourcePrg =
-    "def main [] { if (0) 2; else 3; }";
+    "def main() { if (0) 2; else 3; }";
   std::string ExpectedIR =
     "def main [] ~Fn(Void -> Void) {\n"
     "if (0 ~Int) {\n"

@@ -10,7 +10,7 @@ using namespace rhine;
 TEST(FlattenBB, NumberOfBBs)
 {
   std::string SourcePrg =
-    "def main [] {\n"
+    "def main() {\n"
     "  if(false) 3; else 4;\n"
     "}";
   auto Pf = ParseFacade(SourcePrg);
@@ -24,7 +24,7 @@ TEST(FlattenBB, NumberOfBBs)
 TEST(FlattenBB, PredSucc)
 {
   std::string SourcePrg =
-    "def main [] {\n"
+    "def main() {\n"
     "  if(false) 3; else 4;\n"
     "}";
   auto Pf = ParseFacade(SourcePrg);
@@ -43,7 +43,7 @@ TEST(FlattenBB, PredSucc)
 TEST(FlattenBB, SetParent)
 {
   std::string SourcePrg =
-    "def main [] {\n"
+    "def main() {\n"
     "  ret 4;\n"
     "}";
   auto Pf = ParseFacade(SourcePrg);
@@ -57,7 +57,7 @@ TEST(FlattenBB, SetParent)
 TEST(FlattenBB, SetIfParent)
 {
   std::string SourcePrg =
-    "def main [] {\n"
+    "def main() {\n"
     "  if(false) 3; else 4;\n"
     "}";
   auto Pf = ParseFacade(SourcePrg);
@@ -72,7 +72,7 @@ TEST(FlattenBB, SetIfParent)
 TEST(FlattenBB, SetLambdaParent)
 {
   std::string SourcePrg =
-    "def foo [] Bfunc = \\x ~Int -> ret x;";
+    "def foo() Bfunc = \\x ~Int -> ret x;";
   auto Pf = ParseFacade(SourcePrg);
   LambdaLifting LambLift;
   FlattenBB Flatten;
