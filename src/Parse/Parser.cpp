@@ -187,7 +187,21 @@ Instruction *Parser::parseAssignment(Value *Op0, bool Optional) {
 }
 
 Instruction *Parser::parseCall(Value *Callee, bool Optional) {
-  writeError("cannot parse calls yet", Optional);
+  auto CallLoc = CurLoc;
+  if (auto Arg0 = parseRtoken(true)) {
+    std::vector<Value *> CallArgs = { Arg0 };
+    while (auto Tok = parseRtoken(true))
+      CallArgs.push_back(Tok);
+    auto Inst = CallInst::get(Callee, CallArgs);
+    Inst->setSourceLocation(CallLoc);
+    return Inst;
+  }
+  if (getTok(TVOID)) {
+    auto Inst = CallInst::get(Callee, {});
+    Inst->setSourceLocation(CallLoc);
+    return Inst;
+  }
+  writeError("expecting first call argument or '()' for Void", Optional);
   return nullptr;
 }
 
@@ -209,12 +223,19 @@ Value *Parser::parseSingleStm() {
       Ret->setSourceLocation(RetLoc);
       return Ret;
     }
-    auto Lit = parseRtoken();
-    if (!getTok(';'))
-      writeError("expecting ';' to terminate return statement");
-    auto Ret = ReturnInst::get(Lit, K);
-    Ret->setSourceLocation(RetLoc);
-    return Ret;
+    if (auto Lit = parseRtoken(true)) {
+      getSemiTerm("return statement");
+      auto Ret = ReturnInst::get(Lit, K);
+      Ret->setSourceLocation(RetLoc);
+      return Ret;
+    }
+    if (getTok(TVOID)) {
+      getSemiTerm("return statement");
+      auto Ret = ReturnInst::get({}, K);
+      Ret->setSourceLocation(RetLoc);
+      return Ret;
+    }
+    writeError("'ret' must be followed by an rtoken, '$', or '()'");
   }
   case INTEGER:
   case BOOLEAN:
@@ -243,6 +264,7 @@ Value *Parser::parseSingleStm() {
   }
   default:
     writeError("expecting a single statement");
+    getTok();
   }
   return nullptr;
 }
@@ -258,17 +280,22 @@ BasicBlock *Parser::parseCompoundBody() {
   return BasicBlock::get("entry", StmList, K);
 }
 
-Function *Parser::parseFnDecl() {
-  if (!getTok(DEF))
-    writeError("expected 'def', to begin function definition");
-
+Function *Parser::parseFcnDecl(bool Optional) {
+  if (!getTok(DEF)) {
+    writeError("expected 'def', to begin function definition", Optional);
+    return nullptr;
+  }
   Location FcnLoc;
   Semantic FcnSema;
-  if (!getTok(LITERALNAME, FcnLoc, FcnSema))
+  if (!getTok(LITERALNAME, FcnLoc, FcnSema)) {
     writeError("expected function name");
+    return nullptr;
+  }
   auto FcnName = *FcnSema.LiteralName;
-  if (!getTok('['))
+  if (!getTok('[')) {
     writeError("expected '[' to start function argument list");
+    return nullptr;
+  }
   auto ArgList = parseArgumentList();
   auto Ty = parseOptionalTypeAnnotation();
   std::vector<Type *> ATys;
@@ -281,19 +308,22 @@ Function *Parser::parseFnDecl() {
 
   if (getTok('{')) {
     Fcn->push_back(parseCompoundBody());
+    if (!getTok('}'))
+      writeError("expected '}' to end compound form");
   } else {
-    if (auto Stm = parseSingleStm()) {
+    if (auto Stm = parseSingleStm())
       Fcn->push_back(BasicBlock::get("entry", { Stm }, K));
-      if (CurTok != END)
-        writeError("trailing garbage");
-    }
   }
   return Fcn;
 }
 
 void Parser::parseToplevelForms() {
   getTok();
-  Driver->Root.appendFunction(parseFnDecl());
+  while (auto Fcn = parseFcnDecl(true)) {
+    Driver->Root.appendFunction(Fcn);
+  }
+  if (CurTok != END)
+    writeError("expected end of file");
 }
 
 bool Parser::parse() {

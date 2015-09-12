@@ -114,7 +114,7 @@ TEST(IR, TypePropagationCallInst)
   EXPECT_IR(SourcePrg, ExpectedIR);
 }
 
-TEST(IR, IfBasic)
+TEST(IR, DISABLED_IfBasic)
 {
   std::string SourcePrg =
     "def main [] { if (0) 2; else 3; }";

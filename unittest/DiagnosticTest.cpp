@@ -31,7 +31,7 @@ TEST(Diagnostic, NotAFunction)
     "def main [] {\n"
     "  foo = 2;\n"
     "  foo 4;\n"
-    "}\n";
+    "}";
   std::string ExpectedErr =
     "string stream:3:3: error: foo was not typed as a function";
   EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
@@ -42,7 +42,7 @@ TEST(Diagnostic, FunctionNotFound)
   std::string SourcePrg =
     "def main [] {\n"
     "  bar 4;\n"
-    "}\n";
+    "}";
   std::string ExpectedErr =
     "string stream:2:3: error: unbound function bar";
   EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
@@ -67,7 +67,7 @@ TEST(Diagnostic, DISABLED_MissingOverloadedInstance)
   std::string SourcePrg =
     "def main [] {\n"
     "  toString '4';\n"
-    "}\n";
+    "}";
   std::string ExpectedErr =
     "error: no overloaded instance of toString takes String argument";
   EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
