@@ -46,7 +46,7 @@ void DiagnosticPrinter::errorReport(const Location &Loc,
   std::istream *InStream;
   std::string ScriptPath;
   std::istringstream Iss(StringStreamInput);
-  std::ifstream InFile(*Loc.Begin.Filename);
+  std::ifstream InFile(Loc.Begin.Filename);
 
   if (!StringStreamInput.empty()) {
     InStream = &Iss;
@@ -54,11 +54,11 @@ void DiagnosticPrinter::errorReport(const Location &Loc,
     if (!InFile)
       *ErrorStream << ColorCode(ANSI_COLOR_RED) << "fatal: "
                    << ColorCode(ANSI_COLOR_WHITE)
-                   << "Unable to open file" << *Loc.Begin.Filename
+                   << "Unable to open file" << Loc.Begin.Filename
                    << ColorCode(ANSI_COLOR_RESET) << std::endl;
     InStream = &InFile;
   }
-  *ErrorStream << ColorCode(ANSI_COLOR_WHITE) << *Loc.Begin.Filename << ":"
+  *ErrorStream << ColorCode(ANSI_COLOR_WHITE) << Loc.Begin.Filename << ":"
                << Loc.Begin.Line << ":" << Loc.Begin.Column << ": "
                << ColorCode(ANSI_COLOR_RED) << "error: "
                << ColorCode(ANSI_COLOR_WHITE) << Message
