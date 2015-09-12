@@ -157,7 +157,7 @@ public:
   BasicBlock *parseCompoundBody();
 
   /// DEF <NAME> '[' <ARGUMENTS ...> ']'
-  Function *parseFnDecl();
+  Function *parseFcnDecl(bool Optional = false);
 
   /// Room for global string and other structures
   void parseToplevelForms();
