@@ -118,17 +118,44 @@ public:
   /// The functions all assume that CurTok is primed for them to read, and do
   /// not getTok() at start; they do, however, make sure that CurTok is primed
   /// for the next person at the end of their operation. This works out really
-  /// well for callers who "parse, but oh no, we don't handle this".
+  /// well for callers who "parse, but oh no, we don't handle this"
   Type *parseOptionalTypeAnnotation();
+
+  /// Arguments are parsed along with optional type information
   std::vector<Argument *> parseArgumentList();
+
+  /// Single token that can appear on the rhs of '='
   Value *parseRtoken(bool Optional = false);
+
+  /// Anything that can come on the right of '='; this is a superset of Rtoken
   Value *parseAssignable(bool Optional = false);
+
+  /// Small helper to determine whether we're looking at a '$' operator
+  bool parseDollarOp(bool Optional = false);
+
+  /// Assuming the lhs has already been parsed (passed in as the first
+  /// argument), look at '=' and parse the rhs to build a full MallocInst to
+  /// return
   Instruction *parseAssignment(Value *Op0, bool Optional = false);
+
+  /// Assuming the lhs has already been parsed (passed in as first argument),
+  /// parse the appropriate arithmetic operator and build the full Instruction
+  /// to return
   Instruction *parseArithOp(Value *Op0, bool Optional = false);
+
+  /// Callee has already been parsed and is passed in as the first argument
   Instruction *parseCall(Value *Callee, bool Optional = false);
+
+  /// A statement is not branch, and ends with a semicolon
   Value *parseSingleStm();
+
+  /// A function body that's delimited by '{' and '}'
   BasicBlock *parseCompoundBody();
+
+  /// DEF <NAME> '[' <ARGUMENTS ...> ']'
   Function *parseFnDecl();
+
+  /// Room for global string and other structures
   void parseToplevelForms();
 
   /// The main driver; sets Driver->Root and returns success status
