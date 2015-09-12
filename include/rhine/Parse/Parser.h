@@ -118,7 +118,9 @@ public:
   /// well for callers who "parse, but oh no, we don't handle this".
   Type *parseOptionalTypeAnnotation();
   std::vector<Argument *> parseArgumentList();
-  Value *parseRvalue(bool Optional = false);
+  Value *parseRtoken(bool Optional = false);
+  Value *parseAssignableExpr(bool Optional = false);
+  Instruction *parseAssignment(Value *Op0, bool Optional = false);
   Instruction *parseArithOp(Value *Op0, bool Optional = false);
   Value *parseSingleStm();
   BasicBlock *parseCompoundBody();

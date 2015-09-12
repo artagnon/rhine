@@ -40,7 +40,7 @@ Type *TypeInfer::visit(Function *V) {
     Type *LastTy = VoidType::get(K);
     for (auto BB : *V)
       LastTy = visit(BB);
-    FTy = FunctionType::get(LastTy, FTy->getATys(), false, K);
+    FTy = FunctionType::get(LastTy, FTy->getATys(), false);
     V->setType(FTy);
   }
   K->Map.add(V);
@@ -59,7 +59,7 @@ Type *TypeInfer::visit(AddInst *V) {
   auto LType = V->getOperand(0)->getType();
   assert(LType == V->getOperand(1)->getType() &&
          "AddInst with operands of different types");
-  V->setType(FunctionType::get(LType, {LType, LType}, false, K));
+  V->setType(FunctionType::get(LType, {LType, LType}, false));
   return LType;
 }
 
@@ -69,7 +69,7 @@ Type *TypeInfer::visit(SubInst *V) {
   auto LType = V->getOperand(0)->getType();
   assert(LType == V->getOperand(1)->getType() &&
          "SubInst with operands of different types");
-  V->setType(FunctionType::get(LType, {LType, LType}, false, K));
+  V->setType(FunctionType::get(LType, {LType, LType}, false));
   return LType;
 }
 

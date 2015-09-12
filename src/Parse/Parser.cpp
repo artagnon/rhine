@@ -23,8 +23,8 @@ void Parser::getTok() {
   CurTok = Driver->Lexx->lex(&CurSema, &CurLoc);
 }
 
-bool Parser::getTok(int Expected) {
-  auto Ret = CurTok == Expected;
+bool Parser::getTok(int expected) {
+  auto Ret = CurTok == expected;
   CurTok = Driver->Lexx->lex(&CurSema, &CurLoc);
   return Ret;
 }
@@ -60,8 +60,8 @@ Type *Parser::parseOptionalTypeAnnotation() {
     case TFUNCTION: {
       getTok();
       if (!getTok('('))
-        writeError("In function type of form Fn(...), '(' is missing");
-      writeError("Cannot parse function types yet");
+        writeError("in function type of form Fn(...), '(' is missing");
+      writeError("cannot parse function types yet");
       while (CurTok != ')')
         getTok();
       getTok();
@@ -72,7 +72,7 @@ Type *Parser::parseOptionalTypeAnnotation() {
       return Ty;
     }
     default:
-      writeError("Unrecognized type name");
+      writeError("unrecognized type name");
     }
   }
   return UnType::get(K);
@@ -82,7 +82,7 @@ std::vector<Argument *> Parser::parseArgumentList() {
   std::vector<Argument *> ArgumentList;
   while (CurTok != ']') {
     if (CurTok != LITERALNAME)
-      writeError("Expected argument name");
+      writeError("expected argument name");
     auto Name = *CurSema.LiteralName;
     getTok();
     auto Ty = parseOptionalTypeAnnotation();
@@ -92,7 +92,7 @@ std::vector<Argument *> Parser::parseArgumentList() {
   return ArgumentList;
 }
 
-Value *Parser::parseRvalue(bool Optional) {
+Value *Parser::parseRtoken(bool Optional) {
   switch (CurTok) {
   case INTEGER: {
     auto Int = CurSema.Integer;
@@ -122,8 +122,19 @@ Value *Parser::parseRvalue(bool Optional) {
     return Sym;
   }
   default:
-    writeError("Expecting an integer, boolean, or string literal");
+    writeError("expecting an integer, boolean, or string literal", Optional);
   }
+  return nullptr;
+}
+
+Value *Parser::parseAssignableExpr(bool Optional) {
+  if (auto Rtok = parseRtoken(Optional)) {
+    Rtok->setSourceLocation(CurLoc);
+    if (auto ArithOp = parseArithOp(Rtok, true))
+      return ArithOp;
+    return Rtok;
+  }
+  writeError("expected assignable expression", Optional);
   return nullptr;
 }
 
@@ -131,31 +142,43 @@ Instruction *Parser::parseArithOp(Value *Op0, bool Optional) {
   switch (CurTok) {
   case '+': {
     getTok();
-    auto Op1 = parseRvalue();
+    auto Op1 = parseRtoken();
     return AddInst::get(Op0, Op1);
   }
   case '-': {
     getTok();
-    auto Op1 = parseRvalue();
+    auto Op1 = parseRtoken();
     return SubInst::get(Op0, Op1);
   }
   default:
-    writeError("Expected '+' or '-'", Optional);
+    writeError("expected '+' or '-'", Optional);
   }
+  return nullptr;
+}
+
+Instruction *Parser::parseAssignment(Value *Op0, bool Optional) {
+  if (!getTok('='))
+    writeError("expected '='", Optional);
+  if (auto Rhs = parseAssignableExpr(Optional)) {
+    auto Inst = MallocInst::get(Op0->getName(), Rhs);
+    Inst->setSourceLocation(Op0->getSourceLocation());
+    return Inst;
+  }
+  writeError("rhs of assignment unparseable", Optional);
   return nullptr;
 }
 
 Value *Parser::parseSingleStm() {
   if (CurTok == IF)
-    writeError("Cannot parse if yet");
+    writeError("cannot parse if yet");
   else {
     switch (CurTok) {
     case RET: {
       auto RetLoc = CurLoc;
       getTok();
-      auto Lit = parseRvalue();
+      auto Lit = parseRtoken();
       if (CurTok != ';')
-        writeError("Expecting ';' to terminate return statement");
+        writeError("expecting ';' to terminate return statement");
       getTok(); // consume ';', or whatever bad token in its place
       auto Ret = ReturnInst::get(Lit, K);
       Ret->setSourceLocation(RetLoc);
@@ -164,23 +187,30 @@ Value *Parser::parseSingleStm() {
     case INTEGER:
     case BOOLEAN:
     case STRING: {
-      auto Rvalue = parseRvalue();
+      auto Rvalue = parseRtoken();
+      Rvalue->setSourceLocation(CurLoc);
       auto ArithOp = parseArithOp(Rvalue);
       if (!getTok(';'))
-        writeError("Expecting ';' to terminate arithmetic operation");
+        writeError("expecting ';' to terminate arithmetic operation");
       return ArithOp;
     }
     case LITERALNAME: {
-      auto Rvalue = parseRvalue();
+      auto Rvalue = parseRtoken();
+      Rvalue->setSourceLocation(CurLoc);
       if (auto Inst = parseArithOp(Rvalue, true)) {
         if (!getTok(';'))
-          writeError("Expecting ';' to terminate arithmetic operation");
+          writeError("expecting ';' to terminate arithmetic operation");
         return Inst;
       }
-      writeError("Cannot parse function calls yet");
+      if (auto Assign = parseAssignment(Rvalue, true)) {
+        if (!getTok(';'))
+          writeError("expecting ';' to terminate '=' assignment");
+        return Assign;
+      }
+      writeError("cannot parse function calls yet");
     }
     default:
-      writeError("Expecting a single statement");
+      writeError("expecting a single statement");
     }
   }
   return nullptr;
@@ -199,17 +229,20 @@ BasicBlock *Parser::parseCompoundBody() {
 
 Function *Parser::parseFnDecl() {
   if (!getTok(DEF))
-    writeError("Expected 'def', to begin function definition");
+    writeError("expected 'def', to begin function definition");
   if (CurTok != LITERALNAME)
-    writeError("Expected function name");
+    writeError("expected function name");
   auto FcnName = *CurSema.LiteralName;
   auto FcnLoc = CurLoc;
   getTok();
   if (!getTok('['))
-    writeError("Expected '[' to start function argument list");
+    writeError("expected '[' to start function argument list");
   auto ArgList = parseArgumentList();
   auto Ty = parseOptionalTypeAnnotation();
-  auto FTy = FunctionType::get(Ty, K);
+  std::vector<Type *> ATys;
+  for (auto Sym : ArgList)
+    ATys.push_back(Sym->getType());
+  auto FTy = FunctionType::get(Ty, ATys, false);
   auto Fcn = Function::get(FcnName, FTy);
   Fcn->setArguments(ArgList);
   Fcn->setSourceLocation(FcnLoc);
@@ -220,7 +253,7 @@ Function *Parser::parseFnDecl() {
   } else {
     Fcn->push_back(BasicBlock::get("entry", { parseSingleStm() }, K));
     if (CurTok != END)
-      writeError("Trailing garbage");
+      writeError("trailing garbage");
   }
   return Fcn;
 }
