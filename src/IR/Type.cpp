@@ -161,11 +161,11 @@ FunctionType::FunctionType(Context *K, Type *RTy,
 
 FunctionType::~FunctionType() {}
 
-FunctionType *FunctionType::get(Type *RTy, std::vector<Type *> ATys,
-                                bool IsV, Context *K) {
+FunctionType *FunctionType::get(Type *RTy, std::vector<Type *> ATys, bool IsV) {
   FoldingSetNodeID ID;
   void *IP;
   FunctionType::Profile(ID, RTy, ATys, IsV);
+  auto K = RTy->getContext();
   if (auto FTy = K->FTyCache.FindNodeOrInsertPos(ID, IP))
     return FTy;
   FunctionType *FTy = new (K->RhAllocator) FunctionType(K, RTy, ATys, IsV);
@@ -173,8 +173,8 @@ FunctionType *FunctionType::get(Type *RTy, std::vector<Type *> ATys,
   return FTy;
 }
 
-FunctionType *FunctionType::get(Type *RTy, Context *K) {
-  return FunctionType::get(RTy, {}, false, K);
+FunctionType *FunctionType::get(Type *RTy) {
+  return FunctionType::get(RTy, {}, false);
 }
 
 bool FunctionType::classof(const Type *T) {

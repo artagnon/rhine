@@ -29,7 +29,7 @@ Value *TypeCoercion::convertValue(Value *V, StringType *) {
       return V;
   }
   auto ToStringTy =
-    FunctionType::get(StringType::get(K), {IntegerType::get(32, K)}, false, K);
+    FunctionType::get(StringType::get(K), {IntegerType::get(32, K)}, false);
   auto ToStringF = K->Map.get(Prototype::get("toString", ToStringTy));
   auto Op = CallInst::get(ToStringF, {V});
   Op->setType(PointerType::get(ToStringTy, K));

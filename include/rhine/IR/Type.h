@@ -142,9 +142,8 @@ class FunctionType : public Type {
 public:
   FunctionType(Context *K, Type *RTy, std::vector<Type *> ATys, bool IsV);
   virtual ~FunctionType();
-  static FunctionType *get(Type *RTy, std::vector<Type *> ATys,
-                           bool IsV, Context *K);
-  static FunctionType *get(Type *RTy, Context *K);
+  static FunctionType *get(Type *RTy, std::vector<Type *> ATys, bool IsV);
+  static FunctionType *get(Type *RTy);
   static bool classof(const Type *T);
   static inline void Profile(FoldingSetNodeID &ID, const Type *RTy,
                              const std::vector<Type *> ATys, bool IsV);
