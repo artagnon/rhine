@@ -9,6 +9,7 @@ namespace rhine {
 class BasicBlock;
 class Function;
 class UnresolvedValue;
+class Argument;
 class Instruction;
 class Type;
 class Value;
@@ -16,23 +17,23 @@ class Value;
 class Parser {
 public:
   enum Token {
-    END,
-    DEF,
-    IF,
-    ELSE,
-    AND,
-    OR,
-    ARROW,
-    TINT,
-    TBOOL,
-    TSTRING,
-    TFUNCTION,
-    TVOID,
-    RET,
-    LITERALNAME,
-    INTEGER,
-    BOOLEAN,
-    STRING,
+    END = 0,
+    DEF = -1,
+    IF = -2,
+    ELSE = -3,
+    AND = -4,
+    OR = -5,
+    ARROW = -6,
+    TINT = -7,
+    TBOOL = -8,
+    TSTRING = -9,
+    TFUNCTION = -10,
+    TVOID = -11,
+    RET = -12,
+    LITERALNAME = -13,
+    INTEGER = -14,
+    BOOLEAN = -15,
+    STRING = -16,
   };
 
   class Position {
@@ -105,6 +106,7 @@ public:
   /// The main reader which consumes a token from the lexer, setting CurSema and
   /// CurLoc for people to construct objects.
   void getTok();
+  bool getTok(int Expected);
 
   /// The master error reporter that calls out to DiagPrinter with CurLoc and
   /// ErrStr, and sets CurStatus; does nothing if Optional is true
@@ -115,7 +117,7 @@ public:
   /// for the next person at the end of their operation. This works out really
   /// well for callers who "parse, but oh no, we don't handle this".
   Type *parseOptionalTypeAnnotation();
-  std::vector<UnresolvedValue *> parseArgumentList();
+  std::vector<Argument *> parseArgumentList();
   Value *parseRvalue(bool Optional = false);
   Instruction *parseArithOp(Value *Op0, bool Optional = false);
   Value *parseSingleStm();
