@@ -25,7 +25,7 @@ void Parser::getTok() {
 
 bool Parser::getTok(int expected) {
   auto Ret = CurTok == expected;
-  CurTok = Driver->Lexx->lex(&CurSema, &CurLoc);
+  if (Ret) CurTok = Driver->Lexx->lex(&CurSema, &CurLoc);
   return Ret;
 }
 
@@ -41,8 +41,7 @@ void Parser::getSemiTerm(std::string ErrFragment) {
 }
 
 Type *Parser::parseOptionalTypeAnnotation() {
-  if (CurTok == '~') {
-    getTok();
+  if (getTok('~')) {
     switch (CurTok) {
     case TINT: {
       auto Ty = IntegerType::get(32, K);
@@ -86,10 +85,9 @@ Type *Parser::parseOptionalTypeAnnotation() {
 std::vector<Argument *> Parser::parseArgumentList() {
   std::vector<Argument *> ArgumentList;
   while (CurTok != ']') {
-    if (CurTok != LITERALNAME)
+    if (!getTok(LITERALNAME))
       writeError("expected argument name");
     auto Name = *CurSema.LiteralName;
-    getTok();
     auto Ty = parseOptionalTypeAnnotation();
     ArgumentList.push_back(Argument::get(Name, Ty));
   }
@@ -162,17 +160,16 @@ Instruction *Parser::parseArithOp(Value *Op0, bool Optional) {
 }
 
 Instruction *Parser::parseAssignment(Value *Op0, bool Optional) {
-  if (CurTok != '=')
+  if (!getTok('='))
     writeError("expected '='", Optional);
   else {
-    getTok();
     if (auto Rhs = parseAssignable(Optional)) {
       auto Inst = MallocInst::get(Op0->getName(), Rhs);
       Inst->setSourceLocation(Op0->getSourceLocation());
       return Inst;
     }
+    writeError("rhs of assignment unparseable", Optional);
   }
-  writeError("rhs of assignment unparseable", Optional);
   return nullptr;
 }
 
@@ -182,11 +179,10 @@ Instruction *Parser::parseCall(Value *Callee, bool Optional) {
 }
 
 bool Parser::parseDollarOp(bool Optional) {
-  if (CurTok != '$') {
+  if (!getTok('$')) {
     writeError("expected dollar ('$') operator", Optional);
     return false;
   }
-  getTok();
   return true;
 }
 
@@ -269,8 +265,7 @@ Function *Parser::parseFnDecl() {
   Fcn->setArguments(ArgList);
   Fcn->setSourceLocation(FcnLoc);
 
-  if (CurTok == '{') {
-    getTok();
+  if (getTok('{')) {
     Fcn->push_back(parseCompoundBody());
   } else {
     Fcn->push_back(BasicBlock::get("entry", { parseSingleStm() }, K));
