@@ -235,8 +235,7 @@ void *Pointer::operator new(size_t s) {
 }
 
 Pointer *Pointer::get(Value *V) {
-  auto K = V->getContext();
-  auto Ty = PointerType::get(V->getType(), K);
+  auto Ty = PointerType::get(V->getType());
   return new Pointer(V, Ty);
 }
 

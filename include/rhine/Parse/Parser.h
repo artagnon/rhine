@@ -123,7 +123,12 @@ public:
   /// not getTok() at start; they do, however, make sure that CurTok is primed
   /// for the next person at the end of their operation. This works out really
   /// well for callers who "parse, but oh no, we don't handle this"
-  Type *parseOptionalTypeAnnotation();
+
+  /// Parse a type (recursive in the case of FunctionType)
+  Type *parseType(bool Optional = false);
+
+  /// Small wrapper around parseType() to consume '~' additionally
+  Type *parseTypeAnnotation(bool Optional = false);
 
   /// Arguments are parsed along with optional type information
   std::vector<Argument *> parseArgumentList();

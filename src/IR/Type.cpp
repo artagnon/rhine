@@ -232,10 +232,11 @@ PointerType::PointerType(Context *K, Type *CTy) :
     Type(K, RT_PointerType), ContainedType(CTy) {}
 
 PointerType::~PointerType() {}
-PointerType *PointerType::get(Type *CTy, Context *K) {
+PointerType *PointerType::get(Type *CTy) {
   FoldingSetNodeID ID;
   void *IP;
   PointerType::Profile(ID, CTy);
+  auto K = CTy->getContext();
   if (auto PTy = K->PTyCache.FindNodeOrInsertPos(ID, IP))
     return PTy;
   PointerType *PTy = new (K->RhAllocator) PointerType(K, CTy);

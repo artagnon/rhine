@@ -50,57 +50,81 @@ void Parser::getSemiTerm(std::string ErrFragment) {
     writeError("expecting ';' to terminate " + ErrFragment);
 }
 
-Type *Parser::parseOptionalTypeAnnotation() {
-  if (getTok('~')) {
-    switch (CurTok) {
-    case TINT: {
-      auto Ty = IntegerType::get(32, K);
-      Ty->setSourceLocation(CurLoc);
-      getTok();
-      return Ty;
-    }
-    case TBOOL: {
-      auto Ty = BoolType::get(K);
-      Ty->setSourceLocation(CurLoc);
-      getTok();
-      return Ty;
-    }
-    case TSTRING: {
-      auto Ty = StringType::get(K);
-      Ty->setSourceLocation(CurLoc);
-      getTok();
-      return Ty;
-    }
-    case TFUNCTION: {
-      getTok();
-      if (!getTok('('))
-        writeError("in function type of form Fn(...), '(' is missing");
-      writeError("cannot parse function types yet");
-      while (CurTok != ')')
-        getTok();
-      getTok();
-    }
-    case TVOID: {
-      auto Ty = VoidType::get(K);
-      Ty->setSourceLocation(CurLoc);
-      return Ty;
-    }
-    default:
-      writeError("unrecognized type name");
-    }
+Type *Parser::parseType(bool Optional) {
+  switch (CurTok) {
+  case TINT: {
+    auto Ty = IntegerType::get(32, K);
+    Ty->setSourceLocation(CurLoc);
+    getTok();
+    return Ty;
   }
+  case TBOOL: {
+    auto Ty = BoolType::get(K);
+    Ty->setSourceLocation(CurLoc);
+    getTok();
+    return Ty;
+  }
+  case TSTRING: {
+    auto Ty = StringType::get(K);
+    Ty->setSourceLocation(CurLoc);
+    getTok();
+    return Ty;
+  }
+  case TFUNCTION: {
+    auto TFcnLoc = CurLoc;
+    getTok();
+    if (!getTok('(')) {
+      writeError("in function type of form 'Fn(...)', '(' is missing");
+      return nullptr;
+    }
+    std::vector<Type *> TypeList;
+    while (auto Ty = parseType(true)) {
+      if (!getTok(ARROW)) {
+        if (!getTok(')')) {
+          writeError("in function type of form 'Fn(...)', ')' is missing");
+          return nullptr;
+        }
+        auto FTy = FunctionType::get(Ty, TypeList, false);
+        auto PTy = PointerType::get(FTy);
+        FTy->setSourceLocation(TFcnLoc);
+        PTy->setSourceLocation(TFcnLoc);
+        return PTy;
+      }
+      TypeList.push_back(Ty);
+    }
+    writeError("dangling function type specifier");
+    return nullptr;
+  }
+  case TVOID: {
+    auto Ty = VoidType::get(K);
+    Ty->setSourceLocation(CurLoc);
+    getTok();
+    return Ty;
+  }
+  default:
+    writeError("unrecognized type name", Optional);
+  }
+  return nullptr;
+}
+
+Type *Parser::parseTypeAnnotation(bool Optional) {
+  if (getTok('~'))
+    return parseType();
+  writeError("unable to parse type annotation", Optional);
   return UnType::get(K);
 }
 
 std::vector<Argument *> Parser::parseArgumentList() {
   std::vector<Argument *> ArgumentList;
   while (CurTok != ']') {
-    Location ArgLoc;
-    Semantic ArgSema;
-    if (!getTok(LITERALNAME, ArgLoc, ArgSema))
+    auto ArgLoc = CurLoc;
+    auto ArgSema = CurSema;
+    if (!getTok(LITERALNAME)) {
       writeError("expected argument name");
+      return ArgumentList;
+    }
     auto Arg = Argument::get(*ArgSema.LiteralName,
-                             parseOptionalTypeAnnotation());
+                             parseTypeAnnotation(true));
     Arg->setSourceLocation(ArgLoc);
     ArgumentList.push_back(Arg);
   }
@@ -132,7 +156,7 @@ Value *Parser::parseRtoken(bool Optional) {
     auto RawName = *CurSema.LiteralName;
     auto SymLoc = CurLoc;
     getTok();
-    auto Ty = parseOptionalTypeAnnotation();
+    auto Ty = parseTypeAnnotation(true);
     auto Sym = UnresolvedValue::get(RawName, Ty);
     Sym->setSourceLocation(SymLoc);
     return Sym;
@@ -297,11 +321,12 @@ Function *Parser::parseFcnDecl(bool Optional) {
     return nullptr;
   }
   auto ArgList = parseArgumentList();
-  auto Ty = parseOptionalTypeAnnotation();
+  auto OptionalTypeAnnLoc = CurLoc;
+
   std::vector<Type *> ATys;
   for (auto Sym : ArgList)
     ATys.push_back(Sym->getType());
-  auto FTy = FunctionType::get(Ty, ATys, false);
+  auto FTy = FunctionType::get(UnType::get(K), ATys, false);
   auto Fcn = Function::get(FcnName, FTy);
   Fcn->setArguments(ArgList);
   Fcn->setSourceLocation(FcnLoc);
