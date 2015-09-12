@@ -162,65 +162,78 @@ Instruction *Parser::parseArithOp(Value *Op0, bool Optional) {
 }
 
 Instruction *Parser::parseAssignment(Value *Op0, bool Optional) {
-  if (!getTok('='))
+  if (CurTok != '=')
     writeError("expected '='", Optional);
-  if (auto Rhs = parseAssignable(Optional)) {
-    auto Inst = MallocInst::get(Op0->getName(), Rhs);
-    Inst->setSourceLocation(Op0->getSourceLocation());
-    return Inst;
+  else {
+    getTok();
+    if (auto Rhs = parseAssignable(Optional)) {
+      auto Inst = MallocInst::get(Op0->getName(), Rhs);
+      Inst->setSourceLocation(Op0->getSourceLocation());
+      return Inst;
+    }
   }
   writeError("rhs of assignment unparseable", Optional);
   return nullptr;
 }
 
 Instruction *Parser::parseCall(Value *Callee, bool Optional) {
-  writeError("cannot parse calls yet");
+  writeError("cannot parse calls yet", Optional);
   return nullptr;
 }
 
+bool Parser::parseDollarOp(bool Optional) {
+  if (CurTok != '$') {
+    writeError("expected dollar ('$') operator", Optional);
+    return false;
+  }
+  getTok();
+  return true;
+}
+
 Value *Parser::parseSingleStm() {
-  if (CurTok == IF)
-    writeError("cannot parse if yet");
-  else {
-    switch (CurTok) {
-    case RET: {
-      auto RetLoc = CurLoc;
-      getTok();
-      auto Lit = parseRtoken();
-      if (!getTok(';'))
-        writeError("expecting ';' to terminate return statement");
-      auto Ret = ReturnInst::get(Lit, K);
+  switch (CurTok) {
+  case RET: {
+    auto RetLoc = CurLoc;
+    getTok();
+    if (parseDollarOp(true)) {
+      auto Ret = ReturnInst::get(parseSingleStm(), K);
       Ret->setSourceLocation(RetLoc);
       return Ret;
     }
-    case INTEGER:
-    case BOOLEAN:
-    case STRING: {
-      if (auto ArithOp = parseAssignable()) {
-        getSemiTerm("arithmetic operation");
+    auto Lit = parseRtoken();
+    if (!getTok(';'))
+      writeError("expecting ';' to terminate return statement");
+    auto Ret = ReturnInst::get(Lit, K);
+    Ret->setSourceLocation(RetLoc);
+    return Ret;
+  }
+  case INTEGER:
+  case BOOLEAN:
+  case STRING: {
+    if (auto ArithOp = parseAssignable()) {
+      getSemiTerm("arithmetic operation");
+      return ArithOp;
+    }
+  }
+  case LITERALNAME: {
+    if (auto Rtok = parseRtoken()) {
+      if (auto Assign = parseAssignment(Rtok, true)) {
+        getSemiTerm("assignment");
+        return Assign;
+      }
+      if (auto Call = parseCall(Rtok, true)) {
+        getSemiTerm("function call");
+        return Call;
+      }
+      if (auto ArithOp = parseArithOp(Rtok, true)) {
+        getSemiTerm("arithmetic op");
         return ArithOp;
       }
     }
-    case LITERALNAME: {
-      if (auto Rtok = parseRtoken()) {
-        if (auto Assign = parseAssignment(Rtok, true)) {
-          getSemiTerm("assignment");
-          return Assign;
-        }
-        if (auto Call = parseCall(Rtok, true)) {
-          getSemiTerm("function call");
-          return Call;
-        }
-      }
-      if (auto ArithOp = parseAssignable(true)) {
-        getSemiTerm("statement");
-        return ArithOp;
-      }
-      writeError("expected call, assign, or arithmetic op");
-    }
-    default:
-      writeError("expecting a single statement");
-    }
+    writeError("expected call, assign, or arithmetic op");
+  }
+  default:
+    writeError("expecting a single statement");
   }
   return nullptr;
 }
