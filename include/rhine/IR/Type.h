@@ -162,7 +162,7 @@ class PointerType : public Type {
 public:
   PointerType(Context *K, Type *CTy);
   virtual ~PointerType();
-  static PointerType *get(Type *CTy, Context *K);
+  static PointerType *get(Type *CTy);
   static bool classof(const Type *T);
   static inline void Profile(FoldingSetNodeID &ID, const Type *CTy);
   void Profile(FoldingSetNodeID &ID);

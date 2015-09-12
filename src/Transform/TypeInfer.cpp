@@ -48,7 +48,7 @@ Type *TypeInfer::visit(Function *V) {
 }
 
 Type *TypeInfer::visit(Pointer *V) {
-  auto Ty = PointerType::get(visit(V->getVal()), K);
+  auto Ty = PointerType::get(visit(V->getVal()));
   V->setType(Ty);
   return Ty;
 }
@@ -120,7 +120,7 @@ Type *TypeInfer::visit(CallInst *V) {
     Callee->setType(PTy->getCTy());
   CalleeTy = Callee->getType();
   if (auto Ty = dyn_cast<FunctionType>(CalleeTy)) {
-    V->setType(PointerType::get(Ty, K));
+    V->setType(PointerType::get(Ty));
     return Ty->getRTy();
   }
   auto NotTypedAsFunction =

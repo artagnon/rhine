@@ -5,20 +5,21 @@ include_directories("${PROJECT_SOURCE_DIR}/gtest/include")
 include_directories("${LLVM_INCLUDE_DIRS}")
 
 add_executable(UnitTest
+  "${CMAKE_CURRENT_SOURCE_DIR}/ParseTest.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/IRTest.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/CodeGenTest.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/FlattenBBTest.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/TyInferTest.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/TyCoerceTest.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ResolveTest.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/BasicBlockTest.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ExternalsTest.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ExecutionTest.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/FunctionPointerTest.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/IfTest.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/StoreTest.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/FlattenBBTest.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/BasicBlockTest.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ModuleTest.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/LambdaTest.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ResolveTest.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ExternalsTest.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/TyInferTest.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/TyCoerceTest.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/DiagnosticTest.cpp")
 set_target_properties(UnitTest PROPERTIES
   LINKER_LANGUAGE CXX
