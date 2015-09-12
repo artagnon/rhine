@@ -3,10 +3,10 @@
 
 using namespace rhine;
 
-TEST(Execution, DollarOperator) {
+TEST(DollarOperator, Basic) {
   std::string SourcePrg =
-    "def foo [x ~Int] ret '2';\n"
-    "def main [] print $ foo 3;";
+    "def foo(x ~Int) ret '2';\n"
+    "def main() print $ foo 3;";
   std::string ExpectedOut = "2";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
