@@ -23,6 +23,12 @@ void Parser::getTok() {
   CurTok = Driver->Lexx->lex(&CurSema, &CurLoc);
 }
 
+bool Parser::getTok(int Expected) {
+  auto Ret = CurTok == Expected;
+  CurTok = Driver->Lexx->lex(&CurSema, &CurLoc);
+  return Ret;
+}
+
 void Parser::writeError(std::string ErrStr, bool Optional) {
   if (Optional) return;
   K->DiagPrinter->errorReport(CurLoc, ErrStr);
@@ -53,9 +59,8 @@ Type *Parser::parseOptionalTypeAnnotation() {
     }
     case TFUNCTION: {
       getTok();
-      if (CurTok != '(')
+      if (!getTok('('))
         writeError("In function type of form Fn(...), '(' is missing");
-      getTok();
       writeError("Cannot parse function types yet");
       while (CurTok != ')')
         getTok();
@@ -64,7 +69,6 @@ Type *Parser::parseOptionalTypeAnnotation() {
     case TVOID: {
       auto Ty = VoidType::get(K);
       Ty->setSourceLocation(CurLoc);
-      getTok();
       return Ty;
     }
     default:
@@ -74,15 +78,15 @@ Type *Parser::parseOptionalTypeAnnotation() {
   return UnType::get(K);
 }
 
-std::vector<UnresolvedValue *> Parser::parseArgumentList() {
-  std::vector<UnresolvedValue *> ArgumentList;
+std::vector<Argument *> Parser::parseArgumentList() {
+  std::vector<Argument *> ArgumentList;
   while (CurTok != ']') {
     if (CurTok != LITERALNAME)
       writeError("Expected argument name");
     auto Name = *CurSema.LiteralName;
     getTok();
     auto Ty = parseOptionalTypeAnnotation();
-    ArgumentList.push_back(UnresolvedValue::get(Name, Ty));
+    ArgumentList.push_back(Argument::get(Name, Ty));
   }
   getTok();
   return ArgumentList;
@@ -136,7 +140,7 @@ Instruction *Parser::parseArithOp(Value *Op0, bool Optional) {
     return SubInst::get(Op0, Op1);
   }
   default:
-    writeError("Expected + or -", Optional);
+    writeError("Expected '+' or '-'", Optional);
   }
   return nullptr;
 }
@@ -150,9 +154,8 @@ Value *Parser::parseSingleStm() {
       auto RetLoc = CurLoc;
       getTok();
       auto Lit = parseRvalue();
-      if (CurTok != ';') {
-        writeError("Expecting ; to terminate return statement");
-      }
+      if (CurTok != ';')
+        writeError("Expecting ';' to terminate return statement");
       getTok(); // consume ';', or whatever bad token in its place
       auto Ret = ReturnInst::get(Lit, K);
       Ret->setSourceLocation(RetLoc);
@@ -162,12 +165,18 @@ Value *Parser::parseSingleStm() {
     case BOOLEAN:
     case STRING: {
       auto Rvalue = parseRvalue();
-      return parseArithOp(Rvalue);
+      auto ArithOp = parseArithOp(Rvalue);
+      if (!getTok(';'))
+        writeError("Expecting ';' to terminate arithmetic operation");
+      return ArithOp;
     }
     case LITERALNAME: {
       auto Rvalue = parseRvalue();
-      if (auto Inst = parseArithOp(Rvalue, true))
+      if (auto Inst = parseArithOp(Rvalue, true)) {
+        if (!getTok(';'))
+          writeError("Expecting ';' to terminate arithmetic operation");
         return Inst;
+      }
       writeError("Cannot parse function calls yet");
     }
     default:
@@ -189,31 +198,29 @@ BasicBlock *Parser::parseCompoundBody() {
 }
 
 Function *Parser::parseFnDecl() {
-  if (CurTok != DEF) {
+  if (!getTok(DEF))
     writeError("Expected 'def', to begin function definition");
-  }
-  getTok();
-  if (CurTok != LITERALNAME) {
+  if (CurTok != LITERALNAME)
     writeError("Expected function name");
-  }
   auto FcnName = *CurSema.LiteralName;
   auto FcnLoc = CurLoc;
   getTok();
-  if (CurTok != '[') {
+  if (!getTok('['))
     writeError("Expected '[' to start function argument list");
-  }
-  getTok(); // consume '['
   auto ArgList = parseArgumentList();
   auto Ty = parseOptionalTypeAnnotation();
   auto FTy = FunctionType::get(Ty, K);
   auto Fcn = Function::get(FcnName, FTy);
+  Fcn->setArguments(ArgList);
   Fcn->setSourceLocation(FcnLoc);
 
   if (CurTok == '{') {
-    getTok(); // consume '{'
+    getTok();
     Fcn->push_back(parseCompoundBody());
   } else {
     Fcn->push_back(BasicBlock::get("entry", { parseSingleStm() }, K));
+    if (CurTok != END)
+      writeError("Trailing garbage");
   }
   return Fcn;
 }

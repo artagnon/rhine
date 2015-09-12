@@ -20,7 +20,7 @@ void UnresolvedValue::print(std::ostream &Stream) const {
 Argument::Argument(std::string N, Type *T) :
     User(T, RT_Argument, 0, N) {}
 
-Argument *Argument::get(std::string N, Type *T, Context *K) {
+Argument *Argument::get(std::string N, Type *T) {
   return new Argument(N, T);
 }
 

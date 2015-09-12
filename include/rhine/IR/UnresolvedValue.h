@@ -20,7 +20,7 @@ class Argument : public User {
 public:
   Argument(std::string N, Type *T);
   virtual ~Argument() {}
-  static Argument *get(std::string N, Type *T, Context *K);
+  static Argument *get(std::string N, Type *T);
   static bool classof(const Value *V);
   virtual llvm::Value *toLL(llvm::Module *M) override;
 protected:

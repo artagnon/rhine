@@ -48,7 +48,7 @@ TEST(IR, ConstantString)
 
 TEST(IR, TypePropagation)
 {
-  std::string SourcePrg = "def id [var ~Int] ret var;\n";
+  std::string SourcePrg = "def id [var ~Int] ret var;";
   std::string ExpectedIR =
     "def id [var ~Int] ~Fn(Int -> Int) {\n"
     "ret var ~Int\n"
