@@ -38,14 +38,11 @@ public:
 
   class Position {
   public:
-    std::string *Filename;
+    std::string Filename;
     unsigned Line;
     unsigned Column;
     Position() :
-        Line(1u), Column(1u) {
-      static std::string Dummy;
-      Filename = &Dummy;
-    }
+        Line(1u), Column(1u) {}
     void lines (int Count = 1)
     {
       Column = 1u;

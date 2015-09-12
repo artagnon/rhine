@@ -7,12 +7,7 @@ using Location = rhine::Parser::Location;
 
 namespace rhine {
 Value::Value(Type *VTy, RTValue ID, std::string N) :
-    VTy(VTy), UseList(nullptr), Name(N), ValID(ID) {
-  static std::string DummyStr = "";
-  SourceLoc.Begin.Line = SourceLoc.End.Line = 0;
-  SourceLoc.Begin.Column = SourceLoc.End.Column = 0;
-  SourceLoc.Begin.Filename = SourceLoc.End.Filename = &DummyStr;
-}
+    VTy(VTy), UseList(nullptr), Name(N), ValID(ID) {}
 
 bool Value::classof(const Value *V) {
   return V->getValID() >= RT_UnresolvedValue &&
