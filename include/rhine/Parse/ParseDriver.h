@@ -10,22 +10,40 @@
 namespace rhine {
 class Context;
 class PTree;
+class Lexer;
 
 class ParseDriver
 {
 public:
-
+  /// We fill in the ParseTree and hand it back; Context is ofcourse inherited,
+  /// and Debug is useful for getting trace outputs
   ParseDriver(class PTree &Tree, Context *SharedCtx, bool Debug = false);
-  bool parseStream(std::istream &In,
-                   const std::string &StreamName_ = "stream input");
+
+  /// The main driver that is called by parseString and parseFile; sets things
+  /// up (instatiates the lexer), and calls the parser
+  bool parseStream(std::istream &In, const std::string &StreamName_);
+
+  /// For things like unittests
   bool parseString(const std::string &Input,
                    const std::string &StreamName_ = "string stream");
-  bool parseFile(const std::string &filename);
 
+  /// For real files with filenames
+  bool parseFile(const std::string &Filename);
+
+  /// Name of current stream being parsed; used in filling in location
+  /// information into the AST by the parser
+  std::string StreamName;
+
+  /// The lexer, used as a service by the parser
+  Lexer *Lexx;
+
+  /// Give verbose Flex output
   bool TraceScanning;
-  bool TraceParsing;
-  class Lexer *Lexx;
+
+  /// The Root of the ParseTree into which the parser stuffs whatever
   PTree &Root;
+
+  /// Finally, the Context
   Context *Ctx;
 };
 }

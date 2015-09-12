@@ -23,10 +23,20 @@ void Parser::getTok() {
   CurTok = Driver->Lexx->lex(&CurSema, &CurLoc);
 }
 
-bool Parser::getTok(int expected) {
-  auto Ret = CurTok == expected;
-  if (Ret) CurTok = Driver->Lexx->lex(&CurSema, &CurLoc);
+bool Parser::getTok(int Expected) {
+  auto Ret = CurTok == Expected;
+  if (Ret) {
+    CurTok = Driver->Lexx->lex(&CurSema, &CurLoc);
+    CurLoc.Begin.Filename = CurLoc.End.Filename = Driver->StreamName;
+  }
+
   return Ret;
+}
+
+bool Parser::getTok(int Expected, Location &Loc, Semantic &Sema) {
+  Loc = CurLoc;
+  Sema = CurSema;
+  return getTok(Expected);
 }
 
 void Parser::writeError(std::string ErrStr, bool Optional) {
@@ -85,11 +95,14 @@ Type *Parser::parseOptionalTypeAnnotation() {
 std::vector<Argument *> Parser::parseArgumentList() {
   std::vector<Argument *> ArgumentList;
   while (CurTok != ']') {
-    if (!getTok(LITERALNAME))
+    Location ArgLoc;
+    Semantic ArgSema;
+    if (!getTok(LITERALNAME, ArgLoc, ArgSema))
       writeError("expected argument name");
-    auto Name = *CurSema.LiteralName;
-    auto Ty = parseOptionalTypeAnnotation();
-    ArgumentList.push_back(Argument::get(Name, Ty));
+    auto Arg = Argument::get(*ArgSema.LiteralName,
+                             parseOptionalTypeAnnotation());
+    Arg->setSourceLocation(ArgLoc);
+    ArgumentList.push_back(Arg);
   }
   getTok();
   return ArgumentList;
@@ -240,7 +253,7 @@ BasicBlock *Parser::parseCompoundBody() {
   while (CurTok != '}' && CurTok != END)
     StmList.push_back(parseSingleStm());
   if (CurTok == END) {
-    writeError("Dangling compound body");
+    writeError("dangling compound form");
   }
   return BasicBlock::get("entry", StmList, K);
 }
@@ -248,11 +261,12 @@ BasicBlock *Parser::parseCompoundBody() {
 Function *Parser::parseFnDecl() {
   if (!getTok(DEF))
     writeError("expected 'def', to begin function definition");
-  if (CurTok != LITERALNAME)
+
+  Location FcnLoc;
+  Semantic FcnSema;
+  if (!getTok(LITERALNAME, FcnLoc, FcnSema))
     writeError("expected function name");
-  auto FcnName = *CurSema.LiteralName;
-  auto FcnLoc = CurLoc;
-  getTok();
+  auto FcnName = *FcnSema.LiteralName;
   if (!getTok('['))
     writeError("expected '[' to start function argument list");
   auto ArgList = parseArgumentList();
@@ -268,9 +282,11 @@ Function *Parser::parseFnDecl() {
   if (getTok('{')) {
     Fcn->push_back(parseCompoundBody());
   } else {
-    Fcn->push_back(BasicBlock::get("entry", { parseSingleStm() }, K));
-    if (CurTok != END)
-      writeError("trailing garbage");
+    if (auto Stm = parseSingleStm()) {
+      Fcn->push_back(BasicBlock::get("entry", { Stm }, K));
+      if (CurTok != END)
+        writeError("trailing garbage");
+    }
   }
   return Fcn;
 }

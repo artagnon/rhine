@@ -8,7 +8,6 @@
 namespace rhine {
 class DiagnosticPrinter {
 public:
-  std::string StreamName;
   std::ostream *ErrorStream;
   std::string StringStreamInput;
 

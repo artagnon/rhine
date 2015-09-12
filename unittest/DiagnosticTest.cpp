@@ -6,7 +6,7 @@ using namespace rhine;
 TEST(Diagnostic, BareDefun)
 {
   std::string SourcePrg = "def foo []";
-  std::string ExpectedErr = "string stream:1:11: error: syntax error";
+  std::string ExpectedErr = "string stream:1:11: error: expecting a single statement";
   EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
 }
 
@@ -51,14 +51,14 @@ TEST(Diagnostic, FunctionNotFound)
 TEST(Diagnostic, BareDanglingBrace)
 {
   std::string SourcePrg = "def foo [] {";
-  std::string ExpectedErr = "string stream:1:13: error: syntax error";
+  std::string ExpectedErr = "string stream:1:13: error: dangling compound form";
   EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
 }
 
 TEST(Diagnostic, DanglingBraceWithStatement)
 {
   std::string SourcePrg = "def foo [] { 3;";
-  std::string ExpectedErr = "string stream:1:16: error: syntax error";
+  std::string ExpectedErr = "string stream:1:16: error: dangling compound form";
   EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
 }
 

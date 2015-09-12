@@ -103,7 +103,14 @@ public:
   /// The main reader which consumes a token from the lexer, setting CurSema and
   /// CurLoc for people to construct objects.
   void getTok();
+
+  /// Matches the current Tok against Expected, and then consumes a token on a
+  /// match; on non-match, nothing is returned
   bool getTok(int Expected);
+
+  /// Same as above, except that it additionally saves the {CurLoc, CurSema}
+  /// into the provided arguments
+  bool getTok(int Expected, Location &Loc, Semantic &Sema);
 
   /// The master error reporter that calls out to DiagPrinter with CurLoc and
   /// ErrStr, and sets CurStatus; does nothing if Optional is true
