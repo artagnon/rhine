@@ -35,6 +35,11 @@ void Parser::writeError(std::string ErrStr, bool Optional) {
   CurStatus = false;
 }
 
+void Parser::getSemiTerm(std::string ErrFragment) {
+  if (!getTok(';'))
+    writeError("expecting ';' to terminate " + ErrFragment);
+}
+
 Type *Parser::parseOptionalTypeAnnotation() {
   if (CurTok == '~') {
     getTok();
@@ -127,7 +132,7 @@ Value *Parser::parseRtoken(bool Optional) {
   return nullptr;
 }
 
-Value *Parser::parseAssignableExpr(bool Optional) {
+Value *Parser::parseAssignable(bool Optional) {
   if (auto Rtok = parseRtoken(Optional)) {
     Rtok->setSourceLocation(CurLoc);
     if (auto ArithOp = parseArithOp(Rtok, true))
@@ -159,12 +164,17 @@ Instruction *Parser::parseArithOp(Value *Op0, bool Optional) {
 Instruction *Parser::parseAssignment(Value *Op0, bool Optional) {
   if (!getTok('='))
     writeError("expected '='", Optional);
-  if (auto Rhs = parseAssignableExpr(Optional)) {
+  if (auto Rhs = parseAssignable(Optional)) {
     auto Inst = MallocInst::get(Op0->getName(), Rhs);
     Inst->setSourceLocation(Op0->getSourceLocation());
     return Inst;
   }
   writeError("rhs of assignment unparseable", Optional);
+  return nullptr;
+}
+
+Instruction *Parser::parseCall(Value *Callee, bool Optional) {
+  writeError("cannot parse calls yet");
   return nullptr;
 }
 
@@ -177,9 +187,8 @@ Value *Parser::parseSingleStm() {
       auto RetLoc = CurLoc;
       getTok();
       auto Lit = parseRtoken();
-      if (CurTok != ';')
+      if (!getTok(';'))
         writeError("expecting ';' to terminate return statement");
-      getTok(); // consume ';', or whatever bad token in its place
       auto Ret = ReturnInst::get(Lit, K);
       Ret->setSourceLocation(RetLoc);
       return Ret;
@@ -187,27 +196,27 @@ Value *Parser::parseSingleStm() {
     case INTEGER:
     case BOOLEAN:
     case STRING: {
-      auto Rvalue = parseRtoken();
-      Rvalue->setSourceLocation(CurLoc);
-      auto ArithOp = parseArithOp(Rvalue);
-      if (!getTok(';'))
-        writeError("expecting ';' to terminate arithmetic operation");
-      return ArithOp;
+      if (auto ArithOp = parseAssignable()) {
+        getSemiTerm("arithmetic operation");
+        return ArithOp;
+      }
     }
     case LITERALNAME: {
-      auto Rvalue = parseRtoken();
-      Rvalue->setSourceLocation(CurLoc);
-      if (auto Inst = parseArithOp(Rvalue, true)) {
-        if (!getTok(';'))
-          writeError("expecting ';' to terminate arithmetic operation");
-        return Inst;
+      if (auto Rtok = parseRtoken()) {
+        if (auto Assign = parseAssignment(Rtok, true)) {
+          getSemiTerm("assignment");
+          return Assign;
+        }
+        if (auto Call = parseCall(Rtok, true)) {
+          getSemiTerm("function call");
+          return Call;
+        }
       }
-      if (auto Assign = parseAssignment(Rvalue, true)) {
-        if (!getTok(';'))
-          writeError("expecting ';' to terminate '=' assignment");
-        return Assign;
+      if (auto ArithOp = parseAssignable(true)) {
+        getSemiTerm("statement");
+        return ArithOp;
       }
-      writeError("cannot parse function calls yet");
+      writeError("expected call, assign, or arithmetic op");
     }
     default:
       writeError("expecting a single statement");

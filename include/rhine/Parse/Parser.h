@@ -112,6 +112,9 @@ public:
   /// ErrStr, and sets CurStatus; does nothing if Optional is true
   void writeError(std::string ErrStr, bool Optional = false);
 
+  /// Specialized error writer for semicolon termination
+  void getSemiTerm(std::string ErrFragment);
+
   /// The functions all assume that CurTok is primed for them to read, and do
   /// not getTok() at start; they do, however, make sure that CurTok is primed
   /// for the next person at the end of their operation. This works out really
@@ -119,9 +122,10 @@ public:
   Type *parseOptionalTypeAnnotation();
   std::vector<Argument *> parseArgumentList();
   Value *parseRtoken(bool Optional = false);
-  Value *parseAssignableExpr(bool Optional = false);
+  Value *parseAssignable(bool Optional = false);
   Instruction *parseAssignment(Value *Op0, bool Optional = false);
   Instruction *parseArithOp(Value *Op0, bool Optional = false);
+  Instruction *parseCall(Value *Callee, bool Optional = false);
   Value *parseSingleStm();
   BasicBlock *parseCompoundBody();
   Function *parseFnDecl();
