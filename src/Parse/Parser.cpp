@@ -77,6 +77,15 @@ Type *Parser::parseType(bool Optional) {
       writeError("in function type of form 'Fn(...)', '(' is missing");
       return nullptr;
     }
+    auto BuildTFunction = [TFcnLoc] (Type *Ty,
+                                     std::vector<Type *> &TypeList,
+                                     bool VariadicRest) {
+      auto FTy = FunctionType::get(Ty, TypeList, VariadicRest);
+      auto PTy = PointerType::get(FTy);
+      FTy->setSourceLocation(TFcnLoc);
+      PTy->setSourceLocation(TFcnLoc);
+      return PTy;
+    };
     std::vector<Type *> TypeList;
     while (auto Ty = parseType(true)) {
       if (!getTok(ARROW)) {
@@ -84,14 +93,19 @@ Type *Parser::parseType(bool Optional) {
           writeError("in function type of form 'Fn(...)', ')' is missing");
           return nullptr;
         }
-        auto FTy = FunctionType::get(Ty, TypeList, false);
-        auto PTy = PointerType::get(FTy);
-        FTy->setSourceLocation(TFcnLoc);
-        PTy->setSourceLocation(TFcnLoc);
-        return PTy;
+        return BuildTFunction(Ty, TypeList, false);
       }
       TypeList.push_back(Ty);
     }
+    if (getTok('&'))
+      if (getTok(ARROW))
+        if (auto RTy = parseType()) {
+          if (!getTok(')')) {
+            writeError("in function type of form 'Fn(...)', ')' is missing");
+            return nullptr;
+          }
+          return BuildTFunction(RTy, TypeList, true);
+        }
     writeError("dangling function type specifier");
     return nullptr;
   }
