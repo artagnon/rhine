@@ -142,8 +142,6 @@ std::vector<Argument *> Parser::parseArgumentList() {
     Arg->setSourceLocation(ArgLoc);
     ArgumentList.push_back(Arg);
   }
-  if (!getTok(')'))
-    writeError("expected ')' to end function argument list");
   return ArgumentList;
 }
 
@@ -364,11 +362,14 @@ Function *Parser::parseFcnDecl(bool Optional) {
     return nullptr;
   }
   auto FcnName = *FcnSema.LiteralName;
-  if (!getTok('(')) {
-    writeError("expected '(' to start function argument list");
-    return nullptr;
+  std::vector<Argument *> ArgList;
+  if (getTok('(')) {
+    ArgList = parseArgumentList();
+    if (!getTok(')')) {
+      writeError("expected ')' to end function argument list");
+      return nullptr;
+    }
   }
-  auto ArgList = parseArgumentList();
   auto OptionalTypeAnnLoc = CurLoc;
 
   std::vector<Type *> ATys;

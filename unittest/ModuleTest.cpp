@@ -8,11 +8,15 @@ using namespace rhine;
 TEST(Module, CountObjects)
 {
   std::string SourcePrg =
-    "def main [] {\n"
+    "def main do\n"
     "  print 4;\n"
-    "}\n"
-    "def foom [] 2;\n"
-    "def baz[] print;\n";
+    "end\n"
+    "def foom do"
+    "  ret 2;\n"
+    "end\n"
+    "def baz do\n"
+    "  ret print;\n"
+    "end";
   auto Pf = ParseFacade(SourcePrg);
   auto Module = Pf.parseToIR(ParseSource::STRING, { });
   ASSERT_EQ(std::distance(Module->begin(), Module->end()), 3);
@@ -21,9 +25,9 @@ TEST(Module, CountObjects)
 TEST(Module, SetFunctionParent)
 {
   std::string SourcePrg =
-    "def main [] {\n"
+    "def main do\n"
     "  print 4;\n"
-    "}";
+    "end";
   auto Pf = ParseFacade(SourcePrg);
   auto Module = Pf.parseToIR(ParseSource::STRING, { });
   for (auto F : *Module)

@@ -5,9 +5,9 @@ using namespace rhine;
 
 TEST(Externals, Print) {
   std::string SourcePrg =
-    "def main [] {\n"
+    "def main() do\n"
     "  print '43';\n"
-    "}";
+    "end";
   std::string ExpectedPP =
     "call void (i8*, ...) @std_Void_print__String";
   EXPECT_LL(SourcePrg, ExpectedPP);
@@ -17,10 +17,10 @@ TEST(Externals, Print) {
 
 TEST(Externals, ExternalsCaching) {
   std::string SourcePrg =
-    "def compside [] {\n"
+    "def compside() do\n"
     "  print 'foom';\n"
     "  print 'baz';\n"
-    "}";
+    "end";
   std::string ExpectedPP =
     "  call void (i8*, ...) @std_Void_print__String"
     "(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @0, i32 0, i32 0))\n"
@@ -31,10 +31,10 @@ TEST(Externals, ExternalsCaching) {
 
 TEST(Externals, Malloc) {
   std::string SourcePrg =
-    "def main [] {\n"
+    "def main() do\n"
     "  malloc 8;\n"
     "  print '3';\n"
-    "}";
+    "end";
   std::string ExpectedPP =
     "call i8* @std_String_malloc__Int(i64 8)";
   EXPECT_LL(SourcePrg, ExpectedPP);
@@ -44,9 +44,9 @@ TEST(Externals, Malloc) {
 
 TEST(Externals, PrintPercentChars) {
   std::string SourcePrg =
-    "def main [] {\n"
+    "def main() do\n"
     "  print '%43';\n"
-    "}";
+    "end";
   std::string ExpectedOut = "%43";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
@@ -54,7 +54,9 @@ TEST(Externals, PrintPercentChars) {
 TEST(Externals, ToString)
 {
   std::string SourcePrg =
-    "def main [] toString 2;";
+    "def main() do\n"
+    "  toString 2;"
+    "end";
   std::string ExpectedPP =
     "%toString = call i8* @std_String_toString__Int(i32 2)";
   EXPECT_LL(SourcePrg, ExpectedPP);
@@ -63,20 +65,22 @@ TEST(Externals, ToString)
 TEST(Externals, ToStringExecution)
 {
   std::string SourcePrg =
-    "def main [] print $ toString 2;";
+    "def main() do\n"
+    "  print $ toString 2;"
+    "end";
   std::string ExpectedOut = "2";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
 
 TEST(Externals, FunctionPointer) {
   std::string SourcePrg =
-    "def mallocRet [] {\n"
+    "def mallocRet() do\n"
     "  ret malloc;\n"
-    "}";
+    "end";
   std::string ExpectedPP =
     "define i8* (i64)* @mallocRet() gc \"rhgc\" {\n"
     "entry:\n"
     "  ret i8* (i64)* @std_String_malloc__Int\n"
-    "}\n";
+    "}";
   EXPECT_LL(SourcePrg, ExpectedPP);
 }

@@ -5,29 +5,29 @@ using namespace rhine;
 
 TEST(Parse, BareDefun)
 {
-  std::string SourcePrg = "def foo()";
-  std::string ExpectedErr = "string stream:1:10: error: expecting a single statement";
+  std::string SourcePrg = "def foo";
+  std::string ExpectedErr = "string stream:1:8: error: expected 'do' to start function block";
   EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
 }
 
 TEST(Parse, BareDanglingBrace)
 {
-  std::string SourcePrg = "def foo() do";
-  std::string ExpectedErr = "string stream:1:13: error: dangling block";
+  std::string SourcePrg = "def foo do";
+  std::string ExpectedErr = "string stream:1:11: error: dangling block";
   EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
 }
 
 TEST(Parse, DanglingBraceWithStatement)
 {
-  std::string SourcePrg = "def foo() do 3;";
-  std::string ExpectedErr = "string stream:1:16: error: dangling block";
+  std::string SourcePrg = "def foo do 3;";
+  std::string ExpectedErr = "string stream:1:14: error: expected 'end' to end block";
   EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
 }
 
 TEST(Parse, EOFExpected)
 {
-  std::string SourcePrg = "def foo() do 3; end;";
-  std::string ExpectedErr = "string stream:1:20: error: expected end of file";
+  std::string SourcePrg = "def foo do 3; end;";
+  std::string ExpectedErr = "string stream:1:18: error: expected end of file";
   EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
 }
 

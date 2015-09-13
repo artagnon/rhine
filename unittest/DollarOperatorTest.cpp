@@ -18,7 +18,7 @@ TEST(DollarOperator, WithFunction) {
 TEST(CodeGen, WithRet)
 {
   std::string SourcePrg =
-    "def foo() do\n"
+    "def foo do\n"
     "  ret $ 3 + 2;\n"
     "end";
   std::string ExpectedLL =

@@ -14,13 +14,13 @@ add_executable(UnitTest
   "${CMAKE_CURRENT_SOURCE_DIR}/DollarOperatorTest.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/FunctionPointerTest.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ExternalsTest.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/FlattenBBTest.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/BasicBlockTest.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/IfTest.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/StoreTest.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ModuleTest.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/LambdaTest.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/DiagnosticTest.cpp")
+  "${CMAKE_CURRENT_SOURCE_DIR}/DiagnosticTest.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/FlattenBBTest.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/IfTest.cpp")
 set_target_properties(UnitTest PROPERTIES
   LINKER_LANGUAGE CXX
   COMPILE_FLAGS "${LLVM_CXXFLAGS}")

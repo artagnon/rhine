@@ -6,7 +6,9 @@ using namespace rhine;
 TEST(Lambda, BasicCodeGen)
 {
   std::string SourcePrg =
-    "def foo [] Bfunc = \\x ~Int -> ret x;";
+    "def foo do\n"
+    "  Bfunc = \\x ~Int -> ret x;\n"
+    "end";
   std::string ExpectedPP =
     "define i32 @lambda(i32) gc \"rhgc\" {\n"
     "entry:\n"
@@ -25,10 +27,10 @@ TEST(Lambda, BasicCodeGen)
 TEST(Lambda, BasicExecution)
 {
   std::string SourcePrg =
-    "def main [] {\n"
+    "def main do\n"
     "  Bfunc = \\x ~Int -> ret x;\n"
     "  print $ Bfunc 3;\n"
-    "}";
+    "end";
   std::string ExpectedOut = "3";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
