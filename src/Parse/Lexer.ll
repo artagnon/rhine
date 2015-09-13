@@ -72,14 +72,15 @@ SPTAB   [ \t]+
 "||" { return T::OR; }
 "->" { return T::ARROW; }
 "ret" { return T::RET; }
-"do" { return T::DO; }
+"do" { return T::DOBLOCK; }
 "end" { return T::ENDBLOCK; }
+"fn" { return T::LAMBDA; }
 
 "Int" { return T::TINT; }
 "Bool" { return T::TBOOL; }
 "String" { return T::TSTRING; }
 "Void" { return T::TVOID; }
-"Fn" { return T::TFUNCTION; }
+"Function" { return T::TFUNCTION; }
 
 "true" {
   auto B = ConstantBool::get(true, K);

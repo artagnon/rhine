@@ -34,8 +34,9 @@ public:
     INTEGER = -14,
     BOOLEAN = -15,
     STRING = -16,
-    DO = -17,
+    DOBLOCK = -17,
     ENDBLOCK = -18,
+    LAMBDA = -19,
   };
 
   class Position {
@@ -110,10 +111,6 @@ public:
   /// match; on non-match, nothing is returned
   bool getTok(int Expected);
 
-  /// Same as above, except that it additionally saves the {CurLoc, CurSema}
-  /// into the provided arguments
-  bool getTok(int Expected, Location &Loc, Semantic &Sema);
-
   /// The master error reporter that calls out to DiagPrinter with CurLoc and
   /// ErrStr, and sets CurStatus; does nothing if Optional is true
   void writeError(std::string ErrStr, bool Optional = false);
@@ -132,8 +129,11 @@ public:
   /// Small wrapper around parseType() to consume '~' additionally
   Type *parseTypeAnnotation(bool Optional = false);
 
-  /// Arguments are parsed along with optional type information
-  std::vector<Argument *> parseArgumentList();
+  /// Arguments are parsed along with optional type information; Parenless
+  /// dictates whether the arguments can be parsed as-is without parsing '(' or
+  /// ')'
+  std::vector<Argument *> parseArgumentList(bool Optional = false,
+                                            bool Parenless = false);
 
   /// Single token that can appear on the rhs of '='
   Value *parseRtoken(bool Optional = false);
@@ -166,10 +166,16 @@ public:
   /// A statement is not branch, and ends with a semicolon
   Value *parseSingleStm();
 
-  /// A function body that's delimited by '{' and '}'
-  BasicBlock *parseCompoundBody();
+  /// A function body that's delimited by 'do' and 'end'
+  BasicBlock *parseBlock(bool ArrowStarter = false);
 
-  /// DEF <NAME> '[' <ARGUMENTS ...> ']'
+  /// Function builder-helper; mainly, extracts types from the ArgList, creates
+  /// a FunctionType using that and the return type, and finally builds a
+  /// function with that type and name FcnName
+  Function *buildFcn(std::string FcnName, std::vector<Argument *> &ArgList,
+                     Type *ReturnType, Location &FcnLoc);
+
+  /// DEF <NAME> ['(' [ARGUMENTS ...] ')']
   Function *parseFcnDecl(bool Optional = false);
 
   /// Room for global string and other structures

@@ -7,7 +7,7 @@ TEST(Lambda, BasicCodeGen)
 {
   std::string SourcePrg =
     "def foo do\n"
-    "  Bfunc = \\x ~Int -> ret x;\n"
+    "  Bfunc = fn x ~Int -> ret x; end;\n"
     "end";
   std::string ExpectedPP =
     "define i32 @lambda(i32) gc \"rhgc\" {\n"
@@ -28,7 +28,7 @@ TEST(Lambda, BasicExecution)
 {
   std::string SourcePrg =
     "def main do\n"
-    "  Bfunc = \\x ~Int -> ret x;\n"
+    "  Bfunc = fn x ~Int -> ret x; end;\n"
     "  print $ Bfunc 3;\n"
     "end";
   std::string ExpectedOut = "3";
