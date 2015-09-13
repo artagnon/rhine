@@ -5,7 +5,10 @@ using namespace rhine;
 
 TEST(CodeGen, DefunStm)
 {
-  std::string SourcePrg = "def foo() ret $ 3 + 2;";
+  std::string SourcePrg =
+    "def foo() do\n"
+    "  ret $ 3 + 2;\n"
+    "end";
   std::string ExpectedLL =
     "define i32 @foo() gc \"rhgc\" {\n"
     "entry:\n"
@@ -17,11 +20,10 @@ TEST(CodeGen, DefunStm)
 TEST(CodeGen, DefunCompoundStm)
 {
   std::string SourcePrg =
-    "def foo()\n"
-    "{\n"
+    "def foo() do\n"
     "  3 + 2;\n"
     "  ret $ 4 + 5;\n"
-    "}";
+    "end";
   std::string ExpectedLL =
     "define i32 @foo() gc \"rhgc\" {\n"
     "entry:\n"
@@ -33,8 +35,12 @@ TEST(CodeGen, DefunCompoundStm)
 TEST(CodeGen, MultipleDefun)
 {
   std::string SourcePrg =
-    "def foo() ret 2;\n"
-    "def bar() ret 3;\n";
+    "def foo() do\n"
+    "  ret 2;\n"
+    "end\n"
+    "def bar() do\n"
+    "   ret 3;\n"
+    "end";
   std::string ExpectedLL =
     "define i32 @foo() gc \"rhgc\" {\n"
     "entry:\n"
@@ -50,7 +56,9 @@ TEST(CodeGen, MultipleDefun)
 TEST(CodeGen, TypeAnnotation)
 {
   std::string SourcePrg =
-    "def id(var ~Int) ret 0;\n";
+    "def id(var ~Int) do\n"
+    "  ret 0;\n"
+    "end";
   std::string ExpectedLL =
     "define i32 @id(i32) gc \"rhgc\" {\n"
     "entry:\n"
@@ -62,7 +70,9 @@ TEST(CodeGen, TypeAnnotation)
 TEST(CodeGen, FunctionArgBinding)
 {
   std::string SourcePrg =
-    "def id(var ~Int) ret var ~Int;\n";
+    "def id(var ~Int) do\n"
+    "  ret var ~Int;\n"
+    "end";
   std::string ExpectedLL =
     "define i32 @id(i32) gc \"rhgc\" {\n"
     "entry:\n"
@@ -74,7 +84,9 @@ TEST(CodeGen, FunctionArgBinding)
 TEST(CodeGen, TypePropagation)
 {
   std::string SourcePrg =
-    "def id(var ~Int) ret var;\n";
+    "def id(var ~Int) do\n"
+    "  ret var;\n"
+    "end";
   std::string ExpectedLL =
     "define i32 @id(i32) gc \"rhgc\" {\n"
     "entry:\n"
@@ -85,10 +97,10 @@ TEST(CodeGen, TypePropagation)
 
 TEST(CodeGen, BindPropagation) {
   std::string SourcePrg =
-    "def bsym() {"
+    "def bsym() do"
     "  Sym = 3;\n"
     "  ret Sym;\n"
-    "}";
+    "end";
   std::string ExpectedLL =
     "define i32 @bsym() gc \"rhgc\" {\n"
     "entry:\n"
@@ -104,8 +116,12 @@ TEST(CodeGen, BindPropagation) {
 TEST(CodeGen, FunctionCall)
 {
   std::string SourcePrg =
-    "def foom() ret 2;\n"
-    "def main() ret $ foom ();";
+    "def foom() do\n"
+    "  ret 2;\n"
+    "end\n"
+    "def main() do\n"
+    "  ret $ foom ();\n"
+    "end";
   std::string ExpectedLL =
     "ret i32 %foom";
   EXPECT_LL(SourcePrg, ExpectedLL);
@@ -114,7 +130,9 @@ TEST(CodeGen, FunctionCall)
 TEST(CodeGen, VoidLowering)
 {
   std::string SourcePrg =
-    "def id() { Var = 3; ret (); }\n";
+    "def id() do\n"
+    "  Var = 3; ret ();\n"
+    "end";
   std::string ExpectedLL =
     "define void @id() gc \"rhgc\" {\n"
     "entry:\n"
@@ -129,8 +147,12 @@ TEST(CodeGen, VoidLowering)
 TEST(CodeGen, MultipleArguments)
 {
   std::string SourcePrg =
-    "def foo(a ~Int b ~Int) ret $ a + b;\n"
-    "def main() ret $ foo 3 2;";
+    "def foo(a ~Int b ~Int) do\n"
+    "  ret $ a + b;\n"
+    "end\n"
+    "def main() do\n"
+    "  ret $ foo 3 2;\n"
+    "end";
   std::string ExpectedLL =
     "define i32 @foo(i32, i32) gc \"rhgc\" {\n"
     "entry:\n"
@@ -148,7 +170,9 @@ TEST(CodeGen, MultipleArguments)
 TEST(CodeGen, ArgumentTypesChaining)
 {
   std::string SourcePrg =
-    "def boom(addfn ~Fn(Int -> Int -> Int)) ret $ addfn 2 4;";
+    "def boom(addfn ~Fn(Int -> Int -> Int)) do\n"
+    "  ret $ addfn 2 4;\n"
+    "end";
   std::string ExpectedLL =
     "define i32 @boom(i32 (i32, i32)*)";
   EXPECT_LL(SourcePrg, ExpectedLL);
