@@ -72,6 +72,8 @@ SPTAB   [ \t]+
 "||" { return T::OR; }
 "->" { return T::ARROW; }
 "ret" { return T::RET; }
+"do" { return T::DO; }
+"end" { return T::ENDBLOCK; }
 
 "Int" { return T::TINT; }
 "Bool" { return T::TBOOL; }

@@ -12,22 +12,22 @@ TEST(Parse, BareDefun)
 
 TEST(Parse, BareDanglingBrace)
 {
-  std::string SourcePrg = "def foo() {";
-  std::string ExpectedErr = "string stream:1:12: error: dangling compound form";
+  std::string SourcePrg = "def foo() do";
+  std::string ExpectedErr = "string stream:1:13: error: dangling block";
   EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
 }
 
 TEST(Parse, DanglingBraceWithStatement)
 {
-  std::string SourcePrg = "def foo() { 3;";
-  std::string ExpectedErr = "string stream:1:15: error: dangling compound form";
+  std::string SourcePrg = "def foo() do 3;";
+  std::string ExpectedErr = "string stream:1:16: error: dangling block";
   EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
 }
 
 TEST(Parse, EOFExpected)
 {
-  std::string SourcePrg = "def foo() { 3; };";
-  std::string ExpectedErr = "string stream:1:17: error: expected end of file";
+  std::string SourcePrg = "def foo() do 3; end;";
+  std::string ExpectedErr = "string stream:1:20: error: expected end of file";
   EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
 }
 

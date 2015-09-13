@@ -5,9 +5,9 @@ using namespace rhine;
 
 TEST(TyInfer, CallInst) {
   std::string SourcePrg =
-    "def mallocCall() {\n"
+    "def mallocCall() do\n"
     "  ret $ malloc 8;\n"
-    "}";
+    "end";
   std::string ExpectedPP =
     "define i8* @mallocCall() gc \"rhgc\" {\n"
     "entry:\n"

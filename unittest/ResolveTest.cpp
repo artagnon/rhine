@@ -13,11 +13,11 @@ using namespace rhine;
 TEST(Resolve, UnresolvedReplacement)
 {
   std::string SourcePrg =
-    "def main() {\n"
+    "def main() do\n"
     "  Moo = 3;\n"
     "  Moo + 3;\n"
     "  Moo + 2;\n"
-    "}";
+    "end";
   auto Pf = ParseFacade(SourcePrg);
   Resolve ResolveL;
   auto Module = Pf.parseToIR(ParseSource::STRING, { &ResolveL });
@@ -49,7 +49,10 @@ TEST(Resolve, UnresolvedReplacement)
 
 TEST(Resolve, ArgumentSymbolReplacement)
 {
-  std::string SourcePrg = "def main(var ~Int) ret var;";
+  std::string SourcePrg =
+    "def main(var ~Int) do\n"
+    "ret var;\n"
+    "end";
   auto Pf = ParseFacade(SourcePrg);
   Resolve ResolveL;
   auto Module = Pf.parseToIR(ParseSource::STRING, { &ResolveL });
@@ -63,14 +66,14 @@ TEST(Resolve, ArgumentSymbolReplacement)
 TEST(Resolve, DISABLED_OutOfScope)
 {
   std::string SourcePrg =
-    "def main() {\n"
-    "  if (true) {\n"
+    "def main() do\n"
+    "  if (true) do\n"
     "     Moo = 2;\n"
-    "  } else {\n"
+    "  else do\n"
     "     Foo = 4;\n"
-    "  }\n"
+    "  end\n"
     "  print Moo;\n"
-    "}\n";
+    "end";
   std::string ExpectedErr = "error: unbound symbol Moo";
   EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
 }

@@ -303,10 +303,11 @@ Value *Parser::parseSingleStm() {
 BasicBlock *Parser::parseCompoundBody() {
   std::vector<Value *> StmList;
 
-  while (CurTok != '}' && CurTok != END)
-    StmList.push_back(parseSingleStm());
+  while (CurTok != ENDBLOCK && CurTok != END)
+    if (auto Stm = parseSingleStm())
+      StmList.push_back(Stm);
   if (CurTok == END) {
-    writeError("dangling compound form");
+    writeError("dangling block");
   }
   return BasicBlock::get("entry", StmList, K);
 }
@@ -338,15 +339,16 @@ Function *Parser::parseFcnDecl(bool Optional) {
   Fcn->setArguments(ArgList);
   Fcn->setSourceLocation(FcnLoc);
 
-  if (getTok('{')) {
+  if (getTok(DO)) {
     Fcn->push_back(parseCompoundBody());
-    if (!getTok('}'))
-      writeError("expected '}' to end compound form");
-  } else {
-    if (auto Stm = parseSingleStm())
-      Fcn->push_back(BasicBlock::get("entry", { Stm }, K));
+    if (!getTok(ENDBLOCK)) {
+      writeError("expected 'end' to end block");
+      return nullptr;
+    }
+    return Fcn;
   }
-  return Fcn;
+  writeError("expected 'do' to start function block");
+  return nullptr;
 }
 
 void Parser::parseToplevelForms() {

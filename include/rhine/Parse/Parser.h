@@ -34,6 +34,8 @@ public:
     INTEGER = -14,
     BOOLEAN = -15,
     STRING = -16,
+    DO = -17,
+    ENDBLOCK = -18,
   };
 
   class Position {
