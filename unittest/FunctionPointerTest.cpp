@@ -43,7 +43,7 @@ TEST(FunctionPointer, Externals) {
 TEST(FunctionPointer, PassPrint)
 {
   std::string SourcePrg =
-    "def bar(printfn ~Fn(String -> & -> Void)) do\n"
+    "def bar(printfn ~Function(String -> & -> Void)) do\n"
     "  printfn '12';\n"
     "end\n"
     "def main() do\n"
@@ -61,7 +61,7 @@ TEST(FunctionPointer, PassPrint)
 TEST(FunctionPointer, PassCustomFunction)
 {
   std::string SourcePrg =
-    "def bar(addfn ~Fn(Int -> Int -> Int)) do\n"
+    "def bar(addfn ~Function(Int -> Int -> Int)) do\n"
     "  print $ addfn 2 4;\n"
     "end\n"
     "def addCandidate(A ~Int B ~Int) do\n"
@@ -77,7 +77,7 @@ TEST(FunctionPointer, PassCustomFunction)
 TEST(FunctionPointer, DISABLED_CondAssign)
 {
   std::string SourcePrg =
-    "def bar(arithFn ~Fn(Int -> Int -> Int)) do\n"
+    "def bar(arithFn ~Function(Int -> Int -> Int)) do\n"
     "  print $ arithFn 2 4;\n"
     "end\n"
     "def addCandidate(A ~Int B ~Int) do\n"

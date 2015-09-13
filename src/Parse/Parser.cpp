@@ -33,12 +33,6 @@ bool Parser::getTok(int Expected) {
   return Ret;
 }
 
-bool Parser::getTok(int Expected, Location &Loc, Semantic &Sema) {
-  Loc = CurLoc;
-  Sema = CurSema;
-  return getTok(Expected);
-}
-
 void Parser::writeError(std::string ErrStr, bool Optional) {
   if (Optional) return;
   K->DiagPrinter->errorReport(CurLoc, ErrStr);
@@ -74,7 +68,7 @@ Type *Parser::parseType(bool Optional) {
     auto TFcnLoc = CurLoc;
     getTok();
     if (!getTok('(')) {
-      writeError("in function type of form 'Fn(...)', '(' is missing");
+      writeError("in function type of form 'Function(...)', '(' is missing");
       return nullptr;
     }
     auto BuildTFunction = [TFcnLoc] (Type *Ty,
@@ -90,7 +84,7 @@ Type *Parser::parseType(bool Optional) {
     while (auto Ty = parseType(true)) {
       if (!getTok(ARROW)) {
         if (!getTok(')')) {
-          writeError("in function type of form 'Fn(...)', ')' is missing");
+          writeError("in function type of form 'Function(...)', ')' is missing");
           return nullptr;
         }
         return BuildTFunction(Ty, TypeList, false);
@@ -101,7 +95,7 @@ Type *Parser::parseType(bool Optional) {
       if (getTok(ARROW))
         if (auto RTy = parseType()) {
           if (!getTok(')')) {
-            writeError("in function type of form 'Fn(...)', ')' is missing");
+            writeError("in function type of form 'Function(...)', ')' is missing");
             return nullptr;
           }
           return BuildTFunction(RTy, TypeList, true);
@@ -128,19 +122,34 @@ Type *Parser::parseTypeAnnotation(bool Optional) {
   return UnType::get(K);
 }
 
-std::vector<Argument *> Parser::parseArgumentList() {
+std::vector<Argument *> Parser::parseArgumentList(bool Optional,
+                                                  bool Parenless) {
+  if (!Parenless && !getTok('(')) {
+    writeError("expected '(' to begin argument list", Optional);
+    return {};
+  }
   std::vector<Argument *> ArgumentList;
   while (CurTok != ')') {
     auto ArgLoc = CurLoc;
     auto ArgSema = CurSema;
     if (!getTok(LITERALNAME)) {
+      if (Parenless)
+        break;
       writeError("expected argument name");
-      return ArgumentList;
+      return {};
     }
-    auto Arg = Argument::get(*ArgSema.LiteralName,
-                             parseTypeAnnotation(true));
-    Arg->setSourceLocation(ArgLoc);
-    ArgumentList.push_back(Arg);
+    if (auto Ty = parseTypeAnnotation(true)) {
+      auto Arg = Argument::get(*ArgSema.LiteralName, Ty);
+      Arg->setSourceLocation(ArgLoc);
+      ArgumentList.push_back(Arg);
+    } else {
+      writeError("malformed argument type specified");
+      return {};
+    }
+  }
+  if (!Parenless && !getTok(')')) {
+    writeError("expected ')' to end function argument list");
+    return {};
   }
   return ArgumentList;
 }
@@ -166,12 +175,12 @@ Value *Parser::parseRtoken(bool Optional) {
     return Str;
   }
   case LITERALNAME: {
-    auto RawName = *CurSema.LiteralName;
-    auto SymLoc = CurLoc;
+    auto LitName = *CurSema.LiteralName;
+    auto LitLoc = CurLoc;
     getTok();
     auto Ty = parseTypeAnnotation(true);
-    auto Sym = UnresolvedValue::get(RawName, Ty);
-    Sym->setSourceLocation(SymLoc);
+    auto Sym = UnresolvedValue::get(LitName, Ty);
+    Sym->setSourceLocation(LitLoc);
     return Sym;
   }
   default:
@@ -186,6 +195,17 @@ Value *Parser::parseAssignable(bool Optional) {
     if (auto ArithOp = parseArithOp(Rtok, true))
       return ArithOp;
     return Rtok;
+  }
+  auto LambdaLoc = CurLoc;
+  if (getTok(LAMBDA)) {
+    auto ArgList = parseArgumentList(true, true);
+    auto Fcn = buildFcn("lambda", ArgList, UnType::get(K), LambdaLoc);
+    if (auto Block = parseBlock(/* ArrowStarter = */ true)) {
+      Fcn->push_back(Block);
+      return Fcn;
+    }
+    writeError("unable to parse lambda body");
+    return nullptr;
   }
   writeError("expected assignable expression", Optional);
   return nullptr;
@@ -224,7 +244,7 @@ Instruction *Parser::parseAssignment(Value *Op0, bool Optional) {
 }
 
 Instruction *Parser::parseCall(Value *Callee, bool Optional) {
-  auto CallLoc = CurLoc;
+  auto CallLoc = Callee->getSourceLocation();
   if (auto Arg0 = parseRtoken(true)) {
     std::vector<Value *> CallArgs = { Arg0 };
     while (auto Tok = parseRtoken(true))
@@ -256,28 +276,30 @@ bool Parser::parseDollarOp(bool Optional) {
 
 Value *Parser::parseRet() {
   auto RetLoc = CurLoc;
-  if (getTok(RET)) {
-    if (parseDollarOp(true)) {
-      if (auto Stm = parseSingleStm()) {
-        auto Ret = ReturnInst::get(Stm, K);
-        Ret->setSourceLocation(RetLoc);
-        return Ret;
-      }
-      writeError("expected 'ret $' to be followed by a single statement");
-    }
-    if (auto Lit = parseRtoken(true)) {
-      getSemiTerm("return statement");
-      auto Ret = ReturnInst::get(Lit, K);
+  if (!getTok(RET)) {
+    writeError("expected 'ret' statement");
+    return nullptr;
+  }
+  if (parseDollarOp(true)) {
+    if (auto Stm = parseSingleStm()) {
+      auto Ret = ReturnInst::get(Stm, K);
       Ret->setSourceLocation(RetLoc);
       return Ret;
     }
-    if (getTok('(')) {
-      if (getTok(')')) {
-        getSemiTerm("return statement");
-        auto Ret = ReturnInst::get({}, K);
-        Ret->setSourceLocation(RetLoc);
-        return Ret;
-      }
+    writeError("expected 'ret $' to be followed by a single statement");
+  }
+  if (auto Lit = parseRtoken(true)) {
+    getSemiTerm("return statement");
+    auto Ret = ReturnInst::get(Lit, K);
+    Ret->setSourceLocation(RetLoc);
+    return Ret;
+  }
+  if (getTok('(')) {
+    if (getTok(')')) {
+      getSemiTerm("return statement");
+      auto Ret = ReturnInst::get({}, K);
+      Ret->setSourceLocation(RetLoc);
+      return Ret;
     }
   }
   writeError("'ret' must be followed by an rtoken, '$', or '()'");
@@ -338,16 +360,42 @@ Value *Parser::parseSingleStm() {
   return nullptr;
 }
 
-BasicBlock *Parser::parseCompoundBody() {
+BasicBlock *Parser::parseBlock(bool ArrowStarter) {
   std::vector<Value *> StmList;
+  if (ArrowStarter) {
+    if (!getTok(ARROW)) {
+      writeError("expected '->' to start block");
+      return nullptr;
+    }
+  } else {
+    if (!getTok(DOBLOCK)) {
+      writeError("expected 'do' to start block");
+      return nullptr;
+    }
+  }
 
   while (CurTok != ENDBLOCK && CurTok != END)
     if (auto Stm = parseSingleStm())
       StmList.push_back(Stm);
-  if (CurTok == END) {
-    writeError("dangling block");
+
+  if (!getTok(ENDBLOCK)) {
+    writeError("expected 'end' to end block");
+    return nullptr;
   }
   return BasicBlock::get("entry", StmList, K);
+}
+
+Function *Parser::buildFcn(std::string FcnName,
+                           std::vector<Argument *> &ArgList,
+                           Type *ReturnType, Location &FcnLoc) {
+  std::vector<Type *> ATys;
+    for (auto Sym : ArgList)
+    ATys.push_back(Sym->getType());
+  auto FTy = FunctionType::get(ReturnType, ATys, false);
+  auto Fcn = Function::get(FcnName, FTy);
+  Fcn->setArguments(ArgList);
+  Fcn->setSourceLocation(FcnLoc);
+  return Fcn;
 }
 
 Function *Parser::parseFcnDecl(bool Optional) {
@@ -355,41 +403,22 @@ Function *Parser::parseFcnDecl(bool Optional) {
     writeError("expected 'def', to begin function definition", Optional);
     return nullptr;
   }
-  Location FcnLoc;
-  Semantic FcnSema;
-  if (!getTok(LITERALNAME, FcnLoc, FcnSema)) {
+  auto FcnLoc = CurLoc;
+  auto FcnName = *CurSema.LiteralName;
+  if (!getTok(LITERALNAME)) {
     writeError("expected function name");
     return nullptr;
   }
-  auto FcnName = *FcnSema.LiteralName;
-  std::vector<Argument *> ArgList;
-  if (getTok('(')) {
-    ArgList = parseArgumentList();
-    if (!getTok(')')) {
-      writeError("expected ')' to end function argument list");
-      return nullptr;
-    }
-  }
+  auto ArgList = parseArgumentList(true);
   auto OptionalTypeAnnLoc = CurLoc;
-
-  std::vector<Type *> ATys;
-  for (auto Sym : ArgList)
-    ATys.push_back(Sym->getType());
-  auto FTy = FunctionType::get(UnType::get(K), ATys, false);
-  auto Fcn = Function::get(FcnName, FTy);
-  Fcn->setArguments(ArgList);
-  Fcn->setSourceLocation(FcnLoc);
-
-  if (getTok(DO)) {
-    Fcn->push_back(parseCompoundBody());
-    if (!getTok(ENDBLOCK)) {
-      writeError("expected 'end' to end block");
-      return nullptr;
-    }
-    return Fcn;
+  auto Fcn = buildFcn(FcnName, ArgList, UnType::get(K), FcnLoc);
+  if (auto Block = parseBlock())
+    Fcn->push_back(Block);
+  else {
+    writeError("unexpected empty block");
+    return nullptr;
   }
-  writeError("expected 'do' to start function block");
-  return nullptr;
+  return Fcn;
 }
 
 void Parser::parseToplevelForms() {

@@ -127,7 +127,7 @@ TEST(CodeGen, MultipleArguments)
 TEST(CodeGen, ArgumentTypesChaining)
 {
   std::string SourcePrg =
-    "def boom(addfn ~Fn(Int -> Int -> Int)) do\n"
+    "def boom(addfn ~Function(Int -> Int -> Int)) do\n"
     "  ret $ addfn 2 4;\n"
     "end";
   std::string ExpectedLL =

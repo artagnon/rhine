@@ -25,11 +25,13 @@ $ make -j8
 def fptrTest do
   return println
 end
-def mathTest(Input, Output) do
+def mathTest(Int Input, Float Finput) do
+	# Simple exercise
   if true do
-    println $ 3 + 2
+    println $ 3 + Input
   else
-    fptrTest 4
+    Lam = fn Arg -> Arg * 2 end
+    fptrTest (Lam 4)
   end
   ret 4
 end
