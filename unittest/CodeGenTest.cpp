@@ -6,10 +6,10 @@ using namespace rhine;
 TEST(CodeGen, MultipleDefun)
 {
   std::string SourcePrg =
-    "def foo() do\n"
+    "def foo do\n"
     "  ret 2;\n"
     "end\n"
-    "def bar() do\n"
+    "def bar do\n"
     "   ret 3;\n"
     "end";
   std::string ExpectedLL =
@@ -54,7 +54,7 @@ TEST(CodeGen, FunctionArgBinding)
 
 TEST(CodeGen, BindPropagation) {
   std::string SourcePrg =
-    "def bsym() do"
+    "def bsym do"
     "  Sym = 3;\n"
     "  ret Sym;\n"
     "end";
@@ -73,10 +73,10 @@ TEST(CodeGen, BindPropagation) {
 TEST(CodeGen, FunctionCall)
 {
   std::string SourcePrg =
-    "def foom() do\n"
+    "def foom do\n"
     "  ret 2;\n"
     "end\n"
-    "def main() do\n"
+    "def main do\n"
     "  ret $ foom ();\n"
     "end";
   std::string ExpectedLL =
@@ -87,7 +87,7 @@ TEST(CodeGen, FunctionCall)
 TEST(CodeGen, VoidLowering)
 {
   std::string SourcePrg =
-    "def id() do\n"
+    "def id do\n"
     "  Var = 3; ret ();\n"
     "end";
   std::string ExpectedLL =
@@ -107,7 +107,7 @@ TEST(CodeGen, MultipleArguments)
     "def foo(a ~Int b ~Int) do\n"
     "  ret $ a + b;\n"
     "end\n"
-    "def main() do\n"
+    "def main do\n"
     "  ret $ foo 3 2;\n"
     "end";
   std::string ExpectedLL =

@@ -9,10 +9,10 @@ using namespace rhine;
 TEST(BasicBlock, SetInstructionParent)
 {
   std::string SourcePrg =
-    "def main [] {\n"
+    "def main do\n"
     "  2 + 3;\n"
     "  print 4;\n"
-    "}";
+    "end";
   auto Pf = ParseFacade(SourcePrg);
   auto Module = Pf.parseToIR(ParseSource::STRING, { });
   for (auto BB : *Module->front())

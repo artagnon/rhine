@@ -5,7 +5,7 @@ using namespace rhine;
 
 TEST(IR, ConstantInt) {
   std::string SourcePrg =
-    "def foo() do\n"
+    "def foo do\n"
     "  ret 3;\n"
     "end";
   std::string ExpectedIR =
@@ -18,7 +18,7 @@ TEST(IR, ConstantInt) {
 TEST(IR, AddTwoInt)
 {
   std::string SourcePrg =
-    "def foo() do\n"
+    "def foo do\n"
     "  3 + 2;\n"
     "end";
   std::string ExpectedIR =
@@ -33,7 +33,7 @@ TEST(IR, AddTwoInt)
 TEST(IR, SubTwoInt)
 {
   std::string SourcePrg =
-    "def foo() do\n"
+    "def foo do\n"
     "  3 - 2;\n"
     "end";
   std::string ExpectedIR =
@@ -48,7 +48,7 @@ TEST(IR, SubTwoInt)
 TEST(IR, DISABLED_FcnTypeSpecifier)
 {
   std::string SourcePrg =
-    "def foo() ~Fn(Void -> Int) do\n"
+    "def foo ~Fn(Void -> Int) do\n"
     "  ret $ 3 - 2;\n"
     "end";
   std::string ExpectedIR =
@@ -63,7 +63,7 @@ TEST(IR, DISABLED_FcnTypeSpecifier)
 TEST(IR, ConstantString)
 {
   std::string SourcePrg =
-    "def foo() do\n"
+    "def foo do\n"
     "  ret 'moo!';\n"
     "end";
   std::string ExpectedIR =
@@ -88,7 +88,7 @@ TEST(IR, TypePropagation)
 
 TEST(IR, MallocInst) {
   std::string SourcePrg =
-    "def bsym() do\n"
+    "def bsym do\n"
     "  sym = 3;"
     "end";
   std::string ExpectedIR =
@@ -100,7 +100,7 @@ TEST(IR, MallocInst) {
 
 TEST(IR, BindPropagation) {
   std::string SourcePrg =
-    "def bsym() do\n"
+    "def bsym do\n"
     "  sym = 3;\n"
     "  ret sym;\n"
     "end";
@@ -114,7 +114,7 @@ TEST(IR, BindPropagation) {
 
 TEST(IR, Comment) {
   std::string SourcePrg =
-    "def foo() do\n"
+    "def foo do\n"
     "  // Strip this out\n"
     "  ret 3;\n"
     "end";
@@ -157,7 +157,7 @@ TEST(IR, TypePropagationCallInst)
 TEST(IR, DISABLED_IfBasic)
 {
   std::string SourcePrg =
-    "def main() do\n"
+    "def main do\n"
     "  if (0) 2; else 3;\n"
     "end";
   std::string ExpectedIR =

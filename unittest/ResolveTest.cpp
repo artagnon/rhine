@@ -13,7 +13,7 @@ using namespace rhine;
 TEST(Resolve, UnresolvedReplacement)
 {
   std::string SourcePrg =
-    "def main() do\n"
+    "def main do\n"
     "  Moo = 3;\n"
     "  Moo + 3;\n"
     "  Moo + 2;\n"
@@ -66,7 +66,7 @@ TEST(Resolve, ArgumentSymbolReplacement)
 TEST(Resolve, DISABLED_OutOfScope)
 {
   std::string SourcePrg =
-    "def main() do\n"
+    "def main do\n"
     "  if (true) do\n"
     "     Moo = 2;\n"
     "  else do\n"

@@ -5,7 +5,7 @@ using namespace rhine;
 
 TEST(TyCoerce, ConstantIntToString) {
   std::string SourcePrg =
-    "def main() do\n"
+    "def main do\n"
     "  print 62;\n"
     "end";
   std::string ExpectedOut = "62";
@@ -17,7 +17,7 @@ TEST(TyCoerce, StringTyToString) {
     "def boom(var ~String) do\n"
     "  print var;\n"
     "end\n"
-    "def main() do\n"
+    "def main do\n"
     "  boom '12';"
     "end";
   std::string ExpectedOut = "12";
@@ -29,7 +29,7 @@ TEST(TyCoerce, IntTyToString) {
     "def boom(var ~Int) do\n"
     "  print var;\n"
     "end\n"
-    "def main() do\n"
+    "def main do\n"
     "  boom 3;\n"
     "end";
   std::string ExpectedOut = "3";
@@ -38,7 +38,7 @@ TEST(TyCoerce, IntTyToString) {
 
 TEST(TyCoerce, DISABLED_InsideIf) {
   std::string SourcePrg =
-    "def main() do\n"
+    "def main do\n"
     "  if (false) print 2; else print 3;\n"
     "end";
   std::string ExpectedOut = "3";
