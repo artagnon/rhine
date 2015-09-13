@@ -242,15 +242,16 @@ bool Parser::parseDollarOp(bool Optional) {
   return true;
 }
 
-Value *Parser::parseSingleStm() {
-  switch (CurTok) {
-  case RET: {
-    auto RetLoc = CurLoc;
-    getTok();
+Value *Parser::parseRet() {
+  auto RetLoc = CurLoc;
+  if (getTok(RET)) {
     if (parseDollarOp(true)) {
-      auto Ret = ReturnInst::get(parseSingleStm(), K);
-      Ret->setSourceLocation(RetLoc);
-      return Ret;
+      if (auto Stm = parseSingleStm()) {
+        auto Ret = ReturnInst::get(Stm, K);
+        Ret->setSourceLocation(RetLoc);
+        return Ret;
+      }
+      writeError("expected 'ret $' to be followed by a single statement");
     }
     if (auto Lit = parseRtoken(true)) {
       getSemiTerm("return statement");
@@ -266,7 +267,42 @@ Value *Parser::parseSingleStm() {
         return Ret;
       }
     }
-    writeError("'ret' must be followed by an rtoken, '$', or '()'");
+  }
+  writeError("'ret' must be followed by an rtoken, '$', or '()'");
+  return nullptr;
+}
+
+Value *Parser::parsePostLiteralName(Value *Rtok) {
+  auto LitLoc = Rtok->getSourceLocation();
+  if (auto Assign = parseAssignment(Rtok, true)) {
+    getSemiTerm("assignment");
+    return Assign;
+  }
+  if (auto Call = parseCall(Rtok, true)) {
+    getSemiTerm("function call");
+    return Call;
+  }
+  if (parseDollarOp(true)) {
+    if (auto Stm = parseSingleStm()) {
+      auto Call = CallInst::get(Rtok, {Stm});
+      Call->setSourceLocation(LitLoc);
+      return Call;
+    }
+    writeError("expected '<callee> $' to be followed by a single statement");
+  }
+  if (auto ArithOp = parseArithOp(Rtok, true)) {
+    getSemiTerm("arithmetic op");
+    return ArithOp;
+  }
+  writeError("expected call, assign, or arithmetic op");
+  return nullptr;
+}
+
+Value *Parser::parseSingleStm() {
+  switch (CurTok) {
+  case RET: {
+    if (auto Ret = parseRet())
+      return Ret;
   }
   case INTEGER:
   case BOOLEAN:
@@ -277,21 +313,11 @@ Value *Parser::parseSingleStm() {
     }
   }
   case LITERALNAME: {
+    auto LitLoc = CurLoc;
     if (auto Rtok = parseRtoken()) {
-      if (auto Assign = parseAssignment(Rtok, true)) {
-        getSemiTerm("assignment");
-        return Assign;
-      }
-      if (auto Call = parseCall(Rtok, true)) {
-        getSemiTerm("function call");
-        return Call;
-      }
-      if (auto ArithOp = parseArithOp(Rtok, true)) {
-        getSemiTerm("arithmetic op");
-        return ArithOp;
-      }
+      Rtok->setSourceLocation(LitLoc);
+      return parsePostLiteralName(Rtok);
     }
-    writeError("expected call, assign, or arithmetic op");
   }
   default:
     writeError("expecting a single statement");

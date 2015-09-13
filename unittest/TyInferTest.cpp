@@ -16,3 +16,17 @@ TEST(TyInfer, CallInst) {
     "}\n";
   EXPECT_LL(SourcePrg, ExpectedPP);
 }
+
+TEST(TyInfer, PropagationFromArgument)
+{
+  std::string SourcePrg =
+    "def id(var ~Int) do\n"
+    "  ret var;\n"
+    "end";
+  std::string ExpectedLL =
+    "define i32 @id(i32) gc \"rhgc\" {\n"
+    "entry:\n"
+    "  ret i32 %0\n"
+    "}\n";
+  EXPECT_LL(SourcePrg, ExpectedLL);
+}

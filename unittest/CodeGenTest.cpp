@@ -3,35 +3,6 @@
 
 using namespace rhine;
 
-TEST(CodeGen, DefunStm)
-{
-  std::string SourcePrg =
-    "def foo() do\n"
-    "  ret $ 3 + 2;\n"
-    "end";
-  std::string ExpectedLL =
-    "define i32 @foo() gc \"rhgc\" {\n"
-    "entry:\n"
-    "  ret i32 5\n"
-    "}\n";
-  EXPECT_LL(SourcePrg, ExpectedLL);
-}
-
-TEST(CodeGen, DefunCompoundStm)
-{
-  std::string SourcePrg =
-    "def foo() do\n"
-    "  3 + 2;\n"
-    "  ret $ 4 + 5;\n"
-    "end";
-  std::string ExpectedLL =
-    "define i32 @foo() gc \"rhgc\" {\n"
-    "entry:\n"
-    "  ret i32 9\n"
-    "}\n";
-  EXPECT_LL(SourcePrg, ExpectedLL);
-}
-
 TEST(CodeGen, MultipleDefun)
 {
   std::string SourcePrg =
@@ -72,20 +43,6 @@ TEST(CodeGen, FunctionArgBinding)
   std::string SourcePrg =
     "def id(var ~Int) do\n"
     "  ret var ~Int;\n"
-    "end";
-  std::string ExpectedLL =
-    "define i32 @id(i32) gc \"rhgc\" {\n"
-    "entry:\n"
-    "  ret i32 %0\n"
-    "}\n";
-  EXPECT_LL(SourcePrg, ExpectedLL);
-}
-
-TEST(CodeGen, TypePropagation)
-{
-  std::string SourcePrg =
-    "def id(var ~Int) do\n"
-    "  ret var;\n"
     "end";
   std::string ExpectedLL =
     "define i32 @id(i32) gc \"rhgc\" {\n"
