@@ -5,37 +5,37 @@ using namespace rhine;
 
 TEST(FunctionPointer, BasicCodeGen) {
   std::string SourcePrg =
-    "def callee [] {\n"
+    "def callee() do\n"
     "  3;\n"
-    "}\n"
-    "def caller [] {\n"
+    "end\n"
+    "def caller() do\n"
     "  ret callee;\n"
-    "}";
+    "end";
   std::string ExpectedPP =
     "define i32 ()* @caller() gc \"rhgc\" {\n"
     "entry:\n"
     "  ret i32 ()* @callee\n"
-    "}\n";
+    "}";
   EXPECT_LL(SourcePrg, ExpectedPP);
 }
 
 TEST(FunctionPointer, BasicExecution) {
   std::string SourcePrg =
-    "def callee [] {\n"
+    "def callee() do\n"
     "  ret 3;\n"
-    "}\n"
-    "def main [] {\n"
+    "end\n"
+    "def main() do\n"
     "  ret callee;\n"
-    "}";
+    "end";
   std::string ExpectedOut = "";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
 
 TEST(FunctionPointer, Externals) {
   std::string SourcePrg =
-    "def main [] {\n"
+    "def main() do\n"
     "  ret malloc;\n"
-    "}";
+    "end";
   std::string ExpectedOut = "";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
@@ -43,8 +43,12 @@ TEST(FunctionPointer, Externals) {
 TEST(FunctionPointer, PassPrint)
 {
   std::string SourcePrg =
-    "def bar [printfn ~Fn(String -> & -> Void)] printfn '12';\n"
-    "def main [] bar print;";
+    "def bar(printfn ~Fn(String -> & -> Void)) do\n"
+    "  printfn '12';\n"
+    "end\n"
+    "def main() do\n"
+    "  bar print;\n"
+    "end";
   std::string ExpectedPP =
     "define void @bar(void (i8*, ...)*) gc \"rhgc\" {\n"
     "entry:\n"
@@ -57,9 +61,15 @@ TEST(FunctionPointer, PassPrint)
 TEST(FunctionPointer, PassCustomFunction)
 {
   std::string SourcePrg =
-    "def bar [addfn ~Fn(Int -> Int -> Int)] print $ addfn 2 4;\n"
-    "def addCandidate [A ~Int B ~Int] ret $ A + B;\n"
-    "def main [] bar addCandidate;";
+    "def bar(addfn ~Fn(Int -> Int -> Int)) do\n"
+    "  print $ addfn 2 4;\n"
+    "end\n"
+    "def addCandidate(A ~Int B ~Int) do\n"
+    "  ret $ A + B;\n"
+    "end\n"
+    "def main() do\n"
+    "  bar addCandidate;"
+    "end";
   std::string ExpectedOut = "6";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
@@ -67,10 +77,18 @@ TEST(FunctionPointer, PassCustomFunction)
 TEST(FunctionPointer, DISABLED_CondAssign)
 {
   std::string SourcePrg =
-    "def bar [arithFn ~Fn(Int -> Int -> Int)] print $ arithFn 2 4;\n"
-    "def addCandidate [A ~Int B ~Int] ret $ A + B;\n"
-    "def subCandidate [A ~Int B ~Int] ret $ A - B;\n"
-    "def main [] if (false) bar addCandidate; else bar subCandidate;";
+    "def bar(arithFn ~Fn(Int -> Int -> Int)) do\n"
+    "  print $ arithFn 2 4;\n"
+    "end\n"
+    "def addCandidate(A ~Int B ~Int) do\n"
+    "  ret $ A + B;\n"
+    "end\n"
+    "def subCandidate(A ~Int B ~Int) do\n"
+    "  ret $ A - B;\n"
+    "end\n"
+    "def main() do\n"
+    "  if (false) bar addCandidate; else bar subCandidate;"
+    "end";
   std::string ExpectedOut = "";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }

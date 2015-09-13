@@ -144,6 +144,12 @@ public:
   /// Small helper to determine whether we're looking at a '$' operator
   bool parseDollarOp(bool Optional = false);
 
+  /// Parse the stuff following a 'ret'
+  Value *parseRet();
+
+  /// Parse the stuff following a literal name in a statement
+  Value *parsePostLiteralName(Value *Rtok);
+
   /// Assuming the lhs has already been parsed (passed in as the first
   /// argument), look at '=' and parse the rhs to build a full MallocInst to
   /// return
