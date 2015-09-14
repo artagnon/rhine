@@ -22,8 +22,9 @@ Parser::~Parser() {}
 void Parser::getTok() {
   LastTok = CurTok;
   CurTok = Driver->Lexx->lex(&CurSema, &CurLoc);
+  LastTokWasNewlineTerminated = false;
   while (CurTok == NEWLINE) {
-    LastTok = CurTok;
+    LastTokWasNewlineTerminated = true;
     CurTok = Driver->Lexx->lex(&CurSema, &CurLoc);
   }
 }
@@ -44,7 +45,7 @@ void Parser::writeError(std::string ErrStr, bool Optional) {
 }
 
 void Parser::getSemiTerm(std::string ErrFragment) {
-  if (!getTok(';') && LastTok != NEWLINE && CurTok != ENDBLOCK)
+  if (!getTok(';') && !LastTokWasNewlineTerminated && CurTok != ENDBLOCK)
     writeError("expecting ';' or newline to terminate " + ErrFragment);
 }
 

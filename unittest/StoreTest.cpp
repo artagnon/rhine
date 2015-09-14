@@ -19,13 +19,16 @@ TEST(Store, Basic)
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
 
-TEST(Store, DISABLED_CondAssign)
+TEST(Store, CondAssign)
 {
   std::string SourcePrg =
     "def main do\n"
     "  Handle = 0;\n"
-    "  if (false) Handle = 2;\n"
-    "  else Handle = 3;\n"
+    "  if false do\n"
+    "    Handle = 2;\n"
+    "  else\n"
+    "    Handle = 3;\n"
+    "  end\n"
     "  print Handle;\n"
     "end";
   std::string ExpectedOut = "3";
