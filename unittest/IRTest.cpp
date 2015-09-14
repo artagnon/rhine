@@ -6,7 +6,7 @@ using namespace rhine;
 TEST(IR, ConstantInt) {
   std::string SourcePrg =
     "def foo do\n"
-    "  ret 3;\n"
+    "  ret 3\n"
     "end";
   std::string ExpectedIR =
     "def foo [] ~Fn(Void -> Int) {\n"
@@ -19,7 +19,7 @@ TEST(IR, AddTwoInt)
 {
   std::string SourcePrg =
     "def foo do\n"
-    "  3 + 2;\n"
+    "  3 + 2\n"
     "end";
   std::string ExpectedIR =
     "def foo [] ~Fn(Void -> Int) {\n"
@@ -34,7 +34,7 @@ TEST(IR, SubTwoInt)
 {
   std::string SourcePrg =
     "def foo do\n"
-    "  3 - 2;\n"
+    "  3 - 2\n"
     "end";
   std::string ExpectedIR =
     "def foo [] ~Fn(Void -> Int) {\n"
@@ -49,7 +49,7 @@ TEST(IR, DISABLED_FcnTypeSpecifier)
 {
   std::string SourcePrg =
     "def foo ~Fn(Void -> Int) do\n"
-    "  ret $ 3 - 2;\n"
+    "  ret $ 3 - 2\n"
     "end";
   std::string ExpectedIR =
     "def foo [] ~Fn(Void -> Int) {\n"
@@ -64,7 +64,7 @@ TEST(IR, ConstantString)
 {
   std::string SourcePrg =
     "def foo do\n"
-    "  ret 'moo!';\n"
+    "  ret 'moo!'\n"
     "end";
   std::string ExpectedIR =
     "def foo [] ~Fn(Void -> String) {\n"
@@ -77,7 +77,7 @@ TEST(IR, TypePropagation)
 {
   std::string SourcePrg =
     "def id(var ~Int) do\n"
-    "  ret var;\n"
+    "  ret var\n"
     "end";
   std::string ExpectedIR =
     "def id [var ~Int] ~Fn(Int -> Int) {\n"
@@ -101,8 +101,8 @@ TEST(IR, MallocInst) {
 TEST(IR, BindPropagation) {
   std::string SourcePrg =
     "def bsym do\n"
-    "  sym = 3;\n"
-    "  ret sym;\n"
+    "  sym = 3\n"
+    "  ret sym\n"
     "end";
   std::string ExpectedIR =
     "def bsym [] ~Fn(Void -> Int) {\n"
@@ -116,7 +116,7 @@ TEST(IR, Comment) {
   std::string SourcePrg =
     "def foo do\n"
     "  // Strip this out\n"
-    "  ret 3;\n"
+    "  ret 3\n"
     "end";
   std::string ExpectedIR =
     "def foo [] ~Fn(Void -> Int) {\n"
@@ -144,7 +144,7 @@ TEST(IR, TypePropagationCallInst)
 {
   std::string SourcePrg =
     "def id(var ~String) do\n"
-    "  println var;\n"
+    "  println var\n"
     "end";
   std::string ExpectedIR =
     "def id [var ~String] ~Fn(String -> Void) {\n"
@@ -158,7 +158,7 @@ TEST(IR, DISABLED_IfBasic)
 {
   std::string SourcePrg =
     "def main do\n"
-    "  if (0) 2; else 3;\n"
+    "  if (0) 2; else 3\n"
     "end";
   std::string ExpectedIR =
     "def main [] ~Fn(Void -> Void) {\n"

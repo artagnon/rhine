@@ -230,8 +230,8 @@ void *IfInst::operator new(size_t S) {
 }
 
 IfInst *IfInst::get(Value *Conditional, BasicBlock *TrueBB,
-                    BasicBlock *FalseBB, Context *K) {
-  auto Obj = new IfInst(UnType::get(K));
+                    BasicBlock *FalseBB) {
+  auto Obj = new IfInst(UnType::get(Conditional->getContext()));
   TrueBB->setName("true");
   FalseBB->setName("false");
   Obj->setOperand(0, Conditional);

@@ -10,6 +10,10 @@ include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 include_directories(${LLVM_INCLUDE_DIRS})
 add_library(Parse
   ${FLEX_Lexx_OUTPUTS}
+  "${CMAKE_CURRENT_SOURCE_DIR}/ParseInstruction.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ParseFunction.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ParseBlock.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ParseType.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Parser.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ParseDriver.cpp")
 set_target_properties(Parse PROPERTIES

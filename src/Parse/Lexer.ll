@@ -16,7 +16,6 @@ class yyFlexLexer;
 SYMBOL  [[:alpha:]][[:alnum:]]*
 EXP     [Ee][- +]?[[:digit:]]+
 INTEGER [- +]?[[:digit:]]+
-RET     [\r\n]+
 SPTAB   [ \t]+
 
 %x str
@@ -32,7 +31,11 @@ SPTAB   [ \t]+
 
 {SPTAB} { yylloc->step(); }
 
-{RET} { yylloc->lines(yyleng); yylloc->step(); }
+("\r\n"|\n) {
+  yylloc->lines(yyleng);
+  yylloc->step();
+  return T::NEWLINE;
+}
 
 {INTEGER} {
   auto C = ConstantInt::get(atoi(yytext), 32, K);
