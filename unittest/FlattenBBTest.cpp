@@ -11,7 +11,7 @@ TEST(FlattenBB, NumberOfBBs)
 {
   std::string SourcePrg =
     "def main() do\n"
-    "  if(false) 3; else 4;\n"
+    "  if false do 3; else 4; end\n"
     "end";
   auto Pf = ParseFacade(SourcePrg);
   FlattenBB Flatten;
@@ -25,7 +25,7 @@ TEST(FlattenBB, PredSucc)
 {
   std::string SourcePrg =
     "def main() do\n"
-    "  if(false) 3; else 4;\n"
+    "  if false do 3; else 4; end\n"
     "end";
   auto Pf = ParseFacade(SourcePrg);
   FlattenBB Flatten;
@@ -58,7 +58,7 @@ TEST(FlattenBB, SetIfParent)
 {
   std::string SourcePrg =
     "def main() do\n"
-    "  if(false) 3; else 4;\n"
+    "  if false do 3; else 4; end\n"
     "end";
   auto Pf = ParseFacade(SourcePrg);
   FlattenBB Flatten;
@@ -73,7 +73,7 @@ TEST(FlattenBB, SetLambdaParent)
 {
   std::string SourcePrg =
     "def foo() do\n"
-    "  Bfunc = \\x ~Int -> ret x;"
+    "  Bfunc = fn x ~Int -> ret x; end\n"
     "end";
   auto Pf = ParseFacade(SourcePrg);
   LambdaLifting LambLift;

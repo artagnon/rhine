@@ -10,14 +10,14 @@ TEST(Parse, BareDefun)
   EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
 }
 
-TEST(Parse, BareDanglingBrace)
+TEST(Parse, BareDanglingDo)
 {
   std::string SourcePrg = "def foo do";
   std::string ExpectedErr = "string stream:1:11: error: expected 'end' to end block";
   EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
 }
 
-TEST(Parse, DanglingBraceWithStatement)
+TEST(Parse, DanglingDoWithStatement)
 {
   std::string SourcePrg = "def foo do 3;";
   std::string ExpectedErr = "string stream:1:14: error: expected 'end' to end block";
@@ -53,10 +53,69 @@ TEST(Parse, FunctionTypeMissingOpenParen)
   EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
 }
 
-TEST(Parse, DISABLED_FunctionTypeMissingCloseParen)
+TEST(Parse, FunctionTypeMissingCloseParen)
 {
   std::string SourcePrg = "def foo(A ~Function(Void -> Void";
   std::string ExpectedErr =
-    "string stream:1:21: error: in function type of form 'Function\\(...\\)', '\\)' is missing";
+    "string stream:1:33: error: in function type of form 'Function\\(...\\)', '\\)' is missing";
+  EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
+}
+
+TEST(Parse, OnelinerRet)
+{
+  std::string SourcePrg = "def foo() do ret 3 end";
+  std::string ExpectedIR = "";
+  EXPECT_IR(SourcePrg, ExpectedIR);
+}
+
+TEST(Parse, MultilineDoBlock)
+{
+  std::string SourcePrg =
+    "def foo() do\n"
+    "  ret 3\n"
+    "end";
+  std::string ExpectedIR = "";
+  EXPECT_IR(SourcePrg, ExpectedIR);
+}
+
+TEST(Parse, ExtraNewlines)
+{
+  std::string SourcePrg =
+    "def foo() do\n\n\n\n"
+    "  ret 3\n\n"
+    "end\n\n";
+  std::string ExpectedIR = "";
+  EXPECT_IR(SourcePrg, ExpectedIR);
+}
+
+TEST(Parse, AssignmentArithOp)
+{
+  std::string SourcePrg =
+    "def foo() do\n"
+    "  Foo = 2 + 3\n"
+    "  Bar = 5 - 19\n"
+    "end";
+  std::string ExpectedIR = "";
+  EXPECT_IR(SourcePrg, ExpectedIR);
+}
+
+TEST(Parse, MixedSemicolonNewline)
+{
+  std::string SourcePrg =
+    "def foo() do\n"
+    "  Foo = 2; ret 3\n"
+    "end";
+  std::string ExpectedIR = "";
+  EXPECT_IR(SourcePrg, ExpectedIR);
+}
+
+TEST(Parse, MissingStatementSeparator)
+{
+  std::string SourcePrg =
+    "def foo() do\n"
+    "  Foo = 2 ret 3\n"
+    "end";
+  std::string ExpectedErr =
+    "string stream:2:11: error: expecting ';' or newline to terminate assignment";
   EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
 }

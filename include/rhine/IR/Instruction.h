@@ -170,7 +170,7 @@ public:
   /// Constant 3 operands
   void *operator new(size_t S);
   static IfInst *get(Value *Conditional, BasicBlock *TrueBB,
-                     BasicBlock *FalseBB, Context *K);
+                     BasicBlock *FalseBB);
 
   static bool classof(const Value *V);
 

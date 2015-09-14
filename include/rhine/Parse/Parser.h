@@ -3,6 +3,7 @@
 #define RHINE_PARSER_H
 
 #include <string>
+#include <map>
 #include "rhine/Parse/ParseDriver.h"
 
 namespace rhine {
@@ -37,6 +38,7 @@ public:
     DOBLOCK = -17,
     ENDBLOCK = -18,
     LAMBDA = -19,
+    NEWLINE = -20,
   };
 
   class Position {
@@ -46,13 +48,12 @@ public:
     unsigned Column;
     Position() :
         Line(1u), Column(1u) {}
-    void lines (int Count = 1)
+    void lines(int Count = 1)
     {
       Column = 1u;
       Line = Line + Count;
     }
-    /// (Column related) Advance to the COUNT next columns.
-    void columns (int Count)
+    void columns(int Count)
     {
       Column += Count;
     }
@@ -60,20 +61,15 @@ public:
 
   class Location {
   public:
-    /// Reset initial Location to final Location.
-    void step ()
+    void step()
     {
       Begin = End;
     }
-
-    /// Extend the current Location to the COUNT next columns.
-    void columns (int count = 1)
+    void columns(int count = 1)
     {
       End.columns(count);
     }
-
-    /// Extend the current Location to the COUNT next lines.
-    void lines (int count = 1)
+    void lines(int count = 1)
     {
       End.lines(count);
     }
@@ -95,6 +91,7 @@ public:
 
   // Current state
   int CurTok;
+  int LastTok;
   Semantic CurSema;
   Location CurLoc;
   bool CurStatus;
@@ -163,11 +160,20 @@ public:
   /// Callee has already been parsed and is passed in as the first argument
   Instruction *parseCall(Value *Callee, bool Optional = false);
 
+  /// Parse an 'if' statement: possible else clause, but no else-if
+  Instruction *parseIf();
+
   /// A statement is not branch, and ends with a semicolon
   Value *parseSingleStm();
 
-  /// A function body that's delimited by 'do' and 'end'
-  BasicBlock *parseBlock(bool ArrowStarter = false);
+  /// Small helper for parseBlock
+  bool matchesAnyTokenPair(std::map<int, std::string> &TokenPairs);
+
+  /// A block (function body, if statemnet, lambda etc) that's delimited by
+  /// StartToken and EndToken
+  BasicBlock *parseBlock(int StartToken,
+                         std::string StartTokenStr,
+                         std::map<int, std::string> EndTokens);
 
   /// Function builder-helper; mainly, extracts types from the ArgList, creates
   /// a FunctionType using that and the return type, and finally builds a

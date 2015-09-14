@@ -6,7 +6,13 @@ using namespace rhine;
 TEST(If, BasicCodeGen)
 {
   std::string SourcePrg =
-    "def main [] { if (false) 2; else 3; }";
+    "def main do\n"
+    "  if false do\n"
+    "    2\n"
+    "  else\n"
+    "    3\n"
+    "  end\n"
+    "end";
   std::string ExpectedLL =
     "define void @main() gc \"rhgc\" {\n"
     "entry:\n"
@@ -25,7 +31,8 @@ TEST(If, BasicCodeGen)
 TEST(If, BasicExecution)
 {
   std::string SourcePrg =
-    "def main [] { if (false) print '2'; else print '3'; }";
+    "def main do if false do print '2'; else print '3'; end\n"
+    "end";
   std::string ExpectedOut = "3";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
@@ -33,14 +40,14 @@ TEST(If, BasicExecution)
 TEST(If, LifeAfterPhi)
 {
   std::string SourcePrg =
-    "def main [] {\n"
-    "  if (true) {\n"
+    "def main do\n"
+    "  if true do\n"
     "     Moo = 2;\n"
-    "  } else {\n"
+    "  else\n"
     "     Foo = 4;\n"
-    "  }\n"
+    "  end\n"
     "  print 2;\n"
-    "}\n";
+    "end";
   std::string ExpectedOut = "2";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
