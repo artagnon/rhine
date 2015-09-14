@@ -154,15 +154,15 @@ TEST(IR, TypePropagationCallInst)
   EXPECT_IR(SourcePrg, ExpectedIR);
 }
 
-TEST(IR, DISABLED_IfBasic)
+TEST(IR, IfBasic)
 {
   std::string SourcePrg =
     "def main do\n"
-    "  if (0) 2; else 3\n"
+    "  if false do 2; else 3; end\n"
     "end";
   std::string ExpectedIR =
     "def main [] ~Fn(Void -> Void) {\n"
-    "if (0 ~Int) {\n"
+    "if (0 ~Bool) {\n"
     "2 ~Int\n"
     "} else {\n"
     "3 ~Int\n"

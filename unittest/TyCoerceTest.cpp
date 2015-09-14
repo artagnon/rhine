@@ -36,10 +36,10 @@ TEST(TyCoerce, IntTyToString) {
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
 
-TEST(TyCoerce, DISABLED_InsideIf) {
+TEST(TyCoerce, InsideIf) {
   std::string SourcePrg =
     "def main do\n"
-    "  if (false) print 2; else print 3;\n"
+    "  if false do print 2; else print 3; end\n"
     "end";
   std::string ExpectedOut = "3";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);

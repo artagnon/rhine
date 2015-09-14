@@ -87,7 +87,7 @@ TEST(FunctionPointer, DISABLED_CondAssign)
     "  ret $ A - B;\n"
     "end\n"
     "def main() do\n"
-    "  if (false) bar addCandidate; else bar subCandidate;"
+    "  if false do bar addCandidate; else bar subCandidate; end\n"
     "end";
   std::string ExpectedOut = "";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);

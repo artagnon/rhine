@@ -92,6 +92,7 @@ public:
   // Current state
   int CurTok;
   int LastTok;
+  bool LastTokWasNewlineTerminated;
   Semantic CurSema;
   Location CurLoc;
   bool CurStatus;
