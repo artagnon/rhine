@@ -73,7 +73,7 @@ public:
 
 protected:
   /// std ostream writer, for debugging
-  virtual void print(std::ostream &Stream) const;
+  virtual void print(std::ostream &Stream) const override;
 };
 }
 
