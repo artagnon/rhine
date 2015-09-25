@@ -3,6 +3,9 @@
 #define RHINE_VALUEVISITOR_H
 
 #include "rhine/IR/Value.h"
+#include "rhine/IR/Instruction.h"
+#include "rhine/IR/Constant.h"
+#include "rhine/IR/GlobalValue.h"
 
 namespace rhine {
 class ConstantInt;
@@ -23,7 +26,7 @@ class ReturnInst;
 template <typename R>
 class ValueVisitor {
 protected:
-  ~ValueVisitor() {}
+  virtual ~ValueVisitor() {}
   virtual R visit(Value *V) {
     switch(V->getValID()) {
     case RT_ConstantInt: return visit(dyn_cast<ConstantInt>(V)); break;
