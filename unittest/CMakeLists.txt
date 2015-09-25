@@ -20,6 +20,7 @@ add_executable(UnitTest
   "${CMAKE_CURRENT_SOURCE_DIR}/LambdaTest.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/DiagnosticTest.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/FlattenBBTest.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ScopeTest.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/IfTest.cpp")
 set_target_properties(UnitTest PROPERTIES
   LINKER_LANGUAGE CXX

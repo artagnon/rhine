@@ -74,7 +74,7 @@ TEST(FunctionPointer, PassCustomFunction)
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
 
-TEST(FunctionPointer, DISABLED_CondAssign)
+TEST(FunctionPointer, CondAssign)
 {
   std::string SourcePrg =
     "def bar(arithFn ~Function(Int -> Int -> Int)) do\n"
@@ -83,12 +83,12 @@ TEST(FunctionPointer, DISABLED_CondAssign)
     "def addCandidate(A ~Int B ~Int) do\n"
     "  ret $ A + B;\n"
     "end\n"
-    "def subCandidate(A ~Int B ~Int) do\n"
-    "  ret $ A - B;\n"
+    "def subCandidate(C ~Int D ~Int) do\n"
+    "  ret $ C - D;\n"
     "end\n"
     "def main() do\n"
     "  if false do bar addCandidate; else bar subCandidate; end\n"
     "end";
-  std::string ExpectedOut = "";
+  std::string ExpectedOut = "-2";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
