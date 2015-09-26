@@ -13,10 +13,10 @@ Resolve::Resolve() : K(nullptr) {}
 
 Resolve::~Resolve() {}
 
-void Resolve::lookupReplaceUse(UnresolvedValue *V, Use &U) {
+void Resolve::lookupReplaceUse(UnresolvedValue *V, Use &U,
+                               BasicBlock *Block) {
   auto Name = V->getName();
   auto K = V->getContext();
-  auto Block = cast<Instruction>(U->getUser())->getParent();
   if (auto S = K->Map.get(V, Block)) {
     if (auto M = dyn_cast<MallocInst>(S)) {
       auto Replacement = LoadInst::get(M);
@@ -32,6 +32,7 @@ void Resolve::lookupReplaceUse(UnresolvedValue *V, Use &U) {
     }
   } else {
     auto SourceLoc = U->getSourceLocation();
+    auto K = Block->getContext();
     switch (U->getUser()->getValID()) {
     case RT_CallInst:
       K->DiagPrinter->errorReport(SourceLoc, "unbound function " + Name);
@@ -43,14 +44,14 @@ void Resolve::lookupReplaceUse(UnresolvedValue *V, Use &U) {
   }
 }
 
-void Resolve::resolveOperandsOfUser(User *U) {
+void Resolve::resolveOperandsOfUser(User *U, BasicBlock *BB) {
   for (Use &ThisUse : U->uses()) {
     Value *V = ThisUse;
     if (auto R = dyn_cast<UnresolvedValue>(V))
-      lookupReplaceUse(R, ThisUse);
+      lookupReplaceUse(R, ThisUse, BB);
 
     if (auto W = dyn_cast<User>(V))
-      resolveOperandsOfUser(W);
+      resolveOperandsOfUser(W, BB);
   }
 }
 
@@ -72,7 +73,7 @@ void Resolve::runOnFunction(Function *F) {
 
   for (auto &BB : *F)
     for (auto &V : *BB)
-      resolveOperandsOfUser(cast<User>(V));
+      resolveOperandsOfUser(cast<User>(V), BB);
 }
 
 void Resolve::runOnModule(Module *M) {
@@ -121,17 +122,16 @@ Value *KR::searchOneBlock(Value *Val, BasicBlock *Block) {
   return IteratorToElement->second;
 }
 
-std::list<BasicBlock *> flattenPredecessors(BasicBlock *Block) {
-  static std::list<BasicBlock *> AllPreds;
-  if (!Block) return AllPreds;
+void flattenPredecessors(BasicBlock *Block, std::list<BasicBlock *> &AllPreds) {
+  if (!Block) return;
   AllPreds.push_back(Block);
   for (auto Pred : Block->preds())
-    flattenPredecessors(Pred);
-  return AllPreds;
+    flattenPredecessors(Pred, AllPreds);
 }
 
 Value *KR::get(Value *Val, BasicBlock *Block) {
-  auto UniqPreds = flattenPredecessors(Block);
+  std::list<BasicBlock *> UniqPreds;
+  flattenPredecessors(Block, UniqPreds);
   UniqPreds.unique();
   UniqPreds.push_back(nullptr); // Global
   for (auto BB : UniqPreds)
