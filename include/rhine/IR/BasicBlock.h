@@ -71,6 +71,10 @@ public:
   void setParent(Function *F);
   Function *getParent() const;
 
+  /// Quick method to check if Predecessors/Successors is empty
+  bool hasNoPredecessors() const;
+  bool hasNoSuccessors() const;
+
   /// Quick method to grab unique predecessor/successor (if any)
   BasicBlock *getUniquePredecessor() const;
   BasicBlock *getUniqueSuccessor() const;

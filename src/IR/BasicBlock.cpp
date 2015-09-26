@@ -99,6 +99,14 @@ Function *BasicBlock::getParent() const {
   return Parent;
 }
 
+bool BasicBlock::hasNoPredecessors() const {
+  return !Predecessors.size();
+}
+
+bool BasicBlock::hasNoSuccessors() const {
+  return !Successors.size();
+}
+
 BasicBlock *BasicBlock::getUniquePredecessor() const {
   if (Predecessors.size() == 1)
     return Predecessors[0];
