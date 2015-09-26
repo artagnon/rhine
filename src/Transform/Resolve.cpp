@@ -33,14 +33,13 @@ void Resolve::lookupReplaceUse(UnresolvedValue *V, Use &U,
   } else {
     auto SourceLoc = U->getSourceLocation();
     auto K = Block->getContext();
-    switch (U->getUser()->getValID()) {
-    case RT_CallInst:
-      K->DiagPrinter->errorReport(SourceLoc, "unbound function " + Name);
-      exit(1);
-    default:
-      K->DiagPrinter->errorReport(SourceLoc, "unbound symbol " + Name);
-      exit(1);
-    }
+    if (auto Inst = dyn_cast<CallInst>(U->getUser()))
+      if (Inst->getCallee() == V) {
+        K->DiagPrinter->errorReport(SourceLoc, "unbound function " + Name);
+        exit(1);
+      }
+    K->DiagPrinter->errorReport(SourceLoc, "unbound symbol " + Name);
+    exit(1);
   }
 }
 
@@ -125,8 +124,15 @@ Value *KR::searchOneBlock(Value *Val, BasicBlock *Block) {
 void flattenPredecessors(BasicBlock *Block, std::list<BasicBlock *> &AllPreds) {
   if (!Block) return;
   AllPreds.push_back(Block);
-  for (auto Pred : Block->preds())
-    flattenPredecessors(Pred, AllPreds);
+  if (Block->hasNoPredecessors()) return;
+  if (auto OnlyPred = Block->getUniquePredecessor()) {
+    flattenPredecessors(OnlyPred, AllPreds);
+  } else {    // Merge block
+    auto FirstPred = *(Block->pred_begin());
+    auto PredOfPred = FirstPred->getUniquePredecessor();
+    assert(PredOfPred && "Malformed branch: no phi block found");
+    flattenPredecessors(PredOfPred, AllPreds);
+  }
 }
 
 Value *KR::get(Value *Val, BasicBlock *Block) {

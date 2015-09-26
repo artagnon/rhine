@@ -63,17 +63,36 @@ TEST(Resolve, ArgumentSymbolReplacement)
   EXPECT_PRED_FORMAT2(::testing::IsSubstring, Expected, Pf.irToPP(Module));
 }
 
-TEST(Resolve, DISABLED_OutOfScope)
+TEST(Resolve, CrossFunctionNameDisambiguation)
+{
+  std::string SourcePrg =
+    "def bar(arithFn ~Function(Int -> Int -> Int)) do\n"
+    "  print $ arithFn 2 4;\n"
+    "end\n"
+    "def addCandidate(A ~Int B ~Int) do\n"
+    "  ret $ A + B;\n"
+    "end\n"
+    "def subCandidate(A ~Int B ~Int) do\n"
+    "  ret $ A - B;\n"
+    "end\n"
+    "def main() do\n"
+    "  if false do bar addCandidate; else bar subCandidate; end\n"
+    "end";
+  std::string ExpectedOut = "-2";
+  EXPECT_OUTPUT(SourcePrg, ExpectedOut);
+}
+
+TEST(Resolve, OutOfScope)
 {
   std::string SourcePrg =
     "def main do\n"
-    "  if (true) do\n"
+    "  if true do\n"
     "     Moo = 2;\n"
-    "  else do\n"
+    "  else\n"
     "     Foo = 4;\n"
     "  end\n"
     "  print Moo;\n"
     "end";
-  std::string ExpectedErr = "error: unbound symbol Moo";
+  std::string ExpectedErr = "string stream:7:9: error: unbound symbol Moo";
   EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
 }
