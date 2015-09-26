@@ -58,8 +58,8 @@ Function *Parser::parseFcnDecl(bool Optional) {
     return nullptr;
   }
   auto ArgList = parseArgumentList(true);
-  auto OptionalTypeAnnLoc = CurLoc;
-  auto Fcn = buildFcn(FcnName, ArgList, UnType::get(K), FcnLoc);
+  auto ReturnTy = parseTypeAnnotation(true);
+  auto Fcn = buildFcn(FcnName, ArgList, ReturnTy, FcnLoc);
   if (auto Block = parseBlock(DOBLOCK, "do", {{ENDBLOCK, "end"}}))
     Fcn->push_back(Block);
   else {

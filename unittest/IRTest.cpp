@@ -45,15 +45,15 @@ TEST(IR, SubTwoInt)
   EXPECT_IR(SourcePrg, ExpectedIR);
 }
 
-TEST(IR, DISABLED_FcnTypeSpecifier)
+TEST(IR, ReturnTypeSpecifier)
 {
   std::string SourcePrg =
-    "def foo ~Fn(Void -> Int) do\n"
+    "def foo ~Int do\n"
     "  ret $ 3 - 2\n"
     "end";
   std::string ExpectedIR =
     "def foo [] ~Fn(Void -> Int) {\n"
-    "- ~Fn(Int -> Int -> Int)\n"
+    "ret - ~Fn(Int -> Int -> Int)\n"
     "3 ~Int\n"
     "2 ~Int\n"
     "}";
