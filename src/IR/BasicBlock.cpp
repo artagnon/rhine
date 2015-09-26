@@ -4,11 +4,18 @@
 #include "rhine/Context.h"
 
 namespace rhine {
+void BasicBlock::setAllInstructionParents(std::vector<Value *> List) {
+  for (auto V : List) {
+    if (auto Inst = dyn_cast<Instruction>(V)) {
+      Inst->setParent(this);
+      setAllInstructionParents(Inst->getOperands());
+    }
+  }
+}
+
 BasicBlock::BasicBlock(Type *Ty, std::string Name, std::vector<Value *> V) :
     Value(Ty, RT_BasicBlock, Name), Parent(nullptr), ValueList(V) {
-  for (auto L : V)
-    if (auto Inst = dyn_cast<Instruction>(L))
-      Inst->setParent(this);
+  setAllInstructionParents(ValueList);
 }
 
 BasicBlock::~BasicBlock() {}

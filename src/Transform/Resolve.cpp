@@ -1,9 +1,8 @@
 #include "rhine/Context.h"
 #include "rhine/IR/BasicBlock.h"
-#include "rhine/IR/Constant.h"
-#include "rhine/IR/Module.h"
 #include "rhine/IR/Instruction.h"
 #include "rhine/IR/UnresolvedValue.h"
+#include "rhine/IR/Module.h"
 #include "rhine/Transform/Resolve.h"
 #include "rhine/Externals.h"
 
@@ -14,10 +13,10 @@ Resolve::Resolve() : K(nullptr) {}
 
 Resolve::~Resolve() {}
 
-void Resolve::lookupReplaceUse(UnresolvedValue *V, Use &U,
-                               BasicBlock *Block) {
+void Resolve::lookupReplaceUse(UnresolvedValue *V, Use &U) {
   auto Name = V->getName();
   auto K = V->getContext();
+  auto Block = cast<Instruction>(U->getUser())->getParent();
   if (auto S = K->Map.get(V, Block)) {
     if (auto M = dyn_cast<MallocInst>(S)) {
       auto Replacement = LoadInst::get(M);
@@ -33,7 +32,6 @@ void Resolve::lookupReplaceUse(UnresolvedValue *V, Use &U,
     }
   } else {
     auto SourceLoc = U->getSourceLocation();
-    auto K = Block->getContext();
     switch (U->getUser()->getValID()) {
     case RT_CallInst:
       K->DiagPrinter->errorReport(SourceLoc, "unbound function " + Name);
@@ -45,14 +43,14 @@ void Resolve::lookupReplaceUse(UnresolvedValue *V, Use &U,
   }
 }
 
-void Resolve::resolveOperandsOfUser(User *U, BasicBlock *BB) {
+void Resolve::resolveOperandsOfUser(User *U) {
   for (Use &ThisUse : U->uses()) {
     Value *V = ThisUse;
     if (auto R = dyn_cast<UnresolvedValue>(V))
-      lookupReplaceUse(R, ThisUse, BB);
+      lookupReplaceUse(R, ThisUse);
 
     if (auto W = dyn_cast<User>(V))
-      resolveOperandsOfUser(W, BB);
+      resolveOperandsOfUser(W);
   }
 }
 
@@ -74,7 +72,7 @@ void Resolve::runOnFunction(Function *F) {
 
   for (auto &BB : *F)
     for (auto &V : *BB)
-      resolveOperandsOfUser(cast<User>(V), BB);
+      resolveOperandsOfUser(cast<User>(V));
 }
 
 void Resolve::runOnModule(Module *M) {

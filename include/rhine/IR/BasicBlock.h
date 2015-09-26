@@ -25,6 +25,10 @@ public:
   static BasicBlock *get(std::string Name, std::vector<Value *> V, Context *K);
   static bool classof(const Value *V);
 
+  /// When adding instructions to the BasicBlock, it's our reposibility to make
+  /// the different Parent pointers point to us
+  void setAllInstructionParents(std::vector<Value *> List);
+
   /// When the entry block is toLL()'ed, and a branch instruction is found, the
   /// branch instruction takes over the responsibility of lowering its case
   /// blocks _and_ the merge block with the phi

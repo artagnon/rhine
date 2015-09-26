@@ -88,7 +88,7 @@ public:
   Module *getParent() const;
   virtual std::string getMangledName() const;
   llvm::Function *getOrInsert(llvm::Module *M);
-  void setArguments(std::vector<Argument *> L);
+  void setArguments(std::vector<Argument *> &L);
   void setVariadicRest(Argument *Rest);
   std::vector<Argument *> getArguments() const;
   typedef std::vector<Argument *>::iterator arg_iterator;
