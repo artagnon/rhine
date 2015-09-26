@@ -91,7 +91,7 @@ using KR = Context::ResolutionMap;
 
 void KR::add(Value *Val, BasicBlock *Block) {
   assert(!isa<UnresolvedValue>(Val));
-  auto &ThisResolutionMap = FunctionResolutionMap[Block];
+  auto &ThisResolutionMap = BlockResolutionMap[Block];
   auto Ret = ThisResolutionMap.insert(std::make_pair(Val->getName(), Val));
   bool NewElementInserted = Ret.second;
   if (!NewElementInserted) {
@@ -116,7 +116,7 @@ void KR::add(Value *Val, llvm::Value *LLVal) {
 
 Value *KR::searchOneBlock(Value *Val, BasicBlock *Block) {
   auto Name = Val->getName();
-  auto &ThisResolutionMap = FunctionResolutionMap[Block];
+  auto &ThisResolutionMap = BlockResolutionMap[Block];
   auto IteratorToElement = ThisResolutionMap.find(Name);
   if (IteratorToElement == ThisResolutionMap.end())
     return nullptr;

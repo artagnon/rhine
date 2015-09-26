@@ -48,25 +48,25 @@ llvm::Constant *Prototype::toLL(llvm::Module *M) {
 
 llvm::Constant *Function::toLL(llvm::Module *M) {
   auto K = getContext();
-  K->CurrentFunction = getOrInsert(M);
-  K->CurrentFunction->setGC("rhgc");
+  auto CurrentFunction = getOrInsert(M);
+  CurrentFunction->setGC("rhgc");
 
   // Bind argument symbols to function argument values in symbol table
   auto ArgList = getArguments();
   auto S = ArgList.begin();
-  for (auto &Arg : K->CurrentFunction->args()) {
+  for (auto &Arg : CurrentFunction->args()) {
     K->Map.add(*S, &Arg);
     ++S;
   }
 
   // Add function symbol to symbol table, global scope
-  K->Map.add(this, K->CurrentFunction);
+  K->Map.add(this, CurrentFunction);
 
   getEntryBlock()->toLL(M);
   auto ExitBlock = getExitBlock();
   if (!ExitBlock->size() || !isa<ReturnInst>(ExitBlock->back()))
     K->Builder->CreateRet(nullptr);
-  return K->CurrentFunction;
+  return CurrentFunction;
 }
 
 llvm::Value *Pointer::toLL(llvm::Module *M) {
