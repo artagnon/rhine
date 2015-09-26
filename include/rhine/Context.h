@@ -50,8 +50,8 @@ public:
   }
 
   class ResolutionMap {
-    typedef std::map<std::string, Value *> BlockResolutionMap;
-    std::map<BasicBlock *, BlockResolutionMap> FunctionResolutionMap;
+    typedef std::map<std::string, Value *> NameResolutionMap;
+    std::map<BasicBlock *, NameResolutionMap> BlockResolutionMap;
     std::map<Value *, llvm::Value *> LoweringMap;
     Value *searchOneBlock(Value *Val, BasicBlock *Block);
   public:
