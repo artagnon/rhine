@@ -36,10 +36,10 @@ Type *TypeInfer::visit(Prototype *V) {
 
 Type *TypeInfer::visit(Function *V) {
   auto FTy = cast<FunctionType>(V->getType());
+  Type *LastTy = VoidType::get(K);
+  for (auto BB : *V)
+    LastTy = visit(BB);
   if (isa<UnType>(FTy->getRTy())) {
-    Type *LastTy = VoidType::get(K);
-    for (auto BB : *V)
-      LastTy = visit(BB);
     FTy = FunctionType::get(LastTy, FTy->getATys(), false);
     V->setType(FTy);
   }
