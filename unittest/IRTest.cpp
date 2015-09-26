@@ -128,8 +128,8 @@ TEST(IR, Comment) {
 TEST(IR, TwoArguments)
 {
   std::string SourcePrg =
-    "def foo(a ~Int b ~Int) do"
-    "  ret $ a + b;"
+    "def foo(a ~Int b ~Int) do\n"
+    "  ret $ a + b\n"
     "end";
   std::string ExpectedIR =
     "foo [a ~Int b ~Int] ~Fn(Int -> Int -> Int) {\n"

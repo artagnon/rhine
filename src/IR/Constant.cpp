@@ -123,7 +123,9 @@ std::string Prototype::getMangledName() const {
   return Scratch.str();
 }
 
-void Prototype::setArguments(std::vector<Argument *> L) {
+void Prototype::setArguments(std::vector<Argument *> &L) {
+  for (auto Arg : L)
+    Arg->setParent(this);
   ArgumentList = L;
 }
 

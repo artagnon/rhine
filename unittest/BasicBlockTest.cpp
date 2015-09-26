@@ -19,3 +19,18 @@ TEST(BasicBlock, SetInstructionParent)
     for (auto Inst : *BB)
       ASSERT_EQ(cast<rhine::Instruction>(Inst)->getParent(), BB);
 }
+
+TEST(BasicBlock, SetNestedInstructionParent)
+{
+  std::string SourcePrg =
+    "def main do\n"
+    "  print $ 2 + 4;\n"
+    "end";
+  auto Pf = ParseFacade(SourcePrg);
+  auto Module = Pf.parseToIR(ParseSource::STRING, { });
+  for (auto BB : *Module->front())
+    for (auto Inst : *BB)
+      if (auto OuterInst = dyn_cast<rhine::Instruction>(Inst))
+        if (auto NestedInst = dyn_cast<rhine::Instruction>(OuterInst->getOperand(0)))
+          ASSERT_EQ(cast<rhine::Instruction>(NestedInst)->getParent(), BB);
+}

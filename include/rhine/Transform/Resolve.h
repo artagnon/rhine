@@ -16,10 +16,9 @@ public:
 private:
   virtual void runOnFunction(Function *F) override;
   std::vector<BasicBlock *> getBlocksInScope(BasicBlock *BB);
-  void lookupReplaceUse(UnresolvedValue *V, Use &U,
-                        BasicBlock *Block);
-  void resolveOperandsOfUser(User *U, BasicBlock *BB);
-  Value *lookupNameinBlock(Value *V, BasicBlock *BB);
+  void lookupReplaceUse(UnresolvedValue *V, Use &U);
+  void resolveOperandsOfUser(User *U);
+  Value *lookupNameinBlock(Value *V, BasicBlock *B);
 };
 }
 

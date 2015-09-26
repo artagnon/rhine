@@ -28,6 +28,10 @@ bool Argument::classof(const Value *V) {
   return V->getValID() == RT_Argument;
 }
 
+void Argument::setParent(Prototype *P) {
+  Parent = P;
+}
+
 void Argument::print(std::ostream &Stream) const {
   Stream << Name << " ~" << *getType();
 }
