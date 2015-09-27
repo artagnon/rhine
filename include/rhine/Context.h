@@ -24,7 +24,6 @@ public:
   llvm::FoldingSet<FunctionType> FTyCache;
   llvm::FoldingSet<PointerType> PTyCache;
   llvm::FoldingSet<IntegerType> ITyCache;
-  UnType UniqueUnType;
   VoidType UniqueVoidType;
   BoolType UniqueBoolType;
   FloatType UniqueFloatType;

@@ -28,14 +28,12 @@ void Type::dump() {
   std::cout << *this << std::endl;
 }
 
-UnType::UnType(): Type(RT_UnType) {}
+UnType::UnType(Context *K): Type(K, RT_UnType) {}
 
 UnType::~UnType() {}
 
 UnType *UnType::get(Context *K) {
-  auto Uniq = &K->UniqueUnType;
-  Uniq->Kontext = K;
-  return Uniq;
+  return new UnType(K);
 }
 
 bool UnType::classof(const Type *T) {
