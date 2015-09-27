@@ -61,8 +61,8 @@ private:
 };
 
 class UnType : public Type {
-  UnType();
 public:
+  UnType(Context *K);
   virtual ~UnType();
   static UnType *get(Context *K);
   static bool classof(const Type *T);
