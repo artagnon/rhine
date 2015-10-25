@@ -13,8 +13,7 @@ Resolve::Resolve() : K(nullptr) {}
 
 Resolve::~Resolve() {}
 
-void Resolve::lookupReplaceUse(UnresolvedValue *V, Use &U,
-                               BasicBlock *Block) {
+void Resolve::lookupReplaceUse(UnresolvedValue *V, Use &U, BasicBlock *Block) {
   auto Name = V->getName();
   auto K = V->getContext();
   if (auto S = K->Map.get(V, Block)) {
@@ -26,11 +25,14 @@ void Resolve::lookupReplaceUse(UnresolvedValue *V, Use &U,
     ///      ^
     ///  UnresolvedValue; replace with %Replacement
     if (auto M = dyn_cast<MallocInst>(S)) {
-      auto Replacement = LoadInst::get(M);
-      Replacement->setSourceLocation(V->getSourceLocation());
-      U.set(Replacement);
-    }
-    else if (isa<Argument>(S)) {
+      if (dyn_cast<StoreInst>(U->getUser()))
+        U.set(M);
+      else {
+        auto Replacement = LoadInst::get(M);
+        Replacement->setSourceLocation(V->getSourceLocation());
+        U.set(Replacement);
+      }
+    } else if (isa<Argument>(S)) {
       U.set(S);
     } else if (isa<Prototype>(S)) {
       auto Replacement = Pointer::get(S);
@@ -60,6 +62,7 @@ void Resolve::resolveOperandsOfUser(User *U, BasicBlock *BB) {
     if (auto R = dyn_cast<UnresolvedValue>(V))
       lookupReplaceUse(R, ThisUse, BB);
 
+    /// If this Operand is a User in itself, resolve recursively
     if (auto W = dyn_cast<User>(V))
       resolveOperandsOfUser(W, BB);
   }
@@ -69,18 +72,27 @@ void Resolve::runOnFunction(Function *F) {
   for (auto &Arg : F->args())
     K->Map.add(Arg, F->getEntryBlock());
 
+  /// For all statements of the form:
+  ///   %V = 7;
+  ///      ^
+  ///   MallocInst
+  ///
+  /// Insert into K->Map
   for (auto &BB : *F)
     for (auto It = BB->begin(); It != BB->end(); ++It) {
       auto &V = *It;
-      if (auto M = dyn_cast<MallocInst>(V)) {
-        if (auto OldValue = K->Map.get(V, BB)) {
-          auto NewInst = StoreInst::get(OldValue, M->getVal());
-          std::replace(It, It + 1, V, cast<Value>(NewInst));
-        } else
-          K->Map.add(M, BB);
-      }
+      if (auto M = dyn_cast<MallocInst>(V))
+        if (!K->Map.add(M, BB)) {
+          auto ErrMsg = "symbol " + M->getName() + " already bound";
+          K->DiagPrinter->errorReport(M->getSourceLocation(), ErrMsg);
+          exit(1);
+        }
     }
 
+  /// Resolve operands of all Users:
+  ///   %V(...);
+  ///    ^  ^---- Operands
+  ///   User
   for (auto &BB : *F)
     for (auto &V : *BB)
       resolveOperandsOfUser(cast<User>(V), BB);
@@ -89,38 +101,50 @@ void Resolve::runOnFunction(Function *F) {
 void Resolve::runOnModule(Module *M) {
   K = M->getContext();
   for (auto P : Externals::get(K)->getProtos())
-    K->Map.add(P);
+    if (!K->Map.add(P)) {
+      auto ErrMsg = "prototype " + P->getName() + " already bound";
+      K->DiagPrinter->errorReport(P->getSourceLocation(), ErrMsg);
+      exit(1);
+    }
   for (auto &F : *M)
-    K->Map.add(F);
+    if (!K->Map.add(F)) {
+      auto ErrMsg = "function " + F->getName() + " already exists";
+      K->DiagPrinter->errorReport(F->getSourceLocation(), ErrMsg);
+      exit(1);
+    }
   for (auto &F : *M)
     runOnFunction(F);
 }
 
 using KR = Context::ResolutionMap;
 
-void KR::add(Value *Val, BasicBlock *Block) {
-  assert(!isa<UnresolvedValue>(Val));
+bool KR::add(Value *Val, BasicBlock *Block) {
+  assert(!isa<UnresolvedValue>(Val) &&
+         "Attempting to add an UnresolvedValue to the Map");
   auto &ThisResolutionMap = BlockResolutionMap[Block];
   auto Ret = ThisResolutionMap.insert(std::make_pair(Val->getName(), Val));
   bool NewElementInserted = Ret.second;
   if (!NewElementInserted) {
     auto IteratorToEquivalentKey = Ret.first;
     auto &ValueOfEquivalentKey = IteratorToEquivalentKey->second;
-    assert(ValueOfEquivalentKey == Val &&
-           "Inserting conflicting values into ResolutionMap");
+    if (ValueOfEquivalentKey != Val)
+      return false;
   }
+  return true;
 }
 
-void KR::add(Value *Val, llvm::Value *LLVal) {
-  assert(!isa<UnresolvedValue>(Val));
+bool KR::add(Value *Val, llvm::Value *LLVal) {
+  assert(!isa<UnresolvedValue>(Val) &&
+         "Attempting to add an UnresolvedValue to the Map");
   auto Ret = LoweringMap.insert(std::make_pair(Val, LLVal));
   bool NewElementInserted = Ret.second;
   if (!NewElementInserted) {
     auto IteratorToEquivalentKey = Ret.first;
     auto &ValueOfEquivalentKey = IteratorToEquivalentKey->second;
-    assert(ValueOfEquivalentKey == LLVal &&
-           "Inserting conflicting values into LoweringMap");
+    if (ValueOfEquivalentKey != LLVal)
+      return false;
   }
+  return true;
 }
 
 Value *KR::searchOneBlock(Value *Val, BasicBlock *Block) {
@@ -133,12 +157,14 @@ Value *KR::searchOneBlock(Value *Val, BasicBlock *Block) {
 }
 
 void flattenPredecessors(BasicBlock *Block, std::list<BasicBlock *> &AllPreds) {
-  if (!Block) return;
+  if (!Block)
+    return;
   AllPreds.push_back(Block);
-  if (Block->hasNoPredecessors()) return;
+  if (Block->hasNoPredecessors())
+    return;
   if (auto OnlyPred = Block->getUniquePredecessor()) {
     flattenPredecessors(OnlyPred, AllPreds);
-  } else {    // Merge block
+  } else { // Merge block
     auto FirstPred = *(Block->pred_begin());
     auto PredOfPred = FirstPred->getUniquePredecessor();
     assert(PredOfPred && "Malformed branch: no phi block found");
@@ -159,7 +185,7 @@ Value *KR::get(Value *Val, BasicBlock *Block) {
 
 llvm::Value *KR::getl(Value *Val) {
   auto IteratorToElement = LoweringMap.find(Val);
-  return IteratorToElement == LoweringMap.end() ? nullptr :
-    IteratorToElement->second;
+  return IteratorToElement == LoweringMap.end() ? nullptr
+                                                : IteratorToElement->second;
 }
 }

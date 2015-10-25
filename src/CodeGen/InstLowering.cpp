@@ -57,11 +57,12 @@ llvm::Value *MallocInst::toLL(llvm::Module *M) {
 
 llvm::Value *StoreInst::toLL(llvm::Module *M) {
   auto K = getContext();
-  if (auto MValue = K->Map.getl(getMallocedValue())) {
+  auto Op0 = getMallocedValue();
+  if (auto MValue = K->Map.getl(Op0)) {
     auto NewValue = getNewValue()->toLL(M);
     return K->Builder->CreateStore(NewValue, MValue);
   }
-  auto Error = "unable to find " + Name + " to store into";
+  auto Error = "unable to find symbol " + Op0->getName() + " to store into";
   K->DiagPrinter->errorReport(SourceLoc, Error);
   exit(1);
 }

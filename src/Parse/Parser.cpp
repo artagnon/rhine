@@ -148,11 +148,11 @@ Value *Parser::parseRet() {
 
 Value *Parser::parsePostLiteralName(Value *Rtok) {
   auto LitLoc = Rtok->getSourceLocation();
-  if (auto Bind = parseAssignment(Rtok, false, true)) {
+  if (auto Bind = parseBind(Rtok, true)) {
     getSemiTerm("bind");
     return Bind;
   }
-  if (auto Mutate = parseAssignment(Rtok, true, true)) {
+  if (auto Mutate = parseMutate(Rtok, true)) {
     getSemiTerm("mutate");
     return Mutate;
   }
