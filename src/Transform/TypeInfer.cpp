@@ -7,32 +7,22 @@
 namespace rhine {
 TypeInfer::TypeInfer() : K(nullptr) {}
 
-Type *TypeInfer::visit(ConstantInt *V) {
-  return V->getType();
-}
+Type *TypeInfer::visit(ConstantInt *V) { return V->getType(); }
 
-Type *TypeInfer::visit(ConstantBool *V) {
-  return V->getType();
-}
+Type *TypeInfer::visit(ConstantBool *V) { return V->getType(); }
 
-Type *TypeInfer::visit(ConstantFloat *V) {
-  return V->getType();
-}
+Type *TypeInfer::visit(ConstantFloat *V) { return V->getType(); }
 
-Type *TypeInfer::visit(GlobalString *V) {
-  return V->getType();
-}
+Type *TypeInfer::visit(GlobalString *V) { return V->getType(); }
 
 Type *TypeInfer::visit(BasicBlock *BB) {
   Type *LastTy = VoidType::get(K);
-  for (auto V: *BB)
+  for (auto V : *BB)
     LastTy = visit(V);
   return LastTy;
 }
 
-Type *TypeInfer::visit(Prototype *V) {
-  return V->getType();
-}
+Type *TypeInfer::visit(Prototype *V) { return V->getType(); }
 
 Type *TypeInfer::visit(Function *V) {
   auto FTy = cast<FunctionType>(V->getType());
@@ -43,7 +33,8 @@ Type *TypeInfer::visit(Function *V) {
     FTy = FunctionType::get(LastTy, FTy->getATys(), false);
     V->setType(FTy);
   }
-  K->Map.add(V);
+  assert(K->Map.add(V) &&
+         ("Function with name " + V->getName() + " already declared").c_str());
   return FTy;
 }
 
@@ -79,8 +70,8 @@ Type *TypeInfer::visit(IfInst *V) {
   auto TrueTy = visit(TrueBlock);
   auto FalseTy = visit(FalseBlock);
   if (TrueTy != FalseTy) {
-    K->DiagPrinter->errorReport(
-        V->getSourceLocation(), "mismatched true/false block types");
+    K->DiagPrinter->errorReport(V->getSourceLocation(),
+                                "mismatched true/false block types");
     exit(1);
   }
   V->setType(TrueTy);
@@ -91,14 +82,11 @@ Type *TypeInfer::visit(LoadInst *V) {
   if (!V->isUnTyped())
     return V->getType();
   auto Name = V->getVal()->getName();
-  K->DiagPrinter->errorReport(V->getSourceLocation(),
-                              "untyped symbol " + Name);
+  K->DiagPrinter->errorReport(V->getSourceLocation(), "untyped symbol " + Name);
   exit(1);
 }
 
-Type *TypeInfer::visit(StoreInst *V) {
-  return VoidType::get(K);
-}
+Type *TypeInfer::visit(StoreInst *V) { return VoidType::get(K); }
 
 Type *TypeInfer::visit(Argument *V) {
   if (!V->isUnTyped())
@@ -123,8 +111,7 @@ Type *TypeInfer::visit(CallInst *V) {
     V->setType(PointerType::get(Ty));
     return Ty->getRTy();
   }
-  auto NotTypedAsFunction =
-    Callee->getName() + " was not typed as a function";
+  auto NotTypedAsFunction = Callee->getName() + " was not typed as a function";
   K->DiagPrinter->errorReport(V->getSourceLocation(), NotTypedAsFunction);
   exit(1);
 }
@@ -139,8 +126,10 @@ Type *TypeInfer::visit(ReturnInst *V) {
 
 Type *TypeInfer::visit(MallocInst *V) {
   V->setType(visit(V->getVal()));
-  assert (!V->isUnTyped() && "Unable to type infer MallocInst");
-  K->Map.add(V);
+  assert(!V->isUnTyped() && "Unable to type infer MallocInst");
+  assert(
+      K->Map.add(V) &&
+      ("Symbol " + V->getName() + " conflicts with existing symbol").c_str());
   return VoidType::get(K);
 }
 
