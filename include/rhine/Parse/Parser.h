@@ -139,8 +139,12 @@ public:
   /// Assuming the lhs has already been parsed (passed in as the first
   /// argument), look at '=' and parse the rhs to build a full MallocInst to
   /// return
-  Instruction *parseAssignment(Value *Op0, bool IsMutation = false,
-                               bool Optional = false);
+  Instruction *parseBind(Value *Op0, bool Optional = false);
+
+  /// Assuming the lhs has already been parsed (passed in as the first
+  /// argument), look at ':=' and parse the rhs to build a
+  /// UnresolvedValue-StoreInst to return
+  Instruction *parseMutate(Value *Op0, bool Optional = false);
 
   /// Assuming the lhs has already been parsed (passed in as first argument),
   /// parse the appropriate arithmetic operator and build the full Instruction

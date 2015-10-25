@@ -47,6 +47,18 @@ TEST(Diagnostic, FunctionNotFound)
   EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
 }
 
+TEST(Diagnostic, AlreadyBound)
+{
+  std::string SourcePrg =
+    "def main do\n"
+    "  Handle = 0;\n"
+    "  Handle = 2;\n"
+    "end";
+  std::string ExpectedErr =
+    "string stream:3:3: error: symbol Handle already bound";
+  EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
+}
+
 TEST(Diagnostic, DISABLED_MissingOverloadedInstance)
 {
   std::string SourcePrg =

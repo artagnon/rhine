@@ -30,11 +30,8 @@ Instruction *Parser::parseArithOp(Value *Op0, bool Optional) {
   return nullptr;
 }
 
-Instruction *Parser::parseAssignment(Value *Op0, bool IsMutation,
-                                     bool Optional) {
-  if (IsMutation && !getTok(MUTATE))
-    writeError("expected '=!'", Optional);
-  else if (!IsMutation && !getTok(BIND))
+Instruction *Parser::parseBind(Value *Op0, bool Optional) {
+  if (!getTok(BIND))
     writeError("expected '='", Optional);
   else {
     if (auto Rhs = parseAssignable(Optional)) {
@@ -42,7 +39,22 @@ Instruction *Parser::parseAssignment(Value *Op0, bool IsMutation,
       Inst->setSourceLocation(Op0->getSourceLocation());
       return Inst;
     }
-    writeError("rhs of assignment unparseable", Optional);
+    writeError("rhs of bind unparseable", Optional);
+  }
+  return nullptr;
+}
+
+Instruction *Parser::parseMutate(Value *Op0, bool Optional) {
+  if (!getTok(MUTATE))
+    writeError("expected ':='", Optional);
+  else {
+    if (auto Rhs = parseAssignable(Optional)) {
+      auto UnRes = UnresolvedValue::get(Op0->getName(), Rhs->getType());
+      auto Inst = StoreInst::get(UnRes, Rhs);
+      Inst->setSourceLocation(Op0->getSourceLocation());
+      return Inst;
+    }
+    writeError("rhs of mutate unparseable", Optional);
   }
   return nullptr;
 }

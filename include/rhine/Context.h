@@ -54,8 +54,8 @@ public:
     std::map<Value *, llvm::Value *> LoweringMap;
     Value *searchOneBlock(Value *Val, BasicBlock *Block);
   public:
-    void add(Value *Val, BasicBlock *Block = nullptr);
-    void add(Value *Val, llvm::Value *LLVal);
+    bool add(Value *Val, BasicBlock *Block = nullptr);
+    bool add(Value *Val, llvm::Value *LLVal);
     Value *get(Value *Val, BasicBlock *Block = nullptr);
     llvm::Value *getl(Value *Val);
   };
