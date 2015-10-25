@@ -6,7 +6,7 @@ using namespace rhine;
 TEST(Diagnostic, UnboundVariable)
 {
   std::string SourcePrg =
-    "def unboundVar() do\n"
+    "def unboundVar do\n"
     "  ret Var ~Int;\n"
     "end";
   std::string ExpectedErr = "string stream:2:7: error: unbound symbol Var";
@@ -47,7 +47,7 @@ TEST(Diagnostic, FunctionNotFound)
   EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
 }
 
-TEST(Diagnostic, AlreadyBound)
+TEST(Diagnostic, AlreadyBoundLocal)
 {
   std::string SourcePrg =
     "def main do\n"
@@ -56,6 +56,31 @@ TEST(Diagnostic, AlreadyBound)
     "end";
   std::string ExpectedErr =
     "string stream:3:3: error: symbol Handle already bound";
+  EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
+}
+
+TEST(Diagnostic, ConflictingFunctions)
+{
+  std::string SourcePrg =
+    "def main do\n"
+    "  ret 3\n"
+    "end\n"
+    "def main do\n"
+    "  ret 2\n"
+    "end";
+  std::string ExpectedErr =
+    "string stream:4:5: error: function main already exists";
+  EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
+}
+
+TEST(Diagnostic, DISABLED_ArgumentNameEqualsFunctionName)
+{
+  std::string SourcePrg =
+    "def main(main ~Int) do\n"
+    "  ret $ main + 2;\n"
+    "end";
+  std::string ExpectedErr =
+    "string stream:3:3: error: argument main conflicts with existing symbol name";
   EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
 }
 
