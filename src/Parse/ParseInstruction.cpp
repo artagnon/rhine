@@ -30,8 +30,11 @@ Instruction *Parser::parseArithOp(Value *Op0, bool Optional) {
   return nullptr;
 }
 
-Instruction *Parser::parseAssignment(Value *Op0, bool Optional) {
-  if (!getTok('='))
+Instruction *Parser::parseAssignment(Value *Op0, bool IsMutation,
+                                     bool Optional) {
+  if (IsMutation && !getTok(MUTATE))
+    writeError("expected '=!'", Optional);
+  else if (!IsMutation && !getTok(BIND))
     writeError("expected '='", Optional);
   else {
     if (auto Rhs = parseAssignable(Optional)) {
@@ -47,7 +50,7 @@ Instruction *Parser::parseAssignment(Value *Op0, bool Optional) {
 Instruction *Parser::parseCall(Value *Callee, bool Optional) {
   auto CallLoc = Callee->getSourceLocation();
   if (auto Arg0 = parseRtoken(true)) {
-    std::vector<Value *> CallArgs = { Arg0 };
+    std::vector<Value *> CallArgs = {Arg0};
     while (auto Tok = parseRtoken(true))
       CallArgs.push_back(Tok);
     auto Inst = CallInst::get(Callee, CallArgs);
@@ -73,7 +76,8 @@ Instruction *Parser::parseIf() {
     return nullptr;
   }
   auto Conditional = parseRtoken();
-  auto TrueBlock = parseBlock(DOBLOCK, "do", {{ELSE, "else"}, {ENDBLOCK, "end"}});
+  auto TrueBlock =
+      parseBlock(DOBLOCK, "do", {{ELSE, "else"}, {ENDBLOCK, "end"}});
   auto FalseBlock = BasicBlock::get("false", {}, K);
   if (LastTok == ELSE)
     FalseBlock = parseBlock(0, "", {{ENDBLOCK, "end"}});

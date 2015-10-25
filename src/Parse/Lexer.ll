@@ -73,6 +73,8 @@ SPTAB   [ \t]+
 "else" { return T::ELSE; }
 "&&" { return T::AND; }
 "||" { return T::OR; }
+"=" { return T::BIND; }
+"=!" { return T::MUTATE; }
 "->" { return T::ARROW; }
 "ret" { return T::RET; }
 "do" { return T::DOBLOCK; }

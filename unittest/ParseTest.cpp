@@ -116,6 +116,6 @@ TEST(Parse, MissingStatementSeparator)
     "  Foo = 2 ret 3\n"
     "end";
   std::string ExpectedErr =
-    "string stream:2:11: error: expecting ';' or newline to terminate assignment";
+    "string stream:2:11: error: expecting ';' or newline to terminate bind";
   EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
 }

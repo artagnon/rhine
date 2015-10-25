@@ -39,6 +39,8 @@ public:
     ENDBLOCK = -18,
     LAMBDA = -19,
     NEWLINE = -20,
+    BIND = -21,
+    MUTATE = -22,
   };
 
   class Position {
@@ -46,33 +48,19 @@ public:
     std::string Filename;
     unsigned Line;
     unsigned Column;
-    Position() :
-        Line(1u), Column(1u) {}
-    void lines(int Count = 1)
-    {
+    Position() : Line(1u), Column(1u) {}
+    void lines(int Count = 1) {
       Column = 1u;
       Line = Line + Count;
     }
-    void columns(int Count)
-    {
-      Column += Count;
-    }
+    void columns(int Count) { Column += Count; }
   };
 
   class Location {
   public:
-    void step()
-    {
-      Begin = End;
-    }
-    void columns(int count = 1)
-    {
-      End.columns(count);
-    }
-    void lines(int count = 1)
-    {
-      End.lines(count);
-    }
+    void step() { Begin = End; }
+    void columns(int count = 1) { End.columns(count); }
+    void lines(int count = 1) { End.lines(count); }
 
   public:
     Position Begin;
@@ -151,7 +139,8 @@ public:
   /// Assuming the lhs has already been parsed (passed in as the first
   /// argument), look at '=' and parse the rhs to build a full MallocInst to
   /// return
-  Instruction *parseAssignment(Value *Op0, bool Optional = false);
+  Instruction *parseAssignment(Value *Op0, bool IsMutation = false,
+                               bool Optional = false);
 
   /// Assuming the lhs has already been parsed (passed in as first argument),
   /// parse the appropriate arithmetic operator and build the full Instruction
@@ -172,8 +161,7 @@ public:
 
   /// A block (function body, if statemnet, lambda etc) that's delimited by
   /// StartToken and EndToken
-  BasicBlock *parseBlock(int StartToken,
-                         std::string StartTokenStr,
+  BasicBlock *parseBlock(int StartToken, std::string StartTokenStr,
                          std::map<int, std::string> EndTokens);
 
   /// Function builder-helper; mainly, extracts types from the ArgList, creates
