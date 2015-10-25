@@ -18,6 +18,13 @@ void Resolve::lookupReplaceUse(UnresolvedValue *V, Use &U,
   auto Name = V->getName();
   auto K = V->getContext();
   if (auto S = K->Map.get(V, Block)) {
+    /// %S = 2;
+    ///  ^
+    /// Came from here (MallocInst, Argument, or Prototype)
+    ///
+    /// Foo(%S);
+    ///      ^
+    ///  UnresolvedValue; replace with %Replacement
     if (auto M = dyn_cast<MallocInst>(S)) {
       auto Replacement = LoadInst::get(M);
       Replacement->setSourceLocation(V->getSourceLocation());
@@ -31,6 +38,10 @@ void Resolve::lookupReplaceUse(UnresolvedValue *V, Use &U,
       U.set(Replacement);
     }
   } else {
+    /// %V was not seen earlier (%S not initialized)
+    /// Only one possibility: %V(...)
+    ///                        ^
+    ///                Callee of CallInst
     auto SourceLoc = U->getSourceLocation();
     auto K = Block->getContext();
     if (auto Inst = dyn_cast<CallInst>(U->getUser()))

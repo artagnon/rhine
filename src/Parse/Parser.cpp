@@ -148,9 +148,13 @@ Value *Parser::parseRet() {
 
 Value *Parser::parsePostLiteralName(Value *Rtok) {
   auto LitLoc = Rtok->getSourceLocation();
-  if (auto Assign = parseAssignment(Rtok, true)) {
-    getSemiTerm("assignment");
-    return Assign;
+  if (auto Bind = parseAssignment(Rtok, false, true)) {
+    getSemiTerm("bind");
+    return Bind;
+  }
+  if (auto Mutate = parseAssignment(Rtok, true, true)) {
+    getSemiTerm("mutate");
+    return Mutate;
   }
   if (auto Call = parseCall(Rtok, true)) {
     getSemiTerm("function call");
