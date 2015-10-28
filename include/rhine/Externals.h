@@ -18,6 +18,7 @@ class Externals {
 
 public:
   Externals(Context *K);
+  virtual ~Externals();
   static Externals *get(Context *K);
   std::vector<Prototype *> getProtos() const;
   Prototype *getMappingProto(std::string S);

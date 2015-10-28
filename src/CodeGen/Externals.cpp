@@ -24,6 +24,13 @@ Externals::Externals(Context *K) {
   ToStringProto = Prototype::get("toString", ToStringTy);
 }
 
+Externals::~Externals() {
+  delete PrintProto;
+  delete PrintlnProto;
+  delete MallocProto;
+  delete ToStringProto;
+}
+
 Externals *Externals::get(Context *K) {
   if (!K->ExternalsCache)
     K->ExternalsCache = new (K->RhAllocator) Externals(K);

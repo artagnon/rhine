@@ -74,7 +74,6 @@ protected:
 };
 
 class Prototype : public User {
-private:
   Module *ParentModule;
   std::vector<Argument *> ArgumentList;
   Argument *VariadicRestLoadInst;
