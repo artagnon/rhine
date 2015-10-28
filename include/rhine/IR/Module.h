@@ -19,7 +19,10 @@ class Module {
 public:
   /// Context is all that is required to initialize
   Module(Context *K);
-  virtual ~Module() {}
+
+  /// Destructor gets rid of ContainedFs, but leaves Kontext alone
+  virtual ~Module();
+
   static Module *get(Context *K);
   Context *getContext();
 

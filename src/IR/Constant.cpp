@@ -88,7 +88,11 @@ Prototype::Prototype(std::string Name, FunctionType *FTy, RTValue RTy) :
     User(FTy, RTy, 0, Name), ParentModule(nullptr),
     VariadicRestLoadInst(nullptr) {}
 
-Prototype::~Prototype() {}
+Prototype::~Prototype() {
+  for (auto A : ArgumentList)
+    delete A;
+  delete VariadicRestLoadInst;
+}
 
 void *Prototype::operator new(size_t s) {
   return User::operator new(s);
@@ -180,7 +184,10 @@ void Prototype::print(std::ostream &Stream) const {
 Function::Function(std::string Name, FunctionType *FTy) :
     Prototype(Name, FTy, RT_Function) {}
 
-Function::~Function() {}
+Function::~Function() {
+  for (auto BB : Val)
+    delete BB;
+}
 
 void *Function::operator new(size_t s) {
   return User::operator new(s);
