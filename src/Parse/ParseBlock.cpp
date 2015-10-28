@@ -1,12 +1,6 @@
 #include "rhine/Parse/Parser.h"
-#include "rhine/Parse/ParseTree.h"
-#include "rhine/Parse/ParseDriver.h"
-#include "rhine/IR/UnresolvedValue.h"
-#include "rhine/IR/GlobalValue.h"
-#include "rhine/IR/Instruction.h"
 #include "rhine/IR/BasicBlock.h"
 #include "rhine/IR/Constant.h"
-#include "rhine/IR/Value.h"
 #include "rhine/IR/Type.h"
 
 #include <vector>
@@ -14,7 +8,6 @@
 #define K Driver->Ctx
 
 namespace rhine {
-
 bool Parser::matchesAnyTokenPair(std::map<int, std::string> &TokenPairs) {
   for (auto TokPair : TokenPairs)
     if (CurTok == TokPair.first)

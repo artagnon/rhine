@@ -2,6 +2,7 @@
 #include "rhine/IR/BasicBlock.h"
 #include "rhine/IR/Instruction.h"
 #include "rhine/IR/GlobalValue.h"
+#include "rhine/IR/Context.h"
 #include "rhine/Transform/TypeInfer.h"
 
 namespace rhine {

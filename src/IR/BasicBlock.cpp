@@ -1,7 +1,6 @@
 #include "rhine/IR/BasicBlock.h"
 #include "rhine/IR/Instruction.h"
 #include "rhine/IR/Module.h"
-#include "rhine/Context.h"
 
 namespace rhine {
 void BasicBlock::setAllInstructionParents(std::vector<Value *> List) {
@@ -18,7 +17,11 @@ BasicBlock::BasicBlock(Type *Ty, std::string Name, std::vector<Value *> V) :
   setAllInstructionParents(ValueList);
 }
 
-BasicBlock::~BasicBlock() {}
+BasicBlock::~BasicBlock() {
+  for (auto V : ValueList) {
+    delete cast<User>(V);
+  }
+}
 
 BasicBlock *BasicBlock::get(std::string Name, std::vector<Value *> V,
                             Context *K) {

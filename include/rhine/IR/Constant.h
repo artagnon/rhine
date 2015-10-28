@@ -10,7 +10,7 @@
 #include <vector>
 #include <sstream>
 
-#include "rhine/Context.h"
+#include "rhine/IR/Type.h"
 #include "rhine/IR/User.h"
 #include "rhine/IR/UnresolvedValue.h"
 #include "rhine/IR/BasicBlock.h"
@@ -19,6 +19,7 @@ using namespace std;
 using namespace llvm;
 
 namespace rhine {
+class Context;
 class Module;
 
 class Constant : public User {

@@ -13,7 +13,8 @@ add_library(IR
   "${CMAKE_CURRENT_SOURCE_DIR}/Instruction.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Module.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/User.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/Use.cpp")
+  "${CMAKE_CURRENT_SOURCE_DIR}/Use.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Context.cpp")
 set_target_properties(IR PROPERTIES
   LINKER_LANGUAGE CXX
   COMPILE_FLAGS "${LLVM_CXXFLAGS}")

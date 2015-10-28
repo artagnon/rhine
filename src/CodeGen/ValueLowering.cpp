@@ -1,4 +1,4 @@
-#include "rhine/Context.h"
+#include "rhine/IR/Context.h"
 #include "rhine/IR/Value.h"
 #include "rhine/IR/UnresolvedValue.h"
 #include "rhine/IR/GlobalValue.h"

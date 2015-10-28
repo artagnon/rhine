@@ -38,15 +38,9 @@ public:
       LLContext(llvm::getGlobalContext()),
       Builder(new llvm::IRBuilder<>(LLContext)),
       DiagPrinter(new DiagnosticPrinter(&ErrStream)),
-      ExternalsCache(nullptr),
-      CurrentFunction(nullptr) {}
+      ExternalsCache(nullptr) {}
 
-  // The big free
-  void releaseMemory() {
-    RhAllocator.Reset();
-    FTyCache.clear();
-    ITyCache.clear();
-  }
+  virtual ~Context();
 
   class ResolutionMap {
     typedef std::map<std::string, Value *> NameResolutionMap;

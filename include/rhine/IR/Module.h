@@ -6,13 +6,14 @@
 #include <vector>
 #include <sstream>
 
-#include "rhine/Context.h"
 #include "rhine/IR/Constant.h"
 
 using namespace std;
 using namespace llvm;
 
 namespace rhine {
+class Context;
+
 class Module {
   Context *Kontext;
   std::vector<Function *> ContainedFs;
