@@ -4,7 +4,7 @@
 
 #include "rhine/Parse/ParseDriver.h"
 #include "rhine/Parse/Lexer.h"
-#include "rhine/Context.h"
+#include "rhine/IR/Context.h"
 
 namespace rhine {
 ParseDriver::ParseDriver(class PTree &Tree, Context *SharedCtx, bool Debug) :

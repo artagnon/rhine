@@ -1,5 +1,5 @@
 #include "rhine/IR/Type.h"
-#include "rhine/Context.h"
+#include "rhine/IR/Context.h"
 #include <iostream>
 
 using Location = rhine::Parser::Location;

@@ -1,6 +1,7 @@
-#include "rhine/Externals.h"
-#include "rhine/IR/Constant.h"
 #include "rhine/IR/Type.h"
+#include "rhine/Externals.h"
+#include "rhine/IR/Context.h"
+#include "rhine/IR/Constant.h"
 
 #include "llvm/IR/Type.h"
 #include "llvm/ADT/ArrayRef.h"
@@ -33,7 +34,7 @@ Externals::~Externals() {
 
 Externals *Externals::get(Context *K) {
   if (!K->ExternalsCache)
-    K->ExternalsCache = new (K->RhAllocator) Externals(K);
+    K->ExternalsCache = new Externals(K);
   return K->ExternalsCache;
 }
 

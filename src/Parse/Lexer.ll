@@ -4,6 +4,7 @@
 #include "rhine/Parse/Lexer.h"
 #include "rhine/IR/Constant.h"
 #include "rhine/IR/GlobalValue.h"
+#include "rhine/IR/Context.h"
 
 class yyFlexLexer;
 
