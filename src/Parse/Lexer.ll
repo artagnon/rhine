@@ -101,7 +101,7 @@ SPTAB   [ \t]+
 }
 
 {SYMBOL} {
-  yylval->LiteralName = new (K->RhAllocator) std::string(yytext);
+  yylval->LiteralName = new std::string(yytext);
   return T::LITERALNAME;
 }
 

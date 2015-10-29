@@ -6,8 +6,8 @@ Context::~Context() {
   delete Builder;
   delete DiagPrinter;
   delete ExternalsCache;
-  RhAllocator.Reset();
   FTyCache.clear();
+  PTyCache.clear();
   ITyCache.clear();
 }
 }

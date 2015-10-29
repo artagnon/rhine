@@ -1,14 +1,12 @@
-#include "rhine/Parse/Lexer.h"
-#include "rhine/Parse/Parser.h"
-#include "rhine/Parse/ParseTree.h"
 #include "rhine/Parse/ParseDriver.h"
+#include "rhine/Parse/Parser.h"
+#include "rhine/Parse/Lexer.h"
+
 #include "rhine/IR/UnresolvedValue.h"
 #include "rhine/IR/GlobalValue.h"
 #include "rhine/IR/Instruction.h"
-#include "rhine/IR/BasicBlock.h"
-#include "rhine/IR/Constant.h"
 #include "rhine/IR/Context.h"
-#include "rhine/IR/Value.h"
+#include "rhine/IR/Module.h"
 #include "rhine/IR/Type.h"
 
 #include <vector>
@@ -217,7 +215,7 @@ Value *Parser::parseSingleStm() {
 void Parser::parseToplevelForms() {
   getTok();
   while (auto Fcn = parseFcnDecl(true)) {
-    Driver->Root.appendFunction(Fcn);
+    Driver->Root->appendFunction(Fcn);
   }
   if (CurTok != END)
     writeError("expected end of file");

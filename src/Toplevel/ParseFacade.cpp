@@ -1,12 +1,12 @@
 #include "rhine/Toplevel/ParseFacade.h"
 #include "rhine/Parse/ParseDriver.h"
-#include "rhine/Parse/ParseTree.h"
 #include "rhine/Transform/FlattenBB.h"
 #include "rhine/Transform/TypeInfer.h"
 #include "rhine/Transform/LambdaLifting.h"
 #include "rhine/Transform/TypeCoercion.h"
 #include "rhine/Transform/Resolve.h"
 #include "rhine/IR/Context.h"
+#include "rhine/IR/Module.h"
 #include "rhine/Runtime/GC.h"
 
 #include "llvm/ExecutionEngine/ExecutionEngine.h"
@@ -34,7 +34,7 @@ template <typename T> std::string ParseFacade::llToPP(T *Obj) {
 Module *ParseFacade::parseToIR(ParseSource SrcE,
                                std::vector<ModulePass *> TransformChain) {
   auto Ctx = new rhine::Context(ErrStream);
-  rhine::PTree Root(Ctx);
+  auto Root = Module::get(Ctx);
   auto Driver = rhine::ParseDriver(Root, Ctx, Debug);
   switch (SrcE) {
   case ParseSource::STRING:
@@ -50,10 +50,9 @@ Module *ParseFacade::parseToIR(ParseSource SrcE,
     }
     break;
   }
-  auto RootModule = Root.M;
   for (auto Transform : TransformChain)
-    Transform->runOnModule(RootModule);
-  return RootModule;
+    Transform->runOnModule(Root);
+  return Root;
 }
 
 std::string ParseFacade::parseAction(ParseSource SrcE,

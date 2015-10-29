@@ -73,7 +73,7 @@ IntegerType *IntegerType::get(unsigned Bitwidth, Context *K) {
   IntegerType::Profile(ID, Bitwidth);
   if (auto T = K->ITyCache.FindNodeOrInsertPos(ID, IP))
     return T;
-  auto T = new (K->RhAllocator) IntegerType(K, Bitwidth);
+  auto T = new IntegerType(K, Bitwidth);
   K->ITyCache.InsertNode(T, IP);
   return T;
 }
@@ -157,7 +157,10 @@ FunctionType::FunctionType(Context *K, Type *RTy,
     Type(K, RT_FunctionType), ReturnType(RTy), VariadicFlag(IsV),
     ArgumentTypes(ATys) {}
 
-FunctionType::~FunctionType() {}
+FunctionType::~FunctionType() {
+  delete ReturnType;
+  ArgumentTypes.clear();
+}
 
 FunctionType *FunctionType::get(Type *RTy, std::vector<Type *> ATys, bool IsV) {
   FoldingSetNodeID ID;
@@ -166,7 +169,7 @@ FunctionType *FunctionType::get(Type *RTy, std::vector<Type *> ATys, bool IsV) {
   auto K = RTy->getContext();
   if (auto FTy = K->FTyCache.FindNodeOrInsertPos(ID, IP))
     return FTy;
-  FunctionType *FTy = new (K->RhAllocator) FunctionType(K, RTy, ATys, IsV);
+  FunctionType *FTy = new FunctionType(K, RTy, ATys, IsV);
   K->FTyCache.InsertNode(FTy, IP);
   return FTy;
 }
@@ -229,7 +232,10 @@ void FunctionType::print(std::ostream &Stream) const {
 PointerType::PointerType(Context *K, Type *CTy) :
     Type(K, RT_PointerType), ContainedType(CTy) {}
 
-PointerType::~PointerType() {}
+PointerType::~PointerType() {
+  delete ContainedType;
+}
+
 PointerType *PointerType::get(Type *CTy) {
   FoldingSetNodeID ID;
   void *IP;
@@ -237,7 +243,7 @@ PointerType *PointerType::get(Type *CTy) {
   auto K = CTy->getContext();
   if (auto PTy = K->PTyCache.FindNodeOrInsertPos(ID, IP))
     return PTy;
-  PointerType *PTy = new (K->RhAllocator) PointerType(K, CTy);
+  PointerType *PTy = new PointerType(K, CTy);
   K->PTyCache.InsertNode(PTy, IP);
   return PTy;
 }

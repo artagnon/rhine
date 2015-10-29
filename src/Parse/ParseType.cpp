@@ -1,5 +1,4 @@
 #include "rhine/Parse/Parser.h"
-#include "rhine/Parse/ParseTree.h"
 #include "rhine/Parse/ParseDriver.h"
 #include "rhine/IR/UnresolvedValue.h"
 #include "rhine/IR/GlobalValue.h"

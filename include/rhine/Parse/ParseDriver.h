@@ -9,7 +9,7 @@
 
 namespace rhine {
 class Context;
-class PTree;
+class Module;
 class Lexer;
 
 class ParseDriver
@@ -17,7 +17,7 @@ class ParseDriver
 public:
   /// We fill in the ParseTree and hand it back; Context is ofcourse inherited,
   /// and Debug is useful for getting trace outputs
-  ParseDriver(class PTree &Tree, Context *SharedCtx, bool Debug = false);
+  ParseDriver(Module *Tree, Context *SharedCtx, bool Debug = false);
 
   /// The main driver that is called by parseString and parseFile; sets things
   /// up (instatiates the lexer), and calls the parser
@@ -41,7 +41,7 @@ public:
   bool TraceScanning;
 
   /// The Root of the ParseTree into which the parser stuffs whatever
-  PTree &Root;
+  Module *Root;
 
   /// Finally, the Context
   Context *Ctx;
