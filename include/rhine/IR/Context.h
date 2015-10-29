@@ -20,7 +20,6 @@ class Externals;
 
 class Context {
 public:
-  llvm::BumpPtrAllocator RhAllocator;
   llvm::FoldingSet<FunctionType> FTyCache;
   llvm::FoldingSet<PointerType> PTyCache;
   llvm::FoldingSet<IntegerType> ITyCache;

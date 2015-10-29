@@ -51,7 +51,7 @@ protected:
   std::string Name;
 public:
   Value(Type *VTy, RTValue ID, std::string N = "");
-  virtual ~Value() { }
+  virtual ~Value();
   Value *get() = delete;
   static bool classof(const Value *V);
   Context *getContext();

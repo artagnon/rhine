@@ -7,7 +7,9 @@
 #include "rhine/IR/Context.h"
 
 namespace rhine {
-ParseDriver::ParseDriver(class PTree &Tree, Context *SharedCtx, bool Debug) :
+class Module;
+
+ParseDriver::ParseDriver(Module *Tree, Context *SharedCtx, bool Debug) :
     TraceScanning(Debug), Root(Tree), Ctx(SharedCtx)
 {}
 
