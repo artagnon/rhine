@@ -78,7 +78,7 @@ protected:
 class CallInst : public Instruction {
 public:
   CallInst(Type *Ty, unsigned NumOps, std::string N);
-  virtual ~CallInst() {}
+  virtual ~CallInst();
   void *operator new(size_t S, unsigned n);
   static CallInst *get(Value *Callee, std::vector<Value *> Ops);
   static bool classof(const Value *V);
@@ -91,7 +91,7 @@ protected:
 class MallocInst : public Instruction {
 public:
   MallocInst(std::string N, Value *V);
-  virtual ~MallocInst() {}
+  virtual ~MallocInst();
   void *operator new(size_t S);
   static MallocInst *get(std::string N, Value *V);
   static bool classof(const Value *V);
@@ -110,6 +110,7 @@ public:
   /// Load an existing MallocInst
   LoadInst(MallocInst *M);
 
+  /// Noop.
   virtual ~LoadInst() {}
   void *operator new(size_t S);
   static LoadInst *get(MallocInst *M);
@@ -125,7 +126,8 @@ public:
   /// A socket and plug; they better fit well
   StoreInst(Value *MallocedValue, Value *NewValue);
 
-  virtual ~StoreInst() {}
+  /// Noop.
+  virtual ~StoreInst();
 
   /// Allocate a constant two operands
   void *operator new(size_t S);
@@ -145,7 +147,7 @@ protected:
 class ReturnInst : public Instruction {
 public:
   ReturnInst(Type *Ty, bool IsNotVoid);
-  virtual ~ReturnInst() {}
+  virtual ~ReturnInst();
 
   /// Really N can either be 0 or 1; We don't do funky multi-output functions
   void *operator new(size_t S, unsigned N);

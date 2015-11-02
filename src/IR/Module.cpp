@@ -4,7 +4,7 @@ namespace rhine {
 Module::Module(Context *K) : Kontext(K) {}
 
 Module::~Module() {
-  for (auto F : ContainedFs)
+  for (auto *F : ContainedFs)
     delete F;
 }
 

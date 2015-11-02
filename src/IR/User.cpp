@@ -5,6 +5,8 @@ namespace rhine {
 User::User(Type *Ty, RTValue ID, unsigned NumOps, std::string N) :
     Value(Ty, ID, N), NumOperands(NumOps), NumAllocatedOps(NumOps) {}
 
+User::~User() {}
+
 void *User::operator new(size_t Size, unsigned Us) {
   void *Storage = ::operator new (Us * sizeof(Use) + Size);
   auto Start = static_cast<Use *>(Storage);
@@ -25,6 +27,11 @@ void User::operator delete(void *Usr) {
   Use *Storage = static_cast<Use *>(Usr) - Obj->NumAllocatedOps;
   Use::zap(Storage, Storage + Obj->NumAllocatedOps, /* Delete */ false);
   ::operator delete(Storage);
+}
+
+void User::dropAllReferences() {
+  for (auto &U : uses())
+    U.set(nullptr);
 }
 
 bool User::classof(const Value *V) {

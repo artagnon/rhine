@@ -7,6 +7,8 @@ Use::Use(unsigned Dist) :
     Val(nullptr), Prev(nullptr),
     Next(nullptr), DistToUser(Dist) {}
 
+Use::~Use() {}
+
 unsigned Use::getOperandNumber() {
   return DistToUser;
 }
@@ -71,11 +73,12 @@ void Use::addToList(Use *&UseList) {
 }
 
 void Use::removeFromList() {
-  if (!Prev) Val->zapUseList();
-  else {
-    delete Prev->Next;
-    Prev->Next = nullptr;
-  }
+  if (!Prev && !Next)
+    Val->zapUseList();
+  if (Prev)
+    Prev->Next = Next;
+  if (Next)
+    Next->Prev = Prev;
 }
 
 void Use::set(Value *V) {

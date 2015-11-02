@@ -73,6 +73,8 @@ void SubInst::print(std::ostream &Stream) const {
 CallInst::CallInst(Type *Ty, unsigned NumOps, std::string N) :
     Instruction(Ty, RT_CallInst, NumOps, N) {}
 
+CallInst::~CallInst() {}
+
 void *CallInst::operator new(size_t S, unsigned N) {
   return User::operator new(S, N);
 }
@@ -106,6 +108,8 @@ MallocInst::MallocInst(std::string N, Value *V) :
     Instruction(V->getType(), RT_MallocInst, 1, N) {
   setOperand(0, V);
 }
+
+MallocInst::~MallocInst() {}
 
 void *MallocInst::operator new(size_t S) {
   return User::operator new(S, 1);
@@ -164,6 +168,8 @@ StoreInst::StoreInst(Value *MallocedValue, Value *NewValue) :
   setOperand(1, NewValue);
 }
 
+StoreInst::~StoreInst() {}
+
 void *StoreInst::operator new(size_t S) {
   return User::operator new (S, 2);
 }
@@ -190,6 +196,8 @@ void StoreInst::print(std::ostream &Stream) const {
 
 ReturnInst::ReturnInst(Type *Ty, bool IsNotVoid) :
     Instruction(Ty, RT_ReturnInst, IsNotVoid) {}
+
+ReturnInst::~ReturnInst() {}
 
 void *ReturnInst::operator new(size_t S, unsigned N) {
   return User::operator new(S, N);

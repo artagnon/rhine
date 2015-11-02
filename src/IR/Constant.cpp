@@ -185,7 +185,7 @@ Function::Function(std::string Name, FunctionType *FTy) :
     Prototype(Name, FTy, RT_Function) {}
 
 Function::~Function() {
-  for (auto BB : Val)
+  for (auto *BB : Val)
     delete BB;
 }
 
