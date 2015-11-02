@@ -59,6 +59,7 @@ Function *Parser::parseFcnDecl(bool Optional) {
   auto ArgList = parseArgumentList(true);
   auto ReturnTy = parseTypeAnnotation(true);
   auto Fcn = buildFcn(FcnName, ArgList, ReturnTy, FcnLoc);
+  delete CurSema.LiteralName;
   if (auto Block = parseBlock(DOBLOCK, "do", {{ENDBLOCK, "end"}}))
     Fcn->push_back(Block);
   else {

@@ -2,7 +2,6 @@
 #include "rhine/IR/Instruction.h"
 #include "rhine/IR/Constant.h"
 #include "rhine/IR/Context.h"
-#include "rhine/IR/Value.h"
 #include "rhine/IR/Type.h"
 #include "rhine/Transform/TypeCoercion.h"
 

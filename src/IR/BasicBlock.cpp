@@ -18,7 +18,10 @@ BasicBlock::BasicBlock(Type *Ty, std::string Name, std::vector<Value *> V) :
 }
 
 BasicBlock::~BasicBlock() {
-  for (auto V : ValueList) {
+  for (auto &V : ValueList) {
+    cast<User>(V)->dropAllReferences();
+  }
+  for (auto &V : ValueList) {
     delete cast<User>(V);
   }
 }
