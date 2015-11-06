@@ -33,7 +33,9 @@ UnType::UnType(Context *K): Type(K, RT_UnType) {}
 UnType::~UnType() {}
 
 UnType *UnType::get(Context *K) {
-  return new UnType(K);
+  auto N = new UnType(K);
+  K->UTyCache.push_back(N);
+  return N;
 }
 
 bool UnType::classof(const Type *T) {
@@ -90,7 +92,7 @@ void IntegerType::Profile(FoldingSetNodeID &ID, const unsigned &W) {
   ID.AddInteger(W);
 }
 
-void IntegerType::Profile(FoldingSetNodeID &ID) {
+void IntegerType::Profile(FoldingSetNodeID &ID) const {
   Profile(ID, Bitwidth);
 }
 
@@ -158,7 +160,6 @@ FunctionType::FunctionType(Context *K, Type *RTy,
     ArgumentTypes(ATys) {}
 
 FunctionType::~FunctionType() {
-  delete ReturnType;
   ArgumentTypes.clear();
 }
 
@@ -183,14 +184,15 @@ bool FunctionType::classof(const Type *T) {
 }
 
 void FunctionType::Profile(FoldingSetNodeID &ID, const Type *RTy,
-                           const std::vector<Type *> ATys, bool IsV) {
-  ID.AddPointer(RTy);
+                           const std::vector<Type *> &ATys,
+                           const bool &IsV) {
+  ID.Add(RTy);
   for (auto &T: ATys)
-    ID.AddPointer(T);
+    ID.Add(T);
   ID.AddBoolean(IsV);
 }
 
-void FunctionType::Profile(FoldingSetNodeID &ID) {
+void FunctionType::Profile(FoldingSetNodeID &ID) const {
   Profile(ID, ReturnType, ArgumentTypes, VariadicFlag);
 }
 
@@ -232,9 +234,7 @@ void FunctionType::print(std::ostream &Stream) const {
 PointerType::PointerType(Context *K, Type *CTy) :
     Type(K, RT_PointerType), ContainedType(CTy) {}
 
-PointerType::~PointerType() {
-  delete ContainedType;
-}
+PointerType::~PointerType() {}
 
 PointerType *PointerType::get(Type *CTy) {
   FoldingSetNodeID ID;
@@ -253,10 +253,10 @@ bool PointerType::classof(const Type *T) {
 }
 
 void PointerType::Profile(FoldingSetNodeID &ID, const Type *CTy) {
-  ID.AddPointer(CTy);
+  ID.Add(CTy);
 }
 
-void PointerType::Profile(FoldingSetNodeID &ID) {
+void PointerType::Profile(FoldingSetNodeID &ID) const {
   Profile(ID, ContainedType);
 }
 

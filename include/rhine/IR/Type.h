@@ -36,6 +36,8 @@ enum RTType {
 
 class Type : public FoldingSetNode {
 protected:
+  /// Context is an essential part of the Type; it is how every Value indirectly
+  /// has access to the Context.
   Context *Kontext;
   Location SourceLoc;
   Type(RTType ID);
@@ -61,8 +63,11 @@ private:
 };
 
 class UnType : public Type {
-public:
+  /// UnType is a special typed for expressions that are constructed by the
+  /// parser without a literal type. The type is later filled in using
+  /// inference. Private constructor because
   UnType(Context *K);
+public:
   virtual ~UnType();
   static UnType *get(Context *K);
   static bool classof(const Type *T);
@@ -85,14 +90,14 @@ protected:
 };
 
 class IntegerType : public Type {
-public:
   IntegerType(Context *K, unsigned Width);
+public:
   virtual ~IntegerType();
   static IntegerType *get(unsigned Bitwidth, Context *K);
   unsigned getBitwidth();
   static bool classof(const Type *T);
   static inline void Profile(FoldingSetNodeID &ID, const unsigned &W);
-  void Profile(FoldingSetNodeID &ID);
+  void Profile(FoldingSetNodeID &ID) const;
   virtual llvm::Type *toLL(llvm::Module *M) override;
 protected:
   unsigned Bitwidth;
@@ -100,6 +105,7 @@ protected:
 };
 
 class BoolType : public Type {
+  /// Lowers to i1.
   BoolType();
 public:
   virtual ~BoolType();
@@ -112,6 +118,7 @@ protected:
 };
 
 class FloatType : public Type {
+  /// Pivate constructor; only used by Context;
   FloatType();
 public:
   virtual ~FloatType();
@@ -124,6 +131,7 @@ protected:
 };
 
 class StringType : public Type {
+  /// Pivate constructor; only used by Context;
   StringType();
 public:
   virtual ~StringType();
@@ -139,15 +147,18 @@ class FunctionType : public Type {
   Type *ReturnType;
   bool VariadicFlag;
   std::vector<Type *> ArgumentTypes;
-public:
+
+  /// Constructor is private; use ::get to construct a new one.
   FunctionType(Context *K, Type *RTy, std::vector<Type *> ATys, bool IsV);
+public:
   virtual ~FunctionType();
   static FunctionType *get(Type *RTy, std::vector<Type *> ATys, bool IsV);
   static FunctionType *get(Type *RTy);
   static bool classof(const Type *T);
   static inline void Profile(FoldingSetNodeID &ID, const Type *RTy,
-                             const std::vector<Type *> ATys, bool IsV);
-  void Profile(FoldingSetNodeID &ID);
+                             const std::vector<Type *> &ATys,
+                             const bool &IsV);
+  void Profile(FoldingSetNodeID &ID) const;
   Type *getATy(unsigned i);
   std::vector<Type *> getATys();
   Type *getRTy();
@@ -159,13 +170,15 @@ protected:
 
 class PointerType : public Type {
   Type *ContainedType;
-public:
+
+  /// Pivate constructor; use ::get to construct a new one.
   PointerType(Context *K, Type *CTy);
+public:
   virtual ~PointerType();
   static PointerType *get(Type *CTy);
   static bool classof(const Type *T);
   static inline void Profile(FoldingSetNodeID &ID, const Type *CTy);
-  void Profile(FoldingSetNodeID &ID);
+  void Profile(FoldingSetNodeID &ID) const;
   Type *getCTy();
   virtual llvm::Type *toLL(llvm::Module *M) override;
 protected:

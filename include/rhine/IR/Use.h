@@ -7,7 +7,7 @@ class Value;
 class User;
 
 class Use {
-  /// A Use is basically a linked list of Value wrappers
+  /// A Use is basically a linked list of Value wrappers.
   Value *Val;
   Use *Prev;
   Use *Next;
@@ -17,7 +17,7 @@ public:
   /// to reference a particular operand.
   Use(unsigned Dist);
 
-  /// Noop
+  /// Noop.
   virtual ~Use();
 
   /// Which operand # is this Use?
@@ -29,7 +29,11 @@ public:
   Value *operator=(Value *RHS);
   Value *operator->();
   operator Value *() const;
+
+  /// Swap out the values in this and RHS.
   void swap(Use &RHS);
+
+  /// Add this to the given UseList.
   void addToList(Use *&UseList);
 
   /// Remove any intermediate element from the list.
