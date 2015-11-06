@@ -1,7 +1,9 @@
 #include "rhine/Toplevel/OptionParser.h"
-#include "rhine/Toplevel/Toplevel.h"
+#include "rhine/Toplevel/ParseFacade.h"
 
 #include <iostream>
+
+using namespace rhine;
 
 enum OptionIndex {
   UNKNOWN,
@@ -48,7 +50,9 @@ int main(int argc, char *argv[]) {
     std::string Input;
     for (std::string Line; std::getline(std::cin, Line);)
       Input += Line;
-    auto FHandle = rhine::jitFacade(Input, Options[DEBUG], true);
+    std::string InStream = Parse.nonOption(0);
+    ParseFacade Pf(InStream, std::cerr, Options[DEBUG]);
+    auto FHandle = Pf.jitAction(ParseSource::STRING, PostParseAction::LLDUMP);
     delete[] Options;
     delete[] Buffer;
     FHandle();
@@ -60,7 +64,9 @@ int main(int argc, char *argv[]) {
     return 128;
   }
 
-  auto FHandle = rhine::jitFacade(Parse.nonOption(0), Options[DEBUG]);
+  std::string InFile = Parse.nonOption(0);
+  ParseFacade Pf(InFile, std::cerr, Options[DEBUG]);
+  auto FHandle = Pf.jitAction(ParseSource::FILE, PostParseAction::LLDUMP);
   delete[] Options;
   delete[] Buffer;
   FHandle();

@@ -13,7 +13,7 @@ TEST(BasicBlock, SetInstructionParent)
     "  2 + 3;\n"
     "  print 4;\n"
     "end";
-  auto Pf = ParseFacade(SourcePrg);
+  ParseFacade Pf(SourcePrg);
   auto Module = Pf.parseToIR(ParseSource::STRING, { });
   for (auto BB : *Module->front())
     for (auto Inst : *BB)
@@ -26,7 +26,7 @@ TEST(BasicBlock, SetNestedInstructionParent)
     "def main do\n"
     "  print $ 2 + 4;\n"
     "end";
-  auto Pf = ParseFacade(SourcePrg);
+  ParseFacade Pf(SourcePrg);
   auto Module = Pf.parseToIR(ParseSource::STRING, { });
   for (auto BB : *Module->front())
     for (auto Inst : *BB)

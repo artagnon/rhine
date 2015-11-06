@@ -13,7 +13,7 @@ TEST(FlattenBB, NumberOfBBs)
     "def main() do\n"
     "  if false do 3; else 4; end\n"
     "end";
-  auto Pf = ParseFacade(SourcePrg);
+  ParseFacade Pf(SourcePrg);
   FlattenBB Flatten;
   auto Mod = Pf.parseToIR(ParseSource::STRING, { &Flatten });
   auto MainF = Mod->front();
@@ -27,7 +27,7 @@ TEST(FlattenBB, PredSucc)
     "def main() do\n"
     "  if false do 3; else 4; end\n"
     "end";
-  auto Pf = ParseFacade(SourcePrg);
+  ParseFacade Pf(SourcePrg);
   FlattenBB Flatten;
   auto Mod = Pf.parseToIR(ParseSource::STRING, { &Flatten });
   auto MainF = Mod->front();
@@ -46,7 +46,7 @@ TEST(FlattenBB, SetParent)
     "def main() do\n"
     "  ret 4;\n"
     "end";
-  auto Pf = ParseFacade(SourcePrg);
+  ParseFacade Pf(SourcePrg);
   FlattenBB Flatten;
   auto Mod = Pf.parseToIR(ParseSource::STRING, { &Flatten });
   auto MainF = Mod->front();
@@ -60,7 +60,7 @@ TEST(FlattenBB, SetIfParent)
     "def main() do\n"
     "  if false do 3; else 4; end\n"
     "end";
-  auto Pf = ParseFacade(SourcePrg);
+  ParseFacade Pf(SourcePrg);
   FlattenBB Flatten;
   auto Mod = Pf.parseToIR(ParseSource::STRING, { &Flatten });
   auto MainF = Mod->front();
@@ -75,7 +75,7 @@ TEST(FlattenBB, SetLambdaParent)
     "def foo() do\n"
     "  Bfunc = fn x ~Int -> ret x; end\n"
     "end";
-  auto Pf = ParseFacade(SourcePrg);
+  ParseFacade Pf(SourcePrg);
   LambdaLifting LambLift;
   FlattenBB Flatten;
   auto Mod = Pf.parseToIR(ParseSource::STRING, { &LambLift, &Flatten });

@@ -5,7 +5,7 @@
 namespace rhine {
 void EXPECT_IR(std::string &SourcePrg, std::string &ExpectedPP)
 {
-  auto Pf = ParseFacade(SourcePrg);
+  ParseFacade Pf(SourcePrg);
   auto Source = Pf.parseAction(ParseSource::STRING, PostParseAction::IR);
   EXPECT_PRED_FORMAT2(::testing::IsSubstring, ExpectedPP.c_str(),
                       Source.c_str());
@@ -13,7 +13,7 @@ void EXPECT_IR(std::string &SourcePrg, std::string &ExpectedPP)
 
 void EXPECT_LL(std::string &SourcePrg, std::string &ExpectedPP)
 {
-  auto Pf = ParseFacade(SourcePrg);
+  ParseFacade Pf(SourcePrg);
   auto Source = Pf.parseAction(ParseSource::STRING, PostParseAction::LL);
   EXPECT_PRED_FORMAT2(::testing::IsSubstring, ExpectedPP.c_str(),
                       Source.c_str());
@@ -21,7 +21,7 @@ void EXPECT_LL(std::string &SourcePrg, std::string &ExpectedPP)
 
 void EXPECT_OUTPUT(std::string &SourcePrg, std::string &ExpectedOut)
 {
-  auto Pf = ParseFacade(SourcePrg);
+  ParseFacade Pf(SourcePrg);
   auto Handle = Pf.jitAction(ParseSource::STRING, PostParseAction::LL);
   testing::internal::CaptureStdout();
   Handle();
@@ -31,7 +31,7 @@ void EXPECT_OUTPUT(std::string &SourcePrg, std::string &ExpectedOut)
 
 void EXPECT_COMPILE_DEATH(std::string &SourcePrg, std::string &ExpectedErr)
 {
-  auto Pf = ParseFacade(SourcePrg);
+  ParseFacade Pf(SourcePrg);
   EXPECT_DEATH(
       Pf.parseAction(ParseSource::STRING, PostParseAction::LL), ExpectedErr);
 }
