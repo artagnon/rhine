@@ -18,7 +18,7 @@ TEST(Resolve, UnresolvedReplacement)
     "  Moo + 3;\n"
     "  Moo + 2;\n"
     "end";
-  auto Pf = ParseFacade(SourcePrg);
+  ParseFacade Pf(SourcePrg);
   Resolve ResolveL;
   auto Module = Pf.parseToIR(ParseSource::STRING, { &ResolveL });
   auto MainF = Module->front();
@@ -53,7 +53,7 @@ TEST(Resolve, ArgumentSymbolReplacement)
     "def main(var ~Int) do\n"
     "ret var;\n"
     "end";
-  auto Pf = ParseFacade(SourcePrg);
+  ParseFacade Pf(SourcePrg);
   Resolve ResolveL;
   auto Module = Pf.parseToIR(ParseSource::STRING, { &ResolveL });
   auto Expected =

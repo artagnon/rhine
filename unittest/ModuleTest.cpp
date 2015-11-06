@@ -17,7 +17,7 @@ TEST(Module, CountObjects)
     "def baz do\n"
     "  ret print;\n"
     "end";
-  auto Pf = ParseFacade(SourcePrg);
+  ParseFacade Pf(SourcePrg);
   auto Module = Pf.parseToIR(ParseSource::STRING, { });
   ASSERT_EQ(std::distance(Module->begin(), Module->end()), 3);
 }
@@ -28,7 +28,7 @@ TEST(Module, SetFunctionParent)
     "def main do\n"
     "  print 4;\n"
     "end";
-  auto Pf = ParseFacade(SourcePrg);
+  ParseFacade Pf(SourcePrg);
   auto Module = Pf.parseToIR(ParseSource::STRING, { });
   for (auto F : *Module)
     ASSERT_EQ(F->getParent(), Module);

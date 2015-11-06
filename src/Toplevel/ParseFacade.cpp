@@ -17,6 +17,15 @@
 #include <string>
 
 namespace rhine {
+ParseFacade::ParseFacade(std::string &PrgString, std::ostream &ErrStream,
+                         bool Debug)
+    : PrgString(PrgString), ErrStream(ErrStream), Debug(Debug) {}
+
+ParseFacade::~ParseFacade() {
+  for (auto *E : Engines)
+    delete E;
+}
+
 template <typename T> std::string ParseFacade::irToPP(T *Obj) {
   std::string Output;
   std::ostringstream OutputStream(Output);
@@ -66,21 +75,19 @@ std::string ParseFacade::parseAction(ParseSource SrcE,
       parseToIR(SrcE, {&LambLift, &Flatten, &ResolveL, &TyInfer, &TyCoercion});
   std::string Ret;
   auto Ctx = TransformedIR->getContext();
+  UniqueModule.reset(new llvm::Module("main", llvm::getGlobalContext()));
+  auto CurrentModule = UniqueModule.get();
   switch (ActionE) {
   case PostParseAction::IR:
     Ret = irToPP(TransformedIR);
     break;
   case PostParseAction::LL:
-    if (!ProgramModule)
-      ProgramModule = new llvm::Module("main", Ctx->LLContext);
-    TransformedIR->toLL(ProgramModule);
-    Ret = llToPP(ProgramModule);
+    TransformedIR->toLL(CurrentModule);
+    Ret = llToPP(CurrentModule);
     break;
   case PostParseAction::LLDUMP:
-    if (!ProgramModule)
-      ProgramModule = new llvm::Module("main", Ctx->LLContext);
-    TransformedIR->toLL(ProgramModule);
-    ProgramModule->dump();
+    TransformedIR->toLL(CurrentModule);
+    CurrentModule->dump();
     break;
   }
   delete TransformedIR;
@@ -92,16 +99,14 @@ MainFTy ParseFacade::jitAction(ParseSource SrcE, PostParseAction ActionE) {
   LLVMInitializeNativeTarget();
   LLVMInitializeNativeAsmPrinter();
 
-  auto UniqueModule =
-      make_unique<llvm::Module>("main", llvm::getGlobalContext());
-  ProgramModule = UniqueModule.get();
   parseAction(SrcE, ActionE);
-
   std::string ErrorStr;
   auto EE = EngineBuilder(std::move(UniqueModule))
                 .setEngineKind(llvm::EngineKind::Either)
                 .setErrorStr(&ErrorStr)
                 .create();
+  Engines.push_back(EE);
+  EE->finalizeObject();
   assert(EE && "Error creating MCJIT with EngineBuilder");
   union {
     uint64_t raw;
