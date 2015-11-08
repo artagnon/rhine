@@ -3,6 +3,7 @@
 #include "rhine/IR/UnresolvedValue.h"
 #include "rhine/IR/GlobalValue.h"
 #include "rhine/Externals.h"
+#include "rhine/Diagnostic/Diagnostic.h"
 
 namespace rhine {
 llvm::Value *UnresolvedValue::toLL(llvm::Module *M) {

@@ -11,15 +11,16 @@
 #include <map>
 
 #include "rhine/IR/Type.h"
-#include "rhine/IR/BasicBlock.h"
-#include "rhine/Diagnostic/Diagnostic.h"
 
 namespace rhine {
 class Value;
 class Externals;
+class BasicBlock;
+class DiagnosticPrinter;
 
 class Context {
 public:
+  /// Type caches
   llvm::FoldingSet<FunctionType> FTyCache;
   llvm::FoldingSet<PointerType> PTyCache;
   llvm::FoldingSet<IntegerType> ITyCache;
@@ -28,20 +29,22 @@ public:
   BoolType UniqueBoolType;
   FloatType UniqueFloatType;
   StringType UniqueStringType;
+
+  /// The LLVM Context (initialized to llvm::getGlobalContext()), Builder
+  /// (initalized to a new IRBuilder instance), DiagnosticPrinter (initialized
+  /// to a new DiagPrinter instance), and ExternalsCache (initialized to
+  /// nullptr).
   llvm::LLVMContext &LLContext;
   llvm::IRBuilder<> *Builder;
   DiagnosticPrinter *DiagPrinter;
   Externals *ExternalsCache;
-  llvm::Function *CurrentFunction;
 
-  Context(std::ostream &ErrStream = std::cerr):
-      LLContext(llvm::getGlobalContext()),
-      Builder(new llvm::IRBuilder<>(LLContext)),
-      DiagPrinter(new DiagnosticPrinter(&ErrStream)),
-      ExternalsCache(nullptr) {}
-
+  /// Creates a new Builder and DiagPrinter. There should only be one Context
+  /// per thread.
+  Context(std::ostream &ErrStream = std::cerr);
   virtual ~Context();
 
+  /// Symbol resolution map; should probably be per-Module?
   class ResolutionMap {
     typedef std::map<std::string, Value *> NameResolutionMap;
     std::map<BasicBlock *, NameResolutionMap> BlockResolutionMap;

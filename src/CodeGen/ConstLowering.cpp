@@ -2,6 +2,7 @@
 #include "rhine/IR/Constant.h"
 #include "rhine/IR/Instruction.h"
 #include "rhine/Externals.h"
+#include "rhine/Diagnostic/Diagnostic.h"
 
 namespace rhine {
 llvm::Constant *ConstantInt::toLL(llvm::Module *M) {

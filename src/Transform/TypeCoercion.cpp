@@ -3,6 +3,7 @@
 #include "rhine/IR/Constant.h"
 #include "rhine/IR/Context.h"
 #include "rhine/IR/Type.h"
+#include "rhine/Diagnostic/Diagnostic.h"
 #include "rhine/Transform/TypeCoercion.h"
 
 namespace rhine {

@@ -2,6 +2,7 @@
 #include "rhine/Parse/Parser.h"
 #include "rhine/Parse/Lexer.h"
 
+#include "rhine/Diagnostic/Diagnostic.h"
 #include "rhine/IR/UnresolvedValue.h"
 #include "rhine/IR/GlobalValue.h"
 #include "rhine/IR/Instruction.h"
