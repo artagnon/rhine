@@ -1,7 +1,15 @@
+#include "rhine/Diagnostic/Diagnostic.h"
+#include "rhine/IR/BasicBlock.h"
 #include "rhine/IR/Context.h"
 #include "rhine/Externals.h"
 
 namespace rhine {
+Context::Context(std::ostream &ErrStream):
+    LLContext(llvm::getGlobalContext()),
+    Builder(new llvm::IRBuilder<>(LLContext)),
+    DiagPrinter(new DiagnosticPrinter(&ErrStream)),
+    ExternalsCache(nullptr) {}
+
 Context::~Context() {
   delete Builder;
   delete DiagPrinter;

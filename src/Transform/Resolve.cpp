@@ -5,6 +5,7 @@
 #include "rhine/IR/Module.h"
 #include "rhine/Transform/Resolve.h"
 #include "rhine/Externals.h"
+#include "rhine/Diagnostic/Diagnostic.h"
 
 #include <list>
 

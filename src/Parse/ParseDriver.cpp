@@ -2,7 +2,9 @@
 #include <sstream>
 #include <iomanip>
 
+#include "rhine/Diagnostic/Diagnostic.h"
 #include "rhine/Parse/ParseDriver.h"
+#include "rhine/Parse/Parser.h"
 #include "rhine/Parse/Lexer.h"
 #include "rhine/IR/Context.h"
 

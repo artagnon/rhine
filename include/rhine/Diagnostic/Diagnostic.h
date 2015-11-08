@@ -5,6 +5,8 @@
 
 #include <string>
 
+#include "rhine/Parse/Parser.h"
+
 namespace rhine {
 class DiagnosticPrinter {
 public:
@@ -12,7 +14,7 @@ public:
   std::string StringStreamInput;
 
   DiagnosticPrinter(std::ostream *ErrStream);
-  void errorReport(const class rhine::Parser::Location &Loca,
+  void errorReport(const rhine::Parser::Location &Loca,
                    const std::string &Message);
 };
 }
