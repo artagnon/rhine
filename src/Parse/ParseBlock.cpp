@@ -1,5 +1,6 @@
 #include "rhine/Parse/Parser.h"
 #include "rhine/IR/BasicBlock.h"
+#include "rhine/IR/Instruction.h"
 #include "rhine/IR/Constant.h"
 #include "rhine/IR/Type.h"
 
@@ -18,7 +19,7 @@ bool Parser::matchesAnyTokenPair(std::map<int, std::string> &TokenPairs) {
 BasicBlock *Parser::parseBlock(int StartToken,
                                std::string StartTokenStr,
                                std::map<int, std::string> EndTokens) {
-  std::vector<Value *> StmList;
+  std::vector<Instruction *> StmList;
 
   if (StartToken && !getTok(StartToken)) {
     writeError("expected '" + StartTokenStr + "' to start block");
@@ -26,8 +27,12 @@ BasicBlock *Parser::parseBlock(int StartToken,
   }
 
   while (!matchesAnyTokenPair(EndTokens) && CurTok != END) {
-    if (auto Stm = parseSingleStm())
-      StmList.push_back(Stm);
+    if (auto Stm = parseSingleStm()) {
+      if (auto Inst = dyn_cast<Instruction>(Stm))
+        StmList.push_back(Inst);
+      else
+        writeError("expected instruction");
+    }
   }
 
   if (!EndTokens.count(CurTok)) {

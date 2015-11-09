@@ -3,7 +3,8 @@
 #include "rhine/IR/Module.h"
 
 namespace rhine {
-void BasicBlock::setAllInstructionParents(std::vector<Value *> List) {
+template <typename T>
+void BasicBlock::setAllInstructionParents(std::vector<T *> List) {
   for (auto V : List) {
     if (auto Inst = dyn_cast<Instruction>(V)) {
       Inst->setParent(this);
@@ -12,21 +13,21 @@ void BasicBlock::setAllInstructionParents(std::vector<Value *> List) {
   }
 }
 
-BasicBlock::BasicBlock(Type *Ty, std::string Name, std::vector<Value *> V) :
-    Value(Ty, RT_BasicBlock, Name), Parent(nullptr), ValueList(V) {
-  setAllInstructionParents(ValueList);
+BasicBlock::BasicBlock(Type *Ty, std::string N, std::vector<Instruction *> V) :
+    Value(Ty, RT_BasicBlock, N), Parent(nullptr), InstList(V) {
+  setAllInstructionParents(InstList);
 }
 
 BasicBlock::~BasicBlock() {
-  for (auto &V : ValueList) {
+  for (auto &V : InstList) {
     cast<User>(V)->dropAllReferences();
   }
-  for (auto &V : ValueList) {
+  for (auto &V : InstList) {
     delete cast<User>(V);
   }
 }
 
-BasicBlock *BasicBlock::get(std::string Name, std::vector<Value *> V,
+BasicBlock *BasicBlock::get(std::string Name, std::vector<Instruction *> V,
                             Context *K) {
   return new BasicBlock(UnType::get(K), Name, V);
 }
@@ -36,11 +37,11 @@ bool BasicBlock::classof(const Value *V) {
 }
 
 BasicBlock::value_iterator BasicBlock::begin() {
-  return ValueList.begin();
+  return InstList.begin();
 }
 
 BasicBlock::value_iterator BasicBlock::end() {
-  return ValueList.end();
+  return InstList.end();
 }
 
 BasicBlock::bb_iterator BasicBlock::pred_begin() {
@@ -90,11 +91,11 @@ void BasicBlock::removeSuccessor(BasicBlock *Succ) {
 }
 
 unsigned BasicBlock::size() {
-  return ValueList.size();
+  return InstList.size();
 }
 
-Value *BasicBlock::back() {
-  return ValueList.back();
+Instruction *BasicBlock::back() {
+  return InstList.back();
 }
 
 void BasicBlock::setParent(Function *F) {
@@ -126,7 +127,7 @@ BasicBlock *BasicBlock::getUniqueSuccessor() const {
 }
 
 void BasicBlock::print(std::ostream &Stream) const {
-  for (auto V: ValueList)
+  for (auto V: InstList)
     Stream << *V << std::endl;
 }
 }

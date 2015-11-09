@@ -6,7 +6,7 @@ using namespace rhine;
 TEST(FunctionPointer, BasicCodeGen) {
   std::string SourcePrg =
     "def callee() do\n"
-    "  3;\n"
+    "  ret 3;\n"
     "end\n"
     "def caller() do\n"
     "  ret callee;\n"

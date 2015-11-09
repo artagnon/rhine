@@ -11,7 +11,7 @@ TEST(FlattenBB, NumberOfBBs)
 {
   std::string SourcePrg =
     "def main() do\n"
-    "  if false do 3; else 4; end\n"
+    "  if false do X = 3; else Y = 4; end\n"
     "end";
   ParseFacade Pf(SourcePrg);
   FlattenBB Flatten;
@@ -25,7 +25,7 @@ TEST(FlattenBB, PredSucc)
 {
   std::string SourcePrg =
     "def main() do\n"
-    "  if false do 3; else 4; end\n"
+    "  if false do X = 3; else Y = 4; end\n"
     "end";
   ParseFacade Pf(SourcePrg);
   FlattenBB Flatten;
@@ -58,7 +58,7 @@ TEST(FlattenBB, SetIfParent)
 {
   std::string SourcePrg =
     "def main() do\n"
-    "  if false do 3; else 4; end\n"
+    "  if false do X = 3; else Y = 4; end\n"
     "end";
   ParseFacade Pf(SourcePrg);
   FlattenBB Flatten;

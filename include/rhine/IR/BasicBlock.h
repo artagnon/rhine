@@ -17,17 +17,17 @@ class BasicBlock : public Value {
   std::vector<BasicBlock *> Predecessors;
   std::vector<BasicBlock *> Successors;
 public:
-  std::vector<Value *> ValueList;
+  std::vector<Instruction *> InstList;
 
   /// Standard methods
-  BasicBlock(Type *Ty, std::string Name, std::vector<Value *> V);
+  BasicBlock(Type *Ty, std::string Name, std::vector<Instruction *> V);
   virtual ~BasicBlock();
-  static BasicBlock *get(std::string Name, std::vector<Value *> V, Context *K);
+  static BasicBlock *get(std::string Name, std::vector<Instruction *> V, Context *K);
   static bool classof(const Value *V);
 
   /// When adding instructions to the BasicBlock, it's our reposibility to make
   /// the different Parent pointers point to us
-  void setAllInstructionParents(std::vector<Value *> List);
+  template <typename T> void setAllInstructionParents(std::vector<T *> List);
 
   /// When the entry block is toLL()'ed, and a branch instruction is found, the
   /// branch instruction takes over the responsibility of lowering its case
@@ -40,7 +40,7 @@ public:
   llvm::Value *toValuesLL(llvm::Module *M);
 
   /// Iterator over all the instructions in this BB
-  typedef std::vector<Value *>::iterator value_iterator;
+  typedef std::vector<Instruction *>::iterator value_iterator;
   value_iterator begin();
   value_iterator end();
 
@@ -61,7 +61,7 @@ public:
 
   /// Proxy for std methods acting on ValueList
   unsigned size();
-  Value *back();
+  Instruction *back();
 
   template <class ForwardIterator, class T>
   void replace(ForwardIterator First, ForwardIterator Last,

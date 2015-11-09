@@ -22,8 +22,8 @@ void FlattenBB::cleaveBB(BasicBlock *Cleavee, Function *Parent) {
   auto FalseBB = BranchInst->getFalseBB();
   auto StartInst = std::next(It);
   auto NewBB = BasicBlock::get("exit",
-      std::vector<Value *>(StartInst, Cleavee->end()), K);
-  Cleavee->ValueList.erase(StartInst, Cleavee->end());
+      std::vector<Instruction *>(StartInst, Cleavee->end()), K);
+  Cleavee->InstList.erase(StartInst, Cleavee->end());
 
   // Set up predecessors and successors
   Cleavee->addSuccessors({TrueBB, FalseBB});
