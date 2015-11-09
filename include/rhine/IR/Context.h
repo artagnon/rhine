@@ -11,6 +11,7 @@
 #include <map>
 
 #include "rhine/IR/Type.h"
+#include "rhine/IR/Constant.h"
 
 namespace rhine {
 class Value;
@@ -29,6 +30,12 @@ public:
   BoolType UniqueBoolType;
   FloatType UniqueFloatType;
   StringType UniqueStringType;
+
+  /// Constant caches
+  llvm::FoldingSet<ConstantInt> CIntCache;
+  llvm::FoldingSet<ConstantBool> CBoolCache;
+  llvm::FoldingSet<ConstantFloat> CFltCache;
+  llvm::FoldingSet<Pointer> PtrCache;
 
   /// The LLVM Context (initialized to llvm::getGlobalContext()), Builder
   /// (initalized to a new IRBuilder instance), DiagnosticPrinter (initialized

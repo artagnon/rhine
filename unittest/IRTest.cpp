@@ -158,14 +158,14 @@ TEST(IR, IfBasic)
 {
   std::string SourcePrg =
     "def main do\n"
-    "  if false do 2; else 3; end\n"
+    "  if false do X = 2; else Y = 3; end\n"
     "end";
   std::string ExpectedIR =
     "def main [] ~Fn(Void -> Void) {\n"
     "if (0 ~Bool) {\n"
-    "2 ~Int\n"
+    "X = 2 ~Int\n"
     "} else {\n"
-    "3 ~Int\n"
+    "Y = 3 ~Int\n"
     "}\n"
     "}";
   EXPECT_IR(SourcePrg, ExpectedIR);
