@@ -6,7 +6,7 @@
 namespace rhine {
 llvm::Value *BasicBlock::toValuesLL(llvm::Module *M) {
   llvm::Value *LastLL;
-  for (auto Val : ValueList)
+  for (auto Val : InstList)
     LastLL = Val->toLL(M);
   return LastLL;
 }

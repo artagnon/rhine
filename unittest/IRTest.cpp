@@ -19,11 +19,11 @@ TEST(IR, AddTwoInt)
 {
   std::string SourcePrg =
     "def foo do\n"
-    "  3 + 2\n"
+    "  ret $ 3 + 2\n"
     "end";
   std::string ExpectedIR =
     "def foo [] ~Fn(Void -> Int) {\n"
-    "+ ~Fn(Int -> Int -> Int)\n"
+    "ret + ~Fn(Int -> Int -> Int)\n"
     "3 ~Int\n"
     "2 ~Int\n"
     "}";
@@ -31,21 +31,6 @@ TEST(IR, AddTwoInt)
 }
 
 TEST(IR, SubTwoInt)
-{
-  std::string SourcePrg =
-    "def foo do\n"
-    "  3 - 2\n"
-    "end";
-  std::string ExpectedIR =
-    "def foo [] ~Fn(Void -> Int) {\n"
-    "- ~Fn(Int -> Int -> Int)\n"
-    "3 ~Int\n"
-    "2 ~Int\n"
-    "}";
-  EXPECT_IR(SourcePrg, ExpectedIR);
-}
-
-TEST(IR, ReturnTypeSpecifier)
 {
   std::string SourcePrg =
     "def foo ~Int do\n"

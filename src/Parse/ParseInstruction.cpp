@@ -94,4 +94,36 @@ Instruction *Parser::parseIf() {
     FalseBlock = parseBlock(0, "", {{ENDBLOCK, "end"}});
   return IfInst::get(Conditional, TrueBlock, FalseBlock);
 }
+
+Instruction *Parser::parseRet() {
+  auto RetLoc = CurLoc;
+  if (!getTok(RET)) {
+    writeError("expected 'ret' statement");
+    return nullptr;
+  }
+  if (parseDollarOp(true)) {
+    if (auto Stm = parseSingleStm()) {
+      auto Ret = ReturnInst::get(Stm, K);
+      Ret->setSourceLocation(RetLoc);
+      return Ret;
+    }
+    writeError("expected 'ret $' to be followed by a single statement");
+  }
+  if (auto Lit = parseRtoken(true)) {
+    getSemiTerm("return statement");
+    auto Ret = ReturnInst::get(Lit, K);
+    Ret->setSourceLocation(RetLoc);
+    return Ret;
+  }
+  if (getTok('(')) {
+    if (getTok(')')) {
+      getSemiTerm("return statement");
+      auto Ret = ReturnInst::get({}, K);
+      Ret->setSourceLocation(RetLoc);
+      return Ret;
+    }
+  }
+  writeError("'ret' must be followed by an rtoken, '$', or '()'");
+  return nullptr;
+}
 }
