@@ -33,5 +33,21 @@ Context::~Context() {
   for (auto *Ty : UTyCache)
     delete Ty;
   UTyCache.clear();
+
+  /// Now getting rid of constants
+  std::vector<Value *> ToDeleteV;
+  for (auto &C : CIntCache)
+    ToDeleteV.push_back(&C);
+  for (auto &C : CBoolCache)
+    ToDeleteV.push_back(&C);
+  for (auto &C : CFltCache)
+    ToDeleteV.push_back(&C);
+  for (auto &C : PtrCache)
+    ToDeleteV.push_back(&C);
+  CIntCache.clear();
+  CBoolCache.clear();
+  CFltCache.clear();
+  PtrCache.clear();
+  ToDeleteV.clear();
 }
 }
