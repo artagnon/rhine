@@ -51,7 +51,7 @@ TEST(Resolve, ArgumentSymbolReplacement)
 {
   std::string SourcePrg =
     "def main(var ~Int) do\n"
-    "ret var;\n"
+    "  ret var\n"
     "end";
   ParseFacade Pf(SourcePrg);
   Resolve ResolveL;
@@ -95,4 +95,18 @@ TEST(Resolve, OutOfScope)
     "end";
   std::string ExpectedErr = "string stream:7:9: error: unbound symbol Moo";
   EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
+}
+
+TEST(Resolve, DISABLED_CrossBlockDisambiguation)
+{
+  std::string SourcePrg =
+    "def main do\n"
+    "  if true do\n"
+    "     Moo = 2;\n"
+    "  else\n"
+    "     Moo = 4;\n"
+    "  end\n"
+    "end";
+  std::string ExpectedOut = "";
+  EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }

@@ -1,6 +1,6 @@
 #include "rhine/Toplevel/ParseFacade.h"
 #include "rhine/Parse/ParseDriver.h"
-#include "rhine/Transform/FlattenBB.h"
+#include "rhine/Transform/Scope2Block.h"
 #include "rhine/Transform/TypeInfer.h"
 #include "rhine/Transform/LambdaLifting.h"
 #include "rhine/Transform/TypeCoercion.h"
@@ -68,7 +68,7 @@ std::string ParseFacade::parseAction(ParseSource SrcE,
                                      PostParseAction ActionE) {
   Resolve ResolveL;
   LambdaLifting LambLift;
-  FlattenBB Flatten;
+  Scope2Block Flatten;
   TypeInfer TyInfer;
   TypeCoercion TyCoercion;
   auto TransformedIR =

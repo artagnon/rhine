@@ -1,4 +1,4 @@
-#include "rhine/Transform/FlattenBB.h"
+#include "rhine/Transform/Scope2Block.h"
 #include "rhine/IR/Instruction.h"
 #include "rhine/IR/BasicBlock.h"
 #include "rhine/IR/Constant.h"
@@ -6,11 +6,11 @@
 namespace rhine {
 class Value;
 
-FlattenBB::FlattenBB() : K(nullptr) {}
+Scope2Block::Scope2Block() : K(nullptr) {}
 
-FlattenBB::~FlattenBB() {}
+Scope2Block::~Scope2Block() {}
 
-void FlattenBB::cleaveBB(BasicBlock *Cleavee, Function *Parent) {
+void Scope2Block::cleaveBB(BasicBlock *Cleavee, Function *Parent) {
   auto It = std::find_if(Cleavee->begin(), Cleavee->end(),
                          [](Value *Arg) {
                            return isa<IfInst>(Arg);
@@ -44,7 +44,7 @@ void FlattenBB::cleaveBB(BasicBlock *Cleavee, Function *Parent) {
   return cleaveBB(NewBB, Parent);
 }
 
-void FlattenBB::runOnFunction(Function *F) {
+void Scope2Block::runOnFunction(Function *F) {
   K = F->getContext();
   auto EntryBlock = F->getEntryBlock();
   EntryBlock->setParent(F);
