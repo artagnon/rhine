@@ -3,32 +3,32 @@
 
 #include "rhine/IR/Module.h"
 #include "rhine/Transform/LambdaLifting.h"
-#include "rhine/Transform/FlattenBB.h"
+#include "rhine/Transform/Scope2Block.h"
 
 using namespace rhine;
 
-TEST(FlattenBB, NumberOfBBs)
+TEST(Scope2Block, NumberOfBBs)
 {
   std::string SourcePrg =
     "def main() do\n"
     "  if false do X = 3; else Y = 4; end\n"
     "end";
   ParseFacade Pf(SourcePrg);
-  FlattenBB Flatten;
+  Scope2Block Flatten;
   auto Mod = Pf.parseToIR(ParseSource::STRING, { &Flatten });
   auto MainF = Mod->front();
   auto NumberOfBBs = std::distance(MainF->begin(), MainF->end());
   ASSERT_EQ(NumberOfBBs, 4);
 }
 
-TEST(FlattenBB, PredSucc)
+TEST(Scope2Block, PredSucc)
 {
   std::string SourcePrg =
     "def main() do\n"
     "  if false do X = 3; else Y = 4; end\n"
     "end";
   ParseFacade Pf(SourcePrg);
-  FlattenBB Flatten;
+  Scope2Block Flatten;
   auto Mod = Pf.parseToIR(ParseSource::STRING, { &Flatten });
   auto MainF = Mod->front();
   std::vector<int> NumPreds = {0, 1, 1, 2}, NumSuccs = {2, 1, 1, 0};
@@ -40,28 +40,28 @@ TEST(FlattenBB, PredSucc)
   }
 }
 
-TEST(FlattenBB, SetParent)
+TEST(Scope2Block, SetParent)
 {
   std::string SourcePrg =
     "def main() do\n"
     "  ret 4;\n"
     "end";
   ParseFacade Pf(SourcePrg);
-  FlattenBB Flatten;
+  Scope2Block Flatten;
   auto Mod = Pf.parseToIR(ParseSource::STRING, { &Flatten });
   auto MainF = Mod->front();
   auto EntryBlock = MainF->getEntryBlock();
   ASSERT_EQ(EntryBlock->getParent(), MainF);
 }
 
-TEST(FlattenBB, SetIfParent)
+TEST(Scope2Block, SetIfParent)
 {
   std::string SourcePrg =
     "def main() do\n"
     "  if false do X = 3; else Y = 4; end\n"
     "end";
   ParseFacade Pf(SourcePrg);
-  FlattenBB Flatten;
+  Scope2Block Flatten;
   auto Mod = Pf.parseToIR(ParseSource::STRING, { &Flatten });
   auto MainF = Mod->front();
   for (auto BB : *MainF) {
@@ -69,7 +69,7 @@ TEST(FlattenBB, SetIfParent)
   }
 }
 
-TEST(FlattenBB, SetLambdaParent)
+TEST(Scope2Block, SetLambdaParent)
 {
   std::string SourcePrg =
     "def foo() do\n"
@@ -77,7 +77,7 @@ TEST(FlattenBB, SetLambdaParent)
     "end";
   ParseFacade Pf(SourcePrg);
   LambdaLifting LambLift;
-  FlattenBB Flatten;
+  Scope2Block Flatten;
   auto Mod = Pf.parseToIR(ParseSource::STRING, { &LambLift, &Flatten });
   for (auto F : *Mod)
     for (auto BB : *F)
