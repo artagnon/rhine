@@ -33,9 +33,9 @@ Externals::~Externals() {
 }
 
 Externals *Externals::get(Context *K) {
-  if (!K->ExternalsCache)
-    K->ExternalsCache = new Externals(K);
-  return K->ExternalsCache;
+  if (!K->ExternalsCache.get())
+    K->ExternalsCache.reset(new Externals(K));
+  return K->ExternalsCache.get();
 }
 
 std::vector<Prototype *> Externals::getProtos() const {

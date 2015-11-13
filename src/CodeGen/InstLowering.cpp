@@ -82,10 +82,10 @@ llvm::Value *LoadInst::toLL(llvm::Module *M) {
 }
 
 llvm::Value *ReturnInst::toLL(llvm::Module *M) {
-  auto B = getContext()->Builder;
+  auto K = getContext();
   if (auto ReturnVal = getVal())
-    return B->CreateRet(ReturnVal->toLL(M));
-  return B->CreateRet(nullptr);
+    return K->Builder->CreateRet(ReturnVal->toLL(M));
+  return K->Builder->CreateRet(nullptr);
 }
 
 llvm::Value *IfInst::toLL(llvm::Module *M) {
