@@ -1,18 +1,19 @@
 #include "rhine/IR/Module.h"
+#include "rhine/IR/Context.h"
 
 namespace rhine {
-Module::Module(Context *K) : Kontext(K) {}
+Module::Module(std::unique_ptr<Context> K) : Kontext(std::move(K)) {}
 
 Module::~Module() {
   for (auto *F : ContainedFs)
     delete F;
 }
 
-Module *Module::get(Context *K) {
-  return new Module(K);
+Module *Module::get(std::unique_ptr<Context> K) {
+  return new Module(std::move(K));
 }
 
-Context *Module::getContext() { return Kontext; }
+Context *Module::getContext() { return Kontext.get(); }
 
 void Module::appendFunction(Function *F) {
   F->setParent(this);

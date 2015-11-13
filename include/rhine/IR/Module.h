@@ -15,16 +15,16 @@ namespace rhine {
 class Context;
 
 class Module {
-  Context *Kontext;
+  std::unique_ptr<Context> Kontext;
   std::vector<Function *> ContainedFs;
 public:
   /// Context is all that is required to initialize
-  Module(Context *K);
+  Module(std::unique_ptr<Context> K);
 
   /// Destructor gets rid of ContainedFs, but leaves Kontext alone
   virtual ~Module();
 
-  static Module *get(Context *K);
+  static Module *get(std::unique_ptr<Context> K);
   Context *getContext();
 
   /// Append, or insert given an iterator
