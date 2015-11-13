@@ -11,10 +11,6 @@ Context::Context(std::ostream &ErrStream):
     ExternalsCache(nullptr) {}
 
 Context::~Context() {
-  delete Builder;
-  delete DiagPrinter;
-  delete ExternalsCache;
-
   /// Cannot delete in-place, because we rely on the "next" pointer embedded in
   /// the node to get to the next element.
   std::vector<Type *> ToDelete;

@@ -42,9 +42,9 @@ public:
   /// to a new DiagPrinter instance), and ExternalsCache (initialized to
   /// nullptr).
   llvm::LLVMContext &LLContext;
-  llvm::IRBuilder<> *Builder;
-  DiagnosticPrinter *DiagPrinter;
-  Externals *ExternalsCache;
+  std::unique_ptr<llvm::IRBuilder<>> Builder;
+  std::unique_ptr<DiagnosticPrinter> DiagPrinter;
+  std::unique_ptr<Externals> ExternalsCache;
 
   /// Creates a new Builder and DiagPrinter. There should only be one Context
   /// per thread.
