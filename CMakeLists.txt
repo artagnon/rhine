@@ -1,8 +1,9 @@
-cmake_minimum_required (VERSION 2.6)
-project (Rhine)
+cmake_minimum_required(VERSION 2.6)
+project(Rhine)
 
 # set(CMAKE_CXX_COMPILER "/usr/local/bin/clang++")
 # set(CMAKE_CXX_FLAGS "-fsanitize=address")
+set(CMAKE_CXX_FLAGS "-std=c++14")
 set(LLVM_ROOT_DIR "${PROJECT_SOURCE_DIR}/llvm")
 set(CLANG_ROOT_DIR "${PROJECT_SOURCE_DIR}/clang")
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/Modules")

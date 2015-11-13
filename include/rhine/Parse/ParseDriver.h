@@ -15,9 +15,9 @@ class Lexer;
 class ParseDriver
 {
 public:
-  /// We fill in the ParseTree and hand it back; Context is ofcourse inherited,
-  /// and Debug is useful for getting trace outputs
-  ParseDriver(Module *Tree, Context *SharedCtx, bool Debug = false);
+  /// We fill in the parsetree and hand it back; Tree is initialized with a
+  /// Context that we borrow. Debug is useful for getting trace outputs
+  ParseDriver(Module *Tree, bool Debug = false);
 
   /// The main driver that is called by parseString and parseFile; sets things
   /// up (instatiates the lexer), and calls the parser

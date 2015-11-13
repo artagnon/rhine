@@ -26,8 +26,8 @@ enum class PostParseAction {
 };
 
 class ParseFacade {
-  std::vector<llvm::ExecutionEngine *> Engines;
   std::unique_ptr<llvm::Module> UniqueModule;
+  std::unique_ptr<llvm::ExecutionEngine> EE;
   std::string &PrgString;
   std::ostream &ErrStream;
   bool Debug;

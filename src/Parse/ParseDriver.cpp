@@ -6,13 +6,14 @@
 #include "rhine/Parse/ParseDriver.h"
 #include "rhine/Parse/Parser.h"
 #include "rhine/Parse/Lexer.h"
+#include "rhine/IR/Module.h"
 #include "rhine/IR/Context.h"
 
 namespace rhine {
 class Module;
 
-ParseDriver::ParseDriver(Module *Tree, Context *SharedCtx, bool Debug) :
-    TraceScanning(Debug), Root(Tree), Ctx(SharedCtx)
+ParseDriver::ParseDriver(Module *Tree, bool Debug) :
+    TraceScanning(Debug), Root(Tree), Ctx(Tree->getContext())
 {}
 
 bool ParseDriver::parseStream(std::istream &In,

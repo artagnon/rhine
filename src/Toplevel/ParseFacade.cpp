@@ -21,10 +21,7 @@ ParseFacade::ParseFacade(std::string &PrgString, std::ostream &ErrStream,
                          bool Debug)
     : PrgString(PrgString), ErrStream(ErrStream), Debug(Debug) {}
 
-ParseFacade::~ParseFacade() {
-  for (auto *E : Engines)
-    delete E;
-}
+ParseFacade::~ParseFacade() {}
 
 template <typename T> std::string ParseFacade::irToPP(T *Obj) {
   std::string Output;
@@ -42,9 +39,9 @@ template <typename T> std::string ParseFacade::llToPP(T *Obj) {
 
 Module *ParseFacade::parseToIR(ParseSource SrcE,
                                std::vector<ModulePass *> TransformChain) {
-  auto Ctx = new rhine::Context(ErrStream);
-  auto Root = Module::get(Ctx);
-  auto Driver = rhine::ParseDriver(Root, Ctx, Debug);
+  auto Ctx = make_unique<rhine::Context>(ErrStream);
+  auto Root = Module::get(std::move(Ctx));
+  auto Driver = rhine::ParseDriver(Root, Debug);
   switch (SrcE) {
   case ParseSource::STRING:
     if (!Driver.parseString(PrgString)) {
@@ -71,27 +68,23 @@ std::string ParseFacade::parseAction(ParseSource SrcE,
   Scope2Block Flatten;
   TypeInfer TyInfer;
   TypeCoercion TyCoercion;
-  auto TransformedIR =
-      parseToIR(SrcE, {&LambLift, &Flatten, &ResolveL, &TyInfer, &TyCoercion});
+  auto TransformedIR = std::unique_ptr<Module>(
+      parseToIR(SrcE, {&LambLift, &Flatten, &ResolveL, &TyInfer, &TyCoercion}));
   std::string Ret;
-  auto Ctx = TransformedIR->getContext();
   UniqueModule.reset(new llvm::Module("main", llvm::getGlobalContext()));
-  auto CurrentModule = UniqueModule.get();
   switch (ActionE) {
   case PostParseAction::IR:
-    Ret = irToPP(TransformedIR);
+    Ret = irToPP(TransformedIR.get());
     break;
   case PostParseAction::LL:
-    TransformedIR->toLL(CurrentModule);
-    Ret = llToPP(CurrentModule);
+    TransformedIR->toLL(UniqueModule.get());
+    Ret = llToPP(UniqueModule.get());
     break;
   case PostParseAction::LLDUMP:
-    TransformedIR->toLL(CurrentModule);
-    CurrentModule->dump();
+    TransformedIR->toLL(UniqueModule.get());
+    UniqueModule->dump();
     break;
   }
-  delete TransformedIR;
-  delete Ctx;
   return Ret;
 }
 
@@ -101,13 +94,10 @@ MainFTy ParseFacade::jitAction(ParseSource SrcE, PostParseAction ActionE) {
 
   parseAction(SrcE, ActionE);
   std::string ErrorStr;
-  auto EE = EngineBuilder(std::move(UniqueModule))
-                .setEngineKind(llvm::EngineKind::Either)
-                .setErrorStr(&ErrorStr)
-                .create();
-  Engines.push_back(EE);
-  EE->finalizeObject();
-  assert(EE && "Error creating MCJIT with EngineBuilder");
+  EE.reset(EngineBuilder(std::move(UniqueModule))
+               .setEngineKind(llvm::EngineKind::Either)
+               .setErrorStr(&ErrorStr)
+               .create());
   union {
     uint64_t raw;
     MainFTy usable;
