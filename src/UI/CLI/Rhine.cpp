@@ -41,25 +41,22 @@ int main(int argc, char *argv[]) {
     return 0;
   }
 
+  std::string InFileOrStream;
   if (Options[STDIN]) {
-    std::string Input;
     for (std::string Line; std::getline(std::cin, Line);)
-      Input += Line;
-    std::string InStream = Parse.nonOption(0);
-    ParseFacade Pf(InStream, std::cerr, Options[DEBUG]);
-    auto FHandle = Pf.jitAction(ParseSource::STRING, PostParseAction::LLDUMP);
-    FHandle();
-    return 0;
-  }
+      InFileOrStream += Line;
+  } else
+    InFileOrStream = Parse.nonOption(0);
 
   if (Parse.nonOptionsCount() != 1) {
     option::printUsage(std::cout, Usage);
     return 128;
   }
 
-  std::string InFile = Parse.nonOption(0);
-  ParseFacade Pf(InFile, std::cerr, Options[DEBUG]);
-  auto FHandle = Pf.jitAction(ParseSource::FILE, PostParseAction::LLDUMP);
+  ParseFacade Pf(InFileOrStream, std::cerr, Options[DEBUG]);
+  auto FHandle =
+      Pf.jitAction(Options[STDIN] ? ParseSource::STRING : ParseSource::FILE,
+                   PostParseAction::LLDUMP);
   FHandle();
   return 0;
 }
