@@ -4,14 +4,14 @@
 using namespace rhine;
 
 TEST(FunctionPointer, BasicCodeGen) {
-  std::string SourcePrg =
+  auto SourcePrg =
     "def callee() do\n"
     "  ret 3;\n"
     "end\n"
     "def caller() do\n"
     "  ret callee;\n"
     "end";
-  std::string ExpectedPP =
+  auto ExpectedPP =
     "define i32 ()* @caller() gc \"rhgc\" {\n"
     "entry:\n"
     "  ret i32 ()* @callee\n"
@@ -20,47 +20,47 @@ TEST(FunctionPointer, BasicCodeGen) {
 }
 
 TEST(FunctionPointer, BasicExecution) {
-  std::string SourcePrg =
+  auto SourcePrg =
     "def callee() do\n"
     "  ret 3;\n"
     "end\n"
     "def main() do\n"
     "  ret callee;\n"
     "end";
-  std::string ExpectedOut = "";
+  auto ExpectedOut = "";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
 
 TEST(FunctionPointer, Externals) {
-  std::string SourcePrg =
+  auto SourcePrg =
     "def main() do\n"
     "  ret malloc;\n"
     "end";
-  std::string ExpectedOut = "";
+  auto ExpectedOut = "";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
 
 TEST(FunctionPointer, PassPrint)
 {
-  std::string SourcePrg =
+  auto SourcePrg =
     "def bar(printfn ~Function(String -> & -> Void)) do\n"
     "  printfn '12';\n"
     "end\n"
     "def main() do\n"
     "  bar print;\n"
     "end";
-  std::string ExpectedPP =
+  auto ExpectedPP =
     "define void @bar(void (i8*, ...)*) gc \"rhgc\" {\n"
     "entry:\n"
     "  call void (i8*, ...) %0(i8* getelementptr";
   EXPECT_LL(SourcePrg, ExpectedPP);
-  std::string ExpectedOut = "12";
+  auto ExpectedOut = "12";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
 
 TEST(FunctionPointer, PassCustomFunction)
 {
-  std::string SourcePrg =
+  auto SourcePrg =
     "def bar(addfn ~Function(Int -> Int -> Int)) do\n"
     "  print $ addfn 2 4;\n"
     "end\n"
@@ -70,13 +70,13 @@ TEST(FunctionPointer, PassCustomFunction)
     "def main() do\n"
     "  bar addCandidate;"
     "end";
-  std::string ExpectedOut = "6";
+  auto ExpectedOut = "6";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
 
 TEST(FunctionPointer, CondAssign)
 {
-  std::string SourcePrg =
+  auto SourcePrg =
     "def bar(arithFn ~Function(Int -> Int -> Int)) do\n"
     "  print $ arithFn 2 4;\n"
     "end\n"
@@ -89,6 +89,6 @@ TEST(FunctionPointer, CondAssign)
     "def main() do\n"
     "  if false do bar addCandidate; else bar subCandidate; end\n"
     "end";
-  std::string ExpectedOut = "-2";
+  auto ExpectedOut = "-2";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }

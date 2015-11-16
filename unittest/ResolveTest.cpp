@@ -13,7 +13,7 @@ using namespace rhine;
 
 TEST(Resolve, UnresolvedReplacement)
 {
-  std::string SourcePrg =
+  auto SourcePrg =
     "def main do\n"
     "  Moo = 3;\n"
     "  Moo + 3;\n"
@@ -50,7 +50,7 @@ TEST(Resolve, UnresolvedReplacement)
 
 TEST(Resolve, ArgumentSymbolReplacement)
 {
-  std::string SourcePrg =
+  auto SourcePrg =
     "def main(var ~Int) do\n"
     "  ret var\n"
     "end";
@@ -66,7 +66,7 @@ TEST(Resolve, ArgumentSymbolReplacement)
 
 TEST(Resolve, CrossFunctionNameDisambiguation)
 {
-  std::string SourcePrg =
+  auto SourcePrg =
     "def bar(arithFn ~Function(Int -> Int -> Int)) do\n"
     "  print $ arithFn 2 4;\n"
     "end\n"
@@ -79,13 +79,13 @@ TEST(Resolve, CrossFunctionNameDisambiguation)
     "def main() do\n"
     "  if false do bar addCandidate; else bar subCandidate; end\n"
     "end";
-  std::string ExpectedOut = "-2";
+  auto ExpectedOut = "-2";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
 
 TEST(Resolve, OutOfScope)
 {
-  std::string SourcePrg =
+  auto SourcePrg =
     "def main do\n"
     "  if true do\n"
     "     Moo = 2;\n"
@@ -94,13 +94,13 @@ TEST(Resolve, OutOfScope)
     "  end\n"
     "  print Moo;\n"
     "end";
-  std::string ExpectedErr = "string stream:7:9: error: unbound symbol Moo";
+  auto ExpectedErr = "string stream:7:9: error: unbound symbol Moo";
   EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
 }
 
 TEST(Resolve, DISABLED_CrossBlockDisambiguation)
 {
-  std::string SourcePrg =
+  auto SourcePrg =
     "def main do\n"
     "  if true do\n"
     "     Moo = 2;\n"
@@ -108,6 +108,6 @@ TEST(Resolve, DISABLED_CrossBlockDisambiguation)
     "     Moo = 4;\n"
     "  end\n"
     "end";
-  std::string ExpectedOut = "";
+  auto ExpectedOut = "";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }

@@ -5,11 +5,11 @@ using namespace rhine;
 
 TEST(Lambda, BasicCodeGen)
 {
-  std::string SourcePrg =
+  auto  SourcePrg =
     "def foo do\n"
     "  Bfunc = fn x ~Int -> ret x; end;\n"
     "end";
-  std::string ExpectedPP =
+  auto  ExpectedPP =
     "define i32 @lambda(i32) gc \"rhgc\" {\n"
     "entry:\n"
     "  ret i32 %0\n"
@@ -26,11 +26,11 @@ TEST(Lambda, BasicCodeGen)
 
 TEST(Lambda, BasicExecution)
 {
-  std::string SourcePrg =
+  auto  SourcePrg =
     "def main do\n"
     "  Bfunc = fn x ~Int -> ret x; end;\n"
     "  print $ Bfunc 3;\n"
     "end";
-  std::string ExpectedOut = "3";
+  auto  ExpectedOut = "3";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }

@@ -4,11 +4,11 @@
 using namespace rhine;
 
 TEST(TyInfer, CallInst) {
-  std::string SourcePrg =
+  auto SourcePrg =
     "def mallocCall do\n"
     "  ret $ malloc 8;\n"
     "end";
-  std::string ExpectedPP =
+  auto ExpectedPP =
     "define i8* @mallocCall() gc \"rhgc\" {\n"
     "entry:\n"
     "  %malloc = call i8* @std_String_malloc__Int(i64 8)\n"
@@ -19,11 +19,11 @@ TEST(TyInfer, CallInst) {
 
 TEST(TyInfer, PropagationFromArgument)
 {
-  std::string SourcePrg =
+  auto SourcePrg =
     "def id(var ~Int) do\n"
     "  ret var;\n"
     "end";
-  std::string ExpectedLL =
+  auto ExpectedLL =
     "define i32 @id(i32) gc \"rhgc\" {\n"
     "entry:\n"
     "  ret i32 %0\n"

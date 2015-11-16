@@ -8,7 +8,7 @@ using namespace rhine;
 
 TEST(Module, CountObjects)
 {
-  std::string SourcePrg =
+  auto  SourcePrg =
     "def main do\n"
     "  print 4;\n"
     "end\n"
@@ -25,7 +25,7 @@ TEST(Module, CountObjects)
 
 TEST(Module, SetFunctionParent)
 {
-  std::string SourcePrg =
+  auto  SourcePrg =
     "def main do\n"
     "  print 4;\n"
     "end";

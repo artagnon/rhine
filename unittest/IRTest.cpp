@@ -4,11 +4,11 @@
 using namespace rhine;
 
 TEST(IR, ConstantInt) {
-  std::string SourcePrg =
+  auto SourcePrg =
     "def foo do\n"
     "  ret 3\n"
     "end";
-  std::string ExpectedIR =
+  auto ExpectedIR =
     "def foo [] ~Fn(Void -> Int) {\n"
     "ret 3 ~Int\n"
     "}";
@@ -17,11 +17,11 @@ TEST(IR, ConstantInt) {
 
 TEST(IR, AddTwoInt)
 {
-  std::string SourcePrg =
+  auto SourcePrg =
     "def foo do\n"
     "  ret $ 3 + 2\n"
     "end";
-  std::string ExpectedIR =
+  auto ExpectedIR =
     "def foo [] ~Fn(Void -> Int) {\n"
     "ret + ~Fn(Int -> Int -> Int)\n"
     "3 ~Int\n"
@@ -32,11 +32,11 @@ TEST(IR, AddTwoInt)
 
 TEST(IR, SubTwoInt)
 {
-  std::string SourcePrg =
+  auto SourcePrg =
     "def foo ~Int do\n"
     "  ret $ 3 - 2\n"
     "end";
-  std::string ExpectedIR =
+  auto ExpectedIR =
     "def foo [] ~Fn(Void -> Int) {\n"
     "ret - ~Fn(Int -> Int -> Int)\n"
     "3 ~Int\n"
@@ -47,11 +47,11 @@ TEST(IR, SubTwoInt)
 
 TEST(IR, ConstantString)
 {
-  std::string SourcePrg =
+  auto SourcePrg =
     "def foo do\n"
     "  ret 'moo!'\n"
     "end";
-  std::string ExpectedIR =
+  auto ExpectedIR =
     "def foo [] ~Fn(Void -> String) {\n"
     "ret 'moo!' ~String\n"
     "}";
@@ -60,11 +60,11 @@ TEST(IR, ConstantString)
 
 TEST(IR, TypePropagation)
 {
-  std::string SourcePrg =
+  auto SourcePrg =
     "def id(var ~Int) do\n"
     "  ret var\n"
     "end";
-  std::string ExpectedIR =
+  auto ExpectedIR =
     "def id [var ~Int] ~Fn(Int -> Int) {\n"
     "ret var ~Int\n"
     "}";
@@ -72,11 +72,11 @@ TEST(IR, TypePropagation)
 }
 
 TEST(IR, MallocInst) {
-  std::string SourcePrg =
+  auto SourcePrg =
     "def bsym do\n"
     "  sym = 3;"
     "end";
-  std::string ExpectedIR =
+  auto ExpectedIR =
     "def bsym [] ~Fn(Void -> Void) {\n"
     "sym = 3 ~Int\n"
     "}";
@@ -84,12 +84,12 @@ TEST(IR, MallocInst) {
 }
 
 TEST(IR, BindPropagation) {
-  std::string SourcePrg =
+  auto SourcePrg =
     "def bsym do\n"
     "  sym = 3\n"
     "  ret sym\n"
     "end";
-  std::string ExpectedIR =
+  auto ExpectedIR =
     "def bsym [] ~Fn(Void -> Int) {\n"
     "sym = 3 ~Int\n"
     "ret sym ~Int\n"
@@ -98,12 +98,12 @@ TEST(IR, BindPropagation) {
 }
 
 TEST(IR, Comment) {
-  std::string SourcePrg =
+  auto SourcePrg =
     "def foo do\n"
     "  // Strip this out\n"
     "  ret 3\n"
     "end";
-  std::string ExpectedIR =
+  auto ExpectedIR =
     "def foo [] ~Fn(Void -> Int) {\n"
     "ret 3 ~Int\n"
     "}";
@@ -112,11 +112,11 @@ TEST(IR, Comment) {
 
 TEST(IR, TwoArguments)
 {
-  std::string SourcePrg =
+  auto SourcePrg =
     "def foo(a ~Int b ~Int) do\n"
     "  ret $ a + b\n"
     "end";
-  std::string ExpectedIR =
+  auto ExpectedIR =
     "foo [a ~Int b ~Int] ~Fn(Int -> Int -> Int) {\n"
     "ret + ~Fn(Int -> Int -> Int)\n"
     "a ~Int\n"
@@ -127,11 +127,11 @@ TEST(IR, TwoArguments)
 
 TEST(IR, TypePropagationCallInst)
 {
-  std::string SourcePrg =
+  auto SourcePrg =
     "def id(var ~String) do\n"
     "  println var\n"
     "end";
-  std::string ExpectedIR =
+  auto ExpectedIR =
     "def id [var ~String] ~Fn(String -> Void) {\n"
     "println ~Fn(String -> & -> Void)*\n"
     "var ~String\n"
@@ -141,11 +141,11 @@ TEST(IR, TypePropagationCallInst)
 
 TEST(IR, IfBasic)
 {
-  std::string SourcePrg =
+  auto SourcePrg =
     "def main do\n"
     "  if false do X = 2; else Y = 3; end\n"
     "end";
-  std::string ExpectedIR =
+  auto ExpectedIR =
     "def main [] ~Fn(Void -> Void) {\n"
     "if (0 ~Bool) {\n"
     "X = 2 ~Int\n"

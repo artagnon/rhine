@@ -4,43 +4,43 @@
 using namespace rhine;
 
 TEST(TyCoerce, ConstantIntToString) {
-  std::string SourcePrg =
+  auto SourcePrg =
     "def main do\n"
     "  print 62;\n"
     "end";
-  std::string ExpectedOut = "62";
+  auto ExpectedOut = "62";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
 
 TEST(TyCoerce, StringTyToString) {
-  std::string SourcePrg =
+  auto SourcePrg =
     "def boom(var ~String) do\n"
     "  print var;\n"
     "end\n"
     "def main do\n"
     "  boom '12';"
     "end";
-  std::string ExpectedOut = "12";
+  auto ExpectedOut = "12";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
 
 TEST(TyCoerce, IntTyToString) {
-  std::string SourcePrg =
+  auto SourcePrg =
     "def boom(var ~Int) do\n"
     "  print var;\n"
     "end\n"
     "def main do\n"
     "  boom 3;\n"
     "end";
-  std::string ExpectedOut = "3";
+  auto ExpectedOut = "3";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
 
 TEST(TyCoerce, InsideIf) {
-  std::string SourcePrg =
+  auto SourcePrg =
     "def main do\n"
     "  if false do print 2; else print 3; end\n"
     "end";
-  std::string ExpectedOut = "3";
+  auto ExpectedOut = "3";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
