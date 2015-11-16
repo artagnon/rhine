@@ -5,18 +5,18 @@ using namespace rhine;
 
 TEST(If, DanglingIf)
 {
-  std::string SourcePrg =
+  auto SourcePrg =
   CAT_RH(
     def foo do
       if false);
-  std::string ExpectedErr =
+  auto ExpectedErr =
     "string stream:1:20: error: expected 'do' to start block";
   EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
 }
 
 TEST(If, SimpleIf)
 {
-  std::string SourcePrg =
+  auto SourcePrg =
   CAT_RH(
     def foo do
       if false do
@@ -30,7 +30,7 @@ TEST(If, SimpleIf)
 
 TEST(If, IfWithoutElseClause)
 {
-  std::string SourcePrg =
+  auto SourcePrg =
   CAT_RH(
     def foo do
       if false do
@@ -42,7 +42,7 @@ TEST(If, IfWithoutElseClause)
 
 TEST(If, DISABLED_AssignmentIf)
 {
-  std::string SourcePrg =
+  auto SourcePrg =
   CAT_RH(
     def foo do
       X =
@@ -57,7 +57,7 @@ TEST(If, DISABLED_AssignmentIf)
 
 TEST(If, BasicCodeGen)
 {
-  std::string SourcePrg =
+  auto SourcePrg =
     "def main do\n"
     "  if false do\n"
     "    X = 2\n"
@@ -65,7 +65,7 @@ TEST(If, BasicCodeGen)
     "    Y = 3\n"
     "  end\n"
     "end";
-  std::string ExpectedLL =
+  auto ExpectedLL =
     "define void @main() gc \"rhgc\" {\n"
     "entry:\n"
     "  br i1 false, label %true, label %false\n\n"
@@ -87,7 +87,7 @@ TEST(If, BasicCodeGen)
 
 TEST(If, SideEffectual)
 {
-  std::string SourcePrg =
+  auto SourcePrg =
     CAT_RH(
       def main do
         if false do
@@ -95,13 +95,13 @@ TEST(If, SideEffectual)
         else print '3';
       end
     end);
-  std::string ExpectedOut = "3";
+  auto ExpectedOut = "3";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
 
 TEST(If, DISABLED_PhiAssignment)
 {
-  std::string SourcePrg =
+  auto SourcePrg =
     CAT_RH(
       def main do
         x =
@@ -112,13 +112,13 @@ TEST(If, DISABLED_PhiAssignment)
         end
       print x;
     end);
-  std::string ExpectedOut = "3";
+  auto ExpectedOut = "3";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
 
 TEST(If, LifeAfterPhi)
 {
-  std::string SourcePrg =
+  auto SourcePrg =
     "def main do\n"
     "  if true do\n"
     "     Moo = 2;\n"
@@ -127,6 +127,6 @@ TEST(If, LifeAfterPhi)
     "  end\n"
     "  print 2;\n"
     "end";
-  std::string ExpectedOut = "2";
+  auto ExpectedOut = "2";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }

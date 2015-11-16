@@ -28,7 +28,7 @@ enum class PostParseAction {
 class ParseFacade {
   std::unique_ptr<llvm::Module> UniqueModule;
   std::unique_ptr<llvm::ExecutionEngine> EE;
-  std::string &PrgString;
+  std::string PrgString;
   std::ostream &ErrStream;
   bool Debug;
 
@@ -36,7 +36,10 @@ public:
   /// ParseFacade requires the program string (or filename, indicated by
   /// ParseSource in different functions), an optional error stream, a debugging
   /// flag can also be set.
-  ParseFacade(std::string &PrgString, std::ostream &ErrStream = std::cerr,
+  ParseFacade(std::string PrgString, std::ostream &ErrStream = std::cerr,
+              bool Debug = false);
+
+  ParseFacade(const char *PrgString, std::ostream &ErrStream = std::cerr,
               bool Debug = false);
 
   /// Destroys Engines and Modules.

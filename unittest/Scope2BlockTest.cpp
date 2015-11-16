@@ -10,7 +10,7 @@ using namespace rhine;
 
 TEST(Scope2Block, NumberOfBBs)
 {
-  std::string SourcePrg =
+  auto SourcePrg =
     "def main() do\n"
     "  if false do X = 3; else Y = 4; end\n"
     "end";
@@ -24,7 +24,7 @@ TEST(Scope2Block, NumberOfBBs)
 
 TEST(Scope2Block, PredSucc)
 {
-  std::string SourcePrg =
+  auto SourcePrg =
     "def main() do\n"
     "  if false do X = 3; else Y = 4; end\n"
     "end";
@@ -43,7 +43,7 @@ TEST(Scope2Block, PredSucc)
 
 TEST(Scope2Block, SetParent)
 {
-  std::string SourcePrg =
+  auto SourcePrg =
     "def main() do\n"
     "  ret 4;\n"
     "end";
@@ -57,7 +57,7 @@ TEST(Scope2Block, SetParent)
 
 TEST(Scope2Block, SetIfParent)
 {
-  std::string SourcePrg =
+  auto SourcePrg =
     "def main() do\n"
     "  if false do X = 3; else Y = 4; end\n"
     "end";
@@ -72,7 +72,7 @@ TEST(Scope2Block, SetIfParent)
 
 TEST(Scope2Block, SetLambdaParent)
 {
-  std::string SourcePrg =
+  auto SourcePrg =
     "def foo() do\n"
     "  Bfunc = fn x ~Int -> ret x; end\n"
     "end";

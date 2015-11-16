@@ -17,9 +17,13 @@
 #include <string>
 
 namespace rhine {
-ParseFacade::ParseFacade(std::string &PrgString, std::ostream &ErrStream,
+ParseFacade::ParseFacade(std::string PrgString, std::ostream &ErrStream,
                          bool Debug)
     : PrgString(PrgString), ErrStream(ErrStream), Debug(Debug) {}
+
+  ParseFacade::ParseFacade(const char *PrgString, std::ostream &ErrStream,
+                           bool Debug)
+      : PrgString(std::string(PrgString)), ErrStream(ErrStream), Debug(Debug) {}
 
 ParseFacade::~ParseFacade() {}
 

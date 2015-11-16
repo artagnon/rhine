@@ -9,7 +9,7 @@ using namespace rhine;
 
 TEST(BasicBlock, SetInstructionParent)
 {
-  std::string SourcePrg =
+  auto SourcePrg =
     "def main do\n"
     "  2 + 3;\n"
     "  print 4;\n"
@@ -23,7 +23,7 @@ TEST(BasicBlock, SetInstructionParent)
 
 TEST(BasicBlock, SetNestedInstructionParent)
 {
-  std::string SourcePrg =
+  auto SourcePrg =
     "def main do\n"
     "  print $ 2 + 4;\n"
     "end";

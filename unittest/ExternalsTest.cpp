@@ -4,24 +4,24 @@
 using namespace rhine;
 
 TEST(Externals, Print) {
-  std::string SourcePrg =
+  auto SourcePrg =
     "def main() do\n"
     "  print '43';\n"
     "end";
-  std::string ExpectedPP =
+  auto ExpectedPP =
     "call void (i8*, ...) @std_Void_print__String";
   EXPECT_LL(SourcePrg, ExpectedPP);
-  std::string ExpectedOut = "43";
+  auto ExpectedOut = "43";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
 
 TEST(Externals, ExternalsCaching) {
-  std::string SourcePrg =
+  auto SourcePrg =
     "def compside() do\n"
     "  print 'foom';\n"
     "  print 'baz';\n"
     "end";
-  std::string ExpectedPP =
+  auto ExpectedPP =
     "  call void (i8*, ...) @std_Void_print__String"
     "(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @0, i32 0, i32 0))\n"
     "  call void (i8*, ...) @std_Void_print__String"
@@ -30,54 +30,54 @@ TEST(Externals, ExternalsCaching) {
 }
 
 TEST(Externals, Malloc) {
-  std::string SourcePrg =
+  auto SourcePrg =
     "def main() do\n"
     "  malloc 8;\n"
     "  print '3';\n"
     "end";
-  std::string ExpectedPP =
+  auto ExpectedPP =
     "call i8* @std_String_malloc__Int(i64 8)";
   EXPECT_LL(SourcePrg, ExpectedPP);
-  std::string ExpectedOut = "3";
+  auto ExpectedOut = "3";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
 
 TEST(Externals, PrintPercentChars) {
-  std::string SourcePrg =
+  auto SourcePrg =
     "def main() do\n"
     "  print '%43';\n"
     "end";
-  std::string ExpectedOut = "%43";
+  auto ExpectedOut = "%43";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
 
 TEST(Externals, ToString)
 {
-  std::string SourcePrg =
+  auto SourcePrg =
     "def main() do\n"
     "  toString 2;"
     "end";
-  std::string ExpectedPP =
+  auto ExpectedPP =
     "%toString = call i8* @std_String_toString__Int(i32 2)";
   EXPECT_LL(SourcePrg, ExpectedPP);
 }
 
 TEST(Externals, ToStringExecution)
 {
-  std::string SourcePrg =
+  auto SourcePrg =
     "def main() do\n"
     "  print $ toString 2;"
     "end";
-  std::string ExpectedOut = "2";
+  auto ExpectedOut = "2";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
 
 TEST(Externals, FunctionPointer) {
-  std::string SourcePrg =
+  auto SourcePrg =
     "def mallocRet() do\n"
     "  ret malloc;\n"
     "end";
-  std::string ExpectedPP =
+  auto ExpectedPP =
     "define i8* (i64)* @mallocRet() gc \"rhgc\" {\n"
     "entry:\n"
     "  ret i8* (i64)* @std_String_malloc__Int\n"
