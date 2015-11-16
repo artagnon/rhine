@@ -3,6 +3,7 @@
 
 #include "rhine/IR/Module.h"
 #include "rhine/IR/Instruction.h"
+#include "rhine/Toplevel/ParseFacade.h"
 
 using namespace rhine;
 

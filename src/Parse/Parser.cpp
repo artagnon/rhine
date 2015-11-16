@@ -102,6 +102,11 @@ Value *Parser::parseAssignable(bool Optional) {
     writeError("unable to parse lambda body");
     return nullptr;
   }
+  auto IfLoc = CurLoc;
+  if (auto Expr = parseIf()) {
+    Expr->setSourceLocation(IfLoc);
+    return Expr;
+  }
   writeError("expected assignable expression", Optional);
   return nullptr;
 }
