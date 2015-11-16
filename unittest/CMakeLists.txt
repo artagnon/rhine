@@ -25,4 +25,5 @@ set_target_properties(UnitTest PROPERTIES
   LINKER_LANGUAGE CXX
   COMPILE_FLAGS "${LLVM_CXXFLAGS}")
 target_link_libraries(UnitTest
-  Util)
+  gtest_main
+  Toplevel)

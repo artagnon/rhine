@@ -3,6 +3,58 @@
 
 using namespace rhine;
 
+TEST(If, DanglingIf)
+{
+  std::string SourcePrg =
+  CAT_RH(
+    def foo do
+      if false);
+  std::string ExpectedErr =
+    "string stream:1:20: error: expected 'do' to start block";
+  EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
+}
+
+TEST(If, SimpleIf)
+{
+  std::string SourcePrg =
+  CAT_RH(
+    def foo do
+      if false do
+        print '2';
+      else
+        print '3';
+      end
+    end);
+  EXPECT_SUCCESSFUL_PARSE(SourcePrg);
+}
+
+TEST(If, IfWithoutElseClause)
+{
+  std::string SourcePrg =
+  CAT_RH(
+    def foo do
+      if false do
+        print '2';
+      end
+    end);
+  EXPECT_SUCCESSFUL_PARSE(SourcePrg);
+}
+
+TEST(If, DISABLED_AssignmentIf)
+{
+  std::string SourcePrg =
+  CAT_RH(
+    def foo do
+      X =
+      if false do
+        2;
+      else
+        3;
+      end
+    end);
+  EXPECT_SUCCESSFUL_PARSE(SourcePrg);
+}
+
 TEST(If, BasicCodeGen)
 {
   std::string SourcePrg =
