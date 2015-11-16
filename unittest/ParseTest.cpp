@@ -64,8 +64,7 @@ TEST(Parse, FunctionTypeMissingCloseParen)
 TEST(Parse, OnelinerRet)
 {
   std::string SourcePrg = "def foo() do ret 3 end";
-  std::string ExpectedIR = "";
-  EXPECT_IR(SourcePrg, ExpectedIR);
+  EXPECT_SUCCESSFUL_PARSE(SourcePrg);
 }
 
 TEST(Parse, MultilineDoBlock)
@@ -74,8 +73,7 @@ TEST(Parse, MultilineDoBlock)
     "def foo() do\n"
     "  ret 3\n"
     "end";
-  std::string ExpectedIR = "";
-  EXPECT_IR(SourcePrg, ExpectedIR);
+  EXPECT_SUCCESSFUL_PARSE(SourcePrg);
 }
 
 TEST(Parse, ExtraNewlines)
@@ -84,8 +82,7 @@ TEST(Parse, ExtraNewlines)
     "def foo() do\n\n\n\n"
     "  ret 3\n\n"
     "end\n\n";
-  std::string ExpectedIR = "";
-  EXPECT_IR(SourcePrg, ExpectedIR);
+  EXPECT_SUCCESSFUL_PARSE(SourcePrg);
 }
 
 TEST(Parse, AssignmentArithOp)
@@ -95,8 +92,7 @@ TEST(Parse, AssignmentArithOp)
     "  Foo = 2 + 3\n"
     "  Bar = 5 - 19\n"
     "end";
-  std::string ExpectedIR = "";
-  EXPECT_IR(SourcePrg, ExpectedIR);
+  EXPECT_SUCCESSFUL_PARSE(SourcePrg);
 }
 
 TEST(Parse, MixedSemicolonNewline)
@@ -105,8 +101,7 @@ TEST(Parse, MixedSemicolonNewline)
     "def foo() do\n"
     "  Foo = 2; ret 3\n"
     "end";
-  std::string ExpectedIR = "";
-  EXPECT_IR(SourcePrg, ExpectedIR);
+  EXPECT_SUCCESSFUL_PARSE(SourcePrg);
 }
 
 TEST(Parse, MissingStatementSeparator)
@@ -118,4 +113,56 @@ TEST(Parse, MissingStatementSeparator)
   std::string ExpectedErr =
     "string stream:2:11: error: expecting ';' or newline to terminate bind";
   EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
+}
+
+TEST(Parse, DanglingIf)
+{
+  std::string SourcePrg =
+  CAT_RH(
+    def foo do
+      if false);
+  std::string ExpectedErr =
+    "string stream:1:20: error: expected 'do' to start block";
+  EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
+}
+
+TEST(Parse, SimpleIf)
+{
+  std::string SourcePrg =
+  CAT_RH(
+    def foo do
+      if false do
+        print '2';
+      else
+        print '3';
+      end
+    end);
+  EXPECT_SUCCESSFUL_PARSE(SourcePrg);
+}
+
+TEST(Parse, IfWithoutElseClause)
+{
+  std::string SourcePrg =
+  CAT_RH(
+    def foo do
+      if false do
+        print '2';
+      end
+    end);
+  EXPECT_SUCCESSFUL_PARSE(SourcePrg);
+}
+
+TEST(Parse, DISABLED_AssignmentIf)
+{
+  std::string SourcePrg =
+  CAT_RH(
+    def foo do
+      X =
+      if false do
+        2;
+      else
+        3;
+      end
+    end);
+  EXPECT_SUCCESSFUL_PARSE(SourcePrg);
 }

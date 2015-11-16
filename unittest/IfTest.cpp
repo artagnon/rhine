@@ -33,11 +33,33 @@ TEST(If, BasicCodeGen)
   EXPECT_LL(SourcePrg, ExpectedLL);
 }
 
-TEST(If, BasicExecution)
+TEST(If, SideEffectual)
 {
   std::string SourcePrg =
-    "def main do if false do print '2'; else print '3'; end\n"
-    "end";
+    CAT_RH(
+      def main do
+        if false do
+        print '2';
+        else print '3';
+      end
+    end);
+  std::string ExpectedOut = "3";
+  EXPECT_OUTPUT(SourcePrg, ExpectedOut);
+}
+
+TEST(If, DISABLED_PhiAssignment)
+{
+  std::string SourcePrg =
+    CAT_RH(
+      def main do
+        x =
+        if false do
+          2;
+        else
+          3;
+        end
+      print x;
+    end);
   std::string ExpectedOut = "3";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }

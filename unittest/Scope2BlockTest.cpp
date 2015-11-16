@@ -2,6 +2,7 @@
 #include "gtest/gtest.h"
 
 #include "rhine/IR/Module.h"
+#include "rhine/Toplevel/ParseFacade.h"
 #include "rhine/Transform/LambdaLifting.h"
 #include "rhine/Transform/Scope2Block.h"
 
