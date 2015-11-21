@@ -8,6 +8,7 @@ add_executable(UnitTest
   "${CMAKE_CURRENT_SOURCE_DIR}/ParseTest.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/IRTest.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/CodeGenTest.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/FunctionTest.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/TyInferTest.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/TyCoerceTest.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ResolveTest.cpp"
