@@ -20,9 +20,12 @@ class Module;
 enum class ParseSource { STRING, FILE };
 
 enum class PostParseAction {
-  IR, /// Return, as a string, the pretty-printed Rhine IR
-  LL, /// Return, as a string, the pretty-printed LLVM IR
-  LLDUMP, /// Dump the constructed LLVM Module to stdout
+  IRString, /// Return, as a string, the pretty-printed Rhine IR
+  LLString, /// Return, as a string, the pretty-printed LLVM IR
+  LLEmit, /// Dump the constructed LLVM Module to stdout
+  BCString, /// Return, as a string, the LLVM module converted to Bitcode
+  BCWrite, /// Write a bitcode file from the LLVM module.
+  LinkExecutable, /// Write bitcode, and call the system linker.
 };
 
 class ParseFacade {
@@ -52,6 +55,10 @@ public:
   /// Quick helper that calls the pretty-print method on an LLVM IR object, and
   /// returns it as a string; mainly for testing.
   template <typename T> std::string llToPP(T *Obj);
+
+  /// A little helper that factors out the job of writing a BitCode stream to a
+  /// file on the disk. Used by both BCWrite and LinkExecutable.
+  void writeBitcodeToFile();
 
   /// The main worker that takes the program source, parses it into Rhine IR,
   /// runs it through a series of transforms, and returns it, ready for

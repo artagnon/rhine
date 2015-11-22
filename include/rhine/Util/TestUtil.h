@@ -26,7 +26,7 @@ namespace rhine {
 template <typename... Ts>
 void EXPECT_IR(const char *SourcePrg, Ts... Matchers) {
   ParseFacade Pf(SourcePrg);
-  auto Source = Pf.parseAction(ParseSource::STRING, PostParseAction::IR);
+  auto Source = Pf.parseAction(ParseSource::STRING, PostParseAction::IRString);
   for (auto ExpectedIR : {Matchers...})
     EXPECT_PRED_FORMAT2(::testing::IsSubstring, ExpectedIR,
                         Source.c_str());
@@ -36,7 +36,7 @@ void EXPECT_IR(const char *SourcePrg, Ts... Matchers) {
 template <typename... Ts>
 void EXPECT_LL(const char *SourcePrg, Ts... Matchers) {
   ParseFacade Pf(SourcePrg);
-  auto Source = Pf.parseAction(ParseSource::STRING, PostParseAction::LL);
+  auto Source = Pf.parseAction(ParseSource::STRING, PostParseAction::LLString);
   for (auto ExpectedLL : {Matchers...})
     EXPECT_PRED_FORMAT2(::testing::IsSubstring, ExpectedLL,
                         Source.c_str());
@@ -46,7 +46,7 @@ void EXPECT_LL(const char *SourcePrg, Ts... Matchers) {
 template <typename... Ts>
 void EXPECT_OUTPUT(const char *SourcePrg, Ts... Matchers) {
   ParseFacade Pf(SourcePrg);
-  auto Handle = Pf.jitAction(ParseSource::STRING, PostParseAction::LL);
+  auto Handle = Pf.jitAction(ParseSource::STRING, PostParseAction::LLString);
   testing::internal::CaptureStdout();
   Handle();
   std::string ActualOut = testing::internal::GetCapturedStdout();
@@ -59,7 +59,7 @@ template <typename... Ts>
 void EXPECT_COMPILE_DEATH(const char *SourcePrg, Ts... Matchers) {
   ParseFacade Pf(SourcePrg);
   for (auto ExpectedErr : {Matchers...})
-    EXPECT_DEATH(Pf.parseAction(ParseSource::STRING, PostParseAction::LL),
+    EXPECT_DEATH(Pf.parseAction(ParseSource::STRING, PostParseAction::LLString),
                 ExpectedErr);
 }
 }

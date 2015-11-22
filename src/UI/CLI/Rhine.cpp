@@ -56,7 +56,7 @@ int main(int argc, char *argv[]) {
   ParseFacade Pf(InFileOrStream, std::cerr, Options[DEBUG]);
   auto FHandle =
       Pf.jitAction(Options[STDIN] ? ParseSource::STRING : ParseSource::FILE,
-                   PostParseAction::LLDUMP);
+                   PostParseAction::LLEmit);
   FHandle();
   return 0;
 }

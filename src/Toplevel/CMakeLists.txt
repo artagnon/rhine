@@ -10,7 +10,7 @@ set_target_properties(Toplevel PROPERTIES
   LINKER_LANGUAGE CXX
   COMPILE_FLAGS "${LLVM_CXXFLAGS}")
 target_link_libraries(Toplevel
+  LLVMBitWriter
   Parse
   Transform
-  CodeGen
-  Runtime)
+  CodeGen)
