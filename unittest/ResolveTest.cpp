@@ -11,21 +11,27 @@
 
 using namespace rhine;
 
-TEST(Resolve, UnresolvedReplacement)
-{
-  auto SourcePrg =
-    "def main do\n"
-    "  Moo = 3;\n"
-    "  Moo + 3;\n"
-    "  Moo + 2;\n"
-    "end";
+TEST(Resolve, LocalVariable) {
+  auto SourcePrg = "def bsym do"
+                   "  Sym = 3;\n"
+                   "  ret Sym;\n"
+                   "end";
+  EXPECT_LL(SourcePrg, "bitcast i8* %Alloc to i32*", "store i32 3, i32* %0",
+            "load i32, i32* %0");
+}
+
+TEST(Resolve, UnresolvedReplacement) {
+  auto SourcePrg = "def main do\n"
+                   "  Moo = 3;\n"
+                   "  Moo + 3;\n"
+                   "  Moo + 2;\n"
+                   "end";
   ParseFacade Pf(SourcePrg);
   Resolve ResolveL;
-  auto Module = Pf.parseToIR(ParseSource::STRING, { &ResolveL });
+  auto Module = Pf.parseToIR(ParseSource::STRING, {&ResolveL});
   auto MainF = Module->front();
-  rhine::Value *Decl = nullptr,
-    *FirstInstance = nullptr,
-    *SecondInstance = nullptr;
+  rhine::Value *Decl = nullptr, *FirstInstance = nullptr,
+               *SecondInstance = nullptr;
   for (auto V : *MainF->getEntryBlock()) {
     ASSERT_EQ(dyn_cast<UnresolvedValue>(V), nullptr);
     if (auto D = dyn_cast<MallocInst>(V))
@@ -48,66 +54,57 @@ TEST(Resolve, UnresolvedReplacement)
   ASSERT_NE(FirstInstance, SecondInstance);
 }
 
-TEST(Resolve, ArgumentSymbolReplacement)
-{
-  auto SourcePrg =
-    "def main(var ~Int) do\n"
-    "  ret var\n"
-    "end";
+TEST(Resolve, ArgumentSymbolReplacement) {
+  auto SourcePrg = "def main(var ~Int) do\n"
+                   "  ret var\n"
+                   "end";
   ParseFacade Pf(SourcePrg);
   Resolve ResolveL;
-  auto Module = Pf.parseToIR(ParseSource::STRING, { &ResolveL });
-  auto Expected =
-    "def main [var ~Int] ~Fn(Int -> UnType) {\n"
-    "ret var ~Int\n"
-    "}";
+  auto Module = Pf.parseToIR(ParseSource::STRING, {&ResolveL});
+  auto Expected = "def main [var ~Int] ~Fn(Int -> UnType) {\n"
+                  "ret var ~Int\n"
+                  "}";
   EXPECT_PRED_FORMAT2(::testing::IsSubstring, Expected, Pf.irToPP(Module));
+  EXPECT_LL(SourcePrg, "define i32 @main(i32)", "ret i32 %0");
 }
 
-TEST(Resolve, CrossFunctionNameDisambiguation)
-{
+TEST(Resolve, CrossFunctionNameDisambiguation) {
   auto SourcePrg =
-    "def bar(arithFn ~Function(Int -> Int -> Int)) do\n"
-    "  print $ arithFn 2 4;\n"
-    "end\n"
-    "def addCandidate(A ~Int B ~Int) do\n"
-    "  ret $ A + B;\n"
-    "end\n"
-    "def subCandidate(A ~Int B ~Int) do\n"
-    "  ret $ A - B;\n"
-    "end\n"
-    "def main() do\n"
-    "  if false do bar addCandidate; else bar subCandidate; end\n"
-    "end";
-  auto ExpectedOut = "-2";
-  EXPECT_OUTPUT(SourcePrg, ExpectedOut);
+      "def bar(arithFn ~Function(Int -> Int -> Int)) do\n"
+      "  print $ arithFn 2 4;\n"
+      "end\n"
+      "def addCandidate(A ~Int B ~Int) do\n"
+      "  ret $ A + B;\n"
+      "end\n"
+      "def subCandidate(A ~Int B ~Int) do\n"
+      "  ret $ A - B;\n"
+      "end\n"
+      "def main() do\n"
+      "  if false do bar addCandidate; else bar subCandidate; end\n"
+      "end";
+  EXPECT_OUTPUT(SourcePrg, "-2");
 }
 
-TEST(Resolve, OutOfScope)
-{
-  auto SourcePrg =
-    "def main do\n"
-    "  if true do\n"
-    "     Moo = 2;\n"
-    "  else\n"
-    "     Foo = 4;\n"
-    "  end\n"
-    "  print Moo;\n"
-    "end";
+TEST(Resolve, OutOfScope) {
+  auto SourcePrg = "def main do\n"
+                   "  if true do\n"
+                   "     Moo = 2;\n"
+                   "  else\n"
+                   "     Foo = 4;\n"
+                   "  end\n"
+                   "  print Moo;\n"
+                   "end";
   auto ExpectedErr = "string stream:7:9: error: unbound symbol Moo";
   EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
 }
 
-TEST(Resolve, DISABLED_CrossBlockDisambiguation)
-{
-  auto SourcePrg =
-    "def main do\n"
-    "  if true do\n"
-    "     Moo = 2;\n"
-    "  else\n"
-    "     Moo = 4;\n"
-    "  end\n"
-    "end";
-  auto ExpectedOut = "";
-  EXPECT_OUTPUT(SourcePrg, ExpectedOut);
+TEST(Resolve, DISABLED_CrossBlockDisambiguation) {
+  auto SourcePrg = "def main do\n"
+                   "  if true do\n"
+                   "     Moo = 2;\n"
+                   "  else\n"
+                   "     Moo = 4;\n"
+                   "  end\n"
+                   "end";
+  EXPECT_OUTPUT(SourcePrg, "");
 }
