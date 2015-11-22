@@ -7,13 +7,15 @@
 #include "rhine/Transform/Resolve.h"
 #include "rhine/IR/Context.h"
 #include "rhine/IR/Module.h"
-#include "rhine/Runtime/GC.h"
 
 #include "llvm/ExecutionEngine/ExecutionEngine.h"
+#include "llvm/Bitcode/ReaderWriter.h"
 #include "llvm/Support/raw_ostream.h"
+#include "llvm/Support/FileSystem.h"
 #include "llvm/IR/Module.h"
 
 #include <iostream>
+#include <cstdlib>
 #include <string>
 
 namespace rhine {
@@ -65,6 +67,16 @@ Module *ParseFacade::parseToIR(ParseSource SrcE,
   return Root;
 }
 
+void ParseFacade::writeBitcodeToFile() {
+  std::error_code EC;
+  llvm::raw_fd_ostream OutputFile("foo.bc", EC, sys::fs::F_None);
+  llvm::WriteBitcodeToFile(UniqueModule.get(), OutputFile);
+  if (EC) {
+    std::cerr << EC.message() << std::endl;
+    exit(1);
+  }
+}
+
 std::string ParseFacade::parseAction(ParseSource SrcE,
                                      PostParseAction ActionE) {
   Resolve ResolveL;
@@ -74,22 +86,39 @@ std::string ParseFacade::parseAction(ParseSource SrcE,
   TypeCoercion TyCoercion;
   auto TransformedIR = std::unique_ptr<Module>(
       parseToIR(SrcE, {&LambLift, &Flatten, &ResolveL, &TyInfer, &TyCoercion}));
-  std::string Ret;
   UniqueModule.reset(new llvm::Module("main", llvm::getGlobalContext()));
+  if (ActionE != PostParseAction::IRString)
+    TransformedIR->toLL(UniqueModule.get());
   switch (ActionE) {
-  case PostParseAction::IR:
-    Ret = irToPP(TransformedIR.get());
-    break;
-  case PostParseAction::LL:
-    TransformedIR->toLL(UniqueModule.get());
-    Ret = llToPP(UniqueModule.get());
-    break;
-  case PostParseAction::LLDUMP:
-    TransformedIR->toLL(UniqueModule.get());
+  case PostParseAction::IRString:
+    return irToPP(TransformedIR.get());
+  case PostParseAction::LLString:
+    return llToPP(UniqueModule.get());
+  case PostParseAction::LLEmit:
     UniqueModule->dump();
     break;
+  case PostParseAction::BCString: {
+    std::string Output;
+    llvm::raw_string_ostream OutputStream(Output);
+    llvm::WriteBitcodeToFile(UniqueModule.get(), OutputStream);
+    return OutputStream.str();
   }
-  return Ret;
+  case PostParseAction::BCWrite:
+    writeBitcodeToFile();
+    break;
+  case PostParseAction::LinkExecutable:
+    writeBitcodeToFile();
+    if (auto LinkerProcess = popen("clang -o foo foo.bc", "r")) {
+      if (auto ExitStatus = pclose(LinkerProcess)/256) {
+        std::cerr << "Linker exited with nonzero status: " << ExitStatus;
+        exit(1);
+      }
+      break;
+    }
+    std::cerr << "Linker didn't start: " << strerror(errno);
+    exit(1);
+  }
+  return "";
 }
 
 MainFTy ParseFacade::jitAction(ParseSource SrcE, PostParseAction ActionE) {

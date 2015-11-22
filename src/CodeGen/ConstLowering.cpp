@@ -50,7 +50,6 @@ llvm::Constant *Prototype::toLL(llvm::Module *M) { return getOrInsert(M); }
 llvm::Constant *Function::toLL(llvm::Module *M) {
   auto K = getContext();
   auto CurrentFunction = getOrInsert(M);
-  CurrentFunction->setGC("rhgc");
 
   /// Bind argument symbols to function argument values in symbol table
   auto ArgList = getArguments();
