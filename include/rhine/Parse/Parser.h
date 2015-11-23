@@ -4,16 +4,17 @@
 
 #include <string>
 #include <map>
-#include "rhine/Parse/ParseDriver.h"
+#include <vector>
 
 namespace rhine {
+class UnresolvedValue;
+class ParseDriver;
+class Instruction;
 class BasicBlock;
 class Function;
-class UnresolvedValue;
 class Argument;
-class Instruction;
-class Type;
 class Value;
+class Type;
 
 class Parser {
 public:

@@ -7,6 +7,7 @@
 #include "llvm/IR/LLVMContext.h"
 #include "llvm/ADT/FoldingSet.h"
 
+#include <iostream>
 #include <cstdlib>
 #include <map>
 
