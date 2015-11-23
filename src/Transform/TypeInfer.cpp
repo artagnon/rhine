@@ -121,17 +121,23 @@ Type *TypeInfer::visit(CallInst *V) {
 Type *TypeInfer::visit(ReturnInst *V) {
   if (!V->getVal())
     return VoidType::get(K);
-  auto Ty = visit(V->getVal());
+  auto Val = V->getVal();
+  auto Ty = visit(Val);
+  if (isa<VoidType>(Ty)) {
+    auto CannotReturnVoid = "cannot return expression of Void type";
+    K->DiagPrinter->errorReport(Val->getSourceLocation(), CannotReturnVoid);
+    exit(1);
+  }
   V->setType(Ty);
   return Ty;
 }
 
 Type *TypeInfer::visit(MallocInst *V) {
   V->setType(visit(V->getVal()));
-  assert(!V->isUnTyped() && "Unable to type infer MallocInst");
+  assert(!V->isUnTyped() && "unable to type infer MallocInst");
   assert(
       K->Map.add(V) &&
-      ("Symbol " + V->getName() + " conflicts with existing symbol").c_str());
+      ("symbol " + V->getName() + " conflicts with existing symbol").c_str());
   return VoidType::get(K);
 }
 
