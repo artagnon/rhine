@@ -1,11 +1,5 @@
-#include "rhine/Parse/Parser.h"
 #include "rhine/Parse/ParseDriver.h"
-#include "rhine/IR/UnresolvedValue.h"
-#include "rhine/IR/GlobalValue.h"
-#include "rhine/IR/Instruction.h"
-#include "rhine/IR/BasicBlock.h"
-#include "rhine/IR/Constant.h"
-#include "rhine/IR/Value.h"
+#include "rhine/Parse/Parser.h"
 #include "rhine/IR/Type.h"
 
 #include <vector>
