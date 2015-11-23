@@ -1,8 +1,9 @@
+#include <iostream>
+#include <unistd.h>
 #include <fstream>
 #include <sstream>
 #include <iomanip>
 #include <cassert>
-#include <unistd.h>
 
 #include "rhine/Parse/Parser.h"
 #include "rhine/Diagnostic/Diagnostic.h"

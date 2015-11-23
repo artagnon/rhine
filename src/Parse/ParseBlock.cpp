@@ -1,3 +1,4 @@
+#include "rhine/Parse/ParseDriver.h"
 #include "rhine/Parse/Parser.h"
 #include "rhine/IR/BasicBlock.h"
 #include "rhine/IR/Instruction.h"
