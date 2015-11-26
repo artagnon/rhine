@@ -159,7 +159,7 @@ public:
   Instruction *parseIf();
 
   /// A statement is not branch, and ends with a semicolon
-  Value *parseSingleStm();
+  Value *parseSingleStmt();
 
   /// Small helper for parseBlock
   bool matchesAnyTokenPair(std::map<int, std::string> &TokenPairs);

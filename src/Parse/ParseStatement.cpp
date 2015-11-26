@@ -94,8 +94,8 @@ Instruction *Parser::parsePostLiteralName(Value *Rtok) {
     return Call;
   }
   if (parseDollarOp(true)) {
-    if (auto Stm = parseSingleStm()) {
-      auto Call = CallInst::get(Rtok, {Stm});
+    if (auto Stmt = parseSingleStmt()) {
+      auto Call = CallInst::get(Rtok, {Stmt});
       Call->setSourceLocation(LitLoc);
       return Call;
     }
@@ -110,7 +110,7 @@ Instruction *Parser::parsePostLiteralName(Value *Rtok) {
   return nullptr;
 }
 
-Value *Parser::parseSingleStm() {
+Value *Parser::parseSingleStmt() {
   switch (CurTok) {
   case RET: {
     if (auto Ret = parseRet())
@@ -119,9 +119,9 @@ Value *Parser::parseSingleStm() {
   case INTEGER:
   case BOOLEAN:
   case STRING: {
-    if (auto AssignmentExpr = parseAssignable()) {
+    if (auto AssignableExpr = parseAssignable()) {
       getSemiTerm("assignable expression");
-      return AssignmentExpr;
+      return AssignableExpr;
     }
   }
   case LITERALNAME: {

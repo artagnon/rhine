@@ -102,8 +102,8 @@ Instruction *Parser::parseRet() {
     return nullptr;
   }
   if (parseDollarOp(true)) {
-    if (auto Stm = parseSingleStm()) {
-      auto Ret = ReturnInst::get(Stm, K);
+    if (auto Stmt = parseSingleStmt()) {
+      auto Ret = ReturnInst::get(Stmt, K);
       Ret->setSourceLocation(RetLoc);
       return Ret;
     }

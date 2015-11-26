@@ -91,38 +91,4 @@ llvm::Value *ReturnInst::toLL(llvm::Module *M) {
 llvm::Value *IfInst::toLL(llvm::Module *M) {
   return getParent()->getPhiValueFromBranchBlock(M);
 }
-
-#if 0
-llvm::Value *IfInst::toLL(llvm::Module *M) {
-  auto K = getContext();
-  auto BranchBB = K->Builder->GetInsertBlock();
-  auto TrueBB = getTrueBB()->toContainerLL(M);
-  auto FalseBB = getFalseBB()->toContainerLL(M);
-  auto ContinueBB = getTrueBB()->getUniqueSuccessor();
-  auto MergeBB = ContinueBB->toContainerLL(M);
-  MergeBB->setName("phi");
-  auto Conditional = getConditional()->toLL(M);
-  K->Builder->SetInsertPoint(BranchBB);
-  K->Builder->CreateCondBr(Conditional, TrueBB, FalseBB);
-
-  K->Builder->SetInsertPoint(TrueBB);
-  auto TrueV = getTrueBB()->toValuesLL(M);
-  K->Builder->CreateBr(MergeBB);
-  TrueBB = K->Builder->GetInsertBlock();
-
-  K->Builder->SetInsertPoint(FalseBB);
-  auto FalseV = getFalseBB()->toValuesLL(M);
-  K->Builder->CreateBr(MergeBB);
-  FalseBB = K->Builder->GetInsertBlock();
-
-  K->Builder->SetInsertPoint(MergeBB);
-  if (!isa<VoidType>(VTy)) {
-    auto PN = K->Builder->CreatePHI(VTy->toLL(M), 2, "iftmp");
-    PN->addIncoming(TrueV, TrueBB);
-    PN->addIncoming(FalseV, FalseBB);
-    return PN;
-  }
-  return nullptr;
-}
-#endif
 }
