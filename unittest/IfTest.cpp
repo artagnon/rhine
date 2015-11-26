@@ -40,25 +40,13 @@ TEST(If, BasicCodeGen) {
                    "  end\n"
                    "end";
   EXPECT_LL(SourcePrg, "br i1 false, label %true, label %false", "true:",
-            "false:", "phi:", "call i8* @std_String_malloc__Int(i64 4)",
+            "false:", "merge:", "call i8* @std_String_malloc__Int(i64 4)",
             "store i32 2, i32* %0", "store i32 3, i32* %1");
 }
 
 TEST(If, SideEffectual) {
   auto SourcePrg =
       CAT_RH(def main do if false do print '2'; else print '3'; end end);
-  auto ExpectedOut = "3";
-  EXPECT_OUTPUT(SourcePrg, ExpectedOut);
-}
-
-TEST(If, DISABLED_PhiAssignment) {
-  auto SourcePrg = "def main do\n"
-                   "  x =\n"
-                   "    if false do 2\n"
-                   "    else 3\n"
-                   "    end\n"
-                   "  print x\n"
-                   "end";
   auto ExpectedOut = "3";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
@@ -73,5 +61,17 @@ TEST(If, LifeAfterPhi) {
                    "  print 2;\n"
                    "end";
   auto ExpectedOut = "2";
+  EXPECT_OUTPUT(SourcePrg, ExpectedOut);
+}
+
+TEST(If, DISABLED_PhiAssignment) {
+  auto SourcePrg = "def main do\n"
+                   "  x =\n"
+                   "    if false do 2\n"
+                   "    else 3\n"
+                   "    end\n"
+                   "  print x\n"
+                   "end";
+  auto ExpectedOut = "3";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }

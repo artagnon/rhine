@@ -87,6 +87,7 @@ std::string ParseFacade::parseAction(ParseSource SrcE,
   auto TransformedIR = std::unique_ptr<Module>(
       parseToIR(SrcE, {&LambLift, &Flatten, &ResolveL, &TyInfer, &TyCoercion}));
   UniqueModule.reset(new llvm::Module("main", llvm::getGlobalContext()));
+  auto RawModule = UniqueModule.get();
   if (ActionE != PostParseAction::IRString)
     TransformedIR->toLL(UniqueModule.get());
   switch (ActionE) {

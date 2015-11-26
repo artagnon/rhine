@@ -16,6 +16,7 @@ class BasicBlock : public Value {
   Function *Parent;
   std::vector<BasicBlock *> Predecessors;
   std::vector<BasicBlock *> Successors;
+
 public:
   std::vector<Value *> StmList;
 
@@ -29,9 +30,10 @@ public:
   /// the different Parent pointers point to us
   template <typename T> void setAllInstructionParents(std::vector<T *> List);
 
-  /// When the entry block is toLL()'ed, and a branch instruction is found, the
-  /// branch instruction takes over the responsibility of lowering its case
-  /// blocks _and_ the merge block with the phi
+  /// The function's responsibility is simply to codegen the EntryBlock. A block
+  /// with a terminator instruction (i.e. every block) will codegen other blocks
+  /// referenced by the terminator. So, an IfInst codegens the TrueBlock, the
+  /// FalseBlock, and the MergeBlock.
   virtual llvm::Value *toLL(llvm::Module *M) override;
 
   /// Special methods to generate just the BasicBlock, and lower just the
@@ -64,8 +66,8 @@ public:
   Value *back();
 
   template <class ForwardIterator, class T>
-  void replace(ForwardIterator First, ForwardIterator Last,
-               const T& OldValue, const T& NewValue);
+  void replace(ForwardIterator First, ForwardIterator Last, const T &OldValue,
+               const T &NewValue);
 
   /// Acessors to Parent function
   void setParent(Function *F);
@@ -75,9 +77,26 @@ public:
   bool hasNoPredecessors() const;
   bool hasNoSuccessors() const;
 
+  /// Get the predecessor/successor sizes
+  unsigned pred_size() const;
+  unsigned succ_size() const;
+
   /// Quick method to grab unique predecessor/successor (if any)
   BasicBlock *getUniquePredecessor() const;
   BasicBlock *getUniqueSuccessor() const;
+
+  /// Keep digging through one successor edge until we tally
+  /// successor/predecessor count and find the block containing the phi node
+  /// corresponding to the branch instruction in this block. If the last
+  /// instruction in this block is not a branch, return nullptr.
+  BasicBlock *getMergeBlock();
+
+  /// Given a Block with a known branch instruction, codegen it.
+  llvm::Value *getPhiValueFromBranchBlock(llvm::Module *M);
+
+private:
+  std::vector<std::pair<BasicBlock *, llvm::BasicBlock *>>
+  zipSuccContainers(llvm::Module *M);
 
 protected:
   /// std ostream writer, for debugging

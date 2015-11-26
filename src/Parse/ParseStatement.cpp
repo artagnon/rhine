@@ -119,9 +119,9 @@ Value *Parser::parseSingleStm() {
   case INTEGER:
   case BOOLEAN:
   case STRING: {
-    if (auto ArithOp = parseAssignable()) {
-      getSemiTerm("arithmetic operation");
-      return ArithOp;
+    if (auto AssignmentExpr = parseAssignable()) {
+      getSemiTerm("assignable expression");
+      return AssignmentExpr;
     }
   }
   case LITERALNAME: {

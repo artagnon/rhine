@@ -89,6 +89,11 @@ llvm::Value *ReturnInst::toLL(llvm::Module *M) {
 }
 
 llvm::Value *IfInst::toLL(llvm::Module *M) {
+  return getParent()->getPhiValueFromBranchBlock(M);
+}
+
+#if 0
+llvm::Value *IfInst::toLL(llvm::Module *M) {
   auto K = getContext();
   auto BranchBB = K->Builder->GetInsertBlock();
   auto TrueBB = getTrueBB()->toContainerLL(M);
@@ -115,7 +120,9 @@ llvm::Value *IfInst::toLL(llvm::Module *M) {
     auto PN = K->Builder->CreatePHI(VTy->toLL(M), 2, "iftmp");
     PN->addIncoming(TrueV, TrueBB);
     PN->addIncoming(FalseV, FalseBB);
+    return PN;
   }
-  return ContinueBB->toValuesLL(M);
+  return nullptr;
 }
+#endif
 }

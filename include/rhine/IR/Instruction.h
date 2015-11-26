@@ -181,8 +181,8 @@ public:
   BasicBlock *getTrueBB() const;
   BasicBlock *getFalseBB() const;
 
-  /// Picks up the ball after the phi statement to toLL() the rest of the
-  /// function
+  /// Codegens until the phi node, and returns the value to optionally use it in
+  /// an assignment.
   virtual llvm::Value *toLL(llvm::Module *M) override;
 protected:
   void print(std::ostream &Stream) const override;

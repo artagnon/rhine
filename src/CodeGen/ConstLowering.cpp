@@ -65,7 +65,13 @@ llvm::Constant *Function::toLL(llvm::Module *M) {
   // Add function symbol to symbol table, global scope
   K->Map.add(this, CurrentFunction);
 
-  getEntryBlock()->toLL(M);
+  /// Codegen all blocks
+  auto EntryBlock = getEntryBlock();
+  EntryBlock->toContainerLL(M);
+  for (auto Block = EntryBlock; Block; Block = Block->getMergeBlock()) {
+    Block->toValuesLL(M);
+  }
+
   auto ExitBlock = getExitBlock();
   if (!ExitBlock->size() || !isa<ReturnInst>(ExitBlock->back()))
     K->Builder->CreateRet(nullptr);
