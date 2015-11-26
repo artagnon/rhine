@@ -1,9 +1,9 @@
-#include "rhine/IR/Constant.h"
-#include "rhine/IR/BasicBlock.h"
-#include "rhine/IR/Instruction.h"
-#include "rhine/IR/GlobalValue.h"
-#include "rhine/IR/Context.h"
 #include "rhine/Diagnostic/Diagnostic.h"
+#include "rhine/IR/BasicBlock.h"
+#include "rhine/IR/Constant.h"
+#include "rhine/IR/Context.h"
+#include "rhine/IR/GlobalValue.h"
+#include "rhine/IR/Instruction.h"
 #include "rhine/Transform/TypeInfer.h"
 
 namespace rhine {
@@ -18,10 +18,12 @@ Type *TypeInfer::visit(ConstantFloat *V) { return V->getType(); }
 Type *TypeInfer::visit(GlobalString *V) { return V->getType(); }
 
 Type *TypeInfer::visit(BasicBlock *BB) {
-  Type *LastTy = VoidType::get(K);
-  for (auto V : *BB)
-    LastTy = visit(V);
-  return LastTy;
+  if (BB->begin() == BB->end())
+    return VoidType::get(K);
+  std::vector<Value *>::iterator It;
+  for (It = BB->begin(); std::next(It) != BB->end(); ++It)
+    visit(*It);
+  return visit(*It);
 }
 
 Type *TypeInfer::visit(Prototype *V) { return V->getType(); }
@@ -81,6 +83,7 @@ Type *TypeInfer::visit(IfInst *V) {
 }
 
 Type *TypeInfer::visit(LoadInst *V) {
+  V->setType(V->getVal()->getType());
   if (!V->isUnTyped())
     return V->getType();
   auto Name = V->getVal()->getName();
@@ -88,7 +91,12 @@ Type *TypeInfer::visit(LoadInst *V) {
   exit(1);
 }
 
-Type *TypeInfer::visit(StoreInst *V) { return VoidType::get(K); }
+Type *TypeInfer::visit(StoreInst *V) {
+  auto MallocedV = V->getMallocedValue();
+  auto NewTy = visit(V->getNewValue());
+  MallocedV->setType(NewTy);
+  return VoidType::get(K);
+}
 
 Type *TypeInfer::visit(Argument *V) {
   if (!V->isUnTyped())
@@ -135,9 +143,6 @@ Type *TypeInfer::visit(ReturnInst *V) {
 Type *TypeInfer::visit(MallocInst *V) {
   V->setType(visit(V->getVal()));
   assert(!V->isUnTyped() && "unable to type infer MallocInst");
-  assert(
-      K->Map.add(V) &&
-      ("symbol " + V->getName() + " conflicts with existing symbol").c_str());
   return VoidType::get(K);
 }
 

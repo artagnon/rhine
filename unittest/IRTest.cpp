@@ -22,11 +22,9 @@ TEST(IR, AddTwoInt)
     "  ret $ 3 + 2\n"
     "end";
   auto ExpectedIR =
-    "def foo [] ~Fn(Void -> Int) {\n"
     "ret + ~Fn(Int -> Int -> Int)\n"
     "3 ~Int\n"
-    "2 ~Int\n"
-    "}";
+    "2 ~Int\n";
   EXPECT_IR(SourcePrg, ExpectedIR);
 }
 
@@ -37,11 +35,9 @@ TEST(IR, SubTwoInt)
     "  ret $ 3 - 2\n"
     "end";
   auto ExpectedIR =
-    "def foo [] ~Fn(Void -> Int) {\n"
     "ret - ~Fn(Int -> Int -> Int)\n"
     "3 ~Int\n"
-    "2 ~Int\n"
-    "}";
+    "2 ~Int\n";
   EXPECT_IR(SourcePrg, ExpectedIR);
 }
 
@@ -117,11 +113,9 @@ TEST(IR, TwoArguments)
     "  ret $ a + b\n"
     "end";
   auto ExpectedIR =
-    "foo [a ~Int b ~Int] ~Fn(Int -> Int -> Int) {\n"
     "ret + ~Fn(Int -> Int -> Int)\n"
     "a ~Int\n"
-    "b ~Int\n"
-    "}";
+    "b ~Int\n";
   EXPECT_IR(SourcePrg, ExpectedIR);
 }
 
