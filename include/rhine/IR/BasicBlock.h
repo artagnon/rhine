@@ -17,12 +17,12 @@ class BasicBlock : public Value {
   std::vector<BasicBlock *> Predecessors;
   std::vector<BasicBlock *> Successors;
 public:
-  std::vector<Instruction *> InstList;
+  std::vector<Value *> StmList;
 
   /// Standard methods
-  BasicBlock(Type *Ty, std::string Name, std::vector<Instruction *> V);
+  BasicBlock(Type *Ty, std::string Name, std::vector<Value *> V);
   virtual ~BasicBlock();
-  static BasicBlock *get(std::string Name, std::vector<Instruction *> V, Context *K);
+  static BasicBlock *get(std::string Name, std::vector<Value *> V, Context *K);
   static bool classof(const Value *V);
 
   /// When adding instructions to the BasicBlock, it's our reposibility to make
@@ -40,7 +40,7 @@ public:
   llvm::Value *toValuesLL(llvm::Module *M);
 
   /// Iterator over all the instructions in this BB
-  typedef std::vector<Instruction *>::iterator value_iterator;
+  typedef std::vector<Value *>::iterator value_iterator;
   value_iterator begin();
   value_iterator end();
 
@@ -61,7 +61,7 @@ public:
 
   /// Proxy for std methods acting on ValueList
   unsigned size();
-  Instruction *back();
+  Value *back();
 
   template <class ForwardIterator, class T>
   void replace(ForwardIterator First, ForwardIterator Last,
