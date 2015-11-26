@@ -26,10 +26,6 @@ public:
   static BasicBlock *get(std::string Name, std::vector<Value *> V, Context *K);
   static bool classof(const Value *V);
 
-  /// When adding instructions to the BasicBlock, it's our reposibility to make
-  /// the different Parent pointers point to us
-  template <typename T> void setAllInstructionParents(std::vector<T *> List);
-
   /// The function's responsibility is simply to codegen the EntryBlock. A block
   /// with a terminator instruction (i.e. every block) will codegen other blocks
   /// referenced by the terminator. So, an IfInst codegens the TrueBlock, the

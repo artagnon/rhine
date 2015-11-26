@@ -89,19 +89,19 @@ std::string ParseFacade::parseAction(ParseSource SrcE,
   UniqueModule.reset(new llvm::Module("main", llvm::getGlobalContext()));
   auto RawModule = UniqueModule.get();
   if (ActionE != PostParseAction::IRString)
-    TransformedIR->toLL(UniqueModule.get());
+    TransformedIR->toLL(RawModule);
   switch (ActionE) {
   case PostParseAction::IRString:
     return irToPP(TransformedIR.get());
   case PostParseAction::LLString:
-    return llToPP(UniqueModule.get());
+    return llToPP(RawModule);
   case PostParseAction::LLEmit:
     UniqueModule->dump();
     break;
   case PostParseAction::BCString: {
     std::string Output;
     llvm::raw_string_ostream OutputStream(Output);
-    llvm::WriteBitcodeToFile(UniqueModule.get(), OutputStream);
+    llvm::WriteBitcodeToFile(RawModule, OutputStream);
     return OutputStream.str();
   }
   case PostParseAction::BCWrite:
