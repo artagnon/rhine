@@ -3,19 +3,11 @@
 #include "rhine/IR/Module.h"
 
 namespace rhine {
-template <typename T>
-void BasicBlock::setAllInstructionParents(std::vector<T *> List) {
-  for (auto V : List) {
-    if (auto Inst = dyn_cast<Instruction>(V)) {
+BasicBlock::BasicBlock(Type *Ty, std::string N, std::vector<Value *> V)
+    : Value(Ty, RT_BasicBlock, N), Parent(nullptr), StmList(V) {
+  for (auto Stm : StmList)
+    if (auto Inst = dyn_cast<Instruction>(Stm))
       Inst->setParent(this);
-      setAllInstructionParents(Inst->getOperands());
-    }
-  }
-}
-
-BasicBlock::BasicBlock(Type *Ty, std::string N, std::vector<Value *> V) :
-    Value(Ty, RT_BasicBlock, N), Parent(nullptr), StmList(V) {
-  setAllInstructionParents(StmList);
 }
 
 BasicBlock::~BasicBlock() {
@@ -36,40 +28,30 @@ bool BasicBlock::classof(const Value *V) {
   return V->getValID() == RT_BasicBlock;
 }
 
-BasicBlock::value_iterator BasicBlock::begin() {
-  return StmList.begin();
-}
+BasicBlock::value_iterator BasicBlock::begin() { return StmList.begin(); }
 
-BasicBlock::value_iterator BasicBlock::end() {
-  return StmList.end();
-}
+BasicBlock::value_iterator BasicBlock::end() { return StmList.end(); }
 
 BasicBlock::bb_iterator BasicBlock::pred_begin() {
   return Predecessors.begin();
 }
 
-BasicBlock::bb_iterator BasicBlock::pred_end() {
-  return Predecessors.end();
-}
+BasicBlock::bb_iterator BasicBlock::pred_end() { return Predecessors.end(); }
 
 iterator_range<BasicBlock::bb_iterator> BasicBlock::preds() {
   return iterator_range<BasicBlock::bb_iterator>(pred_begin(), pred_end());
 }
 
-BasicBlock::bb_iterator BasicBlock::succ_begin() {
-  return Successors.begin();
-}
+BasicBlock::bb_iterator BasicBlock::succ_begin() { return Successors.begin(); }
 
-BasicBlock::bb_iterator BasicBlock::succ_end() {
-  return Successors.end();
-}
+BasicBlock::bb_iterator BasicBlock::succ_end() { return Successors.end(); }
 
 iterator_range<BasicBlock::bb_iterator> BasicBlock::succs() {
   return iterator_range<BasicBlock::bb_iterator>(succ_begin(), succ_end());
 }
 
 void BasicBlock::addPredecessors(std::vector<BasicBlock *> Preds) {
-  for (auto B: Preds)
+  for (auto B : Preds)
     Predecessors.push_back(B);
 }
 
@@ -80,7 +62,7 @@ void BasicBlock::removePredecessor(BasicBlock *Pred) {
 }
 
 void BasicBlock::addSuccessors(std::vector<BasicBlock *> Succs) {
-  for (auto B: Succs)
+  for (auto B : Succs)
     Successors.push_back(B);
 }
 
@@ -90,37 +72,21 @@ void BasicBlock::removeSuccessor(BasicBlock *Succ) {
   Successors.erase(It, Successors.end());
 }
 
-unsigned BasicBlock::size() {
-  return StmList.size();
-}
+unsigned BasicBlock::size() { return StmList.size(); }
 
-Value *BasicBlock::back() {
-  return StmList.back();
-}
+Value *BasicBlock::back() { return StmList.back(); }
 
-void BasicBlock::setParent(Function *F) {
-  Parent = F;
-}
+void BasicBlock::setParent(Function *F) { Parent = F; }
 
-Function *BasicBlock::getParent() const {
-  return Parent;
-}
+Function *BasicBlock::getParent() const { return Parent; }
 
-bool BasicBlock::hasNoPredecessors() const {
-  return !Predecessors.size();
-}
+bool BasicBlock::hasNoPredecessors() const { return !Predecessors.size(); }
 
-bool BasicBlock::hasNoSuccessors() const {
-  return !Successors.size();
-}
+bool BasicBlock::hasNoSuccessors() const { return !Successors.size(); }
 
-unsigned BasicBlock::pred_size() const {
-  return Predecessors.size();
-}
+unsigned BasicBlock::pred_size() const { return Predecessors.size(); }
 
-unsigned BasicBlock::succ_size() const {
-  return Successors.size();
-}
+unsigned BasicBlock::succ_size() const { return Successors.size(); }
 
 BasicBlock *BasicBlock::getUniquePredecessor() const {
   if (Predecessors.size() == 1)
@@ -155,7 +121,7 @@ BasicBlock *BasicBlock::getMergeBlock() {
 }
 
 void BasicBlock::print(std::ostream &Stream) const {
-  for (auto V: StmList)
+  for (auto V : StmList)
     Stream << *V << std::endl;
 }
 }
