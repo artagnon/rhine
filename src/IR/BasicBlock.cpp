@@ -114,6 +114,14 @@ bool BasicBlock::hasNoSuccessors() const {
   return !Successors.size();
 }
 
+unsigned BasicBlock::pred_size() const {
+  return Predecessors.size();
+}
+
+unsigned BasicBlock::succ_size() const {
+  return Successors.size();
+}
+
 BasicBlock *BasicBlock::getUniquePredecessor() const {
   if (Predecessors.size() == 1)
     return Predecessors[0];
@@ -124,6 +132,26 @@ BasicBlock *BasicBlock::getUniqueSuccessor() const {
   if (Successors.size() == 1)
     return Successors[0];
   return nullptr;
+}
+
+BasicBlock *BasicBlock::getMergeBlock() {
+  if (!Successors.size())
+    return nullptr;
+  std::vector<unsigned> SuccessorTally;
+  SuccessorTally.push_back(Successors.size());
+  auto DigThroughBlock = this;
+  while (SuccessorTally.size()) {
+    DigThroughBlock = *DigThroughBlock->succ_begin();
+    auto SuccSize = DigThroughBlock->succ_size();
+    auto PredSize = DigThroughBlock->pred_size();
+    if (SuccSize > 1)
+      SuccessorTally.push_back(SuccSize);
+    else if (PredSize > 1) {
+      assert(SuccessorTally.back() == PredSize && "Malformed BasicBlock");
+      SuccessorTally.pop_back();
+    }
+  }
+  return DigThroughBlock;
 }
 
 void BasicBlock::print(std::ostream &Stream) const {
