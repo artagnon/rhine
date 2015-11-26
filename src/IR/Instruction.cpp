@@ -194,8 +194,8 @@ void StoreInst::print(std::ostream &Stream) const {
   Stream << *getMallocedValue() << " = " << *getNewValue();
 }
 
-ReturnInst::ReturnInst(Type *Ty, bool IsNotVoid) :
-    Instruction(Ty, RT_ReturnInst, IsNotVoid) {}
+ReturnInst::ReturnInst(Type *Ty, bool IsVoid) :
+    Instruction(Ty, RT_ReturnInst, !IsVoid) {}
 
 ReturnInst::~ReturnInst() {}
 
@@ -205,8 +205,8 @@ void *ReturnInst::operator new(size_t S, unsigned N) {
 
 ReturnInst *ReturnInst::get(Value *V, Context *K) {
   if (!V)
-    return new (0) ReturnInst(VoidType::get(K), false);
-  auto Obj = new (1) ReturnInst(V->getType(), true);
+    return new (0) ReturnInst(VoidType::get(K), true);
+  auto Obj = new (1) ReturnInst(V->getType(), false);
   Obj->setOperand(0, V);
   return Obj;
 }
@@ -228,6 +228,37 @@ Value *ReturnInst::getVal() {
 
 void ReturnInst::print(std::ostream &Stream) const {
   Stream << "ret " << *getOperand(0);
+}
+
+TerminatorInst::TerminatorInst(Type *Ty) :
+    Instruction(Ty, RT_TerminatorInst, 1) {}
+
+TerminatorInst::~TerminatorInst() {}
+
+void *TerminatorInst::operator new(size_t S) {
+  return User::operator new(S, 1);
+}
+
+TerminatorInst *TerminatorInst::get(Value *V, Context *K) {
+  auto Obj = new TerminatorInst(V->getType());
+  Obj->setOperand(0, V);
+  return Obj;
+}
+
+bool TerminatorInst::classof(const Value *V) {
+  return V->getValID() == RT_TerminatorInst;
+}
+
+void TerminatorInst::setVal(Value *V) {
+  setOperand(0, V);
+}
+
+Value *TerminatorInst::getVal() {
+  return getOperand(0);
+}
+
+void TerminatorInst::print(std::ostream &Stream) const {
+  Stream << "term " << *getOperand(0);
 }
 
 IfInst::IfInst(Type *Ty):

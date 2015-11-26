@@ -144,9 +144,11 @@ protected:
   void print(std::ostream &Stream) const override;
 };
 
+/// Can only be used to terminate functions: has either 0 or 1 arguments. Branch
+/// instructions require to come together at phi nodes.
 class ReturnInst : public Instruction {
 public:
-  ReturnInst(Type *Ty, bool IsNotVoid);
+  ReturnInst(Type *Ty, bool IsVoid);
   virtual ~ReturnInst();
 
   /// Really N can either be 0 or 1; We don't do funky multi-output functions
@@ -159,6 +161,33 @@ public:
   Value *getVal();
   void setVal(Value *V);
 
+  virtual llvm::Value *toLL(llvm::Module *M) override;
+protected:
+  void print(std::ostream &Stream) const override;
+};
+
+/// Used to communicate unifying phi values from the end of a branch
+/// instruction.
+/// if true do
+///   2 <-- TerminatorInst
+/// else ...
+///
+class TerminatorInst : public Instruction {
+public:
+  TerminatorInst(Type *Ty);
+  virtual ~TerminatorInst();
+
+  /// Fixed at one operand.
+  void *operator new(size_t S);
+
+  static TerminatorInst *get(Value *V, Context *K);
+  static bool classof(const Value *V);
+
+  /// For single operand functions, {get,set}Val serves an obvious purpose
+  Value *getVal();
+  void setVal(Value *V);
+
+  /// Codegen to the contained value directly.
   virtual llvm::Value *toLL(llvm::Module *M) override;
 protected:
   void print(std::ostream &Stream) const override;

@@ -39,6 +39,7 @@ enum RTValue {
   RT_LoadInst,
   RT_StoreInst,
   RT_ReturnInst,
+  RT_TerminatorInst,
   RT_IfInst,
   RT_BasicBlock,
 };

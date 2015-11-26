@@ -12,10 +12,12 @@ BasicBlock::BasicBlock(Type *Ty, std::string N, std::vector<Value *> V)
 
 BasicBlock::~BasicBlock() {
   for (auto &V : StmList) {
-    cast<User>(V)->dropAllReferences();
+    if (dyn_cast<Instruction>(V))
+      cast<User>(V)->dropAllReferences();
   }
   for (auto &V : StmList) {
-    delete cast<User>(V);
+    if (dyn_cast<Instruction>(V))
+      delete V;
   }
 }
 

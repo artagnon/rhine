@@ -88,6 +88,10 @@ llvm::Value *ReturnInst::toLL(llvm::Module *M) {
   return K->Builder->CreateRet(nullptr);
 }
 
+llvm::Value *TerminatorInst::toLL(llvm::Module *M) {
+  return getVal()->toLL(M);
+}
+
 llvm::Value *IfInst::toLL(llvm::Module *M) {
   return getParent()->getPhiValueFromBranchBlock(M);
 }
