@@ -11,7 +11,7 @@ void LambdaLifting::runOnFunction(Function *F) {
   for (auto BB : *F)
     std::transform(
         BB->begin(), BB->end(), BB->begin(),
-        [this, F, M](Instruction *V) {
+        [this, F, M](Value *V) {
           if (auto B = dyn_cast<MallocInst>(V)) {
             if (auto Fn = dyn_cast<Function>(B->getVal())) {
               Fn->setName("lambda");

@@ -4,14 +4,20 @@
 using namespace rhine;
 
 TEST(If, DanglingIf) {
-  auto SourcePrg = CAT_RH(def foo do if false);
-  auto ExpectedErr = "string stream:1:20: error: expected 'do' to start block";
+  auto SourcePrg = "def foo do\n"
+                   "  if false";
+  auto ExpectedErr = "string stream:2:11: error: expected 'do' to start block";
   EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
 }
 
 TEST(If, SimpleIf) {
-  auto SourcePrg =
-      CAT_RH(def foo do if false do print '2'; else print '3'; end end);
+  auto SourcePrg = "def foo do\n"
+                   "  if false\n"
+                   "    do print '2'\n"
+                   "  else\n"
+                   "    print '3'\n"
+                   "  end\n"
+                   "end";
   EXPECT_SUCCESSFUL_PARSE(SourcePrg);
 }
 
@@ -46,8 +52,13 @@ TEST(If, SideEffectual) {
 }
 
 TEST(If, DISABLED_PhiAssignment) {
-  auto SourcePrg =
-      CAT_RH(def main do x = if false do 2; else 3; end print x; end);
+  auto SourcePrg = "def main do\n"
+                   "  x =\n"
+                   "    if false do 2\n"
+                   "    else 3\n"
+                   "    end\n"
+                   "  print x\n"
+                   "end";
   auto ExpectedOut = "3";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }

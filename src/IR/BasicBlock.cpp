@@ -13,21 +13,21 @@ void BasicBlock::setAllInstructionParents(std::vector<T *> List) {
   }
 }
 
-BasicBlock::BasicBlock(Type *Ty, std::string N, std::vector<Instruction *> V) :
-    Value(Ty, RT_BasicBlock, N), Parent(nullptr), InstList(V) {
-  setAllInstructionParents(InstList);
+BasicBlock::BasicBlock(Type *Ty, std::string N, std::vector<Value *> V) :
+    Value(Ty, RT_BasicBlock, N), Parent(nullptr), StmList(V) {
+  setAllInstructionParents(StmList);
 }
 
 BasicBlock::~BasicBlock() {
-  for (auto &V : InstList) {
+  for (auto &V : StmList) {
     cast<User>(V)->dropAllReferences();
   }
-  for (auto &V : InstList) {
+  for (auto &V : StmList) {
     delete cast<User>(V);
   }
 }
 
-BasicBlock *BasicBlock::get(std::string Name, std::vector<Instruction *> V,
+BasicBlock *BasicBlock::get(std::string Name, std::vector<Value *> V,
                             Context *K) {
   return new BasicBlock(UnType::get(K), Name, V);
 }
@@ -37,11 +37,11 @@ bool BasicBlock::classof(const Value *V) {
 }
 
 BasicBlock::value_iterator BasicBlock::begin() {
-  return InstList.begin();
+  return StmList.begin();
 }
 
 BasicBlock::value_iterator BasicBlock::end() {
-  return InstList.end();
+  return StmList.end();
 }
 
 BasicBlock::bb_iterator BasicBlock::pred_begin() {
@@ -91,11 +91,11 @@ void BasicBlock::removeSuccessor(BasicBlock *Succ) {
 }
 
 unsigned BasicBlock::size() {
-  return InstList.size();
+  return StmList.size();
 }
 
-Instruction *BasicBlock::back() {
-  return InstList.back();
+Value *BasicBlock::back() {
+  return StmList.back();
 }
 
 void BasicBlock::setParent(Function *F) {
@@ -127,7 +127,7 @@ BasicBlock *BasicBlock::getUniqueSuccessor() const {
 }
 
 void BasicBlock::print(std::ostream &Stream) const {
-  for (auto V: InstList)
+  for (auto V: StmList)
     Stream << *V << std::endl;
 }
 }
