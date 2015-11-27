@@ -2,6 +2,7 @@
 #include "rhine/IR/BasicBlock.h"
 #include "rhine/IR/Constant.h"
 #include "rhine/IR/Context.h"
+#include "rhine/IR/Function.h"
 #include "rhine/IR/Instruction.h"
 #include "rhine/Transform/Scope2Block.h"
 
@@ -12,7 +13,8 @@ Scope2Block::Scope2Block() : K(nullptr) {}
 
 Scope2Block::~Scope2Block() {}
 
-void Scope2Block::cleaveBlockAtBranches(BasicBlock *Cleavee) {
+void Scope2Block::cleaveBlockAtBranches(BasicBlock *Cleavee,
+                                        BasicBlock *ReturnTo) {
   auto Parent = Cleavee->getParent();
   auto It = std::find_if(Cleavee->begin(), Cleavee->end(),
                          [](Instruction *Arg) { return isa<IfInst>(Arg); });
@@ -26,24 +28,33 @@ void Scope2Block::cleaveBlockAtBranches(BasicBlock *Cleavee) {
       "exit", std::vector<Instruction *>(StartInst, Cleavee->end()), K);
 
   /// Remove everything from the branch to the end of the Block.
-  Cleavee->StmList.erase(StartInst, Cleavee->end());
+  Cleavee->getInstList().erase(StartInst, Cleavee->end());
 
   /// Set up predecessors and successors.
-  Cleavee->addSuccessors({TrueBlock, FalseBlock});
-  TrueBlock->addPredecessors({Cleavee});
+  Cleavee->setSuccessors({TrueBlock, FalseBlock});
+
+  TrueBlock->setPredecessors({Cleavee});
   TrueBlock->setParent(Parent);
-  FalseBlock->addPredecessors({Cleavee});
+  TrueBlock->setSuccessors({MergeBlock});
+
+  FalseBlock->setPredecessors({Cleavee});
   FalseBlock->setParent(Parent);
-  TrueBlock->addSuccessors({MergeBlock});
-  FalseBlock->addSuccessors({MergeBlock});
-  MergeBlock->addPredecessors({TrueBlock, FalseBlock});
+  FalseBlock->setSuccessors({MergeBlock});
+
+  MergeBlock->setPredecessors({TrueBlock, FalseBlock});
   MergeBlock->setParent(Parent);
+  if (ReturnTo)
+    MergeBlock->setSuccessors({ReturnTo});
 
   /// Re-populate Parent.
   Parent->push_back(TrueBlock);
   Parent->push_back(FalseBlock);
   Parent->push_back(MergeBlock);
-  return cleaveBlockAtBranches(MergeBlock);
+
+  /// Recursively cleave the three new blocks.
+  cleaveBlockAtBranches(TrueBlock, MergeBlock);
+  cleaveBlockAtBranches(FalseBlock, MergeBlock);
+  cleaveBlockAtBranches(MergeBlock, MergeBlock);
 }
 
 void Scope2Block::validateBlockForm(BasicBlock *BB) {

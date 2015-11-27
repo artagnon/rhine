@@ -1,25 +1,10 @@
 #include "rhine/IR/Context.h"
-#include "rhine/IR/Constant.h"
+#include "rhine/IR/Function.h"
 #include "rhine/IR/Instruction.h"
 #include "rhine/Externals.h"
 #include "rhine/Diagnostic/Diagnostic.h"
 
 namespace rhine {
-llvm::Constant *ConstantInt::toLL(llvm::Module *M) {
-  auto LLTy = getType()->toLL(M);
-  return llvm::ConstantInt::get(LLTy, getVal());
-}
-
-llvm::Constant *ConstantBool::toLL(llvm::Module *M) {
-  auto LLTy = getType()->toLL(M);
-  return llvm::ConstantInt::get(LLTy, getVal());
-}
-
-llvm::Constant *ConstantFloat::toLL(llvm::Module *M) {
-  auto LLTy = getType()->toLL(M);
-  return llvm::ConstantFP::get(LLTy, getVal());
-}
-
 llvm::Function *Prototype::getOrInsert(llvm::Module *M) {
   auto K = getContext();
   auto FnTy = cast<llvm::FunctionType>(getType()->toLL(M));
@@ -47,6 +32,14 @@ llvm::Function *Prototype::getOrInsert(llvm::Module *M) {
 
 llvm::Constant *Prototype::toLL(llvm::Module *M) { return getOrInsert(M); }
 
+void Function::codegenAllBlocks(llvm::Module *M) const {
+  auto EntryBlock = getEntryBlock();
+  EntryBlock->toContainerLL(M);
+  for (auto Block = EntryBlock; Block; Block = Block->getMergeBlock()) {
+    Block->toValuesLL(M);
+  }
+}
+
 llvm::Constant *Function::toLL(llvm::Module *M) {
   auto K = getContext();
   auto CurrentFunction = getOrInsert(M);
@@ -66,23 +59,11 @@ llvm::Constant *Function::toLL(llvm::Module *M) {
   K->Map.add(this, CurrentFunction);
 
   /// Codegen all blocks
-  auto EntryBlock = getEntryBlock();
-  EntryBlock->toContainerLL(M);
-  for (auto Block = EntryBlock; Block; Block = Block->getMergeBlock()) {
-    Block->toValuesLL(M);
-  }
+  codegenAllBlocks(M);
 
   auto ExitBlock = getExitBlock();
   if (!ExitBlock->size() || !isa<ReturnInst>(ExitBlock->back()))
     K->Builder->CreateRet(nullptr);
   return CurrentFunction;
-}
-
-llvm::Constant *Pointer::toLL(llvm::Module *M) {
-  auto K = getContext();
-  auto Name = getVal()->getName();
-  if (auto Val = K->Map.getl(getVal()))
-    return cast<llvm::Constant>(Val);
-  return Externals::get(K)->getMappingVal(Name, M);
 }
 }

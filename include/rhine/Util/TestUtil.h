@@ -14,9 +14,6 @@
 /// variadic templates (for which we can never come up with enough
 /// specializations).
 
-/// Concatenate unquoted, literal program text
-#define CAT_RH(Tok) #Tok
-
 /// Call EXPECT_IR with "" as the second argument.
 #define EXPECT_SUCCESSFUL_PARSE(SourcePrg) EXPECT_IR(SourcePrg, "")
 

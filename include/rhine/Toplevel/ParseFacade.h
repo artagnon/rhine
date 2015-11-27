@@ -65,6 +65,9 @@ public:
   /// conversion to LLVM IR.
   Module *parseToIR(ParseSource SrcE, std::vector<ModulePass *> TransformChain);
 
+  /// Helper that calls parseToIR with all the transforms.
+  Module *parseToIR(ParseSource SrcE);
+
   /// Returns a string in ParseAction = LL and IR cases.
   std::string parseAction(ParseSource SrcE, PostParseAction ActionE);
 

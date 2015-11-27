@@ -11,13 +11,18 @@ class Context;
 /// Convert scopes nested within one another into BasicBlocks.
 class Scope2Block : public FunctionPass {
   Context *K;
+
 public:
   Scope2Block();
   virtual ~Scope2Block();
 
-  /// Look for branch instructions in the BasicBlock, and use them to cleave the
-  /// Scope.
-  void cleaveBlockAtBranches(BasicBlock *Cleavee);
+  /// Look for branch instructions in the BasicBlock (actually a scope before
+  /// transformation), and use them to truncate the Cleavee, and generate three
+  /// more blocks: TrueBB, FalseBB, and MergeBB. An edge from MergeBB to
+  /// ReturnTo is created to return control to the main scope (nullptr in the
+  /// case of the EntryBlock scope).
+  void cleaveBlockAtBranches(BasicBlock *Cleavee,
+                             BasicBlock *ReturnTo = nullptr);
 
   /// Validates that there are no early returns or block terminators.
   void validateBlockForm(BasicBlock *BB);

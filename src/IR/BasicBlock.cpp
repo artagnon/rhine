@@ -4,16 +4,16 @@
 
 namespace rhine {
 BasicBlock::BasicBlock(Type *Ty, std::string N, std::vector<Instruction *> V)
-    : Value(Ty, RT_BasicBlock, N), Parent(nullptr), StmList(V) {
-  for (auto Stm : StmList)
+    : Value(Ty, RT_BasicBlock, N), Parent(nullptr), InstList(V) {
+  for (auto Stm : InstList)
     Stm->setParent(this);
 }
 
 BasicBlock::~BasicBlock() {
-  for (auto &V : StmList) {
+  for (auto &V : InstList) {
     cast<User>(V)->dropAllReferences();
   }
-  for (auto &V : StmList) {
+  for (auto &V : InstList) {
     delete V;
   }
 }
@@ -27,9 +27,13 @@ bool BasicBlock::classof(const Value *V) {
   return V->getValID() == RT_BasicBlock;
 }
 
-BasicBlock::value_iterator BasicBlock::begin() { return StmList.begin(); }
+std::vector<Instruction *> &BasicBlock::getInstList() {
+  return InstList;
+}
 
-BasicBlock::value_iterator BasicBlock::end() { return StmList.end(); }
+BasicBlock::value_iterator BasicBlock::begin() { return InstList.begin(); }
+
+BasicBlock::value_iterator BasicBlock::end() { return InstList.end(); }
 
 BasicBlock::bb_iterator BasicBlock::pred_begin() {
   return Predecessors.begin();
@@ -50,8 +54,12 @@ iterator_range<BasicBlock::bb_iterator> BasicBlock::succs() {
 }
 
 void BasicBlock::addPredecessors(std::vector<BasicBlock *> Preds) {
-  for (auto B : Preds)
+  for (auto &B : Preds)
     Predecessors.push_back(B);
+}
+
+void BasicBlock::setPredecessors(std::vector<BasicBlock *> Preds) {
+  Predecessors = Preds;
 }
 
 void BasicBlock::removePredecessor(BasicBlock *Pred) {
@@ -61,8 +69,12 @@ void BasicBlock::removePredecessor(BasicBlock *Pred) {
 }
 
 void BasicBlock::addSuccessors(std::vector<BasicBlock *> Succs) {
-  for (auto B : Succs)
+  for (auto &B : Succs)
     Successors.push_back(B);
+}
+
+void BasicBlock::setSuccessors(std::vector<BasicBlock *> Succs) {
+  Successors = Succs;
 }
 
 void BasicBlock::removeSuccessor(BasicBlock *Succ) {
@@ -71,9 +83,13 @@ void BasicBlock::removeSuccessor(BasicBlock *Succ) {
   Successors.erase(It, Successors.end());
 }
 
-unsigned BasicBlock::size() { return StmList.size(); }
+unsigned BasicBlock::size() { return InstList.size(); }
 
-Instruction *BasicBlock::back() { return StmList.back(); }
+Instruction *BasicBlock::back() {
+  if (!size())
+    return nullptr;
+  return InstList.back();
+}
 
 void BasicBlock::setParent(Function *F) { Parent = F; }
 
@@ -120,7 +136,7 @@ BasicBlock *BasicBlock::getMergeBlock() {
 }
 
 void BasicBlock::print(std::ostream &Stream) const {
-  for (auto V : StmList)
+  for (auto V : InstList)
     Stream << *V << std::endl;
 }
 }

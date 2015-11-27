@@ -3,6 +3,8 @@
 
 using namespace rhine;
 
+/// Test functions that should ideally be part of the runtime.
+
 TEST(Externals, Print) {
   auto SourcePrg = "def main() do\n"
                    "  print '43';\n"

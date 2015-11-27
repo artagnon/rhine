@@ -15,7 +15,6 @@
 #include "rhine/IR/UnresolvedValue.h"
 #include "rhine/IR/BasicBlock.h"
 
-using namespace std;
 using namespace llvm;
 
 namespace rhine {
@@ -85,59 +84,6 @@ public:
   static inline void Profile(FoldingSetNodeID &ID, const Type *Ty,
                              const float &Val);
   void Profile(FoldingSetNodeID &ID) const;
-  virtual llvm::Constant *toLL(llvm::Module *M) override;
-
-protected:
-  virtual void print(std::ostream &Stream) const override;
-};
-
-class Prototype : public Constant {
-  Module *ParentModule;
-  std::vector<Argument *> ArgumentList;
-  Argument *VariadicRestLoadInst;
-
-public:
-  Prototype(std::string Name, FunctionType *FTy, RTValue RTTy = RT_Prototype);
-  virtual ~Prototype();
-  void *operator new(size_t s);
-  static Prototype *get(std::string Name, FunctionType *FTy);
-  static bool classof(const Value *V);
-  void setParent(Module *Parent);
-  Module *getParent() const;
-  virtual std::string getMangledName() const;
-  llvm::Function *getOrInsert(llvm::Module *M);
-  void setArguments(std::vector<Argument *> &L);
-  void setVariadicRest(Argument *Rest);
-  std::vector<Argument *> getArguments() const;
-  typedef std::vector<Argument *>::iterator arg_iterator;
-  arg_iterator arg_begin();
-  arg_iterator arg_end();
-  iterator_range<arg_iterator> args();
-  virtual llvm::Constant *toLL(llvm::Module *M) override;
-
-protected:
-  virtual void print(std::ostream &Stream) const override;
-  void emitArguments(std::ostream &Stream) const;
-};
-
-class Function : public Prototype {
-  std::vector<BasicBlock *> Val;
-
-public:
-  Function(std::string Name, FunctionType *FTy);
-  virtual ~Function();
-  void *operator new(size_t s);
-  static Function *get(std::string Name, FunctionType *FTy);
-  static bool classof(const Value *V);
-  virtual std::string getMangledName() const override;
-  void push_back(BasicBlock *NewBB);
-  BasicBlock *front() const;
-  BasicBlock *back() const;
-  BasicBlock *getEntryBlock() const;
-  BasicBlock *getExitBlock() const;
-  typedef std::vector<BasicBlock *>::iterator iterator;
-  iterator begin();
-  iterator end();
   virtual llvm::Constant *toLL(llvm::Module *M) override;
 
 protected:

@@ -3,6 +3,8 @@
 
 using namespace rhine;
 
+/// Stress the functionality of the dollar ($) operator.
+
 TEST(DollarOperator, Bare) {
   auto SourcePrg = "def main() do\n"
                    "  $ 3;\n"
