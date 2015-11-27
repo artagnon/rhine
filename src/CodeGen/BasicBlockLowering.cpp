@@ -1,5 +1,5 @@
 #include "rhine/Externals.h"
-#include "rhine/IR/Constant.h"
+#include "rhine/IR/Function.h"
 #include "rhine/IR/Context.h"
 #include "rhine/IR/Instruction.h"
 
@@ -46,10 +46,10 @@ llvm::Value *BasicBlock::getPhiValueFromBranchBlock(llvm::Module *M) {
 }
 
 llvm::Value *BasicBlock::toValuesLL(llvm::Module *M) {
-  if (StmList.begin() == StmList.end())
+  if (InstList.begin() == InstList.end())
     return nullptr;
   std::vector<Instruction *>::iterator It;
-  for (It = StmList.begin(); std::next(It) != StmList.end(); ++It)
+  for (It = InstList.begin(); std::next(It) != InstList.end(); ++It)
     (*It)->toLL(M);
   return (*It)->toLL(M);
 }

@@ -1,7 +1,7 @@
 #include "rhine/IR/Type.h"
 #include "rhine/Externals.h"
 #include "rhine/IR/Context.h"
-#include "rhine/IR/Constant.h"
+#include "rhine/IR/Function.h"
 
 #include "llvm/IR/Type.h"
 #include "llvm/ADT/ArrayRef.h"

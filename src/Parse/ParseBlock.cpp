@@ -1,5 +1,6 @@
 #include "rhine/IR/BasicBlock.h"
 #include "rhine/IR/Constant.h"
+#include "rhine/IR/Function.h"
 #include "rhine/IR/Instruction.h"
 #include "rhine/IR/Type.h"
 #include "rhine/Parse/ParseDriver.h"
@@ -30,7 +31,7 @@ void extractInstructionsFromStmt(Instruction *Top,
 
 BasicBlock *Parser::parseBlock(int StartToken, std::string StartTokenStr,
                                std::map<int, std::string> EndTokens) {
-  std::vector<Instruction *> StmList;
+  std::vector<Instruction *> InstList;
 
   if (StartToken && !getTok(StartToken)) {
     writeError("expected '" + StartTokenStr + "' to start block");
@@ -43,10 +44,10 @@ BasicBlock *Parser::parseBlock(int StartToken, std::string StartTokenStr,
         std::vector<Instruction *> Pieces;
         extractInstructionsFromStmt(Inst, Pieces);
         for (auto It = Pieces.rbegin(); It != Pieces.rend(); ++It)
-          StmList.push_back(*It);
+          InstList.push_back(*It);
       } else
         /// Dangling values at the end of blocks are tidied into TerminatorInst.
-        StmList.push_back(TerminatorInst::get(Stmt));
+        InstList.push_back(TerminatorInst::get(Stmt));
     }
   }
 
@@ -61,7 +62,7 @@ BasicBlock *Parser::parseBlock(int StartToken, std::string StartTokenStr,
     return nullptr;
   }
   getTok();
-  return BasicBlock::get("entry", StmList, K);
+  return BasicBlock::get("entry", InstList, K);
 }
 
 Function *Parser::buildFcn(std::string FcnName,

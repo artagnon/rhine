@@ -3,6 +3,8 @@
 
 using namespace rhine;
 
+/// Stress handling (passing around, invoking) function pointers.
+
 TEST(FunctionPointer, BasicCodeGen) {
   auto SourcePrg = "def callee() do\n"
                    "  ret 3;\n"

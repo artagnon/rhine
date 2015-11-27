@@ -16,15 +16,18 @@ class BasicBlock : public Value {
   Function *Parent;
   std::vector<BasicBlock *> Predecessors;
   std::vector<BasicBlock *> Successors;
+  std::vector<Instruction *> InstList;
 
 public:
-  std::vector<Instruction *> StmList;
-
   /// Standard methods
   BasicBlock(Type *Ty, std::string Name, std::vector<Instruction *> V);
   virtual ~BasicBlock();
   static BasicBlock *get(std::string Name, std::vector<Instruction *> V, Context *K);
   static bool classof(const Value *V);
+
+  /// Just take out the instruction list and do whatever with it; we don't
+  /// provide functions to manipulate it.
+  std::vector<Instruction *> &getInstList();
 
   /// The function's responsibility is simply to codegen the EntryBlock. A block
   /// with a terminator instruction (i.e. every block) will codegen other blocks
@@ -51,19 +54,17 @@ public:
   bb_iterator succ_end();
   iterator_range<bb_iterator> succs();
 
-  /// Methods to add and remove a single predecessor or successor
+  /// Methods to add and remove single/multiple precessors/successors.
   void addPredecessors(std::vector<BasicBlock *> Preds);
+  void setPredecessors(std::vector<BasicBlock *> Preds);
   void removePredecessor(BasicBlock *Pred);
   void addSuccessors(std::vector<BasicBlock *> Succs);
+  void setSuccessors(std::vector<BasicBlock *> Succs);
   void removeSuccessor(BasicBlock *Succ);
 
   /// Proxy for std methods acting on ValueList
   unsigned size();
   Instruction *back();
-
-  template <class ForwardIterator, class T>
-  void replace(ForwardIterator First, ForwardIterator Last, const T &OldValue,
-               const T &NewValue);
 
   /// Acessors to Parent function
   void setParent(Function *F);

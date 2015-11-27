@@ -1,6 +1,7 @@
 #include "rhine/Diagnostic/Diagnostic.h"
 #include "rhine/IR/BasicBlock.h"
 #include "rhine/IR/Constant.h"
+#include "rhine/IR/Function.h"
 #include "rhine/IR/Context.h"
 #include "rhine/IR/GlobalValue.h"
 #include "rhine/IR/Instruction.h"
@@ -28,11 +29,18 @@ Type *TypeInfer::visit(BasicBlock *BB) {
 
 Type *TypeInfer::visit(Prototype *V) { return V->getType(); }
 
+Type *TypeInfer::typeinferAllBlocks(Function *F) {
+  auto EntryBlock = F->getEntryBlock();
+  Type *LastTy = VoidType::get(K);
+  for (auto Block = EntryBlock; Block; Block = Block->getMergeBlock()) {
+    LastTy = visit(Block);
+  }
+  return LastTy;
+}
+
 Type *TypeInfer::visit(Function *V) {
   auto FTy = cast<FunctionType>(V->getType());
-  Type *LastTy = VoidType::get(K);
-  for (auto BB : *V)
-    LastTy = visit(BB);
+  auto LastTy = typeinferAllBlocks(V);
   if (isa<UnType>(FTy->getRTy())) {
     FTy = FunctionType::get(LastTy, FTy->getATys(), false);
     V->setType(FTy);

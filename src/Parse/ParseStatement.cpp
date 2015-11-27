@@ -3,6 +3,7 @@
 
 #include "rhine/IR/Instruction.h"
 #include "rhine/IR/GlobalValue.h"
+#include "rhine/IR/Function.h"
 #include "rhine/IR/Context.h"
 #include "rhine/IR/Value.h"
 

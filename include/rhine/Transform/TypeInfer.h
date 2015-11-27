@@ -31,6 +31,8 @@ public:
   Type *visit(CallInst *V) override;
   Type *visit(ReturnInst *V) override;
   Type *visit(TerminatorInst *V) override;
+private:
+  Type *typeinferAllBlocks(Function *F);
 };
 }
 

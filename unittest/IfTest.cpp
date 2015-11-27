@@ -1,7 +1,11 @@
 #include "rhine/Util/TestUtil.h"
+#include "rhine/IR/Instruction.h"
+#include "rhine/IR/Module.h"
 #include "gtest/gtest.h"
 
 using namespace rhine;
+
+/// Stress operation of if statements.
 
 TEST(If, DanglingIf) {
   auto SourcePrg = "def foo do\n"
@@ -22,7 +26,11 @@ TEST(If, SimpleIf) {
 }
 
 TEST(If, IfWithoutElseClause) {
-  auto SourcePrg = CAT_RH(def foo do if false do print '2'; end end);
+  auto SourcePrg = "def foo do\n"
+                   "  if false do\n"
+                   "    print '2'\n"
+                   "  end\n"
+                   "end";
   EXPECT_SUCCESSFUL_PARSE(SourcePrg);
 }
 
@@ -40,8 +48,13 @@ TEST(If, BasicCodeGen) {
 }
 
 TEST(If, SideEffectual) {
-  auto SourcePrg =
-      CAT_RH(def main do if false do print '2'; else print '3'; end end);
+  auto SourcePrg = "def main do\n"
+                   "  if false do\n"
+                   "    print '2'\n"
+                   "  else\n"
+                   "    print '3'\n"
+                   "  end\n"
+                   "end";
   auto ExpectedOut = "3";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
@@ -57,6 +70,35 @@ TEST(If, LifeAfterPhi) {
                    "end";
   auto ExpectedOut = "2";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
+}
+
+TEST(If, Nested) {
+  auto SourcePrg = "def main do\n"
+                   "  if true do\n"
+                   "    if true do\n"
+                   "      print 2\n"
+                   "    else\n"
+                   "      print 3\n"
+                   "    end\n"
+                   "  else\n"
+                   "    print 4\n"
+                   "  end\n"
+                   "  print 5\n"
+                   "end";
+  ParseFacade Pf(SourcePrg);
+  auto Mod = Pf.parseToIR(ParseSource::STRING);
+  auto EntryBlock = Mod->front()->getEntryBlock();
+  auto &InstList = EntryBlock->getInstList();
+  EXPECT_EQ(InstList.size(), 1u);
+  auto IfStmt = cast<IfInst>(InstList[0]);
+  auto &TrueInstList = IfStmt->getTrueBB()->getInstList();
+  EXPECT_EQ(TrueInstList.size(), 1u);
+  EXPECT_EQ(IfStmt->getFalseBB()->getInstList().size(), 1u);
+  auto NestedIfStmt = cast<IfInst>(TrueInstList[0]);
+  EXPECT_EQ(NestedIfStmt->getTrueBB()->getInstList().size(), 1u);
+  EXPECT_EQ(NestedIfStmt->getFalseBB()->getInstList().size(), 1u);
+  // auto ExpectedOut = "235";
+  // EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
 
 TEST(If, DISABLED_PhiAssignment) {

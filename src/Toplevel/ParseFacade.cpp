@@ -1,21 +1,21 @@
-#include "rhine/Toplevel/ParseFacade.h"
-#include "rhine/Parse/ParseDriver.h"
-#include "rhine/Transform/Scope2Block.h"
-#include "rhine/Transform/TypeInfer.h"
-#include "rhine/Transform/LambdaLifting.h"
-#include "rhine/Transform/TypeCoercion.h"
-#include "rhine/Transform/Resolve.h"
 #include "rhine/IR/Context.h"
 #include "rhine/IR/Module.h"
+#include "rhine/Parse/ParseDriver.h"
+#include "rhine/Toplevel/ParseFacade.h"
+#include "rhine/Transform/LambdaLifting.h"
+#include "rhine/Transform/Resolve.h"
+#include "rhine/Transform/Scope2Block.h"
+#include "rhine/Transform/TypeCoercion.h"
+#include "rhine/Transform/TypeInfer.h"
 
-#include "llvm/ExecutionEngine/ExecutionEngine.h"
 #include "llvm/Bitcode/ReaderWriter.h"
-#include "llvm/Support/raw_ostream.h"
-#include "llvm/Support/FileSystem.h"
+#include "llvm/ExecutionEngine/ExecutionEngine.h"
 #include "llvm/IR/Module.h"
+#include "llvm/Support/FileSystem.h"
+#include "llvm/Support/raw_ostream.h"
 
-#include <iostream>
 #include <cstdlib>
+#include <iostream>
 #include <string>
 
 namespace rhine {
@@ -23,9 +23,9 @@ ParseFacade::ParseFacade(std::string PrgString, std::ostream &ErrStream,
                          bool Debug)
     : PrgString(PrgString), ErrStream(ErrStream), Debug(Debug) {}
 
-  ParseFacade::ParseFacade(const char *PrgString, std::ostream &ErrStream,
-                           bool Debug)
-      : PrgString(std::string(PrgString)), ErrStream(ErrStream), Debug(Debug) {}
+ParseFacade::ParseFacade(const char *PrgString, std::ostream &ErrStream,
+                         bool Debug)
+    : PrgString(std::string(PrgString)), ErrStream(ErrStream), Debug(Debug) {}
 
 ParseFacade::~ParseFacade() {}
 
@@ -65,6 +65,16 @@ Module *ParseFacade::parseToIR(ParseSource SrcE,
   for (auto Transform : TransformChain)
     Transform->runOnModule(Root);
   return Root;
+}
+
+Module *ParseFacade::parseToIR(ParseSource SrcE) {
+  Resolve ResolveL;
+  LambdaLifting LambLift;
+  Scope2Block Flatten;
+  TypeInfer TyInfer;
+  TypeCoercion TyCoercion;
+  return parseToIR(SrcE,
+                   {&LambLift, &Flatten, &ResolveL, &TyInfer, &TyCoercion});
 }
 
 void ParseFacade::writeBitcodeToFile() {
@@ -110,7 +120,7 @@ std::string ParseFacade::parseAction(ParseSource SrcE,
   case PostParseAction::LinkExecutable:
     writeBitcodeToFile();
     if (auto LinkerProcess = popen("clang -o foo foo.bc", "r")) {
-      if (auto ExitStatus = pclose(LinkerProcess)/256) {
+      if (auto ExitStatus = pclose(LinkerProcess) / 256) {
         std::cerr << "Linker exited with nonzero status: " << ExitStatus;
         exit(1);
       }
