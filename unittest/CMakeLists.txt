@@ -22,7 +22,7 @@ add_executable(UnitTest
   "${CMAKE_CURRENT_SOURCE_DIR}/DiagnosticTest.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Scope2BlockTest.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/IfTest.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/RetTest.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ReturnTest.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/BitcodeTest.cpp")
 set_target_properties(UnitTest PROPERTIES
   LINKER_LANGUAGE CXX

@@ -58,8 +58,6 @@ void TypeCoercion::convertOperands(User *U, std::vector<Type *> Tys) {
   for (Use &ThisUse : U->operands()) {
     Value *V = ThisUse;
     ThisUse.set(convertValue(V, Tys[It++]));
-    if (auto Inst = dyn_cast<Instruction>(V))
-      transformInstruction(Inst);
   }
 }
 
@@ -105,8 +103,7 @@ void TypeCoercion::transformInstruction(Instruction *I) {
 void TypeCoercion::runOnFunction(Function *F) {
   K = F->getContext();
   for (auto &BB : *F)
-    for (auto &V : *BB)
-      if (auto I = dyn_cast<Instruction>(V))
-        transformInstruction(I);
+    for (auto &I : *BB)
+      transformInstruction(I);
 }
 }
