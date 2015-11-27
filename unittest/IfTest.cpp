@@ -26,11 +26,6 @@ TEST(If, IfWithoutElseClause) {
   EXPECT_SUCCESSFUL_PARSE(SourcePrg);
 }
 
-TEST(If, DISABLED_AssignmentIf) {
-  auto SourcePrg = CAT_RH(def foo do X = if false do 2; else 3; end end);
-  EXPECT_SUCCESSFUL_PARSE(SourcePrg);
-}
-
 TEST(If, BasicCodeGen) {
   auto SourcePrg = "def main do\n"
                    "  if false do\n"
@@ -73,5 +68,6 @@ TEST(If, DISABLED_PhiAssignment) {
                    "  print x\n"
                    "end";
   auto ExpectedOut = "3";
+  EXPECT_SUCCESSFUL_PARSE(SourcePrg);
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
