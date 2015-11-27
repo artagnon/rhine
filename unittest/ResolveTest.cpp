@@ -98,7 +98,7 @@ TEST(Resolve, OutOfScope) {
   EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
 }
 
-TEST(Resolve, DISABLED_CrossBlockDisambiguation) {
+TEST(Resolve, CrossBlockDisambiguation) {
   auto SourcePrg = "def main do\n"
                    "  if true do\n"
                    "     Moo = 2;\n"

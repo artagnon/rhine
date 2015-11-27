@@ -3,7 +3,7 @@
 
 using namespace rhine;
 
-TEST(Ret, Assignment) {
+TEST(Return, Assignment) {
   auto SourcePrg = "def main() do\n"
                    "  ret $ X = 3;\n"
                    "end";
@@ -11,7 +11,7 @@ TEST(Ret, Assignment) {
   EXPECT_COMPILE_DEATH(SourcePrg, Err);
 }
 
-TEST(Ret, VoidFunction) {
+TEST(Return, VoidFunction) {
   auto SourcePrg = "def foo() do ret () end\n"
                    "def main() do\n"
                    "  ret $ foo ();\n"
@@ -20,10 +20,20 @@ TEST(Ret, VoidFunction) {
   EXPECT_COMPILE_DEATH(SourcePrg, Err);
 }
 
-TEST(Ret, DISABLED_Ret) {
+TEST(Return, DISABLED_Dollar_Return) {
   auto SourcePrg = "def main() do\n"
                    "  ret $ ret 3;\n"
                    "end";
-  auto Err = "string stream:2:7: error: expected 'if' expression";
+  auto Err = "string stream:2:7";
+  EXPECT_COMPILE_DEATH(SourcePrg, Err);
+}
+
+TEST(Return, EarlyExit) {
+  auto SourcePrg = "def foo() do ret () end\n"
+                   "def main() do\n"
+                   "  ret $ foo ()\n"
+                   "  X = 2\n"
+                   "end";
+  auto Err = "string stream:3:3: error: unexpected block terminator";
   EXPECT_COMPILE_DEATH(SourcePrg, Err);
 }

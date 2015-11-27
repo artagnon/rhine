@@ -35,3 +35,22 @@ TEST(BasicBlock, SetNestedInstructionParent)
         if (auto NestedInst = dyn_cast<rhine::Instruction>(OuterInst->getOperand(0)))
           ASSERT_EQ(cast<rhine::Instruction>(NestedInst)->getParent(), BB);
 }
+
+TEST(BasicBlock, NonInstruction)
+{
+  auto SourcePrg =
+    "def main do\n"
+    "  2;\n"
+    "end";
+  EXPECT_LL(SourcePrg, "ret void");
+}
+
+TEST(BasicBlock, MoreNonInstructions)
+{
+  auto SourcePrg =
+    "def main do\n"
+    "  2\n"
+    "  3\n"
+    "end";
+  EXPECT_COMPILE_DEATH(SourcePrg, "unexpected block terminator");
+}
