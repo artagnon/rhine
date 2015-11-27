@@ -20,7 +20,7 @@ Type *TypeInfer::visit(GlobalString *V) { return V->getType(); }
 Type *TypeInfer::visit(BasicBlock *BB) {
   if (BB->begin() == BB->end())
     return VoidType::get(K);
-  std::vector<Value *>::iterator It;
+  std::vector<Instruction *>::iterator It;
   for (It = BB->begin(); std::next(It) != BB->end(); ++It)
     visit(*It);
   return visit(*It);
@@ -136,6 +136,12 @@ Type *TypeInfer::visit(ReturnInst *V) {
     K->DiagPrinter->errorReport(Val->getSourceLocation(), CannotReturnVoid);
     exit(1);
   }
+  V->setType(Ty);
+  return Ty;
+}
+
+Type *TypeInfer::visit(TerminatorInst *V) {
+  auto Ty = visit(V->getVal());
   V->setType(Ty);
   return Ty;
 }

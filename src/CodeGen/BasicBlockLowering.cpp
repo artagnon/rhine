@@ -48,7 +48,7 @@ llvm::Value *BasicBlock::getPhiValueFromBranchBlock(llvm::Module *M) {
 llvm::Value *BasicBlock::toValuesLL(llvm::Module *M) {
   if (StmList.begin() == StmList.end())
     return nullptr;
-  std::vector<Value *>::iterator It;
+  std::vector<Instruction *>::iterator It;
   for (It = StmList.begin(); std::next(It) != StmList.end(); ++It)
     (*It)->toLL(M);
   return (*It)->toLL(M);

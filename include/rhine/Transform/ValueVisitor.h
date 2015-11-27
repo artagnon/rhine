@@ -22,6 +22,7 @@ class MallocInst;
 class LoadInst;
 class CallInst;
 class ReturnInst;
+class TerminatorInst;
 
 template <typename R>
 class ValueVisitor {
@@ -29,23 +30,24 @@ protected:
   virtual ~ValueVisitor() {}
   virtual R visit(Value *V) {
     switch(V->getValID()) {
-    case RT_ConstantInt: return visit(dyn_cast<ConstantInt>(V)); break;
-    case RT_ConstantBool: return visit(dyn_cast<ConstantBool>(V)); break;
-    case RT_ConstantFloat: return visit(dyn_cast<ConstantFloat>(V)); break;
-    case RT_GlobalString: return visit(dyn_cast<GlobalString>(V)); break;
-    case RT_Prototype: return visit(dyn_cast<Prototype>(V)); break;
-    case RT_Function: return visit(dyn_cast<Function>(V)); break;
-    case RT_Pointer: return visit(dyn_cast<Pointer>(V)); break;
-    case RT_AddInst: return visit(dyn_cast<AddInst>(V)); break;
-    case RT_SubInst: return visit(dyn_cast<SubInst>(V)); break;
-    case RT_IfInst: return visit(dyn_cast<IfInst>(V)); break;
-    case RT_Argument: return visit(dyn_cast<Argument>(V)); break;
-    case RT_MallocInst: return visit(dyn_cast<MallocInst>(V)); break;
-    case RT_LoadInst: return visit(dyn_cast<LoadInst>(V)); break;
-    case RT_StoreInst: return visit(dyn_cast<StoreInst>(V)); break;
-    case RT_CallInst: return visit(dyn_cast<CallInst>(V)); break;
-    case RT_ReturnInst: return visit(dyn_cast<ReturnInst>(V)); break;
-    case RT_BasicBlock: return visit(dyn_cast<BasicBlock>(V)); break;
+    case RT_ConstantInt: return visit(cast<ConstantInt>(V)); break;
+    case RT_ConstantBool: return visit(cast<ConstantBool>(V)); break;
+    case RT_ConstantFloat: return visit(cast<ConstantFloat>(V)); break;
+    case RT_GlobalString: return visit(cast<GlobalString>(V)); break;
+    case RT_Prototype: return visit(cast<Prototype>(V)); break;
+    case RT_Function: return visit(cast<Function>(V)); break;
+    case RT_Pointer: return visit(cast<Pointer>(V)); break;
+    case RT_AddInst: return visit(cast<AddInst>(V)); break;
+    case RT_SubInst: return visit(cast<SubInst>(V)); break;
+    case RT_IfInst: return visit(cast<IfInst>(V)); break;
+    case RT_Argument: return visit(cast<Argument>(V)); break;
+    case RT_MallocInst: return visit(cast<MallocInst>(V)); break;
+    case RT_LoadInst: return visit(cast<LoadInst>(V)); break;
+    case RT_StoreInst: return visit(cast<StoreInst>(V)); break;
+    case RT_CallInst: return visit(cast<CallInst>(V)); break;
+    case RT_ReturnInst: return visit(cast<ReturnInst>(V)); break;
+    case RT_TerminatorInst: return visit(cast<TerminatorInst>(V)); break;
+    case RT_BasicBlock: return visit(cast<BasicBlock>(V)); break;
     default: assert(0 && "Unknown ValueVisitor dispatch");
     }
   }
@@ -65,6 +67,7 @@ protected:
   virtual R visit(StoreInst *S) = 0;
   virtual R visit(CallInst *C) = 0;
   virtual R visit(ReturnInst *C) = 0;
+  virtual R visit(TerminatorInst *C) = 0;
   virtual R visit(BasicBlock *BB) = 0;
 };
 }

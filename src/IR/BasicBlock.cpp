@@ -3,25 +3,22 @@
 #include "rhine/IR/Module.h"
 
 namespace rhine {
-BasicBlock::BasicBlock(Type *Ty, std::string N, std::vector<Value *> V)
+BasicBlock::BasicBlock(Type *Ty, std::string N, std::vector<Instruction *> V)
     : Value(Ty, RT_BasicBlock, N), Parent(nullptr), StmList(V) {
   for (auto Stm : StmList)
-    if (auto Inst = dyn_cast<Instruction>(Stm))
-      Inst->setParent(this);
+    Stm->setParent(this);
 }
 
 BasicBlock::~BasicBlock() {
   for (auto &V : StmList) {
-    if (dyn_cast<Instruction>(V))
-      cast<User>(V)->dropAllReferences();
+    cast<User>(V)->dropAllReferences();
   }
   for (auto &V : StmList) {
-    if (dyn_cast<Instruction>(V))
-      delete V;
+    delete V;
   }
 }
 
-BasicBlock *BasicBlock::get(std::string Name, std::vector<Value *> V,
+BasicBlock *BasicBlock::get(std::string Name, std::vector<Instruction *> V,
                             Context *K) {
   return new BasicBlock(UnType::get(K), Name, V);
 }
@@ -76,7 +73,7 @@ void BasicBlock::removeSuccessor(BasicBlock *Succ) {
 
 unsigned BasicBlock::size() { return StmList.size(); }
 
-Value *BasicBlock::back() { return StmList.back(); }
+Instruction *BasicBlock::back() { return StmList.back(); }
 
 void BasicBlock::setParent(Function *F) { Parent = F; }
 
