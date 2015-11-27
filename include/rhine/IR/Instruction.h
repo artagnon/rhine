@@ -180,7 +180,7 @@ public:
   /// Fixed at one operand.
   void *operator new(size_t S);
 
-  static TerminatorInst *get(Value *V, Context *K);
+  static TerminatorInst *get(Value *V);
   static bool classof(const Value *V);
 
   /// For single operand functions, {get,set}Val serves an obvious purpose

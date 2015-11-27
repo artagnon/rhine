@@ -19,10 +19,8 @@ public:
   /// Scope.
   void cleaveBlockAtBranches(BasicBlock *Cleavee);
 
-  /// Validates that all but the last statement is an instruction. The last
-  /// statement is allowed to be a Value, which can be used in a phi (when
-  /// assigning to an If statement).
-  bool isValidBlock(BasicBlock *BB);
+  /// Validates that there are no early returns or block terminators.
+  void validateBlockForm(BasicBlock *BB);
 
   /// Sets up the Context and calls the subroutines.
   virtual void runOnFunction(Function *F) override;

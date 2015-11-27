@@ -30,6 +30,7 @@ public:
   Type *visit(StoreInst *V) override;
   Type *visit(CallInst *V) override;
   Type *visit(ReturnInst *V) override;
+  Type *visit(TerminatorInst *V) override;
 };
 }
 

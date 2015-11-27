@@ -19,7 +19,7 @@ bool Parser::matchesAnyTokenPair(std::map<int, std::string> &TokenPairs) {
 }
 
 void extractInstructionsFromStmt(Instruction *Top,
-                                 std::vector<Value *> &Accumulate) {
+                                 std::vector<Instruction *> &Accumulate) {
   Accumulate.push_back(Top);
   for (auto Op : Top->operands()) {
     Value *Val = Op;
@@ -30,7 +30,7 @@ void extractInstructionsFromStmt(Instruction *Top,
 
 BasicBlock *Parser::parseBlock(int StartToken, std::string StartTokenStr,
                                std::map<int, std::string> EndTokens) {
-  std::vector<Value *> StmList;
+  std::vector<Instruction *> StmList;
 
   if (StartToken && !getTok(StartToken)) {
     writeError("expected '" + StartTokenStr + "' to start block");
@@ -40,12 +40,13 @@ BasicBlock *Parser::parseBlock(int StartToken, std::string StartTokenStr,
   while (!matchesAnyTokenPair(EndTokens) && CurTok != END) {
     if (auto Stmt = parseSingleStmt()) {
       if (auto Inst = dyn_cast<Instruction>(Stmt)) {
-        std::vector<Value *> Pieces;
+        std::vector<Instruction *> Pieces;
         extractInstructionsFromStmt(Inst, Pieces);
         for (auto It = Pieces.rbegin(); It != Pieces.rend(); ++It)
           StmList.push_back(*It);
       } else
-        StmList.push_back(Stmt);
+        /// Dangling values at the end of blocks are tidied into TerminatorInst.
+        StmList.push_back(TerminatorInst::get(Stmt));
     }
   }
 

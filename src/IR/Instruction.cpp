@@ -239,7 +239,7 @@ void *TerminatorInst::operator new(size_t S) {
   return User::operator new(S, 1);
 }
 
-TerminatorInst *TerminatorInst::get(Value *V, Context *K) {
+TerminatorInst *TerminatorInst::get(Value *V) {
   auto Obj = new TerminatorInst(V->getType());
   Obj->setOperand(0, V);
   return Obj;

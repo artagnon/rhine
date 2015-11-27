@@ -18,12 +18,12 @@ class BasicBlock : public Value {
   std::vector<BasicBlock *> Successors;
 
 public:
-  std::vector<Value *> StmList;
+  std::vector<Instruction *> StmList;
 
   /// Standard methods
-  BasicBlock(Type *Ty, std::string Name, std::vector<Value *> V);
+  BasicBlock(Type *Ty, std::string Name, std::vector<Instruction *> V);
   virtual ~BasicBlock();
-  static BasicBlock *get(std::string Name, std::vector<Value *> V, Context *K);
+  static BasicBlock *get(std::string Name, std::vector<Instruction *> V, Context *K);
   static bool classof(const Value *V);
 
   /// The function's responsibility is simply to codegen the EntryBlock. A block
@@ -38,7 +38,7 @@ public:
   llvm::Value *toValuesLL(llvm::Module *M);
 
   /// Iterator over all the instructions in this BB
-  typedef std::vector<Value *>::iterator value_iterator;
+  typedef std::vector<Instruction *>::iterator value_iterator;
   value_iterator begin();
   value_iterator end();
 
@@ -59,7 +59,7 @@ public:
 
   /// Proxy for std methods acting on ValueList
   unsigned size();
-  Value *back();
+  Instruction *back();
 
   template <class ForwardIterator, class T>
   void replace(ForwardIterator First, ForwardIterator Last, const T &OldValue,
