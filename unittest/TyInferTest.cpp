@@ -3,6 +3,8 @@
 
 using namespace rhine;
 
+/// Stress the type inference engine.
+
 TEST(TyInfer, TypeAnnotation) {
   auto SourcePrg = "def id(var ~Int) do\n"
                    "  ret 0;\n"
@@ -24,4 +26,22 @@ TEST(TyInfer, PropagationFromArgument) {
                    "  ret var;\n"
                    "end";
   EXPECT_LL(SourcePrg, "define i32 @id(i32)", "ret i32 %0");
+}
+
+TEST(TyInfer, DISABLED_InferArgumentFromInstruction) {
+  auto SourcePrg = "def pid(var) do\n"
+                   "  ret $ var + 2;\n"
+                   "end";
+  EXPECT_LL(SourcePrg, "define i32 @id(i32)", "ret i32");
+}
+
+TEST(TyInfer, InferCallFromFunction) {
+  auto SourcePrg = "def cid(var ~Int) do\n"
+                   "  ret $ var + 2;\n"
+                   "end\n"
+                   "def main do\n"
+                   "  ret $ cid 2\n"
+                   "end";
+  EXPECT_LL(SourcePrg, "define i32 @cid(i32)", "define i32 @main",
+            "ret i32 %cid1");
 }

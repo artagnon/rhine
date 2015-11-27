@@ -22,7 +22,7 @@ TEST(IR, AddTwoInt)
     "  ret $ 3 + 2\n"
     "end";
   auto ExpectedIR =
-    "ret + ~Fn(Int -> Int -> Int)\n"
+    "ret + ~Int\n"
     "3 ~Int\n"
     "2 ~Int\n";
   EXPECT_IR(SourcePrg, ExpectedIR);
@@ -35,7 +35,7 @@ TEST(IR, SubTwoInt)
     "  ret $ 3 - 2\n"
     "end";
   auto ExpectedIR =
-    "ret - ~Fn(Int -> Int -> Int)\n"
+    "ret - ~Int\n"
     "3 ~Int\n"
     "2 ~Int\n";
   EXPECT_IR(SourcePrg, ExpectedIR);
@@ -113,7 +113,7 @@ TEST(IR, TwoArguments)
     "  ret $ a + b\n"
     "end";
   auto ExpectedIR =
-    "ret + ~Fn(Int -> Int -> Int)\n"
+    "ret + ~Int\n"
     "a ~Int\n"
     "b ~Int\n";
   EXPECT_IR(SourcePrg, ExpectedIR);
