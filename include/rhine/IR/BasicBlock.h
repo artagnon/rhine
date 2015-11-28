@@ -19,20 +19,39 @@ class BasicBlock : public Value {
   std::vector<Instruction *> InstList;
 
 public:
-  /// Standard methods
+  /// The name is just a hint: we don't actually uniquify names; llvm does.
   BasicBlock(Type *Ty, std::string Name, std::vector<Instruction *> V);
+
+  /// Delete all the instructions, after dropping references to all its uses. In
+  /// the case of a branch instruction, the _references_ to the TrueBB and
+  /// FalseBB will be dropped, but those BasicBlocks won't be deleted until the
+  /// parent that iterates over BasicBlocks deletes them.
   virtual ~BasicBlock();
-  static BasicBlock *get(std::string Name, std::vector<Instruction *> V, Context *K);
+
+  static BasicBlock *get(std::string Name, std::vector<Instruction *> V,
+                         Context *K);
   static bool classof(const Value *V);
 
-  /// Just take out the instruction list and do whatever with it; we don't
-  /// provide functions to manipulate it.
+  /// Just take out the instruction list as a reference, and do whatever with
+  /// it; we don't provide functions to manipulate it.
   std::vector<Instruction *> &getInstList();
 
-  /// The function's responsibility is simply to codegen the EntryBlock. A block
-  /// with a terminator instruction (i.e. every block) will codegen other blocks
-  /// referenced by the terminator. So, an IfInst codegens the TrueBlock, the
-  /// FalseBlock, and the MergeBlock.
+  /// A block with a terminator instruction (i.e. every block) will codegen
+  /// other blocks referenced by the terminator. So, an IfInst codegens the
+  /// TrueBlock and the FalseBlock, but not the MergeBlock. We codegen just the
+  /// current block, and the corresponding MergeBlock, if it exists.
+  ///
+  /// def main do
+  ///   print 'entryBlock'     < * EntryBlock Inst 1
+  ///   if (1) do              < * EntryBlock Inst 2 (codegens TrueBB, FalseBB)
+  ///     print 'trueBranch'   < TrueBB Inst 1
+  ///   else
+  ///     print 'falseBranch'  < FalseBB Inst 1
+  ///   end
+  ///   print 'mergeBranch'    < * MergeBlock Inst 1
+  /// end
+  ///
+  /// The instructions marked with asterisks are codegened directly by us.
   virtual llvm::Value *toLL(llvm::Module *M) override;
 
   /// Special methods to generate just the BasicBlock, and lower just the

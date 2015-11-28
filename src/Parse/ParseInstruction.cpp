@@ -88,7 +88,9 @@ Instruction *Parser::parseIf() {
   }
   auto Conditional = parseRtoken();
   auto TrueBlock =
-      parseBlock(DOBLOCK, "do", {{ELSE, "else"}, {ENDBLOCK, "end"}});
+    parseBlock(DOBLOCK, "do", {{ELSE, "else"}, {ENDBLOCK, "end"}});
+  if (!TrueBlock)
+    return nullptr;
   auto FalseBlock = BasicBlock::get("false", {}, K);
   if (LastTok == ELSE)
     FalseBlock = parseBlock(0, "", {{ENDBLOCK, "end"}});
