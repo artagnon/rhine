@@ -116,7 +116,7 @@ BasicBlock *BasicBlock::getUniqueSuccessor() const {
 }
 
 BasicBlock *BasicBlock::getMergeBlock() {
-  if (!Successors.size())
+  if (Successors.size() < 2)
     return nullptr;
   std::vector<unsigned> SuccessorTally;
   SuccessorTally.push_back(Successors.size());

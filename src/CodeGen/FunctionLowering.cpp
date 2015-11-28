@@ -32,14 +32,6 @@ llvm::Function *Prototype::getOrInsert(llvm::Module *M) {
 
 llvm::Constant *Prototype::toLL(llvm::Module *M) { return getOrInsert(M); }
 
-void Function::codegenAllBlocks(llvm::Module *M) const {
-  auto EntryBlock = getEntryBlock();
-  EntryBlock->toContainerLL(M);
-  for (auto Block = EntryBlock; Block; Block = Block->getMergeBlock()) {
-    Block->toValuesLL(M);
-  }
-}
-
 llvm::Constant *Function::toLL(llvm::Module *M) {
   auto K = getContext();
   auto CurrentFunction = getOrInsert(M);
@@ -58,8 +50,8 @@ llvm::Constant *Function::toLL(llvm::Module *M) {
   // Add function symbol to symbol table, global scope
   K->Map.add(this, CurrentFunction);
 
-  /// Codegen all blocks
-  codegenAllBlocks(M);
+  /// Codegens all blocks
+  getEntryBlock()->toLL(M);
 
   auto ExitBlock = getExitBlock();
   if (!ExitBlock->size() || !isa<ReturnInst>(ExitBlock->back()))

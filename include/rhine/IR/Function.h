@@ -54,7 +54,7 @@ protected:
 
 /// A prototype + a body
 class Function : public Prototype {
-  std::vector<BasicBlock *> Val;
+  std::vector<BasicBlock *> Body;
 
 public:
   Function(std::string Name, FunctionType *FTy);
@@ -75,12 +75,6 @@ public:
   typedef std::vector<BasicBlock *>::iterator iterator;
   iterator begin();
   iterator end();
-
-  /// The master codegen function that starts toLL() from the entry block, skips
-  /// to the next merge block when there's a branch, until the exit block. This
-  /// is because the branch instruction calls codegen of the various branch
-  /// blocks on its own.
-  void codegenAllBlocks(llvm::Module *M) const;
 
   /// Emits the decoration around BasicBlocks declaring the function along with
   /// the arguments, and then calls codegenAllBlocks(). Finally, extracts the

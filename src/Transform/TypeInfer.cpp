@@ -1,8 +1,8 @@
 #include "rhine/Diagnostic/Diagnostic.h"
 #include "rhine/IR/BasicBlock.h"
 #include "rhine/IR/Constant.h"
-#include "rhine/IR/Function.h"
 #include "rhine/IR/Context.h"
+#include "rhine/IR/Function.h"
 #include "rhine/IR/GlobalValue.h"
 #include "rhine/IR/Instruction.h"
 #include "rhine/Transform/TypeInfer.h"
@@ -18,7 +18,7 @@ Type *TypeInfer::visit(ConstantFloat *V) { return V->getType(); }
 
 Type *TypeInfer::visit(GlobalString *V) { return V->getType(); }
 
-Type *TypeInfer::visit(BasicBlock *BB) {
+Type *TypeInfer::visitHeaderBlock(BasicBlock *BB) {
   if (BB->begin() == BB->end())
     return VoidType::get(K);
   std::vector<Instruction *>::iterator It;
@@ -27,22 +27,20 @@ Type *TypeInfer::visit(BasicBlock *BB) {
   return visit(*It);
 }
 
-Type *TypeInfer::visit(Prototype *V) { return V->getType(); }
-
-Type *TypeInfer::typeinferAllBlocks(Function *F) {
-  auto EntryBlock = F->getEntryBlock();
-  Type *LastTy = VoidType::get(K);
-  for (auto Block = EntryBlock; Block; Block = Block->getMergeBlock()) {
-    LastTy = visit(Block);
-  }
-  return LastTy;
+Type *TypeInfer::visit(BasicBlock *BB) {
+  auto Ret = visitHeaderBlock(BB);
+  if (auto MergeBlock = BB->getMergeBlock())
+    return visitHeaderBlock(MergeBlock);
+  return Ret;
 }
+
+Type *TypeInfer::visit(Prototype *V) { return V->getType(); }
 
 Type *TypeInfer::visit(Function *V) {
   auto FTy = cast<FunctionType>(V->getType());
-  auto LastTy = typeinferAllBlocks(V);
+  auto Ty = visit(V->getEntryBlock());
   if (isa<UnType>(FTy->getRTy())) {
-    FTy = FunctionType::get(LastTy, FTy->getATys(), false);
+    FTy = FunctionType::get(Ty, FTy->getATys(), false);
     V->setType(FTy);
   }
   assert(K->Map.add(V) &&
@@ -77,10 +75,8 @@ Type *TypeInfer::visit(SubInst *V) {
 }
 
 Type *TypeInfer::visit(IfInst *V) {
-  auto TrueBlock = V->getTrueBB();
-  auto FalseBlock = V->getFalseBB();
-  auto TrueTy = visit(TrueBlock);
-  auto FalseTy = visit(FalseBlock);
+  auto TrueTy = visit(V->getTrueBB());
+  auto FalseTy = visit(V->getFalseBB());
   if (TrueTy != FalseTy) {
     K->DiagPrinter->errorReport(V->getSourceLocation(),
                                 "mismatched true/false block types");

@@ -97,8 +97,22 @@ TEST(If, Nested) {
   auto NestedIfStmt = cast<IfInst>(TrueInstList[0]);
   EXPECT_EQ(NestedIfStmt->getTrueBB()->getInstList().size(), 1u);
   EXPECT_EQ(NestedIfStmt->getFalseBB()->getInstList().size(), 1u);
-  // auto ExpectedOut = "235";
-  // EXPECT_OUTPUT(SourcePrg, ExpectedOut);
+  EXPECT_OUTPUT(SourcePrg, "25");
+}
+
+TEST(If, MergeInBranch) {
+  auto SourcePrg = "def main do\n"
+                   "  if true do\n"
+                   "    if true do\n"
+                   "      print 2\n"
+                   "    else\n"
+                   "      print 3\n"
+                   "    end\n"
+                   "    print 4\n"
+                   "  end\n"
+                   "  print 5\n"
+                   "end";
+  EXPECT_OUTPUT(SourcePrg, "245");
 }
 
 TEST(If, DISABLED_PhiAssignment) {
