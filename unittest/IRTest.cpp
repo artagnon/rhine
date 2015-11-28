@@ -140,12 +140,9 @@ TEST(IR, IfBasic)
     "  if false do X = 2; else Y = 3; end\n"
     "end";
   auto ExpectedIR =
-    "def main [] ~Fn(Void -> Void) {\n"
     "if (0 ~Bool) {\n"
     "X = 2 ~Int\n"
     "} else {\n"
-    "Y = 3 ~Int\n"
-    "}\n"
-    "}";
+    "Y = 3 ~Int\n";
   EXPECT_IR(SourcePrg, ExpectedIR);
 }

@@ -1,6 +1,7 @@
 #include "rhine/Util/TestUtil.h"
 #include "gtest/gtest.h"
 
+#include "rhine/IR/Instruction.h"
 #include "rhine/IR/Module.h"
 #include "rhine/Toplevel/ParseFacade.h"
 #include "rhine/Transform/LambdaLifting.h"
@@ -75,7 +76,7 @@ TEST(Scope2Block, SetLambdaParent) {
       ASSERT_EQ(BB->getParent(), F);
 }
 
-TEST(Scope2Block, DISABLED_NestedIf) {
+TEST(Scope2Block, NestedIf) {
   auto SourcePrg = "def main() do\n"
                    "  if true do \n"
                    "    if true do\n"
@@ -83,6 +84,7 @@ TEST(Scope2Block, DISABLED_NestedIf) {
                    "    else\n"
                    "      X = 2\n"
                    "    end\n"
+                   "    Z = 10\n"
                    "  else\n"
                    "    Y = 4\n"
                    "  end\n"
@@ -93,7 +95,7 @@ TEST(Scope2Block, DISABLED_NestedIf) {
   auto MainF = Mod->front();
   auto NumberOfBBs = std::distance(MainF->begin(), MainF->end());
   ASSERT_EQ(NumberOfBBs, 7);
-  std::vector<unsigned> NumPreds = {0, 1, 1, 2, 2, 1, 2},
+  std::vector<unsigned> NumPreds = {0, 1, 1, 1, 2, 1, 2},
                         NumSuccs = {2, 2, 1, 1, 1, 1, 0};
   auto NumPredsIt = NumPreds.begin();
   auto NumSuccsIt = NumSuccs.begin();
@@ -103,4 +105,25 @@ TEST(Scope2Block, DISABLED_NestedIf) {
     ASSERT_EQ(BB->pred_size(), *NumPredsIt++);
     ASSERT_EQ(BB->succ_size(), *NumSuccsIt++);
   }
+}
+
+TEST(Scope2Block, MergeInBranch) {
+  auto SourcePrg = "def main do\n"
+                   "  if true do\n"
+                   "    if true do\n"
+                   "      print 2\n"
+                   "    end\n"
+                   "    print 4\n"
+                   "  end\n"
+                   "end";
+  ParseFacade Pf(SourcePrg);
+  Scope2Block Flatten;
+  auto Mod = Pf.parseToIR(ParseSource::STRING, {&Flatten});
+  auto MainF = Mod->front();
+  auto EntryBlock = MainF->getEntryBlock();
+  auto &InstList = EntryBlock->getInstList();
+  auto IfStmt = cast<IfInst>(InstList[0]);
+  auto TrueIt = std::find(MainF->begin(), MainF->end(), IfStmt->getTrueBB());
+  auto FalseIt = std::find(MainF->begin(), MainF->end(), IfStmt->getFalseBB());
+  EXPECT_EQ(std::distance(TrueIt, FalseIt), 4);
 }

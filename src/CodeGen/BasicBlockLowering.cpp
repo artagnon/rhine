@@ -51,7 +51,11 @@ llvm::Value *BasicBlock::toValuesLL(llvm::Module *M) {
   std::vector<Instruction *>::iterator It;
   for (It = InstList.begin(); std::next(It) != InstList.end(); ++It)
     (*It)->toLL(M);
-  return (*It)->toLL(M);
+  auto PossibleBrInst = *It;
+  auto Ret = PossibleBrInst->toLL(M);
+  if (auto MergeBlock = getMergeBlock())
+    return MergeBlock->toValuesLL(M);
+  return Ret;
 }
 
 llvm::BasicBlock *BasicBlock::toContainerLL(llvm::Module *M) {

@@ -46,14 +46,14 @@ void Scope2Block::cleaveBlockAtBranches(BasicBlock *Cleavee,
   if (ReturnTo)
     MergeBlock->setSuccessors({ReturnTo});
 
-  /// Re-populate Parent.
+  /// Create three new blocks in the function, inserting and cleaving them as we
+  /// go. Program correctness isn't dependent on insertion order, but
+  /// pretty-printing (and tests) will look strange without the right ordering.
   Parent->push_back(TrueBlock);
-  Parent->push_back(FalseBlock);
-  Parent->push_back(MergeBlock);
-
-  /// Recursively cleave the three new blocks.
   cleaveBlockAtBranches(TrueBlock, MergeBlock);
+  Parent->push_back(FalseBlock);
   cleaveBlockAtBranches(FalseBlock, MergeBlock);
+  Parent->push_back(MergeBlock);
   cleaveBlockAtBranches(MergeBlock, MergeBlock);
 }
 

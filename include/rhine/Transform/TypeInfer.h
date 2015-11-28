@@ -32,7 +32,12 @@ public:
   Type *visit(ReturnInst *V) override;
   Type *visit(TerminatorInst *V) override;
 private:
-  Type *typeinferAllBlocks(Function *F);
+  /// Visit all the instructions in a block possibly containing a branch
+  /// instruction (hence visiting the branch blocks also), but not the merge
+  /// block. Typically called once for the header block and once for the merge
+  /// block (which is possibly a header block possibly containing another branch
+  /// instruction).
+  Type *visitHeaderBlock(BasicBlock *BB);
 };
 }
 

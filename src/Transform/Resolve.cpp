@@ -46,7 +46,6 @@ void Resolve::lookupReplaceUse(UnresolvedValue *V, Use &U, BasicBlock *Block) {
     ///                        ^
     ///                Callee of CallInst
     auto SourceLoc = U->getSourceLocation();
-    auto K = Block->getContext();
     if (auto Inst = dyn_cast<CallInst>(U->getUser()))
       if (Inst->getCallee() == V) {
         K->DiagPrinter->errorReport(SourceLoc, "unbound function " + Name);
@@ -76,8 +75,7 @@ void Resolve::runOnFunction(Function *F) {
   ///
   /// Insert into K->Map
   for (auto &BB : *F)
-    for (auto It = BB->begin(); It != BB->end(); ++It) {
-      auto &V = *It;
+    for (auto &V : *BB) {
       if (auto M = dyn_cast<MallocInst>(V))
         if (!K->Map.add(M, BB)) {
           auto ErrMsg = "symbol " + M->getName() + " already bound";
