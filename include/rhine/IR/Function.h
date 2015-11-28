@@ -57,8 +57,16 @@ class Function : public Prototype {
   std::vector<BasicBlock *> Body;
 
 public:
+  /// Return type can be inferred from body, but argument types are currently a
+  /// hard requirement.
   Function(std::string Name, FunctionType *FTy);
+
+  /// Delete the arguments, VariadicRest, and each BasicBlock in the Body.
   virtual ~Function();
+
+  /// Passes through to the BasicBlock's dropAllReferences().
+  void dropAllReferences();
+
   void *operator new(size_t s);
   static Function *get(std::string Name, FunctionType *FTy);
   static bool classof(const Value *V);

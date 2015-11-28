@@ -10,11 +10,15 @@ BasicBlock::BasicBlock(Type *Ty, std::string N, std::vector<Instruction *> V)
 }
 
 BasicBlock::~BasicBlock() {
-  for (auto &V : InstList)
-    cast<User>(V)->dropAllReferences();
+  dropAllReferences();
   for (auto &V : InstList)
     delete V;
   InstList.clear();
+}
+
+void BasicBlock::dropAllReferences() {
+  for (auto &V : *this)
+    V->dropAllReferences();
 }
 
 BasicBlock *BasicBlock::get(std::string Name, std::vector<Instruction *> V,

@@ -5,8 +5,15 @@ namespace rhine {
 Module::Module(std::unique_ptr<Context> K) : Kontext(std::move(K)) {}
 
 Module::~Module() {
-  for (auto *F : ContainedFs)
+  dropAllReferences();
+  for (auto &F : ContainedFs)
     delete F;
+  ContainedFs.clear();
+}
+
+void Module::dropAllReferences() {
+  for (auto &F : *this)
+    F->dropAllReferences();
 }
 
 Module *Module::get(std::unique_ptr<Context> K) {

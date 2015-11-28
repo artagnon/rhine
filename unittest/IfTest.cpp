@@ -115,7 +115,7 @@ TEST(If, MergeInBranch) {
   EXPECT_OUTPUT(SourcePrg, "245");
 }
 
-TEST(If, DISABLED_PhiAssignment) {
+TEST(If, PhiAssignment) {
   auto SourcePrg = "def main do\n"
                    "  x =\n"
                    "    if false do 2\n"
@@ -124,6 +124,5 @@ TEST(If, DISABLED_PhiAssignment) {
                    "  print x\n"
                    "end";
   auto ExpectedOut = "3";
-  EXPECT_SUCCESSFUL_PARSE(SourcePrg);
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }

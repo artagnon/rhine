@@ -24,6 +24,9 @@ public:
   /// Destructor gets rid of ContainedFs, but leaves Kontext alone
   virtual ~Module();
 
+  /// Passes through to each Function's dropAllReferences().
+  void dropAllReferences();
+
   static Module *get(std::unique_ptr<Context> K);
   Context *getContext();
 

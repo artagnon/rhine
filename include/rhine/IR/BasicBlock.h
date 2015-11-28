@@ -28,6 +28,9 @@ public:
   /// parent that iterates over BasicBlocks deletes them.
   virtual ~BasicBlock();
 
+  /// Pass through to each Instruction's dropAllReferences().
+  void dropAllReferences();
+
   static BasicBlock *get(std::string Name, std::vector<Instruction *> V,
                          Context *K);
   static bool classof(const Value *V);
