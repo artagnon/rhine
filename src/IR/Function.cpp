@@ -92,8 +92,15 @@ Function::Function(std::string Name, FunctionType *FTy)
     : Prototype(Name, FTy, RT_Function) {}
 
 Function::~Function() {
+  dropAllReferences();
   for (auto &BB : Body)
     delete BB;
+  Body.clear();
+}
+
+void Function::dropAllReferences() {
+  for (auto &BB : *this)
+    BB->dropAllReferences();
 }
 
 void *Function::operator new(size_t s) { return User::operator new(s); }

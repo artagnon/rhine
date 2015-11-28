@@ -8,7 +8,7 @@ using namespace rhine;
 TEST(Valgrind, Constant_MultiUse) {
   auto SourcePrg = "def main do\n"
                    "  print 2;\n"
-                   "  print 2;\n"
+                   "  print 2\n"
                    "end";
   EXPECT_OUTPUT(SourcePrg, "22");
 }
@@ -33,7 +33,16 @@ TEST(Valgrind, Constant_DefUse) {
   EXPECT_OUTPUT(SourcePrg, "2");
 }
 
-TEST(Valgrind, Constant_DefUse_MultiBB) {
+TEST(Valgrind, Constant_Def_MultiUse) {
+  auto SourcePrg = "def main do\n"
+                   "  X = 2\n"
+                   "  print 2;\n"
+                   "  print 2\n"
+                   "end";
+  EXPECT_OUTPUT(SourcePrg, "22");
+}
+
+TEST(Valgrind, Constant_MultiBB) {
   auto SourcePrg = "def main do\n"
                    "  if true do\n"
                    "    X = 2\n"
@@ -60,6 +69,16 @@ TEST(Valgrind, Value_MultiUse) {
   EXPECT_OUTPUT(SourcePrg, "11");
 }
 
+TEST(Valgrind, Value_MultiBB) {
+  auto SourcePrg = "def main do\n"
+                   "  X = 2\n"
+                   "  if true do\n"
+                   "    print $ 9 + X\n"
+                   "  end\n"
+                   "end";
+  EXPECT_OUTPUT(SourcePrg, "11");
+}
+
 TEST(Valgrind, Instruction_SingleUse) {
   auto SourcePrg = "def main do\n"
                    "  X = 2\n"
@@ -77,4 +96,27 @@ TEST(Valgrind, Instruction_MultiUse) {
                    "  print $ 9 + Y\n"
                    "end";
   EXPECT_OUTPUT(SourcePrg, "14");
+}
+
+TEST(Valgrind, Instruction_MultiBB) {
+  auto SourcePrg = "def main do\n"
+                   "  X = 2\n"
+                   "  Y = X + 3\n"
+                   "  if true do\n"
+                   "    print $ 9 + Y\n"
+                   "  end\n"
+                   "end";
+  EXPECT_OUTPUT(SourcePrg, "14");
+}
+
+TEST(Valgrind, PhiAssignment) {
+  auto SourcePrg = "def main do\n"
+                   "  X =\n"
+                   "    if false do 2\n"
+                   "    else 3\n"
+                   "    end\n"
+                   "  print X\n"
+                   "end";
+  auto ExpectedOut = "3";
+  EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
