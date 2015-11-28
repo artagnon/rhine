@@ -10,12 +10,11 @@ BasicBlock::BasicBlock(Type *Ty, std::string N, std::vector<Instruction *> V)
 }
 
 BasicBlock::~BasicBlock() {
-  for (auto &V : InstList) {
+  for (auto &V : InstList)
     cast<User>(V)->dropAllReferences();
-  }
-  for (auto &V : InstList) {
+  for (auto &V : InstList)
     delete V;
-  }
+  InstList.clear();
 }
 
 BasicBlock *BasicBlock::get(std::string Name, std::vector<Instruction *> V,
@@ -136,7 +135,7 @@ BasicBlock *BasicBlock::getMergeBlock() {
 }
 
 void BasicBlock::print(std::ostream &Stream) const {
-  for (auto V : InstList)
+  for (auto &V : InstList)
     Stream << *V << std::endl;
 }
 }

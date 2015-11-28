@@ -7,6 +7,8 @@ set(CMAKE_CXX_FLAGS "-std=c++14")
 set(LLVM_ROOT_DIR "${PROJECT_SOURCE_DIR}/llvm")
 set(CLANG_ROOT_DIR "${PROJECT_SOURCE_DIR}/clang")
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/Modules")
+set(UNITTEST_EXE "${PROJECT_BINARY_DIR}/unittest/UnitTest")
+set(VALGRIND_EXE "/usr/local/bin/valgrind")
 
 include_directories("${PROJECT_SOURCE_DIR}/include")
 add_subdirectory(src/Parse)
@@ -21,7 +23,19 @@ add_subdirectory(gtest)
 add_subdirectory(unittest)
 
 add_custom_target(check
-  COMMAND "${PROJECT_BINARY_DIR}/unittest/UnitTest"
+  COMMAND "${UNITTEST_EXE}"
   COMMENT "Running unittests ..."
+  DEPENDS CLI
+  DEPENDS UnitTest)
+
+add_custom_target(valgrind
+  COMMAND "${VALGRIND_EXE}" "--" "${UNITTEST_EXE}" "--gtest_filter=Valgrind.*"
+  COMMENT "Running valgrind tests ..."
+  DEPENDS CLI
+  DEPENDS UnitTest)
+
+add_custom_target(valgrind-all
+  COMMAND "${VALGRIND_EXE}" "${UNITTEST_EXE}"
+  COMMENT "Running valgrind comprehensive tests ..."
   DEPENDS CLI
   DEPENDS UnitTest)

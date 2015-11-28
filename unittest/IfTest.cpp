@@ -66,9 +66,9 @@ TEST(If, LifeAfterPhi) {
                    "  else\n"
                    "     Foo = 4;\n"
                    "  end\n"
-                   "  print 2;\n"
+                   "  print 3;\n"
                    "end";
-  auto ExpectedOut = "2";
+  auto ExpectedOut = "3";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
 
