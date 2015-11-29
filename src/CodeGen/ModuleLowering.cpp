@@ -1,6 +1,6 @@
-#include "rhine/IR/Context.h"
-#include "rhine/IR/Module.h"
-#include "rhine/Externals.h"
+#include "rhine/IR/Context.hpp"
+#include "rhine/IR/Module.hpp"
+#include "rhine/Externals.hpp"
 
 namespace rhine {
 void Module::toLL(llvm::Module *M) {

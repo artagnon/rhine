@@ -2,7 +2,7 @@
 #ifndef RHINE_FUNCTIONTRANSFORM_H
 #define RHINE_FUNCTIONTRANSFORM_H
 
-#include "rhine/Pass/ModulePass.h"
+#include "rhine/Pass/ModulePass.hpp"
 
 namespace rhine {
 class Module;

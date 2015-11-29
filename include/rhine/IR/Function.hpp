@@ -10,11 +10,11 @@
 #include <vector>
 #include <sstream>
 
-#include "rhine/IR/Type.h"
-#include "rhine/IR/User.h"
-#include "rhine/IR/Constant.h"
-#include "rhine/IR/UnresolvedValue.h"
-#include "rhine/IR/BasicBlock.h"
+#include "rhine/IR/Type.hpp"
+#include "rhine/IR/User.hpp"
+#include "rhine/IR/Constant.hpp"
+#include "rhine/IR/UnresolvedValue.hpp"
+#include "rhine/IR/BasicBlock.hpp"
 
 using namespace llvm;
 

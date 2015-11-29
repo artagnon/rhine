@@ -1,11 +1,11 @@
-#include "rhine/IR/GlobalValue.h"
-#include "rhine/IR/Instruction.h"
-#include "rhine/IR/Constant.h"
-#include "rhine/IR/Function.h"
-#include "rhine/IR/Context.h"
-#include "rhine/IR/Type.h"
-#include "rhine/Diagnostic/Diagnostic.h"
-#include "rhine/Transform/TypeCoercion.h"
+#include "rhine/IR/GlobalValue.hpp"
+#include "rhine/IR/Instruction.hpp"
+#include "rhine/IR/Constant.hpp"
+#include "rhine/IR/Function.hpp"
+#include "rhine/IR/Context.hpp"
+#include "rhine/IR/Type.hpp"
+#include "rhine/Diagnostic/Diagnostic.hpp"
+#include "rhine/Transform/TypeCoercion.hpp"
 
 namespace rhine {
 TypeCoercion::TypeCoercion() : K(nullptr) {}

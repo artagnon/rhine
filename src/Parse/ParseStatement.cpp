@@ -1,11 +1,11 @@
-#include "rhine/Parse/ParseDriver.h"
-#include "rhine/Parse/Parser.h"
+#include "rhine/Parse/ParseDriver.hpp"
+#include "rhine/Parse/Parser.hpp"
 
-#include "rhine/IR/Instruction.h"
-#include "rhine/IR/GlobalValue.h"
-#include "rhine/IR/Function.h"
-#include "rhine/IR/Context.h"
-#include "rhine/IR/Value.h"
+#include "rhine/IR/Instruction.hpp"
+#include "rhine/IR/GlobalValue.hpp"
+#include "rhine/IR/Function.hpp"
+#include "rhine/IR/Context.hpp"
+#include "rhine/IR/Value.hpp"
 
 #define K Driver->Ctx
 

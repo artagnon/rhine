@@ -1,4 +1,4 @@
-#include "rhine/IR/Instruction.h"
+#include "rhine/IR/Instruction.hpp"
 
 namespace rhine {
 Instruction::Instruction(Type *Ty, RTValue ID,

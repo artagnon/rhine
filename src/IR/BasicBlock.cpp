@@ -1,6 +1,6 @@
-#include "rhine/IR/BasicBlock.h"
-#include "rhine/IR/Instruction.h"
-#include "rhine/IR/Module.h"
+#include "rhine/IR/BasicBlock.hpp"
+#include "rhine/IR/Instruction.hpp"
+#include "rhine/IR/Module.hpp"
 
 namespace rhine {
 BasicBlock::BasicBlock(Type *Ty, std::string N, std::vector<Instruction *> V)

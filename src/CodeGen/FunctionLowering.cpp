@@ -1,8 +1,8 @@
-#include "rhine/IR/Context.h"
-#include "rhine/IR/Function.h"
-#include "rhine/IR/Instruction.h"
-#include "rhine/Externals.h"
-#include "rhine/Diagnostic/Diagnostic.h"
+#include "rhine/IR/Context.hpp"
+#include "rhine/IR/Function.hpp"
+#include "rhine/IR/Instruction.hpp"
+#include "rhine/Externals.hpp"
+#include "rhine/Diagnostic/Diagnostic.hpp"
 
 namespace rhine {
 llvm::Function *Prototype::getOrInsert(llvm::Module *M) {

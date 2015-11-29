@@ -14,7 +14,7 @@
 #include <vector>
 #include <sstream>
 
-#include "rhine/Parse/Parser.h"
+#include "rhine/Parse/Parser.hpp"
 
 using namespace std;
 using namespace llvm;

@@ -2,8 +2,8 @@
 #ifndef RHINE_TYPEINFER_H
 #define RHINE_TYPEINFER_H
 
-#include "rhine/Transform/ValueVisitor.h"
-#include "rhine/Pass/FunctionPass.h"
+#include "rhine/Transform/ValueVisitor.hpp"
+#include "rhine/Pass/FunctionPass.hpp"
 
 namespace rhine {
 class TypeInfer : public ValueVisitor<Type *>, public FunctionPass {

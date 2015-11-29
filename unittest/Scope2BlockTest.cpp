@@ -1,11 +1,11 @@
-#include "rhine/Util/TestUtil.h"
+#include "rhine/Util/TestUtil.hpp"
 #include "gtest/gtest.h"
 
-#include "rhine/IR/Instruction.h"
-#include "rhine/IR/Module.h"
-#include "rhine/Toplevel/ParseFacade.h"
-#include "rhine/Transform/LambdaLifting.h"
-#include "rhine/Transform/Scope2Block.h"
+#include "rhine/IR/Instruction.hpp"
+#include "rhine/IR/Module.hpp"
+#include "rhine/Toplevel/ParseFacade.hpp"
+#include "rhine/Transform/LambdaLifting.hpp"
+#include "rhine/Transform/Scope2Block.hpp"
 
 using namespace rhine;
 

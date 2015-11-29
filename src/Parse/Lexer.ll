@@ -1,10 +1,10 @@
 /* -*- Bison -*- */
 %{
-#include "rhine/Parse/ParseDriver.h"
-#include "rhine/Parse/Lexer.h"
-#include "rhine/IR/Constant.h"
-#include "rhine/IR/GlobalValue.h"
-#include "rhine/IR/Context.h"
+#include "rhine/Parse/ParseDriver.hpp"
+#include "rhine/Parse/Lexer.hpp"
+#include "rhine/IR/Constant.hpp"
+#include "rhine/IR/GlobalValue.hpp"
+#include "rhine/IR/Context.hpp"
 
 class yyFlexLexer;
 

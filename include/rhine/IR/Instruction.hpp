@@ -9,10 +9,10 @@
 #include <vector>
 #include <sstream>
 
-#include "rhine/IR/Type.h"
-#include "rhine/IR/Value.h"
-#include "rhine/IR/BasicBlock.h"
-#include "rhine/IR/User.h"
+#include "rhine/IR/Type.hpp"
+#include "rhine/IR/Value.hpp"
+#include "rhine/IR/BasicBlock.hpp"
+#include "rhine/IR/User.hpp"
 
 namespace rhine {
 class Context;

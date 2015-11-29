@@ -3,7 +3,7 @@
 #ifndef RHINE_BASICBLOCK_H
 #define RHINE_BASICBLOCK_H
 
-#include "rhine/IR/Value.h"
+#include "rhine/IR/Value.hpp"
 #include <vector>
 
 namespace rhine {

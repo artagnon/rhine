@@ -1,13 +1,13 @@
-#include "rhine/Util/TestUtil.h"
+#include "rhine/Util/TestUtil.hpp"
 #include "gtest/gtest.h"
 
-#include "rhine/IR/Value.h"
-#include "rhine/IR/Module.h"
-#include "rhine/IR/Constant.h"
-#include "rhine/IR/Instruction.h"
-#include "rhine/IR/UnresolvedValue.h"
-#include "rhine/Transform/Resolve.h"
-#include "rhine/Toplevel/ParseFacade.h"
+#include "rhine/IR/Value.hpp"
+#include "rhine/IR/Module.hpp"
+#include "rhine/IR/Constant.hpp"
+#include "rhine/IR/Instruction.hpp"
+#include "rhine/IR/UnresolvedValue.hpp"
+#include "rhine/Transform/Resolve.hpp"
+#include "rhine/Toplevel/ParseFacade.hpp"
 
 using namespace rhine;
 

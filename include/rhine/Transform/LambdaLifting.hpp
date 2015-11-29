@@ -2,7 +2,7 @@
 #ifndef RHINE_LAMBDALIFTING_H
 #define RHINE_LAMBDALIFTING_H
 
-#include "rhine/Pass/FunctionPass.h"
+#include "rhine/Pass/FunctionPass.hpp"
 
 namespace rhine {
 class Function;

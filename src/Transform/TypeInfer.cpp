@@ -1,11 +1,11 @@
-#include "rhine/Diagnostic/Diagnostic.h"
-#include "rhine/IR/BasicBlock.h"
-#include "rhine/IR/Constant.h"
-#include "rhine/IR/Context.h"
-#include "rhine/IR/Function.h"
-#include "rhine/IR/GlobalValue.h"
-#include "rhine/IR/Instruction.h"
-#include "rhine/Transform/TypeInfer.h"
+#include "rhine/Diagnostic/Diagnostic.hpp"
+#include "rhine/IR/BasicBlock.hpp"
+#include "rhine/IR/Constant.hpp"
+#include "rhine/IR/Context.hpp"
+#include "rhine/IR/Function.hpp"
+#include "rhine/IR/GlobalValue.hpp"
+#include "rhine/IR/Instruction.hpp"
+#include "rhine/Transform/TypeInfer.hpp"
 
 namespace rhine {
 TypeInfer::TypeInfer() : K(nullptr) {}

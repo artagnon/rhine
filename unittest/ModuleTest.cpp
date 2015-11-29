@@ -1,8 +1,8 @@
-#include "rhine/Util/TestUtil.h"
+#include "rhine/Util/TestUtil.hpp"
 #include "gtest/gtest.h"
 
-#include "rhine/Toplevel/ParseFacade.h"
-#include "rhine/IR/Module.h"
+#include "rhine/Toplevel/ParseFacade.hpp"
+#include "rhine/IR/Module.hpp"
 
 using namespace rhine;
 

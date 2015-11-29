@@ -5,8 +5,8 @@
 // Flex expects the signature of yylex to be defined in the macro YY_DECL, and
 // the C++ parser expects it to be declared. We can factor both as follows.
 
-#include "rhine/Parse/Parser.h"
-#include "rhine/Parse/ParseDriver.h"
+#include "rhine/Parse/Parser.hpp"
+#include "rhine/Parse/ParseDriver.hpp"
 
 using P = rhine::Parser;
 using T = P::Token;

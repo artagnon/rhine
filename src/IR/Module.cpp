@@ -1,5 +1,5 @@
-#include "rhine/IR/Module.h"
-#include "rhine/IR/Context.h"
+#include "rhine/IR/Module.hpp"
+#include "rhine/IR/Context.hpp"
 
 namespace rhine {
 Module::Module(std::unique_ptr<Context> K) : Kontext(std::move(K)) {}

@@ -1,9 +1,9 @@
-#include "rhine/IR/Context.h"
-#include "rhine/IR/Value.h"
-#include "rhine/IR/UnresolvedValue.h"
-#include "rhine/IR/GlobalValue.h"
-#include "rhine/Externals.h"
-#include "rhine/Diagnostic/Diagnostic.h"
+#include "rhine/IR/Context.hpp"
+#include "rhine/IR/Value.hpp"
+#include "rhine/IR/UnresolvedValue.hpp"
+#include "rhine/IR/GlobalValue.hpp"
+#include "rhine/Externals.hpp"
+#include "rhine/Diagnostic/Diagnostic.hpp"
 
 namespace rhine {
 llvm::Value *UnresolvedValue::toLL(llvm::Module *M) {

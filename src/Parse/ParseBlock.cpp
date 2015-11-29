@@ -1,10 +1,10 @@
-#include "rhine/IR/BasicBlock.h"
-#include "rhine/IR/Constant.h"
-#include "rhine/IR/Function.h"
-#include "rhine/IR/Instruction.h"
-#include "rhine/IR/Type.h"
-#include "rhine/Parse/ParseDriver.h"
-#include "rhine/Parse/Parser.h"
+#include "rhine/IR/BasicBlock.hpp"
+#include "rhine/IR/Constant.hpp"
+#include "rhine/IR/Function.hpp"
+#include "rhine/IR/Instruction.hpp"
+#include "rhine/IR/Type.hpp"
+#include "rhine/Parse/ParseDriver.hpp"
+#include "rhine/Parse/Parser.hpp"
 
 #include <algorithm>
 #include <vector>

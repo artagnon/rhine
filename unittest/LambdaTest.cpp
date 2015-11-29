@@ -1,4 +1,4 @@
-#include "rhine/Util/TestUtil.h"
+#include "rhine/Util/TestUtil.hpp"
 #include "gtest/gtest.h"
 
 using namespace rhine;

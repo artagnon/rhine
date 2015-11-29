@@ -1,11 +1,11 @@
-#include "rhine/IR/Context.h"
-#include "rhine/IR/BasicBlock.h"
-#include "rhine/IR/Instruction.h"
-#include "rhine/IR/UnresolvedValue.h"
-#include "rhine/IR/Module.h"
-#include "rhine/Transform/Resolve.h"
-#include "rhine/Externals.h"
-#include "rhine/Diagnostic/Diagnostic.h"
+#include "rhine/IR/Context.hpp"
+#include "rhine/IR/BasicBlock.hpp"
+#include "rhine/IR/Instruction.hpp"
+#include "rhine/IR/UnresolvedValue.hpp"
+#include "rhine/IR/Module.hpp"
+#include "rhine/Transform/Resolve.hpp"
+#include "rhine/Externals.hpp"
+#include "rhine/Diagnostic/Diagnostic.hpp"
 
 #include <list>
 
