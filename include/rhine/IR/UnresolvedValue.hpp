@@ -2,7 +2,7 @@
 #ifndef RHINE_UNRESOLVEDVALUE_H
 #define RHINE_UNRESOLVEDVALUE_H
 
-#include "rhine/IR/User.h"
+#include "rhine/IR/User.hpp"
 
 namespace rhine {
 class Prototype;

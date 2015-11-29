@@ -1,5 +1,5 @@
-#include "rhine/IR/Context.h"
-#include "rhine/IR/Value.h"
+#include "rhine/IR/Context.hpp"
+#include "rhine/IR/Value.hpp"
 
 namespace rhine {
 llvm::Type *UnType::toLL(llvm::Module *M) {

@@ -2,7 +2,7 @@
 #ifndef RHINE_RESOLVELOCALS_H
 #define RHINE_RESOLVELOCALS_H
 
-#include "rhine/Pass/ModulePass.h"
+#include "rhine/Pass/ModulePass.hpp"
 
 namespace rhine {
 class UnresolvedValue;

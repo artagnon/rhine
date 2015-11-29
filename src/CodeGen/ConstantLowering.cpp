@@ -1,6 +1,6 @@
-#include "rhine/IR/Context.h"
-#include "rhine/IR/Constant.h"
-#include "rhine/Externals.h"
+#include "rhine/IR/Context.hpp"
+#include "rhine/IR/Constant.hpp"
+#include "rhine/Externals.hpp"
 
 namespace rhine {
 llvm::Constant *ConstantInt::toLL(llvm::Module *M) {

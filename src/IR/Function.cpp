@@ -1,7 +1,7 @@
-#include "rhine/IR/Context.h"
-#include "rhine/IR/Function.h"
-#include "rhine/IR/Instruction.h"
-#include "rhine/IR/UnresolvedValue.h"
+#include "rhine/IR/Context.hpp"
+#include "rhine/IR/Function.hpp"
+#include "rhine/IR/Instruction.hpp"
+#include "rhine/IR/UnresolvedValue.hpp"
 
 namespace rhine {
 Prototype::Prototype(std::string Name, FunctionType *FTy, RTValue RTTy)

@@ -2,10 +2,10 @@
 #ifndef RHINE_VALUEVISITOR_H
 #define RHINE_VALUEVISITOR_H
 
-#include "rhine/IR/Value.h"
-#include "rhine/IR/Instruction.h"
-#include "rhine/IR/Constant.h"
-#include "rhine/IR/GlobalValue.h"
+#include "rhine/IR/Value.hpp"
+#include "rhine/IR/Instruction.hpp"
+#include "rhine/IR/Constant.hpp"
+#include "rhine/IR/GlobalValue.hpp"
 
 namespace rhine {
 class ConstantInt;

@@ -2,8 +2,8 @@
 #ifndef RHINE_USER_H
 #define RHINE_USER_H
 
-#include "rhine/IR/Value.h"
-#include "rhine/IR/Use.h"
+#include "rhine/IR/Value.hpp"
+#include "rhine/IR/Use.hpp"
 #include <vector>
 
 namespace rhine {

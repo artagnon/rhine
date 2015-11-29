@@ -1,5 +1,5 @@
-#include "rhine/Toplevel/OptionParser.h"
-#include "rhine/Toplevel/ParseFacade.h"
+#include "rhine/Toplevel/OptionParser.hpp"
+#include "rhine/Toplevel/ParseFacade.hpp"
 
 #include <iostream>
 

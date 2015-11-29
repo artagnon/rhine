@@ -1,7 +1,7 @@
-#include "rhine/Diagnostic/Diagnostic.h"
-#include "rhine/IR/BasicBlock.h"
-#include "rhine/IR/Context.h"
-#include "rhine/Externals.h"
+#include "rhine/Diagnostic/Diagnostic.hpp"
+#include "rhine/IR/BasicBlock.hpp"
+#include "rhine/IR/Context.hpp"
+#include "rhine/Externals.hpp"
 
 namespace rhine {
 Context::Context(std::ostream &ErrStream):

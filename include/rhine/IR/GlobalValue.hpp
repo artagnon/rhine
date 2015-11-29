@@ -2,7 +2,7 @@
 #ifndef GLOBALVALUE_H
 #define GLOBALVALUE_H
 
-#include "rhine/IR/User.h"
+#include "rhine/IR/User.hpp"
 
 namespace rhine {
 class GlobalString : public User {

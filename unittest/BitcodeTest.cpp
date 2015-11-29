@@ -1,11 +1,11 @@
-#include "rhine/Util/TestUtil.h"
+#include "rhine/Util/TestUtil.hpp"
 #include "gtest/gtest.h"
 
 #include <fstream>
 #include <iomanip>
 #include <iostream>
 
-#include "rhine/Toplevel/ParseFacade.h"
+#include "rhine/Toplevel/ParseFacade.hpp"
 
 using namespace rhine;
 

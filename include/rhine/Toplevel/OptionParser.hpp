@@ -51,7 +51,7 @@
  *
  * @par Highlights:
  * <ul style="padding-left:1em;margin-left:0">
- * <li> It is a header-only library. Just <code>\#include "optionparser.h"</code> and you're set.
+ * <li> It is a header-only library. Just <code>\#include "optionparser.hpp"</code> and you're set.
  * <li> It is freestanding. There are no dependencies whatsoever, not even the
  *      C or C++ standard library.
  * <li> It has a usage message formatter that supports column alignment and
@@ -113,7 +113,7 @@
  * (Note: @c option::* identifiers are links that take you to their documentation.)
  * @code
  * #include <iostream>
- * #include "optionparser.h"
+ * #include "optionparser.hpp"
  *
  * enum  optionIndex { UNKNOWN, HELP, PLUS };
  * const option::Descriptor usage[] =

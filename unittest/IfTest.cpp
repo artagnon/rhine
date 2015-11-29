@@ -1,6 +1,6 @@
-#include "rhine/Util/TestUtil.h"
-#include "rhine/IR/Instruction.h"
-#include "rhine/IR/Module.h"
+#include "rhine/Util/TestUtil.hpp"
+#include "rhine/IR/Instruction.hpp"
+#include "rhine/IR/Module.hpp"
 #include "gtest/gtest.h"
 
 using namespace rhine;

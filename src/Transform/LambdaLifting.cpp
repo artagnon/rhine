@@ -1,8 +1,8 @@
-#include "rhine/IR/Module.h"
-#include "rhine/IR/Constant.h"
-#include "rhine/IR/Instruction.h"
-#include "rhine/IR/UnresolvedValue.h"
-#include "rhine/Transform/LambdaLifting.h"
+#include "rhine/IR/Module.hpp"
+#include "rhine/IR/Constant.hpp"
+#include "rhine/IR/Instruction.hpp"
+#include "rhine/IR/UnresolvedValue.hpp"
+#include "rhine/Transform/LambdaLifting.hpp"
 
 namespace rhine {
 

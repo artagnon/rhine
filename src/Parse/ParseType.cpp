@@ -1,6 +1,6 @@
-#include "rhine/Parse/ParseDriver.h"
-#include "rhine/Parse/Parser.h"
-#include "rhine/IR/Type.h"
+#include "rhine/Parse/ParseDriver.hpp"
+#include "rhine/Parse/Parser.hpp"
+#include "rhine/IR/Type.hpp"
 
 #include <vector>
 

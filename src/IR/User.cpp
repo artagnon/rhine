@@ -1,5 +1,5 @@
-#include "rhine/IR/User.h"
-#include "rhine/IR/Constant.h"
+#include "rhine/IR/User.hpp"
+#include "rhine/IR/Constant.hpp"
 
 namespace rhine {
 User::User(Type *Ty, RTValue ID, unsigned NumOps, std::string N) :

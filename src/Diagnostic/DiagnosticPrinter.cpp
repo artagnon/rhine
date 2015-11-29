@@ -5,8 +5,8 @@
 #include <iomanip>
 #include <cassert>
 
-#include "rhine/Parse/Parser.h"
-#include "rhine/Diagnostic/Diagnostic.h"
+#include "rhine/Parse/Parser.hpp"
+#include "rhine/Diagnostic/Diagnostic.hpp"
 
 using Location = rhine::Parser::Location;
 

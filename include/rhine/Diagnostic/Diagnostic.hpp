@@ -5,7 +5,7 @@
 
 #include <string>
 
-#include "rhine/Parse/Parser.h"
+#include "rhine/Parse/Parser.hpp"
 
 namespace rhine {
 class DiagnosticPrinter {

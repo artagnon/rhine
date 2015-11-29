@@ -1,6 +1,6 @@
-#include "rhine/IR/Use.h"
-#include "rhine/IR/User.h"
-#include "rhine/IR/Value.h"
+#include "rhine/IR/Use.hpp"
+#include "rhine/IR/User.hpp"
+#include "rhine/IR/Value.hpp"
 
 namespace rhine {
 Use::Use(unsigned Dist) :

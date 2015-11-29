@@ -1,10 +1,10 @@
-#include "rhine/Diagnostic/Diagnostic.h"
-#include "rhine/IR/BasicBlock.h"
-#include "rhine/IR/Constant.h"
-#include "rhine/IR/Context.h"
-#include "rhine/IR/Function.h"
-#include "rhine/IR/Instruction.h"
-#include "rhine/Transform/Scope2Block.h"
+#include "rhine/Diagnostic/Diagnostic.hpp"
+#include "rhine/IR/BasicBlock.hpp"
+#include "rhine/IR/Constant.hpp"
+#include "rhine/IR/Context.hpp"
+#include "rhine/IR/Function.hpp"
+#include "rhine/IR/Instruction.hpp"
+#include "rhine/Transform/Scope2Block.hpp"
 
 namespace rhine {
 class Value;

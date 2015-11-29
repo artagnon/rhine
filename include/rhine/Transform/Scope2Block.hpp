@@ -2,7 +2,7 @@
 #ifndef RHINE_Scope2Block_H
 #define RHINE_Scope2Block_H
 
-#include "rhine/Pass/FunctionPass.h"
+#include "rhine/Pass/FunctionPass.hpp"
 
 namespace rhine {
 class BasicBlock;

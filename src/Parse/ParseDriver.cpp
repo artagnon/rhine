@@ -2,12 +2,12 @@
 #include <sstream>
 #include <iomanip>
 
-#include "rhine/Diagnostic/Diagnostic.h"
-#include "rhine/Parse/ParseDriver.h"
-#include "rhine/Parse/Parser.h"
-#include "rhine/Parse/Lexer.h"
-#include "rhine/IR/Module.h"
-#include "rhine/IR/Context.h"
+#include "rhine/Diagnostic/Diagnostic.hpp"
+#include "rhine/Parse/ParseDriver.hpp"
+#include "rhine/Parse/Parser.hpp"
+#include "rhine/Parse/Lexer.hpp"
+#include "rhine/IR/Module.hpp"
+#include "rhine/IR/Context.hpp"
 
 namespace rhine {
 class Module;

@@ -6,7 +6,7 @@
 #include <vector>
 #include <sstream>
 
-#include "rhine/IR/Function.h"
+#include "rhine/IR/Function.hpp"
 
 using namespace std;
 using namespace llvm;

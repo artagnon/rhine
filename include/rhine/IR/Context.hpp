@@ -11,8 +11,8 @@
 #include <cstdlib>
 #include <map>
 
-#include "rhine/IR/Type.h"
-#include "rhine/IR/Constant.h"
+#include "rhine/IR/Type.hpp"
+#include "rhine/IR/Constant.hpp"
 
 namespace rhine {
 class Value;

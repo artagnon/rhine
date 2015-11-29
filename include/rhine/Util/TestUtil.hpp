@@ -5,8 +5,8 @@
 
 #include "gtest/gtest.h"
 #include "gtest/internal/gtest-port.h"
-#include "rhine/Toplevel/ParseFacade.h"
-#include "rhine/Util/TestUtil.h"
+#include "rhine/Toplevel/ParseFacade.hpp"
+#include "rhine/Util/TestUtil.hpp"
 
 #include <string>
 
