@@ -26,7 +26,20 @@ TEST(Bitcode, BCWrite)
   EXPECT_TRUE((bool)BCFile);
 }
 
-TEST(Bitcode, DISABLED_LinkedExecutable)
+TEST(Bitcode, LinkExecutable)
+{
+  auto SourcePrg = "def main do ret 2 end";
+  ParseFacade Pf(SourcePrg);
+  testing::internal::CaptureStderr();
+  Pf.parseAction(ParseSource::STRING, PostParseAction::LinkExecutable);
+  testing::internal::GetCapturedStderr();
+  std::ifstream BCFile("foo");
+  auto ExeStream = popen("./foo", "r");
+  ASSERT_NE(ExeStream, nullptr);
+  ASSERT_EQ(pclose(ExeStream) / 256, 2);
+}
+
+TEST(Bitcode, DISABLED_LinkRuntime)
 {
   auto SourcePrg = "def main do print '43' end";
   ParseFacade Pf(SourcePrg);

@@ -119,14 +119,23 @@ std::string ParseFacade::parseAction(ParseSource SrcE,
     break;
   case PostParseAction::LinkExecutable:
     writeBitcodeToFile();
-    if (auto LinkerProcess = popen("clang -o foo foo.bc", "r")) {
+    if (auto AssemblerProcess = popen("llc foo.bc", "r")) {
+      if (auto ExitStatus = pclose(AssemblerProcess) / 256) {
+        std::cerr << "Assembler exited with nonzero status: " << ExitStatus;
+        exit(1);
+      }
+    } else {
+      std::cerr << "llc not found" << std::endl;
+      exit(1);
+    }
+    if (auto LinkerProcess = popen("clang -o foo foo.s", "r")) {
       if (auto ExitStatus = pclose(LinkerProcess) / 256) {
         std::cerr << "Linker exited with nonzero status: " << ExitStatus;
         exit(1);
       }
       break;
     }
-    std::cerr << "Linker didn't start: " << strerror(errno);
+    std::cerr << "clang not found" << std::endl;
     exit(1);
   }
   return "";
