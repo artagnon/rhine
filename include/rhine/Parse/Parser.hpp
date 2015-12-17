@@ -103,7 +103,7 @@ public:
   void writeError(std::string ErrStr, bool Optional = false);
 
   /// Specialized error writer for semicolon termination
-  void getSemiTerm(std::string ErrFragment);
+  bool getSemiTerm(std::string ErrFragment, bool Optional = false);
 
   /// The functions all assume that CurTok is primed for them to read, and do
   /// not getTok() at start; they do, however, make sure that CurTok is primed

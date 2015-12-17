@@ -62,8 +62,12 @@ Instruction *Parser::parseCall(Value *Callee, bool Optional) {
   auto CallLoc = Callee->getSourceLocation();
   if (auto Arg0 = parseRtoken(true)) {
     std::vector<Value *> CallArgs = {Arg0};
-    while (auto Tok = parseRtoken(true))
-      CallArgs.push_back(Tok);
+    while (!LastTokWasNewlineTerminated) {
+      if (auto Tok = parseRtoken(true))
+        CallArgs.push_back(Tok);
+      else
+        break;
+    }
     auto Inst = CallInst::get(Callee, CallArgs);
     Inst->setSourceLocation(CallLoc);
     return Inst;
