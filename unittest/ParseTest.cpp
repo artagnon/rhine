@@ -98,7 +98,7 @@ TEST(Parse, MissingStatementSeparator) {
   EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
 }
 
-TEST(Parse, DISABLED_CallInst_BackToBack) {
+TEST(Parse, CallInst_BackToBack) {
   auto SourcePrg = "def main do\n"
                    "  print 2\n"
                    "  print 2\n"

@@ -40,9 +40,13 @@ void Parser::writeError(std::string ErrStr, bool Optional) {
   CurStatus = false;
 }
 
-void Parser::getSemiTerm(std::string ErrFragment) {
-  if (!getTok(';') && !LastTokWasNewlineTerminated && CurTok != ENDBLOCK)
-    writeError("expecting ';' or newline to terminate " + ErrFragment);
+bool Parser::getSemiTerm(std::string ErrFragment, bool Optional) {
+  if (!getTok(';') && !LastTokWasNewlineTerminated && CurTok != ENDBLOCK) {
+    auto ErrStr = "expecting ';' or newline to terminate " + ErrFragment;
+    writeError(ErrStr, Optional);
+    return false;
+  }
+  return true;
 }
 
 void Parser::parseToplevelForms() {
