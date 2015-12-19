@@ -105,3 +105,12 @@ TEST(Parse, CallInst_BackToBack) {
                    "end";
   EXPECT_SUCCESSFUL_PARSE(SourcePrg);
 }
+
+TEST(Parse, DISABLED_CallInst_NoArgument) {
+  auto SourcePrg = "def main do\n"
+                   "  print\n"
+                   "end";
+  auto ExpectedErr =
+      "string stream:2:3: error: expected call, assign, or arithmetic op";
+  EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
+}

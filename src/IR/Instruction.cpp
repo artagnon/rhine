@@ -1,77 +1,62 @@
 #include "rhine/IR/Instruction.hpp"
 
 namespace rhine {
-Instruction::Instruction(Type *Ty, RTValue ID,
-                         unsigned NumOps, std::string N) :
-    User(Ty, ID, NumOps, N) {}
+Instruction::Instruction(Type *Ty, RTValue ID, unsigned NumOps, std::string N)
+    : User(Ty, ID, NumOps, N) {}
 
 bool Instruction::classof(const Value *V) {
-  return V->getValID() >= RT_AddInst &&
-    V->getValID() <= RT_IfInst;
+  return V->getValID() >= RT_AddInst && V->getValID() <= RT_IfInst;
 }
 
-BasicBlock *Instruction::getParent() const {
-  return Parent;
-}
+BasicBlock *Instruction::getParent() const { return Parent; }
 
-void Instruction::setParent(BasicBlock *P) {
-  Parent = P;
-}
+void Instruction::setParent(BasicBlock *P) { Parent = P; }
 
-AddInst::AddInst(Type *Ty, Value *Op0, Value *Op1) :
-    Instruction(Ty, RT_AddInst, 2) {
+BinaryArithInst::BinaryArithInst(RTValue InstSelector, Type *Ty, Value *Op0,
+                                 Value *Op1)
+    : Instruction(Ty, InstSelector, 2) {
   setOperand(0, Op0);
   setOperand(1, Op1);
 }
 
-void *AddInst::operator new(size_t S) {
+void *BinaryArithInst::operator new(size_t S) {
   return User::operator new(S, 2);
 }
 
-AddInst *AddInst::get(Value *Op0, Value *Op1) {
+BinaryArithInst *BinaryArithInst::get(RTValue InstSelector, Value *Op0,
+                                      Value *Op1) {
   auto K = Op0->getContext();
-  return new AddInst(UnType::get(K), Op0, Op1);
+  return new BinaryArithInst(InstSelector, UnType::get(K), Op0, Op1);
 }
 
-bool AddInst::classof(const Value *V) {
-  return V->getValID() == RT_AddInst;
+bool BinaryArithInst::classof(const Value *V) {
+  return V->getValID() == RT_MulInst || V->getValID() == RT_DivInst ||
+  V->getValID() == RT_AddInst || V->getValID() == RT_SubInst;
 }
 
-void AddInst::print(std::ostream &Stream) const {
-  Stream << "+ ~" << *VTy;
-  for (auto O: getOperands())
+void BinaryArithInst::print(std::ostream &Stream) const {
+  switch (getValID()) {
+  case RT_AddInst:
+    Stream << "+ ~" << *VTy;
+    break;
+  case RT_SubInst:
+    Stream << "- ~" << *VTy;
+    break;
+  case RT_MulInst:
+    Stream << "* ~" << *VTy;
+    break;
+  case RT_DivInst:
+    Stream << "/ ~" << *VTy;
+    break;
+  default:
+    assert(0 && "Malformed BinaryArithInst; cannot print");
+  }
+  for (auto O : getOperands())
     Stream << std::endl << *O;
 }
 
-SubInst::SubInst(Type *Ty, Value *Op0, Value *Op1) :
-    Instruction(Ty, RT_SubInst, 2) {
-  setOperand(0, Op0);
-  setOperand(1, Op1);
-}
-
-SubInst::~SubInst() {}
-
-void *SubInst::operator new(size_t S) {
-  return User::operator new(S, 2);
-}
-
-SubInst *SubInst::get(Value *Op0, Value *Op1) {
-  auto K = Op0->getContext();
-  return new SubInst(UnType::get(K), Op0, Op1);
-}
-
-bool SubInst::classof(const Value *V) {
-  return V->getValID() == RT_SubInst;
-}
-
-void SubInst::print(std::ostream &Stream) const {
-  Stream << "- ~" << *VTy;
-  for (auto O: getOperands())
-    Stream << std::endl << *O;
-}
-
-CallInst::CallInst(Type *Ty, unsigned NumOps, std::string N) :
-    Instruction(Ty, RT_CallInst, NumOps, N) {}
+CallInst::CallInst(Type *Ty, unsigned NumOps, std::string N)
+    : Instruction(Ty, RT_CallInst, NumOps, N) {}
 
 CallInst::~CallInst() {}
 
@@ -90,30 +75,24 @@ CallInst *CallInst::get(Value *Callee, std::vector<Value *> Ops) {
   return Obj;
 }
 
-bool CallInst::classof(const Value *V) {
-  return V->getValID() == RT_CallInst;
-}
+bool CallInst::classof(const Value *V) { return V->getValID() == RT_CallInst; }
 
-Value *CallInst::getCallee() const {
-  return getOperand(-1);
-}
+Value *CallInst::getCallee() const { return getOperand(-1); }
 
 void CallInst::print(std::ostream &Stream) const {
   Stream << getCallee()->getName() << " ~" << *VTy;
-  for (auto O: getOperands())
+  for (auto O : getOperands())
     Stream << std::endl << *O;
 }
 
-MallocInst::MallocInst(std::string N, Value *V) :
-    Instruction(V->getType(), RT_MallocInst, 1, N) {
+MallocInst::MallocInst(std::string N, Value *V)
+    : Instruction(V->getType(), RT_MallocInst, 1, N) {
   setOperand(0, V);
 }
 
 MallocInst::~MallocInst() {}
 
-void *MallocInst::operator new(size_t S) {
-  return User::operator new(S, 1);
-}
+void *MallocInst::operator new(size_t S) { return User::operator new(S, 1); }
 
 MallocInst *MallocInst::get(std::string N, Value *V) {
   return new MallocInst(N, V);
@@ -123,45 +102,33 @@ bool MallocInst::classof(const Value *V) {
   return V->getValID() == RT_MallocInst;
 }
 
-void MallocInst::setVal(Value *V) {
-  setOperand(0, V);
-}
+void MallocInst::setVal(Value *V) { setOperand(0, V); }
 
-Value *MallocInst::getVal() {
-  return getOperand(0);
-}
+Value *MallocInst::getVal() { return getOperand(0); }
 
 void MallocInst::print(std::ostream &Stream) const {
   Stream << Name << " = " << *getOperand(0);
 }
 
-LoadInst::LoadInst(MallocInst *M) :
-    Instruction(M->getType(), RT_LoadInst, 1, M->getName()) {
+LoadInst::LoadInst(MallocInst *M)
+    : Instruction(M->getType(), RT_LoadInst, 1, M->getName()) {
   setOperand(0, M);
 }
 
-void *LoadInst::operator new(size_t S) {
-  return User::operator new (S, 1);
-}
+void *LoadInst::operator new(size_t S) { return User::operator new(S, 1); }
 
-LoadInst *LoadInst::get(MallocInst *M) {
-  return new LoadInst(M);
-}
+LoadInst *LoadInst::get(MallocInst *M) { return new LoadInst(M); }
 
-bool LoadInst::classof(const Value *V) {
-  return V->getValID() == RT_LoadInst;
-}
+bool LoadInst::classof(const Value *V) { return V->getValID() == RT_LoadInst; }
 
-Value *LoadInst::getVal() const {
-  return getOperand(0);
-}
+Value *LoadInst::getVal() const { return getOperand(0); }
 
 void LoadInst::print(std::ostream &Stream) const {
   Stream << Name << " ~" << *VTy;
 }
 
-StoreInst::StoreInst(Value *MallocedValue, Value *NewValue) :
-    Instruction(MallocedValue->getType(), RT_StoreInst, 2) {
+StoreInst::StoreInst(Value *MallocedValue, Value *NewValue)
+    : Instruction(MallocedValue->getType(), RT_StoreInst, 2) {
   assert(MallocedValue->getType() == NewValue->getType() &&
          "Type mismatch in store");
   setOperand(0, MallocedValue);
@@ -170,9 +137,7 @@ StoreInst::StoreInst(Value *MallocedValue, Value *NewValue) :
 
 StoreInst::~StoreInst() {}
 
-void *StoreInst::operator new(size_t S) {
-  return User::operator new (S, 2);
-}
+void *StoreInst::operator new(size_t S) { return User::operator new(S, 2); }
 
 StoreInst *StoreInst::get(Value *MallocedValue, Value *NewValue) {
   return new StoreInst(MallocedValue, NewValue);
@@ -182,20 +147,16 @@ bool StoreInst::classof(const Value *V) {
   return V->getValID() == RT_StoreInst;
 }
 
-Value *StoreInst::getMallocedValue() const {
-  return getOperand(0);
-}
+Value *StoreInst::getMallocedValue() const { return getOperand(0); }
 
-Value *StoreInst::getNewValue() const {
-  return getOperand(1);
-}
+Value *StoreInst::getNewValue() const { return getOperand(1); }
 
 void StoreInst::print(std::ostream &Stream) const {
   Stream << *getMallocedValue() << " = " << *getNewValue();
 }
 
-ReturnInst::ReturnInst(Type *Ty, bool IsVoid) :
-    Instruction(Ty, RT_ReturnInst, !IsVoid) {}
+ReturnInst::ReturnInst(Type *Ty, bool IsVoid)
+    : Instruction(Ty, RT_ReturnInst, !IsVoid) {}
 
 ReturnInst::~ReturnInst() {}
 
@@ -215,9 +176,7 @@ bool ReturnInst::classof(const Value *V) {
   return V->getValID() == RT_ReturnInst;
 }
 
-void ReturnInst::setVal(Value *V) {
-  setOperand(0, V);
-}
+void ReturnInst::setVal(Value *V) { setOperand(0, V); }
 
 Value *ReturnInst::getVal() {
   auto Operands = getOperands();
@@ -230,8 +189,8 @@ void ReturnInst::print(std::ostream &Stream) const {
   Stream << "ret " << *getOperand(0);
 }
 
-TerminatorInst::TerminatorInst(Type *Ty) :
-    Instruction(Ty, RT_TerminatorInst, 1) {}
+TerminatorInst::TerminatorInst(Type *Ty)
+    : Instruction(Ty, RT_TerminatorInst, 1) {}
 
 TerminatorInst::~TerminatorInst() {}
 
@@ -249,24 +208,17 @@ bool TerminatorInst::classof(const Value *V) {
   return V->getValID() == RT_TerminatorInst;
 }
 
-void TerminatorInst::setVal(Value *V) {
-  setOperand(0, V);
-}
+void TerminatorInst::setVal(Value *V) { setOperand(0, V); }
 
-Value *TerminatorInst::getVal() {
-  return getOperand(0);
-}
+Value *TerminatorInst::getVal() { return getOperand(0); }
 
 void TerminatorInst::print(std::ostream &Stream) const {
   Stream << "term " << *getOperand(0);
 }
 
-IfInst::IfInst(Type *Ty):
-    Instruction(Ty, RT_IfInst, 3) {}
+IfInst::IfInst(Type *Ty) : Instruction(Ty, RT_IfInst, 3) {}
 
-void *IfInst::operator new(size_t S) {
-  return User::operator new(S, 3);
-}
+void *IfInst::operator new(size_t S) { return User::operator new(S, 3); }
 
 IfInst *IfInst::get(Value *Conditional, BasicBlock *TrueBB,
                     BasicBlock *FalseBB) {
@@ -279,13 +231,9 @@ IfInst *IfInst::get(Value *Conditional, BasicBlock *TrueBB,
   return Obj;
 }
 
-bool IfInst::classof(const Value *V) {
-  return V->getValID() == RT_IfInst;
-}
+bool IfInst::classof(const Value *V) { return V->getValID() == RT_IfInst; }
 
-Value *IfInst::getConditional() const {
-  return getOperand(0);
-}
+Value *IfInst::getConditional() const { return getOperand(0); }
 
 BasicBlock *IfInst::getTrueBB() const {
   return cast<BasicBlock>(getOperand(1));
@@ -296,10 +244,10 @@ BasicBlock *IfInst::getFalseBB() const {
 
 void IfInst::print(std::ostream &Stream) const {
   Stream << "if (" << *getConditional() << ") {" << std::endl;
-  for (auto V: *getTrueBB())
+  for (auto V : *getTrueBB())
     Stream << *V << std::endl;
   Stream << "} else {" << std::endl;
-  for (auto V: *getFalseBB())
+  for (auto V : *getFalseBB())
     Stream << *V << std::endl;
   Stream << "}";
 }

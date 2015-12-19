@@ -21,3 +21,17 @@ TEST(Lambda, BasicExecution) {
   auto ExpectedOut = "3";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
+
+TEST(Lambda, DISABLED_InsideIf) {
+  auto SourcePrg = "def mathTest(Input ~Int) do"
+                   "  if false do\n"
+                   "    println $ 3 + Input\n"
+                   "  else\n"
+                   "    Lam = fn Arg ~Int -> Arg + 2 end\n"
+                   "    println $ Lam 4\n"
+                   "  end\n"
+                   "  ret 4\n"
+                   "end";
+  auto ExpectedOut = "6";
+  EXPECT_OUTPUT(SourcePrg, ExpectedOut);
+}

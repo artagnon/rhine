@@ -12,21 +12,27 @@
 
 namespace rhine {
 Instruction *Parser::parseArithOp(Value *Op0, bool Optional) {
+  RTValue InstructionSelector;
   switch (CurTok) {
-  case '+': {
-    getTok();
-    auto Op1 = parseRtoken();
-    return AddInst::get(Op0, Op1);
-  }
-  case '-': {
-    getTok();
-    auto Op1 = parseRtoken();
-    return SubInst::get(Op0, Op1);
-  }
+  case '+':
+    InstructionSelector = RT_AddInst;
+    break;
+  case '-':
+    InstructionSelector = RT_SubInst;
+    break;
+  case '*':
+    InstructionSelector = RT_MulInst;
+    break;
+  case '/':
+    InstructionSelector = RT_DivInst;
+    break;
   default:
     writeError("expected '+' or '-'", Optional);
+    return nullptr;
   }
-  return nullptr;
+  getTok();
+  auto Op1 = parseRtoken();
+  return BinaryArithInst::get(InstructionSelector, Op0, Op1);
 }
 
 Instruction *Parser::parseBind(Value *Op0, bool Optional) {
@@ -58,16 +64,23 @@ Instruction *Parser::parseMutate(Value *Op0, bool Optional) {
   return nullptr;
 }
 
+bool Parser::parseCallArgs(std::vector<Value *> &CallArgs) {
+  auto Arg0 = parseRtoken(true);
+  if (!Arg0) return false;
+  CallArgs = {Arg0};
+  while (!LastTokWasNewlineTerminated) {
+    if (auto Tok = parseRtoken(true))
+      CallArgs.push_back(Tok);
+    else
+      break;
+  }
+  return true;
+}
+
 Instruction *Parser::parseCall(Value *Callee, bool Optional) {
   auto CallLoc = Callee->getSourceLocation();
-  if (auto Arg0 = parseRtoken(true)) {
-    std::vector<Value *> CallArgs = {Arg0};
-    while (!LastTokWasNewlineTerminated) {
-      if (auto Tok = parseRtoken(true))
-        CallArgs.push_back(Tok);
-      else
-        break;
-    }
+  std::vector<Value *> CallArgs;
+  if (parseCallArgs(CallArgs)) {
     auto Inst = CallInst::get(Callee, CallArgs);
     Inst->setSourceLocation(CallLoc);
     return Inst;
@@ -81,7 +94,7 @@ Instruction *Parser::parseCall(Value *Callee, bool Optional) {
     writeError("expecting '()'");
     return nullptr;
   }
-  writeError("expecting first call argument or '()' for Void", Optional);
+  writeError("expecting first call argument or '()'", Optional);
   return nullptr;
 }
 

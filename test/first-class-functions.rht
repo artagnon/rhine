@@ -1,13 +1,12 @@
-def foo [f] {
-  f println;
-}
-
-def bar [f] {
-  f 5;
-}
-
-def main [] {
-  foo bar;
-}
---
-5
+def fptrTest do
+  ret println
+end
+def mathTest(Input ~Int, Finput ~Int) do
+  if true do
+    println $ 3 + Input
+  else
+    Lam = fn Arg ~Int -> Arg + 2 end
+    fptrTest $ Lam 4
+  end
+  ret 4
+end

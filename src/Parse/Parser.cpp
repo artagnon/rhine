@@ -26,12 +26,12 @@ void Parser::getTok() {
 }
 
 bool Parser::getTok(int Expected) {
-  auto Ret = CurTok == Expected;
-  if (Ret) {
+  if (CurTok == Expected) {
     getTok();
     CurLoc.Begin.Filename = CurLoc.End.Filename = Driver->StreamName;
+    return true;
   }
-  return Ret;
+  return false;
 }
 
 void Parser::writeError(std::string ErrStr, bool Optional) {
