@@ -37,6 +37,8 @@ private:
   /// block (which is possibly a header block possibly containing another branch
   /// instruction).
   Type *visitHeaderBlock(BasicBlock *BB);
+  FunctionType *extractFunctionType(Value *Callee, Location Loc);
+  void visitCalleeAndOperands(CallInst *V);
 };
 }
 
