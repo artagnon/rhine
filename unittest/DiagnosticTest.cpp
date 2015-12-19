@@ -32,7 +32,8 @@ TEST(Diagnostic, NotAFunction)
     "  foo 4;\n"
     "end";
   auto ExpectedErr =
-    "string stream:3:3: error: foo was not typed as a function";
+    "string stream:3:3: error: foo was expected to be a pointer to a function"
+    " but was instead found to be of type Int";
   EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
 }
 

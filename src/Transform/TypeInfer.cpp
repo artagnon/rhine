@@ -103,11 +103,25 @@ Type *TypeInfer::visit(Argument *V) {
   exit(1);
 }
 
-FunctionType *TypeInfer::extractFunctionType(Value *Callee, Location Loc) {
-  if (auto PointerTy = dyn_cast<PointerType>(Callee->getType())) {
+FunctionType *TypeInfer::followFcnPointer(Type *CalleeTy) {
+  if (auto PointerTy = dyn_cast<PointerType>(CalleeTy))
     return dyn_cast<FunctionType>(PointerTy->getCTy());
+  return nullptr;
+}
+
+FunctionType *TypeInfer::followFcnPointers(Value *Callee, Location Loc) {
+  if (auto Fcn = followFcnPointer(Callee->getType())) {
+    while (auto DeeperFcn = followFcnPointer(Fcn))
+      Fcn = DeeperFcn;
+    return Fcn;
   }
-  return dyn_cast<FunctionType>(Callee->getType());
+  std::ostringstream NotTypedAsFunction;
+  NotTypedAsFunction << Callee->getName()
+                     << " was expected to be a pointer to a function"
+                     << " but was instead found to be of type "
+                     << *Callee->getType();
+  K->DiagPrinter->errorReport(Loc, NotTypedAsFunction.str());
+  exit(1);
 }
 
 void TypeInfer::visitCalleeAndOperands(CallInst *V) {
@@ -121,13 +135,9 @@ void TypeInfer::visitCalleeAndOperands(CallInst *V) {
 Type *TypeInfer::visit(CallInst *V) {
   visitCalleeAndOperands(V);
   auto Callee = V->getCallee();
-  if (auto Ty = extractFunctionType(Callee, V->getSourceLocation())) {
-    V->setType(PointerType::get(Ty));
-    return Ty->getRTy();
-  }
-  auto NotTypedAsFunction = Callee->getName() + " was not typed as a function";
-  K->DiagPrinter->errorReport(V->getSourceLocation(), NotTypedAsFunction);
-  exit(1);
+  auto Ty = followFcnPointers(Callee, V->getSourceLocation());
+  V->setType(PointerType::get(Ty));
+  return Ty->getRTy();
 }
 
 Type *TypeInfer::visit(ReturnInst *V) {

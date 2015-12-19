@@ -37,7 +37,16 @@ private:
   /// block (which is possibly a header block possibly containing another branch
   /// instruction).
   Type *visitHeaderBlock(BasicBlock *BB);
-  FunctionType *extractFunctionType(Value *Callee, Location Loc);
+
+  /// Follow a single function pointer type to get the contained type.
+  FunctionType *followFcnPointer(Type *CalleeTy);
+
+  /// Function pointers returning function pointers that return function
+  /// pointers, and so on needs to be handled. We chase all these function
+  /// pointer types until we end up with a non-function-pointer type.
+  FunctionType *followFcnPointers(Value *Callee, Location Loc);
+
+  /// CallInst::visit helper. Visits the callee and all the operands.
   void visitCalleeAndOperands(CallInst *V);
 };
 }
