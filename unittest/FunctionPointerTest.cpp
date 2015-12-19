@@ -3,27 +3,17 @@
 
 using namespace rhine;
 
-/// Stress handling (passing around, invoking) function pointers.
+/// Stress testing passing around and invoking function pointers.
 
-TEST(FunctionPointer, BasicCodeGen) {
-  auto SourcePrg = "def callee() do\n"
-                   "  ret 3;\n"
-                   "end\n"
-                   "def caller() do\n"
-                   "  ret callee;\n"
-                   "end";
-  EXPECT_LL(SourcePrg, "define i32 ()* @caller()", "ret i32 ()* @callee");
-}
-
-TEST(FunctionPointer, BasicExecution) {
+TEST(FunctionPointer, Ret) {
   auto SourcePrg = "def callee() do\n"
                    "  ret 3;\n"
                    "end\n"
                    "def main() do\n"
                    "  ret callee;\n"
                    "end";
-  auto ExpectedOut = "";
-  EXPECT_OUTPUT(SourcePrg, ExpectedOut);
+  EXPECT_LL(SourcePrg, "define i32 ()* @main()", "ret i32 ()* @callee");
+  EXPECT_OUTPUT(SourcePrg, "");
 }
 
 TEST(FunctionPointer, Externals) {
@@ -76,5 +66,20 @@ TEST(FunctionPointer, CondAssign) {
       "  if false do bar addCandidate; else bar subCandidate; end\n"
       "end";
   auto ExpectedOut = "-2";
+  EXPECT_OUTPUT(SourcePrg, ExpectedOut);
+}
+
+TEST(FunctionPointer, DISABLED_Chain) {
+  auto SourcePrg = "def bar(printfn "
+                   "~Function(Void -> Function(String -> & -> Void))) do\n"
+                   "  printfn 2\n"
+                   "end\n"
+                   "def printCandidate() do\n"
+                   "  ret println;\n"
+                   "end\n"
+                   "def main() do\n"
+                   "  bar printCandidate\n"
+                   "end";
+  auto ExpectedOut = "6";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
