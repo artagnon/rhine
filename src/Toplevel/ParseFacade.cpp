@@ -74,7 +74,7 @@ Module *ParseFacade::parseToIR(ParseSource SrcE) {
   TypeInfer TyInfer;
   TypeCoercion TyCoercion;
   return parseToIR(SrcE,
-                   {&LambLift, &Flatten, &ResolveL, &TyInfer, &TyCoercion});
+                   {&Flatten, &LambLift, &ResolveL, &TyInfer, &TyCoercion});
 }
 
 void ParseFacade::writeBitcodeToFile() {
@@ -89,13 +89,7 @@ void ParseFacade::writeBitcodeToFile() {
 
 std::string ParseFacade::parseAction(ParseSource SrcE,
                                      PostParseAction ActionE) {
-  Resolve ResolveL;
-  LambdaLifting LambLift;
-  Scope2Block Flatten;
-  TypeInfer TyInfer;
-  TypeCoercion TyCoercion;
-  auto TransformedIR = std::unique_ptr<Module>(
-      parseToIR(SrcE, {&LambLift, &Flatten, &ResolveL, &TyInfer, &TyCoercion}));
+  auto TransformedIR = std::unique_ptr<Module>(parseToIR(SrcE));
   UniqueModule.reset(new llvm::Module("main", llvm::getGlobalContext()));
   auto RawModule = UniqueModule.get();
   if (ActionE != PostParseAction::IRString)

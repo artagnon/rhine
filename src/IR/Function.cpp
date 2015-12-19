@@ -113,7 +113,10 @@ bool Function::classof(const Value *V) { return V->getValID() == RT_Function; }
 
 std::string Function::getMangledName() const { return Name; }
 
-void Function::push_back(BasicBlock *NewBB) { Body.push_back(NewBB); }
+void Function::push_back(BasicBlock *NewBB) {
+  NewBB->setParent(this);
+  Body.push_back(NewBB);
+}
 
 BasicBlock *Function::getEntryBlock() const { return Body.front(); }
 
