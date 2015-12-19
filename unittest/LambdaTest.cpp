@@ -22,13 +22,13 @@ TEST(Lambda, BasicExecution) {
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
 
-TEST(Lambda, DISABLED_InsideIf) {
-  auto SourcePrg = "def mathTest(Input ~Int) do"
+TEST(Lambda, InsideIf) {
+  auto SourcePrg = "def main(Input ~Int) do"
                    "  if false do\n"
-                   "    println $ 3 + Input\n"
+                   "    print $ 3 + Input\n"
                    "  else\n"
-                   "    Lam = fn Arg ~Int -> Arg + 2 end\n"
-                   "    println $ Lam 4\n"
+                   "    Lam = fn Arg ~Int -> ret $ Arg + 2; end\n"
+                   "    print $ Lam 4\n"
                    "  end\n"
                    "  ret 4\n"
                    "end";

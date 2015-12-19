@@ -63,14 +63,27 @@ TEST(Scope2Block, SetIfParent) {
   }
 }
 
-TEST(Scope2Block, SetLambdaParent) {
+TEST(Scope2Block, Lambda) {
   auto SourcePrg = "def foo() do\n"
                    "  Bfunc = fn x ~Int -> ret x; end\n"
                    "end";
   ParseFacade Pf(SourcePrg);
-  LambdaLifting LambLift;
   Scope2Block Flatten;
-  auto Mod = Pf.parseToIR(ParseSource::STRING, {&LambLift, &Flatten});
+  auto Mod = Pf.parseToIR(ParseSource::STRING, {&Flatten});
+  for (auto F : *Mod)
+    for (auto BB : *F)
+      ASSERT_EQ(BB->getParent(), F);
+}
+
+TEST(Scope2Block, LambdaInsideIf) {
+  auto SourcePrg = "def foo() do\n"
+                   "  if true do\n"
+                   "    Bfunc = fn x ~Int -> ret x; end\n"
+                   "  end\n"
+                   "end";
+  ParseFacade Pf(SourcePrg);
+  Scope2Block Flatten;
+  auto Mod = Pf.parseToIR(ParseSource::STRING, {&Flatten});
   for (auto F : *Mod)
     for (auto BB : *F)
       ASSERT_EQ(BB->getParent(), F);
