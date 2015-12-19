@@ -20,14 +20,24 @@ class TypeCoercion : public FunctionPass {
 public:
   TypeCoercion();
   virtual ~TypeCoercion() {}
+
+  /// These overloadeded instances convert the source value to the destination
+  /// type, via coercion.
   Value *convertValue(ConstantInt *I, IntegerType *DestTy);
   Value *convertValue(Value *V, StringType *);
   Value *convertValue(Value *V, BoolType *);
   Value *convertValue(Value *V, Type *);
+
+  /// Convert operands of a User to the types in Tys
   void convertOperands(User *U, std::vector<Type *> Tys);
-  void assertActualFormalCount(CallInst *Inst, FunctionType *FTy);
+
+  /// Match CallInst, IfInst etc. for coercion
   void transformInstruction(Instruction *I);
+
+  /// Only Users need to be transformed
   void transformUser(User *U);
+
+  /// This is a FunctionPass
   void runOnFunction(Function *F) override;
 };
 }

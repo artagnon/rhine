@@ -32,6 +32,10 @@ Type *Value::getType() const {
   return VTy;
 }
 
+Type *Value::getRTy() const {
+  return VTy;
+}
+
 void Value::setType(Type *T) {
   VTy = T;
 }

@@ -62,6 +62,12 @@ public:
   Location getSourceLocation();
   RTValue getValID() const;
   Type *getType() const;
+
+  /// Get the return type of the Value. For most Values, this is just the type.
+  /// CallInst, Function are notable exceptions. Useful in places that just need
+  /// to reason about chained expressions.
+  virtual Type *getRTy() const;
+
   void setType(Type *T);
   bool isUnTyped();
   std::string getName() const;

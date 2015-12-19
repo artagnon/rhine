@@ -48,6 +48,9 @@ private:
 
   /// CallInst::visit helper. Visits the callee and all the operands.
   void visitCalleeAndOperands(CallInst *V);
+
+  /// Verify arity of a callsite
+  void verifyArity(CallInst *V, FunctionType *Ty);
 };
 }
 

@@ -11,7 +11,7 @@ namespace rhine {
 TypeCoercion::TypeCoercion() : K(nullptr) {}
 
 Value *TypeCoercion::convertValue(ConstantInt *I, IntegerType *DestTy) {
-  auto SourceTy = cast<IntegerType>(I->getType());
+  auto SourceTy = cast<IntegerType>(I->getRTy());
   auto SourceBitwidth = SourceTy->getBitwidth();
   auto TargetBitwidth = DestTy->getBitwidth();
   if (SourceBitwidth != TargetBitwidth)
@@ -20,16 +20,10 @@ Value *TypeCoercion::convertValue(ConstantInt *I, IntegerType *DestTy) {
 }
 
 Value *TypeCoercion::convertValue(Value *V, StringType *) {
-  if (isa<StringType>(V->getType()))
-    return V;
   if (auto I = dyn_cast<ConstantInt>(V))
     return GlobalString::get(std::to_string(I->getVal()), K);
-  if (auto C = dyn_cast<CallInst>(V)) {
-    auto PTy = cast<PointerType>(C->getType());
-    auto FTy = cast<FunctionType>(PTy->getCTy());
-    if (dyn_cast<StringType>(FTy->getRTy()))
-      return V;
-  }
+  if (!isa<IntegerType>(V->getRTy()))
+    return nullptr;
   auto ToStringTy =
     FunctionType::get(StringType::get(K), {IntegerType::get(32, K)}, false);
   auto ToStringF = K->Map.get(Prototype::get("toString", ToStringTy));
@@ -39,65 +33,56 @@ Value *TypeCoercion::convertValue(Value *V, StringType *) {
 }
 
 Value *TypeCoercion::convertValue(Value *V, BoolType *) {
-  if (isa<BoolType>(V->getType()))
-    return V;
   return V;
 }
 
 Value *TypeCoercion::convertValue(Value *V, Type *Ty) {
+  if (V->getRTy() == Ty) return V;
   if (auto STy = dyn_cast<StringType>(Ty))
     return convertValue(V, STy);
   if (auto I = dyn_cast<ConstantInt>(V)) {
     if (auto ITy = dyn_cast<IntegerType>(Ty))
       return convertValue(I, ITy);
   }
-  return V;
+  return nullptr;
 }
 
 void TypeCoercion::convertOperands(User *U, std::vector<Type *> Tys) {
-  int It = 0;
+  auto TyIt = Tys.begin();
   for (Use &ThisUse : U->operands()) {
     Value *V = ThisUse;
-    ThisUse.set(convertValue(V, Tys[It++]));
+    auto DestTy = *TyIt++;
+    if (auto ConvertedOp = convertValue(V, DestTy)) {
+      ThisUse.set(ConvertedOp);
+    } else {
+      std::ostringstream MismatchedType;
+      MismatchedType << "Unable to coerce argument from "
+                     << *V->getRTy() << " to " << *DestTy;
+      K->DiagPrinter->errorReport(V->getSourceLocation(), MismatchedType.str());
+      exit(1);
+    }
   }
-}
-
-void TypeCoercion::assertActualFormalCount(CallInst *Inst, FunctionType *FTy) {
-  auto OpSize = Inst->getOperands().size();
-  auto ASize = FTy->getATys().size();
-  auto SourceLoc = Inst->getSourceLocation();
-  if (OpSize != ASize) {
-    K->DiagPrinter->errorReport(
-        SourceLoc, "CallInst arguments size mismatch: " +
-        std::to_string(OpSize) + " versus " + std::to_string(ASize));
-    exit(1);
-  }
-}
-
-FunctionType *computeFunctionType(CallInst *Inst) {
-  FunctionType *FTy;
-  if (auto BareFTy = dyn_cast<FunctionType>(Inst->getType())) {
-    FTy = BareFTy;
-  } else {
-    auto PTy = cast<PointerType>(Inst->getType());
-    FTy = cast<FunctionType>(PTy->getCTy());
-  }
-  return FTy;
 }
 
 void TypeCoercion::transformInstruction(Instruction *I) {
   if (auto Inst = dyn_cast<CallInst>(I)) {
-    auto FTy = computeFunctionType(Inst);
-    assertActualFormalCount(Inst, FTy);
-    convertOperands(cast<User>(Inst), FTy->getATys());
+    convertOperands(cast<User>(Inst), Inst->getATys());
   }
   else if (auto Inst = dyn_cast<IfInst>(I)) {
     auto Cond = Inst->getConditional();
     Use *CondUse = *Cond;
-    CondUse->set(convertValue(Cond, BoolType::get(K)));
+    if (auto ConvertedConditional = convertValue(Cond, BoolType::get(K))) {
+      CondUse->set(ConvertedConditional);
+      return;
+    }
+    std::ostringstream MismatchedType;
+    MismatchedType << "Unable to coerce conditional from type "
+                   << *Cond->getType() << " to Bool";
+    K->DiagPrinter->errorReport(Cond->getSourceLocation(), MismatchedType.str());
+    exit(1);
   }
   else if (auto Inst = dyn_cast<ReturnInst>(I)) {
-    convertOperands(cast<User>(Inst), { I->getType() });
+    convertOperands(cast<User>(Inst), { I->getRTy() });
   }
 }
 
