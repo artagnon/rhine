@@ -124,6 +124,38 @@ FunctionType *TypeInfer::followFcnPointers(Value *Callee, Location Loc) {
   exit(1);
 }
 
+void TypeInfer::verifyArity(CallInst *V, FunctionType *Ty) {
+  std::vector<Type *> OpTys;
+  for (auto Op : V->operands())
+    OpTys.push_back(Op->getType());
+  auto ATys = Ty->getATys();
+  unsigned OpSize = OpTys.size();
+  unsigned Arity = ATys.size();
+  if (OpSize != Arity) {
+    std::ostringstream MismatchedArity;
+    MismatchedArity << "Call expected " << Arity
+                    << " number of arguments, but has been supplied " << OpSize
+                    << " arguments";
+    K->DiagPrinter->errorReport(V->getSourceLocation(), MismatchedArity.str());
+    exit(1);
+  }
+#if 0
+  auto OpIt = V->operands().begin();
+  for (auto FormalArg : ATys) {
+    auto Op = *OpIt++;
+    auto ActualArg = Op->getType();
+    if (FormalArg != ActualArg) {
+      std::ostringstream MismatchedArgTy;
+      MismatchedArgTy << "Call expected argument of type " << *FormalArg
+                      << " but has been supplied " << *ActualArg << " type";
+      K->DiagPrinter->errorReport(Op->getSourceLocation(),
+                                  MismatchedArgTy.str());
+      exit(1);
+    }
+  }
+#endif
+}
+
 void TypeInfer::visitCalleeAndOperands(CallInst *V) {
   for (auto Op : V->operands())
     visit(Op);
@@ -136,6 +168,7 @@ Type *TypeInfer::visit(CallInst *V) {
   visitCalleeAndOperands(V);
   auto Callee = V->getCallee();
   auto Ty = followFcnPointers(Callee, V->getSourceLocation());
+  verifyArity(V, Ty);
   V->setType(PointerType::get(Ty));
   return Ty->getRTy();
 }

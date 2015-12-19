@@ -63,7 +63,20 @@ public:
   void *operator new(size_t S, unsigned n);
   static CallInst *get(Value *Callee, std::vector<Value *> Ops);
   static bool classof(const Value *V);
+
+  /// Get the type of the underlying function
+  FunctionType *getFTy() const;
+
+  /// Get the argument types of the underlying function
+  std::vector<Type *> getATys() const;
+
+  /// Get the return type of the whole instruction (the underlying function)
+  virtual Type *getRTy() const override;
+
+  /// Get the underlying function that is called
   Value *getCallee() const;
+
+  /// There should be little cleverness in lowering
   virtual llvm::Value *toLL(llvm::Module *M) override;
 protected:
   void print(std::ostream &Stream) const override;
