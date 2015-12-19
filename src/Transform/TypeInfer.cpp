@@ -68,8 +68,11 @@ Type *TypeInfer::visit(IfInst *V) {
   auto TrueTy = visit(V->getTrueBB());
   auto FalseTy = visit(V->getFalseBB());
   if (TrueTy != FalseTy) {
-    K->DiagPrinter->errorReport(V->getSourceLocation(),
-                                "mismatched true/false block types");
+    std::ostringstream Message;
+    Message << "mismatched types: true block is inferred to be of type "
+            << *TrueTy << " and false block is inferred to be of type "
+            << *FalseTy;
+    K->DiagPrinter->errorReport(V->getSourceLocation(), Message.str());
     exit(1);
   }
   V->setType(TrueTy);
@@ -100,18 +103,25 @@ Type *TypeInfer::visit(Argument *V) {
   exit(1);
 }
 
-Type *TypeInfer::visit(CallInst *V) {
+FunctionType *TypeInfer::extractFunctionType(Value *Callee, Location Loc) {
+  if (auto PointerTy = dyn_cast<PointerType>(Callee->getType())) {
+    return dyn_cast<FunctionType>(PointerTy->getCTy());
+  }
+  return dyn_cast<FunctionType>(Callee->getType());
+}
+
+void TypeInfer::visitCalleeAndOperands(CallInst *V) {
   for (auto Op : V->operands())
     visit(Op);
   auto Callee = V->getCallee();
-  auto CalleeTy = visit(Callee);
+  visit(Callee);
   assert(!isa<UnresolvedValue>(Callee));
-  if (auto P = dyn_cast<Pointer>(Callee))
-    Callee = P->getVal();
-  else if (auto PTy = dyn_cast<PointerType>(CalleeTy))
-    Callee->setType(PTy->getCTy());
-  CalleeTy = Callee->getType();
-  if (auto Ty = dyn_cast<FunctionType>(CalleeTy)) {
+}
+
+Type *TypeInfer::visit(CallInst *V) {
+  visitCalleeAndOperands(V);
+  auto Callee = V->getCallee();
+  if (auto Ty = extractFunctionType(Callee, V->getSourceLocation())) {
     V->setType(PointerType::get(Ty));
     return Ty->getRTy();
   }
