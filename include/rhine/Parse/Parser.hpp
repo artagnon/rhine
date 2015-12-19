@@ -152,6 +152,10 @@ public:
   /// to return
   Instruction *parseArithOp(Value *Op0, bool Optional = false);
 
+  /// Parse the Rtok arguments of a CallInst. Return false if we didn't parse
+  /// any Rtoks (in which case the call doesn't take any arguments).
+  bool parseCallArgs(std::vector<Value *> &CallArgs);
+
   /// Callee has already been parsed and is passed in as the first argument
   Instruction *parseCall(Value *Callee, bool Optional = false);
 

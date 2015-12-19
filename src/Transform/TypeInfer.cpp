@@ -54,22 +54,12 @@ Type *TypeInfer::visit(Pointer *V) {
   return Ty;
 }
 
-Type *TypeInfer::visit(AddInst *V) {
+Type *TypeInfer::visit(BinaryArithInst *V) {
   for (auto Op : V->operands())
     visit(Op);
   auto LType = V->getOperand(0)->getType();
   assert(LType == V->getOperand(1)->getType() &&
-         "AddInst with operands of different types");
-  V->setType(LType);
-  return LType;
-}
-
-Type *TypeInfer::visit(SubInst *V) {
-  for (auto Op : V->operands())
-    visit(Op);
-  auto LType = V->getOperand(0)->getType();
-  assert(LType == V->getOperand(1)->getType() &&
-         "SubInst with operands of different types");
+         "BinaryArithInst with operands of different types");
   V->setType(LType);
   return LType;
 }

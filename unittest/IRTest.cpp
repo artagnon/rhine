@@ -15,32 +15,6 @@ TEST(IR, ConstantInt) {
   EXPECT_IR(SourcePrg, ExpectedIR);
 }
 
-TEST(IR, AddTwoInt)
-{
-  auto SourcePrg =
-    "def foo do\n"
-    "  ret $ 3 + 2\n"
-    "end";
-  auto ExpectedIR =
-    "ret + ~Int\n"
-    "3 ~Int\n"
-    "2 ~Int\n";
-  EXPECT_IR(SourcePrg, ExpectedIR);
-}
-
-TEST(IR, SubTwoInt)
-{
-  auto SourcePrg =
-    "def foo ~Int do\n"
-    "  ret $ 3 - 2\n"
-    "end";
-  auto ExpectedIR =
-    "ret - ~Int\n"
-    "3 ~Int\n"
-    "2 ~Int\n";
-  EXPECT_IR(SourcePrg, ExpectedIR);
-}
-
 TEST(IR, ConstantString)
 {
   auto SourcePrg =

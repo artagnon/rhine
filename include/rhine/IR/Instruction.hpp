@@ -37,38 +37,19 @@ protected:
   virtual void print(std::ostream &Stream) const = 0;
 };
 
-class AddInst : public Instruction {
+class BinaryArithInst : public Instruction {
 public:
   /// We can explicitly request a particular type from two possibly-different
-  /// types being added
-  AddInst(Type *Ty, Value *Op0, Value *Op1);
+  /// types being +, -, *, or /'ded.
+  BinaryArithInst(RTValue InstSelector, Type *Ty, Value *Op0, Value *Op1);
 
-  virtual ~AddInst() {}
+  virtual ~BinaryArithInst() {}
 
   /// Allocate a constant two operands
   void *operator new(size_t S);
 
   /// Context inferred from Op0
-  static AddInst *get(Value *Op0, Value *Op1);
-  static bool classof(const Value *V);
-  virtual llvm::Value *toLL(llvm::Module *M) override;
-protected:
-  void print(std::ostream &Stream) const override;
-};
-
-class SubInst : public Instruction {
-public:
-  /// We can explicitly request a particular type from two possibly-different
-  /// types being added
-  SubInst(Type *Ty, Value *Op0, Value *Op1);
-
-  virtual ~SubInst();
-
-  /// Allocate a constant two operands
-  void *operator new(size_t S);
-
-  /// Context inferred from Op0
-  static SubInst *get(Value *Op0, Value *Op1);
+  static BinaryArithInst *get(RTValue InstSelector, Value *Op0, Value *Op1);
   static bool classof(const Value *V);
   virtual llvm::Value *toLL(llvm::Module *M) override;
 protected:

@@ -26,7 +26,6 @@ def fptrTest do
   return println
 end
 def mathTest(Int Input, Float Finput) do
-	# Simple exercise
   if true do
     println $ 3 + Input
   else

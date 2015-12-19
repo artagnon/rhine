@@ -36,7 +36,7 @@ TEST(Resolve, UnresolvedReplacement) {
     ASSERT_EQ(dyn_cast<UnresolvedValue>(V), nullptr);
     if (auto D = dyn_cast<MallocInst>(V))
       Decl = D;
-    if (auto A = dyn_cast<AddInst>(V)) {
+    if (auto A = dyn_cast<BinaryArithInst>(V)) {
       auto Op0 = A->getOperand(0);
       auto Op1 = A->getOperand(1);
       if (auto U = dyn_cast<rhine::LoadInst>(Op0))

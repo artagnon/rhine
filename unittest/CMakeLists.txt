@@ -11,6 +11,7 @@ add_executable(UnitTest
   "${CMAKE_CURRENT_SOURCE_DIR}/TyInferTest.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/TyCoerceTest.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ResolveTest.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/BinaryArithTest.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/DollarOperatorTest.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/FunctionPointerTest.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ExternalsTest.cpp"
