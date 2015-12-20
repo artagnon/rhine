@@ -11,7 +11,10 @@
 #include <string>
 #include <unistd.h>
 
+#include "llvm/ADT/STLExtras.h"
 #include "rhine/Parse/Parser.hpp"
+
+using namespace std;
 
 namespace rhine {
 #define ANSI_COLOR_RED "\x1b[31;1m"
@@ -41,35 +44,29 @@ public:
 class DiagnosticPrinter {
 public:
   std::ostream &ErrorStream = std::cerr;
-  std::string StringStreamInput;
   const Parser::Location SourceLoc = {};
 
-  DiagnosticPrinter(std::ostream &ErrStream);
-  DiagnosticPrinter(const Parser::Location Loca);
+  DiagnosticPrinter(std::ostream &ErrStream) : ErrorStream(ErrStream) {};
+  DiagnosticPrinter(const Parser::Location Loca) : SourceLoc(Loca) {};
 
   template <typename T> DiagnosticPrinter &operator<<(const T &V) {
-    if (SourceLoc.Begin.Filename.empty()) {
+    if (SourceLoc.Filename.empty()) {
       ErrorStream << V;
       return *this;
     }
-    assert(SourceLoc.Begin.Filename == SourceLoc.End.Filename);
-    assert(SourceLoc.Begin.Line == SourceLoc.End.Line);
 
-    std::istream *InStream;
-    std::istringstream Iss(StringStreamInput);
-    std::ifstream InFile(SourceLoc.Begin.Filename);
-
-    if (SourceLoc.Begin.Filename == "string stream") {
-      InStream = &Iss;
+    unique_ptr<istream> InStream;
+    if (SourceLoc.StringStreamInput) {
+      InStream = llvm::make_unique<stringstream>(*SourceLoc.StringStreamInput);
     } else {
-      if (!InFile)
+      InStream = llvm::make_unique<ifstream>(SourceLoc.Filename);
+      if (!InStream->good())
         ErrorStream << ColorCode(ANSI_COLOR_RED)
                     << "fatal: " << ColorCode(ANSI_COLOR_WHITE)
-                    << "Unable to open file " << SourceLoc.Begin.Filename
+                    << "Unable to open file " << SourceLoc.Filename
                     << ColorCode(ANSI_COLOR_RESET) << std::endl;
-      InStream = &InFile;
     }
-    ErrorStream << ColorCode(ANSI_COLOR_WHITE) << SourceLoc.Begin.Filename
+    ErrorStream << ColorCode(ANSI_COLOR_WHITE) << SourceLoc.Filename
                 << ":" << SourceLoc.Begin.Line << ":" << SourceLoc.Begin.Column
                 << ": " << ColorCode(ANSI_COLOR_RED)
                 << "error: " << ColorCode(ANSI_COLOR_WHITE) << V

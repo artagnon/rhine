@@ -69,6 +69,17 @@ TEST(FunctionPointer, CondAssign) {
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
 
+TEST(FunctionPointer, DISABLED_UseRetValue) {
+  auto SourcePrg = "def bar do\n"
+                   "  ret print\n"
+                   "end\n"
+                   "def main do\n"
+                   "  bar 34;\n"
+                   "end";
+  auto ExpectedOut = "34";
+  EXPECT_OUTPUT(SourcePrg, ExpectedOut);
+}
+
 TEST(FunctionPointer, DISABLED_Chain) {
   auto SourcePrg = "def bar(printfn "
                    "~Function(Void -> Function(String -> & -> Void))) do\n"

@@ -32,7 +32,10 @@ public:
 
   /// Name of current stream being parsed; used in filling in location
   /// information into the AST by the parser
-  std::string StreamName;
+  std::string InputName;
+
+  /// Actual string input (nullptr in the case of file)
+  const std::string *StringStreamInput = nullptr;
 
   /// The lexer, used as a service by the parser
   Lexer *Lexx;
