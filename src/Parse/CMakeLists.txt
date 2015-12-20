@@ -20,5 +20,4 @@ add_library(Parse
 set_target_properties(Parse PROPERTIES
   LINKER_LANGUAGE CXX
   COMPILE_FLAGS "${LLVM_CXXFLAGS} -Wno-deprecated-register -Wno-sign-compare -fexceptions")
-target_link_libraries(Parse
-  Diagnostic)
+target_link_libraries(Parse)

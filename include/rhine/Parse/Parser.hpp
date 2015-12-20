@@ -46,7 +46,6 @@ public:
 
   class Position {
   public:
-    std::string Filename;
     unsigned Line;
     unsigned Column;
     Position() : Line(1u), Column(1u) {}
@@ -63,7 +62,8 @@ public:
     void columns(int count = 1) { End.columns(count); }
     void lines(int count = 1) { End.lines(count); }
 
-  public:
+    std::string Filename;
+    const std::string *StringStreamInput = nullptr;
     Position Begin;
     Position End;
   };

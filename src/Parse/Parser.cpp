@@ -28,7 +28,8 @@ void Parser::getTok() {
 bool Parser::getTok(int Expected) {
   if (CurTok == Expected) {
     getTok();
-    CurLoc.Begin.Filename = CurLoc.End.Filename = Driver->StreamName;
+    CurLoc.Filename = Driver->InputName;
+    CurLoc.StringStreamInput = Driver->StringStreamInput;
     return true;
   }
   return false;
