@@ -7,7 +7,7 @@ namespace rhine {
 Context::Context(std::ostream &ErrStream):
     LLContext(llvm::getGlobalContext()),
     Builder(new llvm::IRBuilder<>(LLContext)),
-    DiagPrinter(new DiagnosticPrinter(&ErrStream)),
+    DiagPrinter(new DiagnosticPrinter(ErrStream)),
     ExternalsCache(nullptr) {}
 
 Context::~Context() {

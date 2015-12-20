@@ -69,8 +69,8 @@ llvm::Value *StoreInst::toLL(llvm::Module *M) {
     auto NewValue = getNewValue()->toLL(M);
     return K->Builder->CreateStore(NewValue, MValue);
   }
-  auto Error = "unable to find symbol " + Op0->getName() + " to store into";
-  K->DiagPrinter->errorReport(SourceLoc, Error);
+  DiagnosticPrinter(SourceLoc)
+      << "unable to find symbol " + Op0->getName() + " to store into";
   exit(1);
 }
 
@@ -80,8 +80,7 @@ llvm::Value *LoadInst::toLL(llvm::Module *M) {
     return K->Builder->CreateLoad(Result, Name + "Load");
   } else if (auto Result = Externals::get(K)->getMappingVal(Name, M))
     return Result;
-  auto Error = "unable to find " + Name + " to load";
-  K->DiagPrinter->errorReport(SourceLoc, Error);
+  DiagnosticPrinter(SourceLoc) << "unable to find " + Name + " to load";
   exit(1);
 }
 

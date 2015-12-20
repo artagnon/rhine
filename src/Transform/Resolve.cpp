@@ -1,11 +1,11 @@
-#include "rhine/IR/Context.hpp"
-#include "rhine/IR/BasicBlock.hpp"
-#include "rhine/IR/Instruction.hpp"
-#include "rhine/IR/UnresolvedValue.hpp"
-#include "rhine/IR/Module.hpp"
-#include "rhine/Transform/Resolve.hpp"
-#include "rhine/Externals.hpp"
 #include "rhine/Diagnostic/Diagnostic.hpp"
+#include "rhine/Externals.hpp"
+#include "rhine/IR/BasicBlock.hpp"
+#include "rhine/IR/Context.hpp"
+#include "rhine/IR/Instruction.hpp"
+#include "rhine/IR/Module.hpp"
+#include "rhine/IR/UnresolvedValue.hpp"
+#include "rhine/Transform/Resolve.hpp"
 
 #include <list>
 
@@ -48,10 +48,10 @@ void Resolve::lookupReplaceUse(UnresolvedValue *V, Use &U, BasicBlock *Block) {
     auto SourceLoc = U->getSourceLocation();
     if (auto Inst = dyn_cast<CallInst>(U->getUser()))
       if (Inst->getCallee() == V) {
-        K->DiagPrinter->errorReport(SourceLoc, "unbound function " + Name);
+        DiagnosticPrinter(SourceLoc) << "unbound function " + Name;
         exit(1);
       }
-    K->DiagPrinter->errorReport(SourceLoc, "unbound symbol " + Name);
+    DiagnosticPrinter(SourceLoc) << "unbound symbol " + Name;
     exit(1);
   }
 }
@@ -78,8 +78,8 @@ void Resolve::runOnFunction(Function *F) {
     for (auto &V : *BB) {
       if (auto M = dyn_cast<MallocInst>(V))
         if (!K->Map.add(M, BB)) {
-          auto ErrMsg = "symbol " + M->getName() + " already bound";
-          K->DiagPrinter->errorReport(M->getSourceLocation(), ErrMsg);
+          DiagnosticPrinter(M->getSourceLocation()) << "symbol " + M->getName()
+                                                    + " already bound";
           exit(1);
         }
     }
@@ -98,13 +98,13 @@ void Resolve::runOnModule(Module *M) {
   for (auto P : Externals::get(K)->getProtos())
     if (!K->Map.add(P)) {
       auto ErrMsg = "prototype " + P->getName() + " already bound";
-      K->DiagPrinter->errorReport(P->getSourceLocation(), ErrMsg);
+      DiagnosticPrinter(P->getSourceLocation()) << ErrMsg;
       exit(1);
     }
   for (auto &F : *M)
     if (!K->Map.add(F)) {
-      auto ErrMsg = "function " + F->getName() + " already exists";
-      K->DiagPrinter->errorReport(F->getSourceLocation(), ErrMsg);
+      DiagnosticPrinter(F->getSourceLocation()) << "function " + F->getName()
+                                                + " already exists";
       exit(1);
     }
   for (auto &F : *M)

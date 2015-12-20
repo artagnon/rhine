@@ -36,7 +36,7 @@ bool Parser::getTok(int Expected) {
 
 void Parser::writeError(std::string ErrStr, bool Optional) {
   if (Optional) return;
-  K->DiagPrinter->errorReport(CurLoc, ErrStr);
+  DiagnosticPrinter(CurLoc) << ErrStr;
   CurStatus = false;
 }
 

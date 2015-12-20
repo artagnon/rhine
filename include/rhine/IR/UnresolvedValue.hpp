@@ -15,7 +15,7 @@ public:
   static bool classof(const Value *V);
   virtual llvm::Value *toLL(llvm::Module *M) override;
 protected:
-  virtual void print(std::ostream &Stream) const override;
+  virtual void print(DiagnosticPrinter &Stream) const override;
 };
 
 class Argument : public User {
@@ -28,7 +28,7 @@ public:
   virtual llvm::Value *toLL(llvm::Module *M) override;
   void setParent(Prototype *P);
 protected:
-  virtual void print(std::ostream &Stream) const override;
+  virtual void print(DiagnosticPrinter &Stream) const override;
 };
 }
 

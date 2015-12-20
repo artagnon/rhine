@@ -7,9 +7,7 @@
 
 namespace rhine {
 llvm::Value *UnresolvedValue::toLL(llvm::Module *M) {
-  auto K = getContext();
-  K->DiagPrinter->errorReport(
-      SourceLoc, "ResolveValues not run properly" + Name);
+  DiagnosticPrinter(SourceLoc) << "ResolveValues not run properly" + Name;
   exit(1);
 }
 
@@ -20,8 +18,7 @@ llvm::Value *Argument::toLL(llvm::Module *M) {
     return Result;
   else if (auto Result = Externals::get(K)->getMappingVal(Name, M))
     return Result;
-  K->DiagPrinter->errorReport(
-      SourceLoc, "unbound argument " + Name);
+  DiagnosticPrinter(SourceLoc) << "unbound argument " + Name;
   exit(1);
 }
 

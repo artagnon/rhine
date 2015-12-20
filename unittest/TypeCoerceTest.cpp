@@ -37,7 +37,8 @@ TEST(TypeCoerce, Uncoercible) {
   auto SourcePrg = "def main do\n"
                    "  print print;\n"
                    "end";
-  EXPECT_COMPILE_DEATH(SourcePrg, "error: Unable to coerce argument from "
+  /// NOTE missing SourceLocation here
+  EXPECT_COMPILE_DEATH(SourcePrg, "Unable to coerce argument from "
                                   "Fn\\(String -> & -> Void\\)\\* to String");
 }
 

@@ -23,7 +23,7 @@ std::string GlobalString::getVal() {
   return Val;
 }
 
-void GlobalString::print(std::ostream &Stream) const {
+void GlobalString::print(DiagnosticPrinter &Stream) const {
   Stream << "'" << Val << "' ~" << *getType();
 }
 }

@@ -8,6 +8,7 @@
 #include <sstream>
 
 #include "rhine/Parse/Parser.hpp"
+#include "rhine/Diagnostic/Diagnostic.hpp"
 
 using namespace std;
 using namespace llvm;
@@ -73,8 +74,13 @@ public:
   std::string getName() const;
   void setName(std::string Str);
   virtual llvm::Value *toLL(llvm::Module *M) = 0;
-  friend ostream &operator<<(ostream &Stream, const Value &V) {
+  friend DiagnosticPrinter &operator<<(DiagnosticPrinter &Stream, const Value &V) {
     V.print(Stream);
+    return Stream;
+  }
+  friend ostream &operator<<(ostream &Stream, const Value &V) {
+    auto DiagStream = DiagnosticPrinter(Stream);
+    V.print(DiagStream);
     return Stream;
   }
   operator Use *() const;
@@ -85,7 +91,7 @@ public:
   void zapUseList();
   void dump();
 protected:
-  virtual void print(std::ostream &Stream) const = 0;
+  virtual void print(DiagnosticPrinter &Stream) const = 0;
 private:
   const RTValue ValID;
 };

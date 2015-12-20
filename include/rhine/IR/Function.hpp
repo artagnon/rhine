@@ -48,8 +48,8 @@ public:
   virtual llvm::Constant *toLL(llvm::Module *M) override;
 
 protected:
-  virtual void print(std::ostream &Stream) const override;
-  void emitArguments(std::ostream &Stream) const;
+  virtual void print(DiagnosticPrinter &Stream) const override;
+  void emitArguments(DiagnosticPrinter &Stream) const;
 };
 
 /// A prototype + a body
@@ -91,7 +91,7 @@ public:
   virtual llvm::Constant *toLL(llvm::Module *M) override;
 
 protected:
-  virtual void print(std::ostream &Stream) const override;
+  virtual void print(DiagnosticPrinter &Stream) const override;
 };
 }
 

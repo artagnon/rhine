@@ -6,7 +6,6 @@
 
 namespace rhine {
 llvm::Function *Prototype::getOrInsert(llvm::Module *M) {
-  auto K = getContext();
   auto FnTy = cast<llvm::FunctionType>(getType()->toLL(M));
   auto MangledName = getMangledName();
 
@@ -26,7 +25,7 @@ llvm::Function *Prototype::getOrInsert(llvm::Module *M) {
   if (auto FunctionCandidate = dyn_cast<llvm::Function>(Const))
     return FunctionCandidate;
   auto Error = MangledName + " was declared with different signature earlier";
-  K->DiagPrinter->errorReport(SourceLoc, Error);
+  DiagnosticPrinter(SourceLoc) << Error;
   exit(1);
 }
 

@@ -34,7 +34,7 @@ bool BinaryArithInst::classof(const Value *V) {
   V->getValID() == RT_AddInst || V->getValID() == RT_SubInst;
 }
 
-void BinaryArithInst::print(std::ostream &Stream) const {
+void BinaryArithInst::print(DiagnosticPrinter &Stream) const {
   switch (getValID()) {
   case RT_AddInst:
     Stream << "+ ~" << *VTy;
@@ -93,7 +93,7 @@ Type *CallInst::getRTy() const {
 
 Value *CallInst::getCallee() const { return getOperand(-1); }
 
-void CallInst::print(std::ostream &Stream) const {
+void CallInst::print(DiagnosticPrinter &Stream) const {
   Stream << getCallee()->getName() << " ~" << *VTy;
   for (auto O : getOperands())
     Stream << std::endl << *O;
@@ -120,7 +120,7 @@ void MallocInst::setVal(Value *V) { setOperand(0, V); }
 
 Value *MallocInst::getVal() { return getOperand(0); }
 
-void MallocInst::print(std::ostream &Stream) const {
+void MallocInst::print(DiagnosticPrinter &Stream) const {
   Stream << Name << " = " << *getOperand(0);
 }
 
@@ -137,7 +137,7 @@ bool LoadInst::classof(const Value *V) { return V->getValID() == RT_LoadInst; }
 
 Value *LoadInst::getVal() const { return getOperand(0); }
 
-void LoadInst::print(std::ostream &Stream) const {
+void LoadInst::print(DiagnosticPrinter &Stream) const {
   Stream << Name << " ~" << *VTy;
 }
 
@@ -165,7 +165,7 @@ Value *StoreInst::getMallocedValue() const { return getOperand(0); }
 
 Value *StoreInst::getNewValue() const { return getOperand(1); }
 
-void StoreInst::print(std::ostream &Stream) const {
+void StoreInst::print(DiagnosticPrinter &Stream) const {
   Stream << *getMallocedValue() << " = " << *getNewValue();
 }
 
@@ -199,7 +199,7 @@ Value *ReturnInst::getVal() {
   return nullptr;
 }
 
-void ReturnInst::print(std::ostream &Stream) const {
+void ReturnInst::print(DiagnosticPrinter &Stream) const {
   Stream << "ret " << *getOperand(0);
 }
 
@@ -226,7 +226,7 @@ void TerminatorInst::setVal(Value *V) { setOperand(0, V); }
 
 Value *TerminatorInst::getVal() { return getOperand(0); }
 
-void TerminatorInst::print(std::ostream &Stream) const {
+void TerminatorInst::print(DiagnosticPrinter &Stream) const {
   Stream << "term " << *getOperand(0);
 }
 
@@ -256,7 +256,7 @@ BasicBlock *IfInst::getFalseBB() const {
   return cast<BasicBlock>(getOperand(2));
 }
 
-void IfInst::print(std::ostream &Stream) const {
+void IfInst::print(DiagnosticPrinter &Stream) const {
   Stream << "if (" << *getConditional() << ") {" << std::endl;
   for (auto V : *getTrueBB())
     Stream << *V << std::endl;

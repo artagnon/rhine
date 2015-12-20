@@ -63,8 +63,8 @@ void Scope2Block::validateBlockForm(BasicBlock *BB) {
   std::vector<Instruction *>::iterator It;
   for (It = BB->begin(); std::next(It) != BB->end(); ++It)
     if (dyn_cast<TerminatorInst>(*It) || dyn_cast<ReturnInst>(*It)) {
-      K->DiagPrinter->errorReport((*It)->getSourceLocation(),
-                                  "unexpected block terminator");
+      DiagnosticPrinter((*It)->getSourceLocation())
+          << "unexpected block terminator";
       exit(1);
     }
 }
