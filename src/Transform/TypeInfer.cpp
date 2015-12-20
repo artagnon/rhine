@@ -68,11 +68,11 @@ Type *TypeInfer::visit(IfInst *V) {
   auto TrueTy = visit(V->getTrueBB());
   auto FalseTy = visit(V->getFalseBB());
   if (TrueTy != FalseTy) {
-    std::ostringstream Message;
-    Message << "mismatched types: true block is inferred to be of type "
-            << *TrueTy << " and false block is inferred to be of type "
-            << *FalseTy;
-    K->DiagPrinter->errorReport(V->getSourceLocation(), Message.str());
+    std::ostringstream ErrMsg;
+    ErrMsg << "mismatched types: true block is inferred to be of type "
+           << *TrueTy << " and false block is inferred to be of type "
+           << *FalseTy;
+    DiagnosticPrinter(V->getSourceLocation()) << ErrMsg.str();
     exit(1);
   }
   V->setType(TrueTy);
@@ -84,7 +84,7 @@ Type *TypeInfer::visit(LoadInst *V) {
   if (!V->isUnTyped())
     return V->getType();
   auto Name = V->getVal()->getName();
-  K->DiagPrinter->errorReport(V->getSourceLocation(), "untyped symbol " + Name);
+  DiagnosticPrinter(V->getSourceLocation()) << "untyped symbol " + Name;
   exit(1);
 }
 
@@ -98,8 +98,8 @@ Type *TypeInfer::visit(StoreInst *V) {
 Type *TypeInfer::visit(Argument *V) {
   if (!V->isUnTyped())
     return V->getType();
-  K->DiagPrinter->errorReport(V->getSourceLocation(),
-                              "untyped argument " + V->getName());
+  DiagnosticPrinter(V->getSourceLocation())
+      << "untyped argument " + V->getName();
   exit(1);
 }
 
@@ -115,12 +115,10 @@ FunctionType *TypeInfer::followFcnPointers(Value *Callee, Location Loc) {
       Fcn = DeeperFcn;
     return Fcn;
   }
-  std::ostringstream NotTypedAsFunction;
-  NotTypedAsFunction << Callee->getName()
-                     << " was expected to be a pointer to a function"
-                     << " but was instead found to be of type "
-                     << *Callee->getType();
-  K->DiagPrinter->errorReport(Loc, NotTypedAsFunction.str());
+  std::ostringstream ErrMsg;
+  ErrMsg << Callee->getName() << " was expected to be a pointer to a function"
+         << " but was instead found to be of type " << *Callee->getType();
+  DiagnosticPrinter(Loc) << ErrMsg.str();
   exit(1);
 }
 
@@ -132,28 +130,13 @@ void TypeInfer::verifyArity(CallInst *V, FunctionType *Ty) {
   unsigned OpSize = OpTys.size();
   unsigned Arity = ATys.size();
   if (OpSize != Arity) {
-    std::ostringstream MismatchedArity;
-    MismatchedArity << "Call expected " << Arity
-                    << " number of arguments, but has been supplied " << OpSize
-                    << " arguments";
-    K->DiagPrinter->errorReport(V->getSourceLocation(), MismatchedArity.str());
+    std::ostringstream ErrMsg;
+    ErrMsg << "Call expected " << Arity
+           << " number of arguments, but has been supplied " << OpSize
+           << " arguments";
+    DiagnosticPrinter(V->getSourceLocation()) << ErrMsg.str();
     exit(1);
   }
-#if 0
-  auto OpIt = V->operands().begin();
-  for (auto FormalArg : ATys) {
-    auto Op = *OpIt++;
-    auto ActualArg = Op->getType();
-    if (FormalArg != ActualArg) {
-      std::ostringstream MismatchedArgTy;
-      MismatchedArgTy << "Call expected argument of type " << *FormalArg
-                      << " but has been supplied " << *ActualArg << " type";
-      K->DiagPrinter->errorReport(Op->getSourceLocation(),
-                                  MismatchedArgTy.str());
-      exit(1);
-    }
-  }
-#endif
 }
 
 void TypeInfer::visitCalleeAndOperands(CallInst *V) {
@@ -180,7 +163,7 @@ Type *TypeInfer::visit(ReturnInst *V) {
   auto Ty = visit(Val);
   if (isa<VoidType>(Ty)) {
     auto CannotReturnVoid = "cannot return expression of Void type";
-    K->DiagPrinter->errorReport(Val->getSourceLocation(), CannotReturnVoid);
+    DiagnosticPrinter(Val->getSourceLocation()) << CannotReturnVoid;
     exit(1);
   }
   V->setType(Ty);

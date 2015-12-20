@@ -1,10 +1,10 @@
+#include "rhine/Diagnostic/Diagnostic.hpp"
+#include "rhine/IR/Constant.hpp"
+#include "rhine/IR/Context.hpp"
+#include "rhine/IR/Function.hpp"
 #include "rhine/IR/GlobalValue.hpp"
 #include "rhine/IR/Instruction.hpp"
-#include "rhine/IR/Constant.hpp"
-#include "rhine/IR/Function.hpp"
-#include "rhine/IR/Context.hpp"
 #include "rhine/IR/Type.hpp"
-#include "rhine/Diagnostic/Diagnostic.hpp"
 #include "rhine/Transform/TypeCoercion.hpp"
 
 namespace rhine {
@@ -25,19 +25,18 @@ Value *TypeCoercion::convertValue(Value *V, StringType *) {
   if (!isa<IntegerType>(V->getRTy()))
     return nullptr;
   auto ToStringTy =
-    FunctionType::get(StringType::get(K), {IntegerType::get(32, K)}, false);
+      FunctionType::get(StringType::get(K), {IntegerType::get(32, K)}, false);
   auto ToStringF = K->Map.get(Prototype::get("toString", ToStringTy));
   auto Op = CallInst::get(ToStringF, {V});
   Op->setType(PointerType::get(ToStringTy));
   return Op;
 }
 
-Value *TypeCoercion::convertValue(Value *V, BoolType *) {
-  return V;
-}
+Value *TypeCoercion::convertValue(Value *V, BoolType *) { return V; }
 
 Value *TypeCoercion::convertValue(Value *V, Type *Ty) {
-  if (V->getRTy() == Ty) return V;
+  if (V->getRTy() == Ty)
+    return V;
   if (auto STy = dyn_cast<StringType>(Ty))
     return convertValue(V, STy);
   if (auto I = dyn_cast<ConstantInt>(V)) {
@@ -55,10 +54,10 @@ void TypeCoercion::convertOperands(User *U, std::vector<Type *> Tys) {
     if (auto ConvertedOp = convertValue(V, DestTy)) {
       ThisUse.set(ConvertedOp);
     } else {
-      std::ostringstream MismatchedType;
-      MismatchedType << "Unable to coerce argument from "
-                     << *V->getRTy() << " to " << *DestTy;
-      K->DiagPrinter->errorReport(V->getSourceLocation(), MismatchedType.str());
+      std::ostringstream ErrMsg;
+      ErrMsg << "Unable to coerce argument from " << *V->getRTy() << " to "
+             << *DestTy;
+      DiagnosticPrinter(V->getSourceLocation()) << ErrMsg.str();
       exit(1);
     }
   }
@@ -67,22 +66,20 @@ void TypeCoercion::convertOperands(User *U, std::vector<Type *> Tys) {
 void TypeCoercion::transformInstruction(Instruction *I) {
   if (auto Inst = dyn_cast<CallInst>(I)) {
     convertOperands(cast<User>(Inst), Inst->getATys());
-  }
-  else if (auto Inst = dyn_cast<IfInst>(I)) {
+  } else if (auto Inst = dyn_cast<IfInst>(I)) {
     auto Cond = Inst->getConditional();
     Use *CondUse = *Cond;
     if (auto ConvertedConditional = convertValue(Cond, BoolType::get(K))) {
       CondUse->set(ConvertedConditional);
       return;
     }
-    std::ostringstream MismatchedType;
-    MismatchedType << "Unable to coerce conditional from type "
-                   << *Cond->getType() << " to Bool";
-    K->DiagPrinter->errorReport(Cond->getSourceLocation(), MismatchedType.str());
+    std::ostringstream ErrMsg;
+    ErrMsg << "Unable to coerce conditional from type " << *Cond->getType()
+           << " to Bool";
+    DiagnosticPrinter(Cond->getSourceLocation()) << ErrMsg.str();
     exit(1);
-  }
-  else if (auto Inst = dyn_cast<ReturnInst>(I)) {
-    convertOperands(cast<User>(Inst), { I->getRTy() });
+  } else if (auto Inst = dyn_cast<ReturnInst>(I)) {
+    convertOperands(cast<User>(Inst), {I->getRTy()});
   }
 }
 

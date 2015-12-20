@@ -3,6 +3,7 @@
 #define GLOBALVALUE_H
 
 #include "rhine/IR/User.hpp"
+#include "rhine/Diagnostic/Diagnostic.hpp"
 
 namespace rhine {
 class GlobalString : public User {
@@ -16,7 +17,7 @@ public:
   std::string getVal();
   virtual llvm::Value *toLL(llvm::Module *M) override;
 protected:
-  virtual void print(std::ostream &Stream) const override;
+  virtual void print(DiagnosticPrinter &Stream) const override;
 };
 }
 

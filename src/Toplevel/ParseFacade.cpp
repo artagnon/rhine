@@ -30,8 +30,7 @@ ParseFacade::ParseFacade(const char *PrgString, std::ostream &ErrStream,
 ParseFacade::~ParseFacade() {}
 
 template <typename T> std::string ParseFacade::irToPP(T *Obj) {
-  std::string Output;
-  std::ostringstream OutputStream(Output);
+  std::ostringstream OutputStream;
   OutputStream << *Obj;
   return OutputStream.str();
 }

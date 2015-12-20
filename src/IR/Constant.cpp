@@ -51,7 +51,7 @@ void ConstantInt::Profile(FoldingSetNodeID &ID, const Type *Ty,
 
 void ConstantInt::Profile(FoldingSetNodeID &ID) const { Profile(ID, VTy, Val); }
 
-void ConstantInt::print(std::ostream &Stream) const {
+void ConstantInt::print(DiagnosticPrinter &Stream) const {
   Stream << Val << " ~" << *getType();
 }
 
@@ -87,7 +87,7 @@ void ConstantBool::Profile(FoldingSetNodeID &ID) const {
   Profile(ID, VTy, Val);
 }
 
-void ConstantBool::print(std::ostream &Stream) const {
+void ConstantBool::print(DiagnosticPrinter &Stream) const {
   Stream << Val << " ~" << *getType();
 }
 
@@ -123,7 +123,7 @@ void ConstantFloat::Profile(FoldingSetNodeID &ID) const {
   Profile(ID, VTy, Val);
 }
 
-void ConstantFloat::print(std::ostream &Stream) const {
+void ConstantFloat::print(DiagnosticPrinter &Stream) const {
   Stream << Val << " ~" << *getType();
 }
 
@@ -160,7 +160,7 @@ void Pointer::Profile(FoldingSetNodeID &ID, const Type *Ty, const Value *Val) {
 
 void Pointer::Profile(FoldingSetNodeID &ID) const { Profile(ID, VTy, Val); }
 
-void Pointer::print(std::ostream &Stream) const {
+void Pointer::print(DiagnosticPrinter &Stream) const {
   Stream << *Val << "*" << std::endl;
 }
 }

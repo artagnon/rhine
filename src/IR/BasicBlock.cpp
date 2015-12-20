@@ -138,7 +138,7 @@ BasicBlock *BasicBlock::getMergeBlock() {
   return DigThroughBlock;
 }
 
-void BasicBlock::print(std::ostream &Stream) const {
+void BasicBlock::print(DiagnosticPrinter &Stream) const {
   for (auto &V : InstList)
     Stream << *V << std::endl;
 }

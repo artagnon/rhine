@@ -64,7 +64,7 @@ iterator_range<Prototype::arg_iterator> Prototype::args() {
   return iterator_range<Prototype::arg_iterator>(arg_begin(), arg_end());
 }
 
-void Prototype::emitArguments(std::ostream &Stream) const {
+void Prototype::emitArguments(DiagnosticPrinter &Stream) const {
   Stream << " [";
   if (ArgumentList.size()) {
     auto Terminator = *ArgumentList.rbegin();
@@ -82,7 +82,7 @@ void Prototype::emitArguments(std::ostream &Stream) const {
   Stream << "]";
 }
 
-void Prototype::print(std::ostream &Stream) const {
+void Prototype::print(DiagnosticPrinter &Stream) const {
   Stream << "def " << Name;
   emitArguments(Stream);
   Stream << " ~" << *getType();
@@ -126,7 +126,7 @@ Function::iterator Function::begin() { return Body.begin(); }
 
 Function::iterator Function::end() { return Body.end(); }
 
-void Function::print(std::ostream &Stream) const {
+void Function::print(DiagnosticPrinter &Stream) const {
   Stream << "def " << Name;
   emitArguments(Stream);
   Stream << " ~" << *getType() << " {";

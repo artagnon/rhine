@@ -42,7 +42,7 @@ bool UnType::classof(const Type *T) {
   return T->getTyID() == RT_UnType;
 }
 
-void UnType::print(std::ostream &Stream) const {
+void UnType::print(DiagnosticPrinter &Stream) const {
   Stream << "UnType";
 }
 
@@ -60,7 +60,7 @@ bool VoidType::classof(const Type *T) {
   return T->getTyID() == RT_VoidType;
 }
 
-void VoidType::print(std::ostream &Stream) const {
+void VoidType::print(DiagnosticPrinter &Stream) const {
   Stream << "Void";
 }
 
@@ -96,7 +96,7 @@ void IntegerType::Profile(FoldingSetNodeID &ID) const {
   Profile(ID, Bitwidth);
 }
 
-void IntegerType::print(std::ostream &Stream) const {
+void IntegerType::print(DiagnosticPrinter &Stream) const {
   Stream << "Int";
 }
 
@@ -114,7 +114,7 @@ bool BoolType::classof(const Type *T) {
   return T->getTyID() == RT_BoolType;
 }
 
-void BoolType::print(std::ostream &Stream) const {
+void BoolType::print(DiagnosticPrinter &Stream) const {
   Stream << "Bool";
 }
 
@@ -132,7 +132,7 @@ bool FloatType::classof(const Type *T) {
   return T->getTyID() == RT_FloatType;
 }
 
-void FloatType::print(std::ostream &Stream) const {
+void FloatType::print(DiagnosticPrinter &Stream) const {
   Stream << "Float";
 }
 
@@ -150,7 +150,7 @@ bool StringType::classof(const Type *T) {
   return T->getTyID() == RT_StringType;
 }
 
-void StringType::print(std::ostream &Stream) const {
+void StringType::print(DiagnosticPrinter &Stream) const {
   Stream << "String";
 }
 
@@ -213,7 +213,7 @@ bool FunctionType::isVariadic() const {
   return VariadicFlag;
 }
 
-void FunctionType::print(std::ostream &Stream) const {
+void FunctionType::print(DiagnosticPrinter &Stream) const {
   Stream << "Fn(";
   if (!ArgumentTypes.size()) {
     if (isVariadic())
@@ -264,7 +264,7 @@ Type *PointerType::getCTy() {
   return ContainedType;
 }
 
-void PointerType::print(std::ostream &Stream) const {
+void PointerType::print(DiagnosticPrinter &Stream) const {
   Stream << *ContainedType << "*";
 }
 }

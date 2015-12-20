@@ -34,7 +34,7 @@ public:
 
   virtual llvm::Value *toLL(llvm::Module *M) = 0;
 protected:
-  virtual void print(std::ostream &Stream) const = 0;
+  virtual void print(DiagnosticPrinter &Stream) const = 0;
 };
 
 class BinaryArithInst : public Instruction {
@@ -53,7 +53,7 @@ public:
   static bool classof(const Value *V);
   virtual llvm::Value *toLL(llvm::Module *M) override;
 protected:
-  void print(std::ostream &Stream) const override;
+  void print(DiagnosticPrinter &Stream) const override;
 };
 
 class CallInst : public Instruction {
@@ -79,7 +79,7 @@ public:
   /// There should be little cleverness in lowering
   virtual llvm::Value *toLL(llvm::Module *M) override;
 protected:
-  void print(std::ostream &Stream) const override;
+  void print(DiagnosticPrinter &Stream) const override;
 };
 
 class MallocInst : public Instruction {
@@ -96,7 +96,7 @@ public:
 
   virtual llvm::Value *toLL(llvm::Module *M) override;
 protected:
-  void print(std::ostream &Stream) const override;
+  void print(DiagnosticPrinter &Stream) const override;
 };
 
 class LoadInst : public Instruction {
@@ -112,7 +112,7 @@ public:
   static bool classof(const Value *V);
   virtual llvm::Value *toLL(llvm::Module *M) override;
 protected:
-  void print(std::ostream &Stream) const override;
+  void print(DiagnosticPrinter &Stream) const override;
 };
 
 class StoreInst : public Instruction {
@@ -135,7 +135,7 @@ public:
   static bool classof(const Value *V);
   virtual llvm::Value *toLL(llvm::Module *M) override;
 protected:
-  void print(std::ostream &Stream) const override;
+  void print(DiagnosticPrinter &Stream) const override;
 };
 
 /// Can only be used to terminate functions: has either 0 or 1 arguments. Branch
@@ -157,7 +157,7 @@ public:
 
   virtual llvm::Value *toLL(llvm::Module *M) override;
 protected:
-  void print(std::ostream &Stream) const override;
+  void print(DiagnosticPrinter &Stream) const override;
 };
 
 /// Used to communicate unifying phi values from the end of a branch
@@ -184,7 +184,7 @@ public:
   /// Codegen to the contained value directly.
   virtual llvm::Value *toLL(llvm::Module *M) override;
 protected:
-  void print(std::ostream &Stream) const override;
+  void print(DiagnosticPrinter &Stream) const override;
 };
 
 class IfInst : public Instruction {
@@ -208,7 +208,7 @@ public:
   /// an assignment.
   virtual llvm::Value *toLL(llvm::Module *M) override;
 protected:
-  void print(std::ostream &Stream) const override;
+  void print(DiagnosticPrinter &Stream) const override;
 };
 }
 

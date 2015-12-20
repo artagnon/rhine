@@ -29,7 +29,7 @@ public:
   virtual llvm::Constant *toLL(llvm::Module *M) = 0;
 
 protected:
-  virtual void print(std::ostream &Stream) const = 0;
+  virtual void print(DiagnosticPrinter &Stream) const = 0;
 };
 
 class ConstantInt : public Constant {
@@ -49,7 +49,7 @@ public:
   virtual llvm::Constant *toLL(llvm::Module *M) override;
 
 protected:
-  virtual void print(std::ostream &Stream) const override;
+  virtual void print(DiagnosticPrinter &Stream) const override;
 };
 
 class ConstantBool : public Constant {
@@ -68,7 +68,7 @@ public:
   virtual llvm::Constant *toLL(llvm::Module *M) override;
 
 protected:
-  virtual void print(std::ostream &Stream) const override;
+  virtual void print(DiagnosticPrinter &Stream) const override;
 };
 
 class ConstantFloat : public Constant {
@@ -87,7 +87,7 @@ public:
   virtual llvm::Constant *toLL(llvm::Module *M) override;
 
 protected:
-  virtual void print(std::ostream &Stream) const override;
+  virtual void print(DiagnosticPrinter &Stream) const override;
 };
 
 class Pointer : public Constant {
@@ -107,7 +107,7 @@ public:
   virtual llvm::Constant *toLL(llvm::Module *M) override;
 
 protected:
-  virtual void print(std::ostream &Stream) const override;
+  virtual void print(DiagnosticPrinter &Stream) const override;
 };
 }
 

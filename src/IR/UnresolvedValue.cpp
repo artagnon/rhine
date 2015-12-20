@@ -13,7 +13,7 @@ bool UnresolvedValue::classof(const Value *V) {
   return V->getValID() == RT_UnresolvedValue;
 }
 
-void UnresolvedValue::print(std::ostream &Stream) const {
+void UnresolvedValue::print(DiagnosticPrinter &Stream) const {
   Stream << Name << " ~" << *getType();
 }
 
@@ -32,7 +32,7 @@ void Argument::setParent(Prototype *P) {
   Parent = P;
 }
 
-void Argument::print(std::ostream &Stream) const {
+void Argument::print(DiagnosticPrinter &Stream) const {
   Stream << Name << " ~" << *getType();
 }
 }
