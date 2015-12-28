@@ -78,7 +78,7 @@ CallInst *CallInst::get(Value *Callee, std::vector<Value *> Ops) {
 bool CallInst::classof(const Value *V) { return V->getValID() == RT_CallInst; }
 
 FunctionType *CallInst::getFTy() const {
-  auto PTy = cast<PointerType>(getCallee()->getType());
+  auto PTy = cast<PointerType>(getType());
   assert(PTy && "Illegal call to getFTy() before type inference");
   return cast<FunctionType>(PTy->getCTy());
 }

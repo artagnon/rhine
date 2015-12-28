@@ -16,6 +16,9 @@
 namespace rhine {
 std::vector<Argument *> Parser::parseArgumentList(bool Optional,
                                                   bool Parenless) {
+  if (!Parenless && getTok(VOID)) {
+    return {};
+  }
   if (!Parenless && !getTok('(')) {
     writeError("expected '(' to begin argument list", Optional);
     return {};

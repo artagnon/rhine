@@ -87,6 +87,7 @@ SPTAB   [ \t]+
 "String" { return T::TSTRING; }
 "Void" { return T::TVOID; }
 "Function" { return T::TFUNCTION; }
+"()" { return T::VOID; }
 
 "true" {
   auto B = ConstantBool::get(true, K);

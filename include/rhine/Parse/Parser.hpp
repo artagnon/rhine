@@ -42,6 +42,7 @@ public:
     NEWLINE = -20,
     BIND = -21,
     MUTATE = -22,
+    VOID = -23,
   };
 
   class Position {
