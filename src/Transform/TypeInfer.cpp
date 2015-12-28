@@ -110,10 +110,10 @@ FunctionType *TypeInfer::followFcnPointer(Type *CalleeTy) {
 }
 
 FunctionType *TypeInfer::followFcnPointers(Value *Callee, Location Loc) {
-  if (auto Fcn = followFcnPointer(Callee->getType())) {
-    while (auto DeeperFcn = followFcnPointer(Fcn))
-      Fcn = DeeperFcn;
-    return Fcn;
+  if (auto FcnTy = followFcnPointer(Callee->getType())) {
+    while (auto DeeperFcn = followFcnPointer(FcnTy->getRTy()))
+      FcnTy = DeeperFcn;
+    return FcnTy;
   }
   std::ostringstream ErrMsg;
   ErrMsg << Callee->getName() << " was expected to be a pointer to a function"
@@ -150,7 +150,7 @@ void TypeInfer::visitCalleeAndOperands(CallInst *V) {
 Type *TypeInfer::visit(CallInst *V) {
   visitCalleeAndOperands(V);
   auto Callee = V->getCallee();
-  auto Ty = followFcnPointers(Callee, V->getSourceLocation());
+  FunctionType *Ty = followFcnPointers(Callee, V->getSourceLocation());
   verifyArity(V, Ty);
   V->setType(PointerType::get(Ty));
   return Ty->getRTy();

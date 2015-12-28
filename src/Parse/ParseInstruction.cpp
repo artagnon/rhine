@@ -66,7 +66,13 @@ Instruction *Parser::parseMutate(Value *Op0, bool Optional) {
 
 bool Parser::parseCallArgs(std::vector<Value *> &CallArgs) {
   auto Arg0 = parseRtoken(true);
-  if (!Arg0) return false;
+  if (!Arg0) {
+    if (getTok(VOID)) {
+      CallArgs = {};
+      return true;
+    }
+    return false;
+  }
   CallArgs = {Arg0};
   while (!LastTokWasNewlineTerminated) {
     if (auto Tok = parseRtoken(true))
@@ -85,16 +91,7 @@ Instruction *Parser::parseCall(Value *Callee, bool Optional) {
     Inst->setSourceLocation(CallLoc);
     return Inst;
   }
-  if (getTok('(')) {
-    if (getTok(')')) {
-      auto Inst = CallInst::get(Callee, {});
-      Inst->setSourceLocation(CallLoc);
-      return Inst;
-    }
-    writeError("expecting '()'");
-    return nullptr;
-  }
-  writeError("expecting first call argument or '()'", Optional);
+  writeError("expecting first call argument, '$' or '()'", Optional);
   return nullptr;
 }
 
@@ -134,13 +131,11 @@ Instruction *Parser::parseRet() {
     Ret->setSourceLocation(RetLoc);
     return Ret;
   }
-  if (getTok('(')) {
-    if (getTok(')')) {
-      getSemiTerm("return statement");
-      auto Ret = ReturnInst::get({}, K);
-      Ret->setSourceLocation(RetLoc);
-      return Ret;
-    }
+  if (getTok(VOID)) {
+    getSemiTerm("return statement");
+    auto Ret = ReturnInst::get({}, K);
+    Ret->setSourceLocation(RetLoc);
+    return Ret;
   }
   writeError("'ret' must be followed by an rtoken, '$', or '()'");
   return nullptr;

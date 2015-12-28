@@ -75,3 +75,15 @@ TEST(DollarOperator, NonInstructionLHS) {
                    "end";
   EXPECT_COMPILE_DEATH(SourcePrg, "string stream:5:11: error:");
 }
+
+TEST(DollarOperator, DISABLED_PartialApplication) {
+  auto SourcePrg = "def foo(X ~Int, Y ~Int) do\n"
+                   "  ret '2';\n"
+                   "end\n"
+                   "def main() do\n"
+                   "  foo 3 $ 4;\n"
+                   "end";
+  EXPECT_LL(SourcePrg, "%foo = call i8* @foo(i32 3, i32 4)",
+            "call void (i8*, ...) @std_Void_print__String(i8* %foo1)");
+  EXPECT_OUTPUT(SourcePrg, "2");
+}
