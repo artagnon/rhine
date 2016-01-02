@@ -1,7 +1,5 @@
-//-*- C++ -*-
-
-#ifndef MODULE_H
-#define MODULE_H
+#ifndef RHINE_MODULE_H
+#define RHINE_MODULE_H
 
 #include <vector>
 #include <sstream>

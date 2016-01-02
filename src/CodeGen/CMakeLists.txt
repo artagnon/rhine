@@ -7,6 +7,7 @@ add_library(CodeGen
   "${CMAKE_CURRENT_SOURCE_DIR}/TypeLowering.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ValueLowering.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ConstantLowering.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/TensorLowering.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/FunctionLowering.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/InstLowering.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ModuleLowering.cpp"

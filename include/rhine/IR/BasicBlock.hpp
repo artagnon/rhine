@@ -1,5 +1,3 @@
-//-*- C++ -*-
-
 #ifndef RHINE_BASICBLOCK_H
 #define RHINE_BASICBLOCK_H
 

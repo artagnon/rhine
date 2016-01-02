@@ -9,6 +9,7 @@ add_library(IR
   "${CMAKE_CURRENT_SOURCE_DIR}/GlobalValue.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Type.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Constant.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Tensor.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Function.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/BasicBlock.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Instruction.cpp"
