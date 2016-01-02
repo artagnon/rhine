@@ -1,5 +1,3 @@
-//-*- C++ -*-
-
 #ifndef RHINE_TYPE_H
 #define RHINE_TYPE_H
 

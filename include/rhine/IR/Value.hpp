@@ -1,4 +1,3 @@
-//-*- C++ -*-
 #ifndef RHINE_VALUE_H
 #define RHINE_VALUE_H
 
@@ -29,6 +28,7 @@ enum RTValue {
   RT_ConstantInt,
   RT_ConstantBool,
   RT_ConstantFloat,
+  RT_Tensor,
   RT_Prototype,
   RT_Function,
   RT_Pointer,

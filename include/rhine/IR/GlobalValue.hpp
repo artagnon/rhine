@@ -1,4 +1,3 @@
-// -*- C++ -*-
 #ifndef GLOBALVALUE_H
 #define GLOBALVALUE_H
 

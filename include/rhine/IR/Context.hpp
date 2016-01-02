@@ -1,7 +1,5 @@
-//-*- C++ -*-
-
-#ifndef SYMBOLTABLE_H
-#define SYMBOLTABLE_H
+#ifndef RHINE_CONTEXT_H
+#define RHINE_CONTEXT_H
 
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/LLVMContext.h"

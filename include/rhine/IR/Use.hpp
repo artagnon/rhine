@@ -1,4 +1,3 @@
-//-*- C++ -*-
 #ifndef RHINE_USE_H
 #define RHINE_USE_H
 

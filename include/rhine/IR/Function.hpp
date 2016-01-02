@@ -1,5 +1,3 @@
-//-*- C++ -*-
-
 #ifndef RHINE_FUNCTION_H
 #define RHINE_FUNCTION_H
 
