@@ -16,6 +16,8 @@ Type *TypeInfer::visit(ConstantBool *V) { return V->getType(); }
 
 Type *TypeInfer::visit(ConstantFloat *V) { return V->getType(); }
 
+Type *TypeInfer::visit(Tensor *V) { return V->getType(); }
+
 Type *TypeInfer::visit(GlobalString *V) { return V->getType(); }
 
 Type *TypeInfer::visitHeaderBlock(BasicBlock *BB) {

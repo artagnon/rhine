@@ -83,7 +83,7 @@ TEST(IR, Comment) {
 TEST(IR, TwoArguments)
 {
   auto SourcePrg =
-    "def foo(a ~Int b ~Int) do\n"
+    "def foo(a ~Int, b ~Int) do\n"
     "  ret $ a + b\n"
     "end";
   auto ExpectedIR =

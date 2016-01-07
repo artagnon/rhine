@@ -24,7 +24,7 @@ TEST(Function, SimpleCall) {
 }
 
 TEST(Function, MultipleArguments) {
-  auto SourcePrg = "def foo(a ~Int b ~Int) do\n"
+  auto SourcePrg = "def foo(a ~Int, b ~Int) do\n"
                    "  ret $ a + b;\n"
                    "end\n"
                    "def main do\n"

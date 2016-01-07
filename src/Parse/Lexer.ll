@@ -106,7 +106,7 @@ SPTAB   [ \t]+
   return T::LITERALNAME;
 }
 
-[\[ \] \( \) + \- * / ; { } $ ~ = \\ \&] {
+[\[ \] \( \) + \- * / , ; { } $ ~ = \\ \&] {
   return static_cast<T>(*yytext);
 }
 

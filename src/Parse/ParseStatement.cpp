@@ -5,6 +5,7 @@
 #include "rhine/IR/GlobalValue.hpp"
 #include "rhine/IR/Function.hpp"
 #include "rhine/IR/Context.hpp"
+#include "rhine/IR/Tensor.hpp"
 #include "rhine/IR/Value.hpp"
 
 #define K Driver->Ctx
@@ -29,6 +30,22 @@ Value *Parser::parseRtoken(bool Optional) {
     Str->setSourceLocation(CurLoc);
     getTok();
     return Str;
+  }
+  case '{': {
+    getTok();
+    if (getTok('}')) {
+      return Tensor::get({0}, {}, K);
+    }
+    std::vector<Value *> TensorValues;
+    TensorValues.push_back(parseRtoken());
+    while (getTok(',')) {
+      TensorValues.push_back(parseRtoken());
+    }
+    if (!getTok('}')) {
+      writeError("expecting '}' to end Tensor");
+      return nullptr;
+    }
+    return Tensor::get({TensorValues.size()}, TensorValues);
   }
   case LITERALNAME: {
     auto LitName = *CurSema.LiteralName;

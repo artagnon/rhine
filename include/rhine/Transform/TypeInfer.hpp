@@ -16,6 +16,7 @@ public:
   Type *visit(ConstantInt *V) override;
   Type *visit(ConstantBool *V) override;
   Type *visit(ConstantFloat *V) override;
+  Type *visit(Tensor *V) override;
   Type *visit(GlobalString *V) override;
   Type *visit(Prototype *V) override;
   Type *visit(BasicBlock *BB) override;

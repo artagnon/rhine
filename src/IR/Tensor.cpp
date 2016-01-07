@@ -1,28 +1,30 @@
 #include <cstdlib>
 #include <vector>
 
+#include "rhine/IR/Type.hpp"
 #include "rhine/IR/Value.hpp"
 #include "rhine/IR/Tensor.hpp"
 
 namespace rhine {
-Tensor::Tensor(std::vector<size_t> Dims, std::vector<Value *> Elts)
-    : Value(Elts[0]->getType(), RT_Tensor), Dimensions(Dims), Elements(Elts) {}
+Tensor::Tensor(Type *Ty, std::vector<size_t> Dims, std::vector<Value *> Elts)
+    : Value(Ty, RT_Tensor), Dimensions(Dims), Elements(Elts) {}
 
 Tensor::~Tensor() {}
 
-Tensor *Tensor::get(std::vector<size_t> Dims, std::vector<Value *> Elts) {
-  assert(Elts.size() && "Attempting to create empty tensor");
+Tensor *Tensor::get(std::vector<size_t> Dims, std::vector<Value *> Elts,
+                    Context *K) {
   size_t DimAccumulator = 1;
   for (auto Dim : Dims) {
     DimAccumulator *= Dim;
   }
   assert(Elts.size() == DimAccumulator &&
          "Mismatched dimensions and number of elements in tensor");
-  auto Ty = Elts[0]->getType();
+  assert(Elts.size() || K && "Context not supplied for empty tensor");
+  auto Ty = Elts.size() ? Elts[0]->getType() : UnType::get(K);
   for (auto Elt : Elts) {
     assert(Elt->getType() == Ty && "Inconsistent tensor type");
   }
-  return new Tensor(Dims, Elts);
+  return new Tensor(Ty, Dims, Elts);
 }
 
 bool Tensor::classof(const Value *V) {

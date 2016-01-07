@@ -5,6 +5,7 @@
 #include "rhine/IR/Value.hpp"
 #include "rhine/IR/Instruction.hpp"
 #include "rhine/IR/Constant.hpp"
+#include "rhine/IR/Tensor.hpp"
 #include "rhine/IR/GlobalValue.hpp"
 
 namespace rhine {
@@ -33,6 +34,7 @@ protected:
     case RT_ConstantInt: return visit(cast<ConstantInt>(V));
     case RT_ConstantBool: return visit(cast<ConstantBool>(V));
     case RT_ConstantFloat: return visit(cast<ConstantFloat>(V));
+    case RT_Tensor: return visit(cast<Tensor>(V));
     case RT_GlobalString: return visit(cast<GlobalString>(V));
     case RT_Prototype: return visit(cast<Prototype>(V));
     case RT_Function: return visit(cast<Function>(V));
@@ -57,6 +59,7 @@ protected:
   virtual R visit(ConstantInt *I) = 0;
   virtual R visit(ConstantBool *B) = 0;
   virtual R visit(ConstantFloat *F) = 0;
+  virtual R visit(Tensor *T) = 0;
   virtual R visit(GlobalString *G) = 0;
   virtual R visit(Prototype *P) = 0;
   virtual R visit(Function *F) = 0;

@@ -55,6 +55,20 @@ TEST(Parse, FunctionTypeMissingCloseParen) {
   EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
 }
 
+TEST(Parse, CommaArgList) {
+  auto SourcePrg = "def foo(A ~Int, B ~Int) do\n"
+                   "end";
+  EXPECT_SUCCESSFUL_PARSE(SourcePrg);
+}
+
+TEST(Parse, CommaLessArgList) {
+  auto SourcePrg = "def foo(A ~Int B ~Int) do\n"
+                   "end";
+  auto ExpectedErr = "string stream:1:16: error: expected ')' to end function "
+                     "argument list, or ',' to separate arguments";
+  EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
+}
+
 TEST(Parse, OnelinerRet) {
   auto SourcePrg = "def foo() do ret 3 end";
   EXPECT_SUCCESSFUL_PARSE(SourcePrg);
