@@ -20,13 +20,15 @@ public:
   /// A tensor is a finite, non-zero list of entries. Dims = { M, N, P }, and
   /// Elts = { ... MxNxP elements ... } for a MxNxP tensor, stored in row-major
   /// order.
-  Tensor(std::vector<size_t> Dims, std::vector<Value *> Elts);
+  Tensor(Type *Ty, std::vector<size_t> Dims, std::vector<Value *> Elts);
 
   /// Destructor is a no-op
   virtual ~Tensor();
 
-  /// Invokes sanity checks on Dims and Elts before calling constructor
-  static Tensor *get(std::vector<size_t> Dims, std::vector<Value *> Elts);
+  /// Invokes sanity checks on Dims and Elts before calling constructor. Context
+  /// is required to construct empty tensor.
+  static Tensor *get(std::vector<size_t> Dims, std::vector<Value *> Elts,
+                     Context *K = nullptr);
 
   /// RT_Tensor
   static bool classof(const Value *V);

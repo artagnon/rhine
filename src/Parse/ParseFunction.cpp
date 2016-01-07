@@ -1,17 +1,15 @@
-#include "rhine/Parse/Parser.hpp"
-#include "rhine/Parse/ParseDriver.hpp"
-#include "rhine/IR/UnresolvedValue.hpp"
-#include "rhine/IR/GlobalValue.hpp"
-#include "rhine/IR/Instruction.hpp"
 #include "rhine/IR/BasicBlock.hpp"
 #include "rhine/IR/Constant.hpp"
 #include "rhine/IR/Function.hpp"
-#include "rhine/IR/Value.hpp"
+#include "rhine/IR/GlobalValue.hpp"
+#include "rhine/IR/Instruction.hpp"
 #include "rhine/IR/Type.hpp"
+#include "rhine/IR/UnresolvedValue.hpp"
+#include "rhine/IR/Value.hpp"
+#include "rhine/Parse/ParseDriver.hpp"
+#include "rhine/Parse/Parser.hpp"
 
 #include <vector>
-
-#define K Driver->Ctx
 
 namespace rhine {
 std::vector<Argument *> Parser::parseArgumentList(bool Optional,
@@ -37,13 +35,16 @@ std::vector<Argument *> Parser::parseArgumentList(bool Optional,
       auto Arg = Argument::get(*ArgSema.LiteralName, Ty);
       Arg->setSourceLocation(ArgLoc);
       ArgumentList.push_back(Arg);
+      if (!getTok(','))
+        break;
     } else {
       writeError("malformed argument type specified");
       return {};
     }
   }
   if (!Parenless && !getTok(')')) {
-    writeError("expected ')' to end function argument list");
+    writeError("expected ')' to end function argument list, or ',' to separate "
+               "arguments");
     return {};
   }
   return ArgumentList;
