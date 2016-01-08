@@ -96,11 +96,11 @@ public:
   void getTok();
 
   /// Matches the current Tok against Expected, and then consumes a token on a
-  /// match; on non-match, nothing is returned
+  /// match; on non-match, nothing is returned.
   bool getTok(int Expected);
 
   /// The master error reporter that calls out to DiagPrinter with CurLoc and
-  /// ErrStr, and sets CurStatus; does nothing if Optional is true
+  /// ErrStr, and sets CurStatus; does nothing if Optional is true.
   void writeError(std::string ErrStr, bool Optional = false);
 
   /// Specialized error writer for semicolon termination
@@ -109,7 +109,7 @@ public:
   /// The functions all assume that CurTok is primed for them to read, and do
   /// not getTok() at start; they do, however, make sure that CurTok is primed
   /// for the next person at the end of their operation. This works out really
-  /// well for callers who "parse, but oh no, we don't handle this"
+  /// well for callers who "parse, but oh no, we don't handle this".
 
   /// Parse a type (recursive in the case of FunctionType)
   Type *parseType(bool Optional = false);
@@ -122,6 +122,9 @@ public:
   /// ')'
   std::vector<Argument *> parseArgumentList(bool Optional = false,
                                             bool Parenless = false);
+
+  /// Quick helper for parsing ConstantInt, ConstantBool, GlobalString.
+  template <typename T> T *parseConstant();
 
   /// Single token that can appear on the rhs of '='
   Value *parseRtoken(bool Optional = false);
