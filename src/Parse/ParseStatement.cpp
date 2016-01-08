@@ -11,26 +11,22 @@
 #define K Driver->Ctx
 
 namespace rhine {
+template <typename T>
+T *Parser::parseConstant() {
+  auto Const = *(T **)&CurSema;
+  Const->setSourceLocation(CurLoc);
+  getTok();
+  return Const;
+}
+
 Value *Parser::parseRtoken(bool Optional) {
   switch (CurTok) {
-  case INTEGER: {
-    auto Int = CurSema.Integer;
-    Int->setSourceLocation(CurLoc);
-    getTok();
-    return Int;
-  }
-  case BOOLEAN: {
-    auto Bool = CurSema.Boolean;
-    Bool->setSourceLocation(CurLoc);
-    getTok();
-    return Bool;
-  }
-  case STRING: {
-    auto Str = CurSema.String;
-    Str->setSourceLocation(CurLoc);
-    getTok();
-    return Str;
-  }
+  case INTEGER:
+    return parseConstant<ConstantInt>();
+  case BOOLEAN:
+    return parseConstant<ConstantBool>();
+  case STRING:
+    return parseConstant<GlobalString>();
   case '{': {
     getTok();
     if (getTok('}')) {
