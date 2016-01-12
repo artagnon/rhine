@@ -35,7 +35,7 @@ public:
         ParseDriver *Dri) :
       yyFlexLexer(arg_yyin, arg_yyout), Driver(Dri) {}
   void LexerError(const char msg[]) {
-    *yyout << msg << std::endl;
+    yyout << msg << std::endl;
   }
   virtual ~Lexer() {}
   virtual T lex(P::Semantic* yylval,
