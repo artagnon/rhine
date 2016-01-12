@@ -1,6 +1,6 @@
 [submodule "llvm"]
 	path = llvm
-	url = https://github.com/artagnon/llvm
+	url = http://llvm.org/git/llvm.git
 	ignore = untracked
 [submodule "clang"]
 	path = clang
