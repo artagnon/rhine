@@ -10,6 +10,11 @@ namespace rhine {
 class UnresolvedValue;
 class ParseDriver;
 class Instruction;
+class IndexingInst;
+class IfInst;
+class CallInst;
+class MallocInst;
+class BinaryArithInst;
 class BasicBlock;
 class Function;
 class Argument;
@@ -135,16 +140,13 @@ public:
   /// Small helper to determine whether we're looking at a '$' operator
   bool parseDollarOp(bool Optional = false);
 
-  /// Parse the stuff following a 'ret'
-  Instruction *parseRet();
-
   /// Parse the stuff following a literal name in a statement
   Instruction *parsePostLiteralName(Value *Rtok);
 
   /// Assuming the lhs has already been parsed (passed in as the first
   /// argument), look at '=' and parse the rhs to build a full MallocInst to
   /// return
-  Instruction *parseBind(Value *Op0, bool Optional = false);
+  MallocInst *parseBind(Value *Op0, bool Optional = false);
 
   /// Assuming the lhs has already been parsed (passed in as the first
   /// argument), look at ':=' and parse the rhs to build a
@@ -154,17 +156,24 @@ public:
   /// Assuming the lhs has already been parsed (passed in as first argument),
   /// parse the appropriate arithmetic operator and build the full Instruction
   /// to return
-  Instruction *parseArithOp(Value *Op0, bool Optional = false);
+  BinaryArithInst *parseArithOp(Value *Op0, bool Optional = false);
 
   /// Parse the Rtok arguments of a CallInst. Return false if we didn't parse
   /// any Rtoks (in which case the call doesn't take any arguments).
   bool parseCallArgs(std::vector<Value *> &CallArgs);
 
   /// Callee has already been parsed and is passed in as the first argument
-  Instruction *parseCall(Value *Callee, bool Optional = false);
+  CallInst *parseCall(Value *Callee, bool Optional = false);
 
   /// Parse an 'if' statement: possible else clause, but no else-if
-  Instruction *parseIf();
+  IfInst *parseIf();
+
+  /// Parse an indexing expression of the form foo[<SomeValue>], where foo is
+  /// pre-parsed, and given to us Sym.
+  IndexingInst *parseIndexingInst(Value *Sym, bool Optional = false);
+
+  /// Parse the stuff following a 'ret'
+  Instruction *parseRet();
 
   /// A statement is not branch, and ends with a semicolon
   Value *parseSingleStmt();

@@ -22,5 +22,5 @@ TEST(Tensor, DISABLED_Indexing) {
                    "A = {42}\n"
                    "print A[0]\n"
                    "end";
-  EXPECT_OUTPUT(SourcePrg, "42");
+  EXPECT_SUCCESSFUL_PARSE(SourcePrg);
 }

@@ -176,6 +176,12 @@ Type *TypeInfer::visit(TerminatorInst *V) {
   return Ty;
 }
 
+Type *TypeInfer::visit(IndexingInst *V) {
+  auto Ty = visit(V->getVal());
+  V->setType(Ty);
+  return Ty;
+}
+
 Type *TypeInfer::visit(MallocInst *V) {
   V->setType(visit(V->getVal()));
   assert(!V->isUnTyped() && "unable to type infer MallocInst");

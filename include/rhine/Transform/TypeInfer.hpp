@@ -31,6 +31,7 @@ public:
   Type *visit(CallInst *V) override;
   Type *visit(ReturnInst *V) override;
   Type *visit(TerminatorInst *V) override;
+  Type *visit(IndexingInst *V) override;
 private:
   /// Visit all the instructions in a block possibly containing a branch
   /// instruction (hence visiting the branch blocks also), but not the merge
