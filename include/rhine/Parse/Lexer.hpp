@@ -30,8 +30,8 @@ using T = P::Token;
 namespace rhine {
 class Lexer : public yyFlexLexer {
 public:
-  Lexer(std::istream *arg_yyin,
-        std::ostream *arg_yyout,
+  Lexer(std::istream &arg_yyin,
+        std::ostream &arg_yyout,
         ParseDriver *Dri) :
       yyFlexLexer(arg_yyin, arg_yyout), Driver(Dri) {}
   void LexerError(const char msg[]) {
