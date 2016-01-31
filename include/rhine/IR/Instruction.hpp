@@ -11,6 +11,7 @@
 
 #include "rhine/IR/Type.hpp"
 #include "rhine/IR/Value.hpp"
+#include "rhine/IR/Tensor.hpp"
 #include "rhine/IR/BasicBlock.hpp"
 #include "rhine/IR/User.hpp"
 
@@ -190,7 +191,7 @@ protected:
 class IfInst : public Instruction {
 public:
   IfInst(Type *Ty);
-  virtual ~IfInst() {}
+  virtual ~IfInst();
 
   /// Constant 3 operands
   void *operator new(size_t S);
@@ -206,6 +207,28 @@ public:
 
   /// Codegens until the phi node, and returns the value to optionally use it in
   /// an assignment.
+  virtual llvm::Value *toLL(llvm::Module *M) override;
+protected:
+  void print(DiagnosticPrinter &Stream) const override;
+};
+
+class IndexingInst : public Instruction {
+  /// Tracked outside User TEMPORARILY
+  std::vector<size_t> Indices;
+public:
+  IndexingInst(Tensor *T, std::vector<size_t> &Idxes);
+  virtual ~IndexingInst();
+
+  /// Constant 1 operand
+  void *operator new(size_t S);
+  static IndexingInst *get(Tensor *T, std::vector<size_t> &Idxes);
+
+  static bool classof(const Value *V);
+
+  /// Getters for two pieces of information
+  Tensor *getTensor() const;
+  std::vector<size_t> getIndices() const;
+
   virtual llvm::Value *toLL(llvm::Module *M) override;
 protected:
   void print(DiagnosticPrinter &Stream) const override;

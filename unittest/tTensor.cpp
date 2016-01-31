@@ -3,7 +3,7 @@
 
 using namespace rhine;
 
-TEST(Tensor, DISABLED_Empty) {
+TEST(Tensor, Empty) {
   auto SourcePrg = "def foo do\n"
                    "A = {}\n"
                    "end";
@@ -15,4 +15,12 @@ TEST(Tensor, SingleElement) {
                    "A = {0}\n"
                    "end";
   EXPECT_SUCCESSFUL_PARSE(SourcePrg);
+}
+
+TEST(Tensor, DISABLED_Indexing) {
+  auto SourcePrg = "def foo do\n"
+                   "A = {42}\n"
+                   "print A[0]\n"
+                   "end";
+  EXPECT_OUTPUT(SourcePrg, "42");
 }

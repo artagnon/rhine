@@ -96,4 +96,8 @@ llvm::Value *TerminatorInst::toLL(llvm::Module *M) { return getVal()->toLL(M); }
 llvm::Value *IfInst::toLL(llvm::Module *M) {
   return getParent()->getPhiValueFromBranchBlock(M);
 }
+
+llvm::Value *IndexingInst::toLL(llvm::Module *M) {
+  return nullptr;
+}
 }

@@ -12,8 +12,8 @@
 #include <string>
 #include <vector>
 
-#include "rhine/Parse/Parser.hpp"
 #include "rhine/Diagnostic/Diagnostic.hpp"
+#include "rhine/Parse/Parser.hpp"
 
 using namespace std;
 using namespace llvm;
@@ -31,6 +31,7 @@ enum RTType {
   RT_StringType,
   RT_FunctionType,
   RT_PointerType,
+  RT_TensorType,
 };
 
 class Type : public FoldingSetNode {
@@ -190,10 +191,9 @@ protected:
 };
 
 class PointerType : public Type {
+protected:
   Type *ContainedType;
-
-  /// Pivate constructor; use ::get to construct a new one.
-  PointerType(Context *K, Type *CTy);
+  PointerType(RTType RTy, Type *CTy);
 
 public:
   virtual ~PointerType();
@@ -203,6 +203,24 @@ public:
   void Profile(FoldingSetNodeID &ID) const;
   Type *getCTy();
   virtual llvm::Type *toLL(llvm::Module *M) override;
+
+protected:
+  virtual void print(DiagnosticPrinter &Stream) const override;
+};
+
+class TensorType : public PointerType {
+  std::vector<size_t> Dimensions;
+
+  /// Private constructor; use ::get to construct a new one.
+  TensorType(Type *CTy, std::vector<size_t> &Dims);
+
+public:
+  virtual ~TensorType();
+  static TensorType *get(Type *CTy, std::vector<size_t> &Dims);
+  static bool classof(const Type *T);
+  static inline void Profile(FoldingSetNodeID &ID, const Type *CTy,
+                             const std::vector<size_t> &Dims);
+  void Profile(FoldingSetNodeID &ID) const;
 
 protected:
   virtual void print(DiagnosticPrinter &Stream) const override;
