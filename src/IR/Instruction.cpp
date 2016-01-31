@@ -5,7 +5,7 @@ Instruction::Instruction(Type *Ty, RTValue ID, unsigned NumOps, std::string N)
     : User(Ty, ID, NumOps, N) {}
 
 bool Instruction::classof(const Value *V) {
-  return V->getValID() >= RT_AddInst && V->getValID() <= RT_IfInst;
+  return V->getValID() >= RT_AddInst && V->getValID() <= RT_IndexingInst;
 }
 
 BasicBlock *Instruction::getParent() const { return Parent; }
@@ -31,7 +31,7 @@ BinaryArithInst *BinaryArithInst::get(RTValue InstSelector, Value *Op0,
 
 bool BinaryArithInst::classof(const Value *V) {
   return V->getValID() == RT_MulInst || V->getValID() == RT_DivInst ||
-  V->getValID() == RT_AddInst || V->getValID() == RT_SubInst;
+         V->getValID() == RT_AddInst || V->getValID() == RT_SubInst;
 }
 
 void BinaryArithInst::print(DiagnosticPrinter &Stream) const {
@@ -83,13 +83,9 @@ FunctionType *CallInst::getFTy() const {
   return cast<FunctionType>(PTy->getCTy());
 }
 
-std::vector<Type *> CallInst::getATys() const {
-  return getFTy()->getATys();
-}
+std::vector<Type *> CallInst::getATys() const { return getFTy()->getATys(); }
 
-Type *CallInst::getRTy() const {
-  return getFTy()->getRTy();
-}
+Type *CallInst::getRTy() const { return getFTy()->getRTy(); }
 
 Value *CallInst::getCallee() const { return getOperand(-1); }
 
@@ -232,6 +228,8 @@ void TerminatorInst::print(DiagnosticPrinter &Stream) const {
 
 IfInst::IfInst(Type *Ty) : Instruction(Ty, RT_IfInst, 3) {}
 
+IfInst::~IfInst() {}
+
 void *IfInst::operator new(size_t S) { return User::operator new(S, 3); }
 
 IfInst *IfInst::get(Value *Conditional, BasicBlock *TrueBB,
@@ -264,5 +262,35 @@ void IfInst::print(DiagnosticPrinter &Stream) const {
   for (auto V : *getFalseBB())
     Stream << *V << std::endl;
   Stream << "}";
+}
+
+IndexingInst::IndexingInst(Tensor *T, std::vector<size_t> &Idxes)
+    : Instruction(T->getType(), RT_IndexingInst, 1), Indices(Idxes) {}
+
+IndexingInst::~IndexingInst() {}
+
+void *IndexingInst::operator new(size_t S) { return User::operator new(S, 1); }
+
+IndexingInst *IndexingInst::get(Tensor *T, std::vector<size_t> &Idxes) {
+  return new IndexingInst(T, Idxes);
+}
+
+bool IndexingInst::classof(const Value *V) {
+  return V->getValID() == RT_IndexingInst;
+}
+
+Tensor *IndexingInst::getTensor() const {
+  return cast<Tensor>(getOperand(0));
+}
+
+std::vector<size_t> IndexingInst::getIndices() const {
+  return Indices;
+}
+
+void IndexingInst::print(DiagnosticPrinter &Stream) const {
+  Stream << *getTensor();
+  for (auto Idx : getIndices())
+    Stream << "[" << Idx << "]";
+  Stream << std::endl;
 }
 }

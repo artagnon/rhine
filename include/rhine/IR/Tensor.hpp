@@ -19,8 +19,8 @@ class Tensor : public Value {
 public:
   /// A tensor is a finite, non-zero list of entries. Dims = { M, N, P }, and
   /// Elts = { ... MxNxP elements ... } for a MxNxP tensor, stored in row-major
-  /// order.
-  Tensor(Type *Ty, std::vector<size_t> Dims, std::vector<Value *> Elts);
+  /// order. Dims and ContainedType is part of Ty.
+  Tensor(Type *Ty, std::vector<Value *> Elts);
 
   /// Destructor is a no-op
   virtual ~Tensor();

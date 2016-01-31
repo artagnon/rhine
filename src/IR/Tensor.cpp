@@ -6,8 +6,8 @@
 #include "rhine/IR/Tensor.hpp"
 
 namespace rhine {
-Tensor::Tensor(Type *Ty, std::vector<size_t> Dims, std::vector<Value *> Elts)
-    : Value(Ty, RT_Tensor), Dimensions(Dims), Elements(Elts) {}
+Tensor::Tensor(Type *Ty, std::vector<Value *> Elts)
+    : Value(Ty, RT_Tensor), Elements(Elts) {}
 
 Tensor::~Tensor() {}
 
@@ -20,11 +20,11 @@ Tensor *Tensor::get(std::vector<size_t> Dims, std::vector<Value *> Elts,
   assert(Elts.size() == DimAccumulator &&
          "Mismatched dimensions and number of elements in tensor");
   assert(Elts.size() || K && "Context not supplied for empty tensor");
-  auto Ty = Elts.size() ? Elts[0]->getType() : UnType::get(K);
+  auto Ty = Elts.size() ? Elts[0]->getType() : IntegerType::get(32, K);
   for (auto Elt : Elts) {
     assert(Elt->getType() == Ty && "Inconsistent tensor type");
   }
-  return new Tensor(Ty, Dims, Elts);
+  return new Tensor(TensorType::get(Ty, Dims), Elts);
 }
 
 bool Tensor::classof(const Value *V) {

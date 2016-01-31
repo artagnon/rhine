@@ -23,6 +23,7 @@ public:
   /// Type caches
   llvm::FoldingSet<FunctionType> FTyCache;
   llvm::FoldingSet<PointerType> PTyCache;
+  llvm::FoldingSet<TensorType> TTyCache;
   llvm::FoldingSet<IntegerType> ITyCache;
   std::vector<UnType *> UTyCache;
   VoidType UniqueVoidType;
