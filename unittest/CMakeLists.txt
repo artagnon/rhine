@@ -21,10 +21,13 @@ add_executable(UnitTest
   "${CMAKE_CURRENT_SOURCE_DIR}/tStore.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/tModule.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/tLambda.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/tUnbound.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/tDiagnostic.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/tOvershadow.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/tIf.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/tReturn.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/tUse.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/tOverload.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/tTensor.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/tBitcode.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/tValgrind.cpp")

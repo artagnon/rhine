@@ -45,8 +45,6 @@ Type *TypeInfer::visit(Function *V) {
     FTy = FunctionType::get(Ty, FTy->getATys(), false);
     V->setType(FTy);
   }
-  assert(K->Map.add(V) &&
-         ("Function with name " + V->getName() + " already declared").c_str());
   return FTy;
 }
 

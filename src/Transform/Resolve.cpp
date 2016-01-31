@@ -66,7 +66,12 @@ void Resolve::resolveOperandsOfUser(User *U, BasicBlock *BB) {
 
 void Resolve::runOnFunction(Function *F) {
   for (auto &Arg : F->args())
-    K->Map.add(Arg, F->getEntryBlock());
+    if (!K->Map.add(Arg, F->getEntryBlock())) {
+      DiagnosticPrinter(Arg->getSourceLocation())
+          << "argument " + Arg->getName() + " attempting to overshadow "
+                                            "previously bound symbol with "
+                                            "same name";
+    }
 
   /// For all statements of the form:
   ///   %V = 7;
@@ -78,8 +83,10 @@ void Resolve::runOnFunction(Function *F) {
     for (auto &V : *BB) {
       if (auto M = dyn_cast<MallocInst>(V))
         if (!K->Map.add(M, BB)) {
-          DiagnosticPrinter(M->getSourceLocation()) << "symbol " + M->getName()
-                                                    + " already bound";
+          DiagnosticPrinter(M->getSourceLocation())
+              << "symbol " + M->getName() + " attempting to overshadow "
+                                            "previously bound symbol with same "
+                                            "name";
           exit(1);
         }
     }
@@ -97,14 +104,18 @@ void Resolve::runOnModule(Module *M) {
   K = M->getContext();
   for (auto P : Externals::get(K)->getProtos())
     if (!K->Map.add(P)) {
-      auto ErrMsg = "prototype " + P->getName() + " already bound";
+      auto ErrMsg =
+          "prototype " + P->getName() +
+          " attempting to overshadow previously bound symbol with same name";
       DiagnosticPrinter(P->getSourceLocation()) << ErrMsg;
       exit(1);
     }
   for (auto &F : *M)
     if (!K->Map.add(F)) {
-      DiagnosticPrinter(F->getSourceLocation()) << "function " + F->getName()
-                                                + " already exists";
+      DiagnosticPrinter(F->getSourceLocation())
+          << "function " + F->getName() + " attempting to overshadow "
+                                          "previously bound symbol with same "
+                                          "name";
       exit(1);
     }
   for (auto &F : *M)
@@ -116,6 +127,8 @@ using KR = Context::ResolutionMap;
 bool KR::add(Value *Val, BasicBlock *Block) {
   assert(!isa<UnresolvedValue>(Val) &&
          "Attempting to add an UnresolvedValue to the Map");
+  if (get(Val, Block))
+    return false;
   auto &ThisResolutionMap = BlockResolutionMap[Block];
   auto Ret = ThisResolutionMap.insert(std::make_pair(Val->getName(), Val));
   bool NewElementInserted = Ret.second;

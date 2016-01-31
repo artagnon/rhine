@@ -11,8 +11,8 @@
 #include <string>
 #include <unistd.h>
 
-#include "llvm/ADT/STLExtras.h"
 #include "rhine/Parse/Parser.hpp"
+#include "llvm/ADT/STLExtras.h"
 
 using namespace std;
 
@@ -46,10 +46,12 @@ public:
   std::ostream &ErrorStream = std::cerr;
   const Parser::Location SourceLoc = {};
 
-  DiagnosticPrinter(std::ostream &ErrStream) : ErrorStream(ErrStream) {};
-  DiagnosticPrinter(const Parser::Location Loca) : SourceLoc(Loca) {};
+  DiagnosticPrinter(std::ostream &ErrStream) : ErrorStream(ErrStream){};
+  DiagnosticPrinter(const Parser::Location Loca) : SourceLoc(Loca){};
 
   template <typename T> DiagnosticPrinter &operator<<(const T &V) {
+    unsigned ColSz = 200;
+
     if (SourceLoc.Filename.empty()) {
       ErrorStream << V;
       return *this;
@@ -60,17 +62,29 @@ public:
       InStream = llvm::make_unique<stringstream>(*SourceLoc.StringStreamInput);
     } else {
       InStream = llvm::make_unique<ifstream>(SourceLoc.Filename);
-      if (!InStream->good())
+      if (!InStream->good()) {
         ErrorStream << ColorCode(ANSI_COLOR_RED)
                     << "fatal: " << ColorCode(ANSI_COLOR_WHITE)
                     << "Unable to open file " << SourceLoc.Filename
                     << ColorCode(ANSI_COLOR_RESET) << std::endl;
+      }
     }
-    ErrorStream << ColorCode(ANSI_COLOR_WHITE) << SourceLoc.Filename
-                << ":" << SourceLoc.Begin.Line << ":" << SourceLoc.Begin.Column
-                << ": " << ColorCode(ANSI_COLOR_RED)
-                << "error: " << ColorCode(ANSI_COLOR_WHITE) << V
-                << ColorCode(ANSI_COLOR_RESET);
+    std::ostringstream Oss;
+    Oss << ColorCode(ANSI_COLOR_WHITE) << SourceLoc.Filename << ":"
+        << SourceLoc.Begin.Line << ":" << SourceLoc.Begin.Column << ": "
+        << ColorCode(ANSI_COLOR_RED) << "error: " << ColorCode(ANSI_COLOR_WHITE)
+        << V << ColorCode(ANSI_COLOR_RESET);
+    istringstream WrapStream(Oss.str());
+    std::string Word;
+    unsigned CharsWritten = 0;
+    while (WrapStream >> Word) {
+      if (Word.size() + CharsWritten > ColSz) {
+        ErrorStream << std::endl;
+        CharsWritten = 0;
+      }
+      ErrorStream << Word << " ";
+      CharsWritten += Word.size() + 1;
+    }
     std::string FaultyLine;
     for (unsigned int i = 0; i < SourceLoc.Begin.Line; i++)
       std::getline(*InStream, FaultyLine);
