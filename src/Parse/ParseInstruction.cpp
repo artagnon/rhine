@@ -11,7 +11,7 @@
 #define K Driver->Ctx
 
 namespace rhine {
-Instruction *Parser::parseArithOp(Value *Op0, bool Optional) {
+BinaryArithInst *Parser::parseArithOp(Value *Op0, bool Optional) {
   RTValue InstructionSelector;
   switch (CurTok) {
   case '+':
@@ -35,7 +35,7 @@ Instruction *Parser::parseArithOp(Value *Op0, bool Optional) {
   return BinaryArithInst::get(InstructionSelector, Op0, Op1);
 }
 
-Instruction *Parser::parseBind(Value *Op0, bool Optional) {
+MallocInst *Parser::parseBind(Value *Op0, bool Optional) {
   if (!getTok(BIND))
     writeError("expected '='", Optional);
   else {
@@ -83,7 +83,7 @@ bool Parser::parseCallArgs(std::vector<Value *> &CallArgs) {
   return true;
 }
 
-Instruction *Parser::parseCall(Value *Callee, bool Optional) {
+CallInst *Parser::parseCall(Value *Callee, bool Optional) {
   auto CallLoc = Callee->getSourceLocation();
   std::vector<Value *> CallArgs;
   if (parseCallArgs(CallArgs)) {
@@ -95,7 +95,7 @@ Instruction *Parser::parseCall(Value *Callee, bool Optional) {
   return nullptr;
 }
 
-Instruction *Parser::parseIf() {
+IfInst *Parser::parseIf() {
   if (!getTok(IF)) {
     writeError("expected 'if' expression");
     return nullptr;
@@ -109,6 +109,23 @@ Instruction *Parser::parseIf() {
   if (LastTok == ELSE)
     FalseBlock = parseBlock(0, "", {{ENDBLOCK, "end"}});
   return IfInst::get(Conditional, TrueBlock, FalseBlock);
+}
+
+IndexingInst *Parser::parseIndexingInst(Value *Sym, bool Optional) {
+  if (CurTok != '[') {
+    if (!Optional) {
+      writeError("Expected an indexing expression of the form [...]");
+    }
+    return nullptr;
+  }
+  std::vector<Value *> Idxes;
+  while (getTok('[')) {
+    Idxes.push_back(parseRtoken());
+    if (!getTok(']')) {
+      writeError("Expected ']' to match '[' of indexing expression");
+    }
+  }
+  return IndexingInst::get(Sym, Idxes);
 }
 
 Instruction *Parser::parseRet() {

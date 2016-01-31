@@ -50,10 +50,13 @@ Value *Parser::parseRtoken(bool Optional) {
     auto Ty = parseTypeAnnotation(true);
     auto Sym = UnresolvedValue::get(LitName, Ty);
     Sym->setSourceLocation(LitLoc);
+    if (auto Inst = parseIndexingInst(Sym, true)) {
+      return Inst;
+    }
     return Sym;
   }
   default:
-    writeError("expecting an integer, boolean, or string literal", Optional);
+    writeError("expecting a literal, symbol, or indexing expression", Optional);
   }
   return nullptr;
 }

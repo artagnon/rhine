@@ -24,6 +24,7 @@ class LoadInst;
 class CallInst;
 class ReturnInst;
 class TerminatorInst;
+class IndexingInst;
 
 template <typename R>
 class ValueVisitor {
@@ -51,6 +52,7 @@ protected:
     case RT_CallInst: return visit(cast<CallInst>(V));
     case RT_ReturnInst: return visit(cast<ReturnInst>(V));
     case RT_TerminatorInst: return visit(cast<TerminatorInst>(V));
+    case RT_IndexingInst: return visit(cast<IndexingInst>(V));
     case RT_BasicBlock: return visit(cast<BasicBlock>(V));
     case RT_UnresolvedValue: assert(0 && "UnresolvedValue hit");
     default: assert(0 && "Unknown ValueVisitor dispatch");
@@ -73,6 +75,7 @@ protected:
   virtual R visit(CallInst *C) = 0;
   virtual R visit(ReturnInst *C) = 0;
   virtual R visit(TerminatorInst *C) = 0;
+  virtual R visit(IndexingInst *C) = 0;
   virtual R visit(BasicBlock *BB) = 0;
 };
 }

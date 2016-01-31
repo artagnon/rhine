@@ -1,4 +1,5 @@
 #include "rhine/IR/Instruction.hpp"
+#include "rhine/IR/Constant.hpp"
 
 namespace rhine {
 Instruction::Instruction(Type *Ty, RTValue ID, unsigned NumOps, std::string N)
@@ -264,23 +265,39 @@ void IfInst::print(DiagnosticPrinter &Stream) const {
   Stream << "}";
 }
 
-IndexingInst::IndexingInst(Tensor *T, std::vector<size_t> &Idxes)
-    : Instruction(T->getType(), RT_IndexingInst, 1), Indices(Idxes) {}
+IndexingInst::IndexingInst(Value *V, std::vector<size_t> &Idxes)
+    : Instruction(V->getType(), RT_IndexingInst, 1), Indices(Idxes) {
+}
 
 IndexingInst::~IndexingInst() {}
 
 void *IndexingInst::operator new(size_t S) { return User::operator new(S, 1); }
 
-IndexingInst *IndexingInst::get(Tensor *T, std::vector<size_t> &Idxes) {
-  return new IndexingInst(T, Idxes);
+IndexingInst *IndexingInst::get(Value *V, std::vector<size_t> &Idxes) {
+  auto Inst = new IndexingInst(V, Idxes);
+  Inst->setOperand(0, V);
+  return Inst;
+}
+
+IndexingInst *IndexingInst::get(Value *V, std::vector<Value *> &Idxes) {
+  std::vector<size_t> IntIdxes;
+  for (auto Idx : Idxes) {
+    if (auto IntIdx = dyn_cast<ConstantInt>(Idx)) {
+      assert(IntIdx->getVal() >= 0 && "Only positive indices are supported now");
+      IntIdxes.push_back(IntIdx->getVal());
+    } else {
+      assert(0 && "Only integer indices are supported now");
+    }
+  }
+  return IndexingInst::get(V, IntIdxes);
 }
 
 bool IndexingInst::classof(const Value *V) {
   return V->getValID() == RT_IndexingInst;
 }
 
-Tensor *IndexingInst::getTensor() const {
-  return cast<Tensor>(getOperand(0));
+Value *IndexingInst::getVal() const {
+  return getOperand(0);
 }
 
 std::vector<size_t> IndexingInst::getIndices() const {
@@ -288,7 +305,7 @@ std::vector<size_t> IndexingInst::getIndices() const {
 }
 
 void IndexingInst::print(DiagnosticPrinter &Stream) const {
-  Stream << *getTensor();
+  Stream << *getVal();
   for (auto Idx : getIndices())
     Stream << "[" << Idx << "]";
   Stream << std::endl;

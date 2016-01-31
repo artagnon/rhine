@@ -11,7 +11,6 @@
 
 #include "rhine/IR/Type.hpp"
 #include "rhine/IR/Value.hpp"
-#include "rhine/IR/Tensor.hpp"
 #include "rhine/IR/BasicBlock.hpp"
 #include "rhine/IR/User.hpp"
 
@@ -216,17 +215,18 @@ class IndexingInst : public Instruction {
   /// Tracked outside User TEMPORARILY
   std::vector<size_t> Indices;
 public:
-  IndexingInst(Tensor *T, std::vector<size_t> &Idxes);
+  IndexingInst(Value *V, std::vector<size_t> &Idxes);
   virtual ~IndexingInst();
 
   /// Constant 1 operand
   void *operator new(size_t S);
-  static IndexingInst *get(Tensor *T, std::vector<size_t> &Idxes);
+  static IndexingInst *get(Value *V, std::vector<size_t> &Idxes);
+  static IndexingInst *get(Value *V, std::vector<Value *> &Idxes);
 
   static bool classof(const Value *V);
 
   /// Getters for two pieces of information
-  Tensor *getTensor() const;
+  Value *getVal() const;
   std::vector<size_t> getIndices() const;
 
   virtual llvm::Value *toLL(llvm::Module *M) override;
