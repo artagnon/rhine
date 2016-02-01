@@ -261,6 +261,10 @@ void TensorType::Profile(FoldingSetNodeID &ID) const {
   Profile(ID, ContainedType, Dimensions);
 }
 
+std::vector<size_t> TensorType::getDims() {
+  return Dimensions;
+}
+
 void TensorType::print(DiagnosticPrinter &Stream) const {
   Stream << "[" << Dimensions[0];
   for (auto Dim = std::next(Dimensions.begin()); Dim != Dimensions.end();

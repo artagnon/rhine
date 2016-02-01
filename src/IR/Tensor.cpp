@@ -27,6 +27,10 @@ Tensor *Tensor::get(std::vector<size_t> Dims, std::vector<Value *> Elts,
   return new Tensor(TensorType::get(Ty, Dims), Elts);
 }
 
+TensorType *Tensor::getType() const {
+  return cast<TensorType>(Value::getType());
+}
+
 bool Tensor::classof(const Value *V) {
   return V->getValID() == RT_Tensor;
 }

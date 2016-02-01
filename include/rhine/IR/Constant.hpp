@@ -40,6 +40,7 @@ public:
   virtual ~ConstantInt();
   void *operator new(size_t s);
   static ConstantInt *get(int Val, unsigned Bitwidth, Context *K);
+  IntegerType *getType() const;
   static bool classof(const Value *V);
   int getVal() const;
   unsigned getBitwidth() const;
@@ -60,6 +61,7 @@ public:
   virtual ~ConstantBool() {}
   void *operator new(size_t s);
   static ConstantBool *get(bool Val, Context *K);
+  BoolType *getType() const;
   static bool classof(const Value *V);
   float getVal() const;
   static inline void Profile(FoldingSetNodeID &ID, const Type *Ty,
@@ -79,6 +81,7 @@ public:
   virtual ~ConstantFloat() {}
   void *operator new(size_t s);
   static ConstantFloat *get(float Val, Context *K);
+  FloatType *getType() const;
   static bool classof(const Value *V);
   float getVal() const;
   static inline void Profile(FoldingSetNodeID &ID, const Type *Ty,
@@ -98,6 +101,7 @@ public:
   virtual ~Pointer();
   void *operator new(size_t s);
   static Pointer *get(Value *V);
+  PointerType *getType() const;
   static bool classof(const Value *V);
   void setVal(Value *V);
   Value *getVal() const;

@@ -220,6 +220,7 @@ public:
   static bool classof(const Type *T);
   static inline void Profile(FoldingSetNodeID &ID, const Type *CTy,
                              const std::vector<size_t> &Dims);
+  std::vector<size_t> getDims();
   void Profile(FoldingSetNodeID &ID) const;
 
 protected:

@@ -177,8 +177,8 @@ Type *TypeInfer::visit(TerminatorInst *V) {
 }
 
 Type *TypeInfer::visit(IndexingInst *V) {
-  auto Ty = visit(V->getVal());
-  V->setType(Ty);
+  auto Ty = cast<TensorType>(visit(V->getVal()));
+  V->setType(Ty->getCTy());
   return Ty;
 }
 
