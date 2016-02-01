@@ -1,8 +1,8 @@
+#include "rhine/Diagnostic/Diagnostic.hpp"
+#include "rhine/Externals.hpp"
 #include "rhine/IR/Context.hpp"
 #include "rhine/IR/Function.hpp"
 #include "rhine/IR/Instruction.hpp"
-#include "rhine/Externals.hpp"
-#include "rhine/Diagnostic/Diagnostic.hpp"
 
 namespace rhine {
 llvm::Function *Prototype::getOrInsert(llvm::Module *M) {
@@ -39,10 +39,11 @@ llvm::Constant *Function::toLL(llvm::Module *M) {
   auto ArgList = getArguments();
   auto S = ArgList.begin();
   for (auto &Arg : CurrentFunction->args()) {
-    assert(
-        K->Map.add(*S, &Arg) &&
-        ("argument " + (*S)->getName() + " conflicts with existing symbol name")
-            .c_str());
+    auto SourceLoc = (*S)->getSourceLocation();
+    if (!K->Map.add(*S, &Arg))
+      DiagnosticPrinter(SourceLoc)
+          << "argument " + (*S)->getName() +
+                 " conflicts with existing symbol name";
     ++S;
   }
 

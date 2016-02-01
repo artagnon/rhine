@@ -31,6 +31,10 @@ ConstantInt *ConstantInt::get(int Val, unsigned Bitwidth, Context *K) {
   return CInt;
 }
 
+IntegerType *ConstantInt::getType() const {
+  return cast<IntegerType>(Value::getType());
+}
+
 bool ConstantInt::classof(const Value *V) {
   return V->getValID() == RT_ConstantInt;
 }
@@ -71,6 +75,10 @@ ConstantBool *ConstantBool::get(bool Val, Context *K) {
   return CBool;
 }
 
+BoolType *ConstantBool::getType() const {
+  return cast<BoolType>(Value::getType());
+}
+
 bool ConstantBool::classof(const Value *V) {
   return V->getValID() == RT_ConstantBool;
 }
@@ -105,6 +113,10 @@ ConstantFloat *ConstantFloat::get(float Val, Context *K) {
   auto CFlt = new ConstantFloat(Val, K);
   K->CFltCache.InsertNode(CFlt, IP);
   return CFlt;
+}
+
+FloatType *ConstantFloat::getType() const {
+  return cast<FloatType>(Value::getType());
 }
 
 bool ConstantFloat::classof(const Value *V) {
@@ -145,6 +157,10 @@ Pointer *Pointer::get(Value *V) {
   auto Ptr = new Pointer(V, Ty);
   K->PtrCache.InsertNode(Ptr, IP);
   return Ptr;
+}
+
+PointerType *Pointer::getType() const {
+  return cast<PointerType>(Value::getType());
 }
 
 bool Pointer::classof(const Value *V) { return V->getValID() == RT_Pointer; }

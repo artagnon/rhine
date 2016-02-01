@@ -39,6 +39,7 @@ llvm::Value *BinaryArithInst::toLL(llvm::Module *M) {
   default:
     assert(0 && "Malformed BinaryArithInst; cannot lower");
   }
+  return nullptr;
 }
 
 llvm::Value *MallocInst::toLL(llvm::Module *M) {
@@ -57,8 +58,9 @@ llvm::Value *MallocInst::toLL(llvm::Module *M) {
   auto CastSlot =
       K->Builder->CreateBitCast(Slot, llvm::PointerType::get(Ty, 0));
   K->Builder->CreateStore(V, CastSlot);
-  assert(K->Map.add(this, CastSlot) &&
-         (Name + " lowered to a different value earlier").c_str());
+  if (!K->Map.add(this, CastSlot))
+    DiagnosticPrinter(getSourceLocation())
+        << getName() + " lowered to a different value earlier";
   return nullptr;
 }
 
@@ -97,7 +99,5 @@ llvm::Value *IfInst::toLL(llvm::Module *M) {
   return getParent()->getPhiValueFromBranchBlock(M);
 }
 
-llvm::Value *IndexingInst::toLL(llvm::Module *M) {
-  return nullptr;
-}
+llvm::Value *IndexingInst::toLL(llvm::Module *M) { return nullptr; }
 }

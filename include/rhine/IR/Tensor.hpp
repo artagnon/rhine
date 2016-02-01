@@ -30,6 +30,8 @@ public:
   static Tensor *get(std::vector<size_t> Dims, std::vector<Value *> Elts,
                      Context *K = nullptr);
 
+  TensorType *getType() const;
+
   /// RT_Tensor
   static bool classof(const Value *V);
 

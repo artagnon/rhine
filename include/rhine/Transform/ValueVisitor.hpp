@@ -57,6 +57,7 @@ protected:
     case RT_UnresolvedValue: assert(0 && "UnresolvedValue hit");
     default: assert(0 && "Unknown ValueVisitor dispatch");
     }
+    return nullptr;
   }
   virtual R visit(ConstantInt *I) = 0;
   virtual R visit(ConstantBool *B) = 0;
