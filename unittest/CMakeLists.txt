@@ -13,6 +13,7 @@ add_executable(UnitTest
   "${CMAKE_CURRENT_SOURCE_DIR}/tScope2Block.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/tResolve.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/tBinaryArith.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/tPointer.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/tDollarOperator.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/tCall.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/tFunctionPointer.cpp"
