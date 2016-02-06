@@ -38,6 +38,7 @@ enum RTValue {
   RT_MulInst,
   RT_DivInst,
   RT_CallInst,
+  RT_BindInst,
   RT_MallocInst,
   RT_LoadInst,
   RT_StoreInst,

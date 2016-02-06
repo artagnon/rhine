@@ -25,6 +25,7 @@ public:
   Type *visit(BinaryArithInst *V) override;
   Type *visit(IfInst *V) override;
   Type *visit(Argument *V) override;
+  Type *visit(BindInst *V) override;
   Type *visit(MallocInst *V) override;
   Type *visit(LoadInst *V) override;
   Type *visit(StoreInst *V) override;

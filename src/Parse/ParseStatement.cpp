@@ -61,13 +61,7 @@ Value *Parser::parseRtoken(bool Optional) {
   return nullptr;
 }
 
-Value *Parser::parseAssignable(bool Optional) {
-  if (auto Rtok = parseRtoken(Optional)) {
-    Rtok->setSourceLocation(CurLoc);
-    if (auto ArithOp = parseArithOp(Rtok, true))
-      return ArithOp;
-    return Rtok;
-  }
+Function *Parser::parseLambda(bool Optional) {
   auto LambdaLoc = CurLoc;
   if (getTok(LAMBDA)) {
     auto ArgList = parseArgumentList(true, true);
@@ -79,6 +73,19 @@ Value *Parser::parseAssignable(bool Optional) {
     writeError("unable to parse lambda body");
     return nullptr;
   }
+  writeError("expected lambda but found " + std::to_string(CurTok), Optional);
+  return nullptr;
+}
+
+Value *Parser::parseAssignable(bool Optional) {
+  if (auto Rtok = parseRtoken(Optional)) {
+    Rtok->setSourceLocation(CurLoc);
+    if (auto ArithOp = parseArithOp(Rtok, true))
+      return ArithOp;
+    return Rtok;
+  }
+  if (auto Lamb = parseLambda(true))
+    return Lamb;
   auto IfLoc = CurLoc;
   if (auto Expr = parseIf()) {
     Expr->setSourceLocation(IfLoc);

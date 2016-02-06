@@ -22,7 +22,9 @@ Tensor *Tensor::get(std::vector<size_t> Dims, std::vector<Value *> Elts,
   assert(Elts.size() || K && "Context not supplied for empty tensor");
   auto Ty = Elts.size() ? Elts[0]->getType() : IntegerType::get(32, K);
   for (auto Elt : Elts) {
-    assert(Elt->getType() == Ty && "Inconsistent tensor type");
+    if (Elt->getType() != Ty) {
+      assert (0 && "Inconsistent tensor type");
+    }
   }
   return new Tensor(TensorType::get(Ty, Dims), Elts);
 }

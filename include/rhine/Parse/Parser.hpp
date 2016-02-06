@@ -13,7 +13,7 @@ class Instruction;
 class IndexingInst;
 class IfInst;
 class CallInst;
-class MallocInst;
+class BindInst;
 class BinaryArithInst;
 class BasicBlock;
 class Function;
@@ -134,6 +134,9 @@ public:
   /// Single token that can appear on the rhs of '='
   Value *parseRtoken(bool Optional = false);
 
+  /// Parse a lambda expression of the form "fn x -> x"
+  Function *parseLambda(bool Optional = false);
+
   /// Anything that can come on the right of '='; this is a superset of Rtoken
   Value *parseAssignable(bool Optional = false);
 
@@ -146,7 +149,7 @@ public:
   /// Assuming the lhs has already been parsed (passed in as the first
   /// argument), look at '=' and parse the rhs to build a full MallocInst to
   /// return
-  MallocInst *parseBind(Value *Op0, bool Optional = false);
+  BindInst *parseBind(Value *Op0, bool Optional = false);
 
   /// Assuming the lhs has already been parsed (passed in as the first
   /// argument), look at ':=' and parse the rhs to build a

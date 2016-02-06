@@ -46,6 +46,7 @@ protected:
     case RT_DivInst: return visit(cast<BinaryArithInst>(V));
     case RT_IfInst: return visit(cast<IfInst>(V));
     case RT_Argument: return visit(cast<Argument>(V));
+    case RT_BindInst: return visit(cast<BindInst>(V));
     case RT_MallocInst: return visit(cast<MallocInst>(V));
     case RT_LoadInst: return visit(cast<LoadInst>(V));
     case RT_StoreInst: return visit(cast<StoreInst>(V));
@@ -70,6 +71,7 @@ protected:
   virtual R visit(BinaryArithInst *B) = 0;
   virtual R visit(IfInst *F) = 0;
   virtual R visit(Argument *A) = 0;
+  virtual R visit(BindInst *B) = 0;
   virtual R visit(MallocInst *B) = 0;
   virtual R visit(LoadInst *S) = 0;
   virtual R visit(StoreInst *S) = 0;
