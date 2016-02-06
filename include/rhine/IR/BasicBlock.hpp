@@ -86,6 +86,9 @@ public:
   unsigned size();
   Instruction *back();
 
+  /// Search for the Instruction that binds SymbolName named symbol
+  Instruction *find(std::string SymbolName);
+
   /// Acessors to Parent function
   void setParent(Function *F);
   Function *getParent() const;

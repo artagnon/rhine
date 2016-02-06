@@ -82,17 +82,30 @@ protected:
   void print(DiagnosticPrinter &Stream) const override;
 };
 
-class MallocInst : public Instruction {
+class BindInst : public Instruction {
+public:
+  BindInst(RTValue RTVal, std::string N, Value *V);
+  virtual ~BindInst();
+  void *operator new(size_t S);
+  static BindInst *get(std::string N, Value *V);
+  static bool classof(const Value *V);
+
+  /// Operand0 manipulators
+  Value *getVal();
+  void setVal(Value *V);
+
+  virtual llvm::Value *toLL(llvm::Module *M) override;
+protected:
+  void print(DiagnosticPrinter &Stream) const override;
+};
+
+class MallocInst : public BindInst {
 public:
   MallocInst(std::string N, Value *V);
   virtual ~MallocInst();
   void *operator new(size_t S);
   static MallocInst *get(std::string N, Value *V);
   static bool classof(const Value *V);
-
-  /// Operand0 manipulators
-  Value *getVal();
-  void setVal(Value *V);
 
   virtual llvm::Value *toLL(llvm::Module *M) override;
 protected:

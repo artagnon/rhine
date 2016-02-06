@@ -182,6 +182,12 @@ Type *TypeInfer::visit(IndexingInst *V) {
   return Ty;
 }
 
+Type *TypeInfer::visit(BindInst *V) {
+  V->setType(visit(V->getVal()));
+  assert(!V->isUnTyped() && "unable to type infer BindInst");
+  return VoidType::get(K);
+}
+
 Type *TypeInfer::visit(MallocInst *V) {
   V->setType(visit(V->getVal()));
   assert(!V->isUnTyped() && "unable to type infer MallocInst");

@@ -48,6 +48,14 @@ Function *Module::back() {
   return ContainedFs.back();
 }
 
+Function *Module::find(std::string FunctionName) {
+  for (auto &F : *this) {
+    if (F->getName() == FunctionName)
+      return F;
+  }
+  return nullptr;
+}
+
 Module::iterator Module::begin() {
   return ContainedFs.begin();
 }

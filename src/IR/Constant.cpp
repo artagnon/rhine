@@ -45,6 +45,7 @@ unsigned ConstantInt::getBitwidth() const {
   if (auto ITy = dyn_cast<IntegerType>(VTy))
     return ITy->getBitwidth();
   assert(0 && "ConstantInt of non IntegerType type");
+  return 0;
 }
 
 void ConstantInt::Profile(FoldingSetNodeID &ID, const Type *Ty,

@@ -5,6 +5,7 @@
 #include "rhine/IR/Instruction.hpp"
 #include "rhine/IR/BasicBlock.hpp"
 #include "rhine/IR/Constant.hpp"
+#include "rhine/IR/Tensor.hpp"
 #include "rhine/IR/Value.hpp"
 #include "rhine/IR/Type.hpp"
 
@@ -35,12 +36,15 @@ BinaryArithInst *Parser::parseArithOp(Value *Op0, bool Optional) {
   return BinaryArithInst::get(InstructionSelector, Op0, Op1);
 }
 
-MallocInst *Parser::parseBind(Value *Op0, bool Optional) {
+BindInst *Parser::parseBind(Value *Op0, bool Optional) {
   if (!getTok(BIND))
     writeError("expected '='", Optional);
   else {
     if (auto Rhs = parseAssignable(Optional)) {
-      auto Inst = MallocInst::get(Op0->getName(), Rhs);
+      auto Inst = BindInst::get(Op0->getName(), Rhs);
+      if (!isa<Tensor>(Rhs)) {
+        Inst = MallocInst::get(Op0->getName(), Rhs);
+      }
       Inst->setSourceLocation(Op0->getSourceLocation());
       return Inst;
     }

@@ -42,10 +42,15 @@ llvm::Value *BinaryArithInst::toLL(llvm::Module *M) {
   return nullptr;
 }
 
+llvm::Value *BindInst::toLL(llvm::Module *M) {
+  return getOperand(0)->toLL(M);
+}
+
 llvm::Value *MallocInst::toLL(llvm::Module *M) {
   auto K = getContext();
   auto V = getVal()->toLL(M);
-  auto Ty = getVal()->getType()->toLL(M);
+  auto RhTy = getVal()->getType();
+  auto Ty = RhTy->toLL(M);
   auto DL = DataLayout(M);
   auto Sz = DL.getTypeSizeInBits(Ty) / 8;
   if (!Sz)

@@ -1,5 +1,5 @@
-#include "rhine/IR/Instruction.hpp"
 #include "rhine/IR/Constant.hpp"
+#include "rhine/IR/Instruction.hpp"
 
 namespace rhine {
 Instruction::Instruction(Type *Ty, RTValue ID, unsigned NumOps, std::string N)
@@ -96,10 +96,33 @@ void CallInst::print(DiagnosticPrinter &Stream) const {
     Stream << std::endl << *O;
 }
 
-MallocInst::MallocInst(std::string N, Value *V)
-    : Instruction(V->getType(), RT_MallocInst, 1, N) {
+BindInst::BindInst(RTValue RTVal, std::string N, Value *V)
+    : Instruction(V->getType(), RTVal, 1, N) {
   setOperand(0, V);
 }
+
+BindInst::~BindInst() {}
+
+void *BindInst::operator new(size_t S) { return User::operator new(S, 1); }
+
+BindInst *BindInst::get(std::string N, Value *V) {
+  return new BindInst(RT_BindInst, N, V);
+}
+
+bool BindInst::classof(const Value *V) {
+  return V->getValID() == RT_BindInst || V->getValID() == RT_MallocInst;
+}
+
+void BindInst::setVal(Value *V) { setOperand(0, V); }
+
+Value *BindInst::getVal() { return getOperand(0); }
+
+void BindInst::print(DiagnosticPrinter &Stream) const {
+  Stream << Name << " = " << *getOperand(0);
+}
+
+MallocInst::MallocInst(std::string N, Value *V)
+    : BindInst(RT_MallocInst, N, V) {}
 
 MallocInst::~MallocInst() {}
 
@@ -113,12 +136,8 @@ bool MallocInst::classof(const Value *V) {
   return V->getValID() == RT_MallocInst;
 }
 
-void MallocInst::setVal(Value *V) { setOperand(0, V); }
-
-Value *MallocInst::getVal() { return getOperand(0); }
-
 void MallocInst::print(DiagnosticPrinter &Stream) const {
-  Stream << Name << " = " << *getOperand(0);
+  Stream << Name << " = malloc:" << *getOperand(0);
 }
 
 LoadInst::LoadInst(MallocInst *M)
@@ -266,8 +285,8 @@ void IfInst::print(DiagnosticPrinter &Stream) const {
 }
 
 IndexingInst::IndexingInst(Value *V, std::vector<size_t> &Idxes)
-    : Instruction(V->getType(), RT_IndexingInst, 1), Indices(Idxes) {
-}
+    : Instruction(V->getType(), RT_IndexingInst, 1
+), Indices(Idxes) {}
 
 IndexingInst::~IndexingInst() {}
 
@@ -283,7 +302,8 @@ IndexingInst *IndexingInst::get(Value *V, std::vector<Value *> &Idxes) {
   std::vector<size_t> IntIdxes;
   for (auto Idx : Idxes) {
     if (auto IntIdx = dyn_cast<ConstantInt>(Idx)) {
-      assert(IntIdx->getVal() >= 0 && "Only positive indices are supported now");
+      assert(IntIdx->getVal() >= 0 &&
+             "Only positive indices are supported now");
       IntIdxes.push_back(IntIdx->getVal());
     } else {
       assert(0 && "Only integer indices are supported now");
@@ -296,13 +316,9 @@ bool IndexingInst::classof(const Value *V) {
   return V->getValID() == RT_IndexingInst;
 }
 
-Value *IndexingInst::getVal() const {
-  return getOperand(0);
-}
+Value *IndexingInst::getVal() const { return getOperand(0); }
 
-std::vector<size_t> IndexingInst::getIndices() const {
-  return Indices;
-}
+std::vector<size_t> IndexingInst::getIndices() const { return Indices; }
 
 void IndexingInst::print(DiagnosticPrinter &Stream) const {
   Stream << *getVal();

@@ -47,6 +47,10 @@ public:
   /// std methods that pass through to the underlying ContainedFs
   Function *front();
   Function *back();
+
+  /// Find a function in the mess
+  Function *find(std::string Name);
+
   iterator begin();
   iterator end();
 

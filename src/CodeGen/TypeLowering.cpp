@@ -4,6 +4,7 @@
 namespace rhine {
 llvm::Type *UnType::toLL(llvm::Module *M) {
   assert(0 && "Cannot toLL() without inferring type");
+  return nullptr;
 }
 
 llvm::Type *VoidType::toLL(llvm::Module *M) {
@@ -19,6 +20,7 @@ llvm::Type *IntegerType::toLL(llvm::Module *M) {
   default:
     assert (0 && "int bitwidths other than 32 and 64 are unimplemented");
   }
+  return nullptr;
 }
 
 llvm::Type *BoolType::toLL(llvm::Module *M) {

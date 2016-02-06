@@ -48,7 +48,7 @@ TEST(IR, MallocInst) {
     "end";
   auto ExpectedIR =
     "def bsym [] ~Fn(Void -> Void) {\n"
-    "sym = 3 ~Int\n"
+    "sym = malloc:3 ~Int\n"
     "}";
   EXPECT_IR(SourcePrg, ExpectedIR);
 }
@@ -61,7 +61,7 @@ TEST(IR, BindPropagation) {
     "end";
   auto ExpectedIR =
     "def bsym [] ~Fn(Void -> Int) {\n"
-    "sym = 3 ~Int\n"
+    "sym = malloc:3 ~Int\n"
     "ret sym ~Int\n"
     "}";
   EXPECT_IR(SourcePrg, ExpectedIR);
@@ -115,8 +115,8 @@ TEST(IR, IfBasic)
     "end";
   auto ExpectedIR =
     "if (0 ~Bool) {\n"
-    "X = 2 ~Int\n"
+    "X = malloc:2 ~Int\n"
     "} else {\n"
-    "Y = 3 ~Int\n";
+    "Y = malloc:3 ~Int\n";
   EXPECT_IR(SourcePrg, ExpectedIR);
 }
