@@ -224,6 +224,8 @@ void PointerType::Profile(FoldingSetNodeID &ID) const {
 
 Type *PointerType::getCTy() { return ContainedType; }
 
+size_t PointerType::getSize() { return 8; }
+
 void PointerType::print(DiagnosticPrinter &Stream) const {
   Stream << *ContainedType << "*";
 }

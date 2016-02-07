@@ -1,15 +1,34 @@
 #include "rhine/IR/Context.hpp"
+#include "rhine/Externals.hpp"
 #include "rhine/IR/Tensor.hpp"
+
+#include <iostream>
 
 namespace rhine {
 llvm::Value *Tensor::toLL(llvm::Module *M) {
+  auto K = getContext();
   auto ElTy = getType()->getCTy()->toLL(M);
-  // auto PElTy = llvm::PointerType::get(ElTy, 0);
+  auto PElTy = llvm::PointerType::get(ElTy, 0);
   auto Dims = getType()->getDims();
   assert(Dims.size() == 1 && "Multi-dimensional tensor not supported yet");
   auto NElements = 0;
   for (auto Dim : Dims)
     NElements += Dim;
-  return nullptr;
+  auto ConstElts = ConstantInt::get(NElements, 32, K)->toLL(M);
+  auto ConstPtrSize = ConstantInt::get(8, 32, K)->toLL(M);
+  auto TensorLen = K->Builder->CreateMul(ConstElts, ConstPtrSize);
+  auto MallocF = Externals::get(K)->getMappingVal("malloc", M);
+  auto Slot = K->Builder->CreateCall(MallocF, {TensorLen}, "TensorAlloc");
+  auto CastSlot = K->Builder->CreateBitCast(Slot, PElTy);
+  auto PtrN = [K, M, CastSlot](size_t N) {
+    auto Idx = ConstantInt::get(N, 32, K)->toLL(M);
+    return K->Builder->CreateInBoundsGEP(CastSlot, Idx);
+  };
+  for (auto Idx = 0; Idx < NElements; Idx++) {
+    auto ElToStore = getElts()[Idx]->toLL(M);
+    auto SlotToStoreIn = PtrN(Idx);
+    return K->Builder->CreateStore(ElToStore, SlotToStoreIn);
+  }
+  return PtrN(0);
 }
 }

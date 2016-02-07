@@ -5,6 +5,8 @@
 #include "rhine/IR/Context.hpp"
 #include "rhine/IR/Instruction.hpp"
 
+#include <iostream>
+
 namespace rhine {
 llvm::Value *CallInst::toLL(llvm::Module *M) {
   auto K = getContext();
@@ -43,7 +45,14 @@ llvm::Value *BinaryArithInst::toLL(llvm::Module *M) {
 }
 
 llvm::Value *BindInst::toLL(llvm::Module *M) {
-  return getOperand(0)->toLL(M);
+  auto K = getContext();
+  auto LLOp = getOperand(0)->toLL(M);
+  if (!K->Map.add(this, LLOp)) {
+    DiagnosticPrinter(getSourceLocation())
+        << getName() + " lowered to a different value earlier";
+    exit(1);
+  }
+  return LLOp;
 }
 
 llvm::Value *MallocInst::toLL(llvm::Module *M) {
@@ -56,16 +65,17 @@ llvm::Value *MallocInst::toLL(llvm::Module *M) {
   if (!Sz)
     Sz = 1;
   auto ITy = IntegerType::get(64, K)->toLL(M);
-  std::vector<llvm::Value *> LLOps;
-  LLOps.push_back(llvm::ConstantInt::get(ITy, Sz));
+  auto CallArg = llvm::ConstantInt::get(ITy, Sz);
   auto MallocF = Externals::get(K)->getMappingVal("malloc", M);
-  auto Slot = K->Builder->CreateCall(MallocF, LLOps, "Alloc");
+  auto Slot = K->Builder->CreateCall(MallocF, {CallArg}, "Alloc");
   auto CastSlot =
       K->Builder->CreateBitCast(Slot, llvm::PointerType::get(Ty, 0));
   K->Builder->CreateStore(V, CastSlot);
-  if (!K->Map.add(this, CastSlot))
+  if (!K->Map.add(this, CastSlot)) {
     DiagnosticPrinter(getSourceLocation())
         << getName() + " lowered to a different value earlier";
+    exit(1);
+  }
   return nullptr;
 }
 
@@ -76,7 +86,7 @@ llvm::Value *StoreInst::toLL(llvm::Module *M) {
     auto NewValue = getNewValue()->toLL(M);
     return K->Builder->CreateStore(NewValue, MValue);
   }
-  DiagnosticPrinter(SourceLoc)
+  DiagnosticPrinter(getSourceLocation())
       << "unable to find symbol " + Op0->getName() + " to store into";
   exit(1);
 }
@@ -104,5 +114,22 @@ llvm::Value *IfInst::toLL(llvm::Module *M) {
   return getParent()->getPhiValueFromBranchBlock(M);
 }
 
-llvm::Value *IndexingInst::toLL(llvm::Module *M) { return nullptr; }
+llvm::Value *IndexingInst::toLL(llvm::Module *M) {
+  auto K = getContext();
+  auto SumIdx = 0;
+  auto Op0 = getVal();
+  auto Indices = getIndices();
+  if (auto IndexingInto = K->Map.getl(Op0)) {
+    auto IdxIt = Indices.begin()++;
+    for (auto Dim : cast<TensorType>(Op0->getType())->getDims()) {
+      SumIdx += (*IdxIt++) * Dim;
+      if (IdxIt == Indices.end()) break;
+    }
+    auto Index = ConstantInt::get(SumIdx, 32, K)->toLL(M);
+    return K->Builder->CreateInBoundsGEP(IndexingInto, Index);
+  }
+  DiagnosticPrinter(getSourceLocation())
+      << "unable to find symbol " + Op0->getName() + " to index into";
+  exit(1);
+}
 }

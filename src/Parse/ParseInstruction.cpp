@@ -42,7 +42,7 @@ BindInst *Parser::parseBind(Value *Op0, bool Optional) {
   else {
     if (auto Rhs = parseAssignable(Optional)) {
       auto Inst = BindInst::get(Op0->getName(), Rhs);
-      if (!isa<Tensor>(Rhs)) {
+      if (!dyn_cast<Tensor>(Rhs)) {
         Inst = MallocInst::get(Op0->getName(), Rhs);
       }
       Inst->setSourceLocation(Op0->getSourceLocation());
