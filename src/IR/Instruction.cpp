@@ -106,7 +106,6 @@ BindInst::~BindInst() {}
 void *BindInst::operator new(size_t S) { return User::operator new(S, 1); }
 
 BindInst *BindInst::get(std::string N, Value *V) {
-  V->setName(N);
   return new BindInst(RT_BindInst, N, V);
 }
 

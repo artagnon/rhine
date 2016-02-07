@@ -41,10 +41,11 @@ BindInst *Parser::parseBind(Value *Op0, bool Optional) {
     writeError("expected '='", Optional);
   else {
     if (auto Rhs = parseAssignable(Optional)) {
-      auto Inst = BindInst::get(Op0->getName(), Rhs);
-      if (!dyn_cast<Tensor>(Rhs)) {
+      BindInst *Inst;
+      if (isa<Tensor>(Rhs))
+        Inst = BindInst::get(Op0->getName(), Rhs);
+      else
         Inst = MallocInst::get(Op0->getName(), Rhs);
-      }
       Inst->setSourceLocation(Op0->getSourceLocation());
       return Inst;
     }
@@ -100,6 +101,7 @@ CallInst *Parser::parseCall(Value *Callee, bool Optional) {
 }
 
 IfInst *Parser::parseIf() {
+  auto IfLoc = CurLoc;
   if (!getTok(IF)) {
     writeError("expected 'if' expression");
     return nullptr;
@@ -112,7 +114,9 @@ IfInst *Parser::parseIf() {
   auto FalseBlock = BasicBlock::get("false", {}, K);
   if (LastTok == ELSE)
     FalseBlock = parseBlock(0, "", {{ENDBLOCK, "end"}});
-  return IfInst::get(Conditional, TrueBlock, FalseBlock);
+  auto Inst = IfInst::get(Conditional, TrueBlock, FalseBlock);
+  Inst->setSourceLocation(IfLoc);
+  return Inst;
 }
 
 IndexingInst *Parser::parseIndexingInst(Value *Sym, bool Optional) {
