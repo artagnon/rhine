@@ -86,11 +86,8 @@ Value *Parser::parseAssignable(bool Optional) {
   }
   if (auto Lamb = parseLambda(true))
     return Lamb;
-  auto IfLoc = CurLoc;
-  if (auto Expr = parseIf()) {
-    Expr->setSourceLocation(IfLoc);
+  if (auto Expr = parseIf())
     return Expr;
-  }
   writeError("expected assignable expression", Optional);
   return nullptr;
 }
