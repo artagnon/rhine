@@ -202,6 +202,7 @@ public:
   static inline void Profile(FoldingSetNodeID &ID, const Type *CTy);
   void Profile(FoldingSetNodeID &ID) const;
   Type *getCTy();
+  size_t getSize();
   virtual llvm::Type *toLL(llvm::Module *M) override;
 
 protected:

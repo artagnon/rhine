@@ -179,13 +179,13 @@ Type *TypeInfer::visit(TerminatorInst *V) {
 Type *TypeInfer::visit(IndexingInst *V) {
   auto Ty = cast<TensorType>(visit(V->getVal()));
   V->setType(Ty->getCTy());
-  return Ty;
+  return Ty->getCTy();
 }
 
 Type *TypeInfer::visit(BindInst *V) {
   V->setType(visit(V->getVal()));
   assert(!V->isUnTyped() && "unable to type infer BindInst");
-  return VoidType::get(K);
+  return V->getType();
 }
 
 Type *TypeInfer::visit(MallocInst *V) {

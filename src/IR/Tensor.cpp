@@ -33,6 +33,10 @@ TensorType *Tensor::getType() const {
   return cast<TensorType>(Value::getType());
 }
 
+std::vector<Value *> Tensor::getElts() const {
+  return Elements;
+}
+
 bool Tensor::classof(const Value *V) {
   return V->getValID() == RT_Tensor;
 }
@@ -42,6 +46,6 @@ void Tensor::print(DiagnosticPrinter &Stream) const {
   for (auto Elt : Elements) {
     Stream << Elt;
   }
-  Stream << " }" << std::endl;
+  Stream << " } ~" << *getType() << std::endl;
 }
 }

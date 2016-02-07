@@ -106,6 +106,7 @@ BindInst::~BindInst() {}
 void *BindInst::operator new(size_t S) { return User::operator new(S, 1); }
 
 BindInst *BindInst::get(std::string N, Value *V) {
+  V->setName(N);
   return new BindInst(RT_BindInst, N, V);
 }
 
@@ -285,8 +286,7 @@ void IfInst::print(DiagnosticPrinter &Stream) const {
 }
 
 IndexingInst::IndexingInst(Value *V, std::vector<size_t> &Idxes)
-    : Instruction(V->getType(), RT_IndexingInst, 1
-), Indices(Idxes) {}
+    : Instruction(V->getType(), RT_IndexingInst, 1), Indices(Idxes) {}
 
 IndexingInst::~IndexingInst() {}
 

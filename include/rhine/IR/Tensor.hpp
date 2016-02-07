@@ -32,6 +32,8 @@ public:
 
   TensorType *getType() const;
 
+  std::vector<Value *> getElts() const;
+
   /// RT_Tensor
   static bool classof(const Value *V);
 

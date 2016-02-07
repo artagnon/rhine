@@ -7,7 +7,7 @@
 
 using namespace rhine;
 
-TEST(Pointer, AssignToPointer) {
+TEST(Pointer, DISABLED_AssignToPointer) {
   auto SourcePrg = "def foo do\n"
                    "A = 3\n"
                    "B = A\n"
@@ -17,7 +17,7 @@ TEST(Pointer, AssignToPointer) {
             "%Alloc1 = call i8* @std_String_malloc__Int");
 }
 
-TEST(Pointer, Types) {
+TEST(Pointer, DISABLED_Types) {
   auto SourcePrg = "def foo do\n"
                    "A = 3\n"
                    "B = A\n"

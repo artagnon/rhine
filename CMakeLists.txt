@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.6)
 project(Rhine)
 
-# set(CMAKE_CXX_COMPILER "/usr/local/bin/clang++")
+# set(CMAKE_CXX_COMPILER "/Users/artagnon/src/clang-build/bin/clang++")
 # set(CMAKE_CXX_FLAGS "-fsanitize=address")
 set(CMAKE_CXX_FLAGS "-std=c++14")
 set(LLVM_ROOT_DIR "${PROJECT_SOURCE_DIR}/llvm")

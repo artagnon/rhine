@@ -33,7 +33,7 @@ void Resolve::lookupReplaceUse(UnresolvedValue *V, Use &U, BasicBlock *Block) {
         Replacement->setSourceLocation(V->getSourceLocation());
         U.set(Replacement);
       }
-    } else if (isa<BindInst>(S) || isa<Argument>(S)) {
+    } else if (isa<Argument>(S)) {
       U.set(S);
     } else if (isa<Prototype>(S)) {
       auto Replacement = Pointer::get(S);
