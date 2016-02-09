@@ -178,6 +178,7 @@ Type *TypeInfer::visit(TerminatorInst *V) {
 
 Type *TypeInfer::visit(IndexingInst *V) {
   auto Ty = cast<TensorType>(visit(V->getVal()));
+  assert(!isa<UnType>(Ty) && "unable to infer type of Tensor");
   V->setType(Ty->getCTy());
   return Ty->getCTy();
 }

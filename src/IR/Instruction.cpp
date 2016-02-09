@@ -284,40 +284,43 @@ void IfInst::print(DiagnosticPrinter &Stream) const {
   Stream << "}";
 }
 
-IndexingInst::IndexingInst(Value *V, std::vector<size_t> &Idxes)
-    : Instruction(V->getType(), RT_IndexingInst, 1), Indices(Idxes) {}
+IndexingInst::IndexingInst(Type *Ty, unsigned NumOps)
+    : Instruction(Ty, RT_IndexingInst, NumOps) {}
 
 IndexingInst::~IndexingInst() {}
 
-void *IndexingInst::operator new(size_t S) { return User::operator new(S, 1); }
-
-IndexingInst *IndexingInst::get(Value *V, std::vector<size_t> &Idxes) {
-  auto Inst = new IndexingInst(V, Idxes);
-  Inst->setOperand(0, V);
-  return Inst;
+void *IndexingInst::operator new(size_t S, unsigned N) {
+  return User::operator new(S, N);
 }
 
 IndexingInst *IndexingInst::get(Value *V, std::vector<Value *> &Idxes) {
-  std::vector<size_t> IntIdxes;
+  auto NumOps = Idxes.size();
+  auto Inst = new (NumOps + 1) IndexingInst(V->getType(), NumOps);
+  Inst->NumAllocatedOps = NumOps + 1;
+  Inst->setOperand(-1, V);
+  for (unsigned OpN = 0; OpN < NumOps; OpN++)
+    Inst->setOperand(OpN, Idxes[OpN]);
+  return Inst;
+}
+
+IndexingInst *IndexingInst::get(Value *V, std::vector<size_t> &Idxes) {
+  auto K = V->getContext();
+  std::vector<Value *> IdxValues;
   for (auto Idx : Idxes) {
-    if (auto IntIdx = dyn_cast<ConstantInt>(Idx)) {
-      assert(IntIdx->getVal() >= 0 &&
-             "Only positive indices are supported now");
-      IntIdxes.push_back(IntIdx->getVal());
-    } else {
-      assert(0 && "Only integer indices are supported now");
-    }
+    IdxValues.push_back(ConstantInt::get(Idx, 32, K));
   }
-  return IndexingInst::get(V, IntIdxes);
+  return IndexingInst::get(V, IdxValues);
 }
 
 bool IndexingInst::classof(const Value *V) {
   return V->getValID() == RT_IndexingInst;
 }
 
-Value *IndexingInst::getVal() const { return getOperand(0); }
+Value *IndexingInst::getVal() const { return getOperand(-1); }
 
-std::vector<size_t> IndexingInst::getIndices() const { return Indices; }
+std::vector<Value *> IndexingInst::getIndices() const {
+  return getOperands();
+}
 
 void IndexingInst::print(DiagnosticPrinter &Stream) const {
   Stream << *getVal();

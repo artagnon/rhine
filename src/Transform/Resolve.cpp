@@ -33,7 +33,7 @@ void Resolve::lookupReplaceUse(UnresolvedValue *V, Use &U, BasicBlock *Block) {
         Replacement->setSourceLocation(V->getSourceLocation());
         U.set(Replacement);
       }
-    } else if (isa<Argument>(S)) {
+    } else if (isa<BindInst>(S) || isa<Argument>(S)) {
       U.set(S);
     } else if (isa<Prototype>(S)) {
       auto Replacement = Pointer::get(S);
@@ -81,10 +81,10 @@ void Resolve::runOnFunction(Function *F) {
   /// Insert into K->Map
   for (auto &BB : *F)
     for (auto &V : *BB) {
-      if (auto M = dyn_cast<BindInst>(V))
-        if (!K->Map.add(M, BB)) {
-          DiagnosticPrinter(M->getSourceLocation())
-              << "symbol " + M->getName() + " attempting to overshadow "
+      if (auto B = dyn_cast<BindInst>(V))
+        if (!K->Map.add(B, BB)) {
+          DiagnosticPrinter(B->getSourceLocation())
+              << "symbol " + B->getName() + " attempting to overshadow "
                                             "previously bound symbol with same "
                                             "name";
           exit(1);

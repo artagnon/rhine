@@ -14,8 +14,8 @@ llvm::Value *Tensor::toLL(llvm::Module *M) {
   auto NElements = 0;
   for (auto Dim : Dims)
     NElements += Dim;
-  auto ConstElts = ConstantInt::get(NElements, 32, K)->toLL(M);
-  auto ConstPtrSize = ConstantInt::get(8, 32, K)->toLL(M);
+  auto ConstElts = ConstantInt::get(NElements, 64, K)->toLL(M);
+  auto ConstPtrSize = ConstantInt::get(8, 64, K)->toLL(M);
   auto TensorLen = K->Builder->CreateMul(ConstElts, ConstPtrSize);
   auto MallocF = Externals::get(K)->getMappingVal("malloc", M);
   auto Slot = K->Builder->CreateCall(MallocF, {TensorLen}, "TensorAlloc");
@@ -27,7 +27,7 @@ llvm::Value *Tensor::toLL(llvm::Module *M) {
   for (auto Idx = 0; Idx < NElements; Idx++) {
     auto ElToStore = getElts()[Idx]->toLL(M);
     auto SlotToStoreIn = PtrN(Idx);
-    return K->Builder->CreateStore(ElToStore, SlotToStoreIn);
+    K->Builder->CreateStore(ElToStore, SlotToStoreIn);
   }
   return PtrN(0);
 }
