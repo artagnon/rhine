@@ -116,20 +116,24 @@ llvm::Value *IfInst::toLL(llvm::Module *M) {
 
 llvm::Value *IndexingInst::toLL(llvm::Module *M) {
   auto K = getContext();
-  auto SumIdx = 0;
-  auto Op0 = getVal();
+  auto BoundValue = cast<BindInst>(getVal());
+  auto Op0 = BoundValue->getVal();
   auto Indices = getIndices();
-  if (auto IndexingInto = K->Map.getl(Op0)) {
+  llvm::Value *SumIdx = ConstantInt::get(0, 32, K)->toLL(M);
+  if (auto IndexingInto = K->Map.getl(BoundValue)) {
     auto IdxIt = Indices.begin()++;
     for (auto Dim : cast<TensorType>(Op0->getType())->getDims()) {
-      SumIdx += (*IdxIt++) * Dim;
-      if (IdxIt == Indices.end()) break;
+      auto LLDim = ConstantInt::get(Dim, 32, K)->toLL(M);
+      auto ToAdd = K->Builder->CreateMul((*IdxIt++)->toLL(M), LLDim);
+      SumIdx = K->Builder->CreateAdd(SumIdx, ToAdd);
+      if (IdxIt == Indices.end())
+        break;
     }
-    auto Index = ConstantInt::get(SumIdx, 32, K)->toLL(M);
-    return K->Builder->CreateInBoundsGEP(IndexingInto, Index);
+    auto ToLoad = K->Builder->CreateInBoundsGEP(IndexingInto, SumIdx);
+    return K->Builder->CreateLoad(ToLoad, BoundValue->getName() + "Load");
   }
-  DiagnosticPrinter(getSourceLocation())
-      << "unable to find symbol " + Op0->getName() + " to index into";
+  DiagnosticPrinter(BoundValue->getSourceLocation())
+      << "unable to find symbol " + BoundValue->getName() + " to index into";
   exit(1);
 }
 }

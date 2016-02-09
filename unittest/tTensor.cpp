@@ -17,8 +17,8 @@ TEST(Tensor, SingleElement) {
   EXPECT_SUCCESSFUL_PARSE(SourcePrg);
 }
 
-TEST(Tensor, DISABLED_Indexing) {
-  auto SourcePrg = "def foo do\n"
+TEST(Tensor, Indexing) {
+  auto SourcePrg = "def main do\n"
                    "A = {42}\n"
                    "print A[0]\n"
                    "end";

@@ -5,14 +5,14 @@
 
 #include "llvm/IR/Value.h"
 
+#include <sstream>
 #include <string>
 #include <vector>
-#include <sstream>
 
-#include "rhine/IR/Type.hpp"
-#include "rhine/IR/Value.hpp"
 #include "rhine/IR/BasicBlock.hpp"
+#include "rhine/IR/Type.hpp"
 #include "rhine/IR/User.hpp"
+#include "rhine/IR/Value.hpp"
 
 namespace rhine {
 class Context;
@@ -20,6 +20,7 @@ class Use;
 
 class Instruction : public User {
   BasicBlock *Parent;
+
 public:
   /// Number of operands required to initalize properly; NumAllocatedOps and
   /// NumOperands are initialized to this value
@@ -33,6 +34,7 @@ public:
   void setParent(BasicBlock *P);
 
   virtual llvm::Value *toLL(llvm::Module *M) = 0;
+
 protected:
   virtual void print(DiagnosticPrinter &Stream) const = 0;
 };
@@ -52,6 +54,7 @@ public:
   static BinaryArithInst *get(RTValue InstSelector, Value *Op0, Value *Op1);
   static bool classof(const Value *V);
   virtual llvm::Value *toLL(llvm::Module *M) override;
+
 protected:
   void print(DiagnosticPrinter &Stream) const override;
 };
@@ -60,8 +63,14 @@ class CallInst : public Instruction {
 public:
   CallInst(Type *Ty, unsigned NumOps, std::string N);
   virtual ~CallInst();
-  void *operator new(size_t S, unsigned n);
+
+  /// N operands, including Callee.
+  void *operator new(size_t S, unsigned N);
+
+  /// Set all the operands here
   static CallInst *get(Value *Callee, std::vector<Value *> Ops);
+
+  /// Custom RTTI support
   static bool classof(const Value *V);
 
   /// Get the type of the underlying function
@@ -78,6 +87,7 @@ public:
 
   /// There should be little cleverness in lowering
   virtual llvm::Value *toLL(llvm::Module *M) override;
+
 protected:
   void print(DiagnosticPrinter &Stream) const override;
 };
@@ -95,6 +105,7 @@ public:
   void setVal(Value *V);
 
   virtual llvm::Value *toLL(llvm::Module *M) override;
+
 protected:
   void print(DiagnosticPrinter &Stream) const override;
 };
@@ -108,6 +119,7 @@ public:
   static bool classof(const Value *V);
 
   virtual llvm::Value *toLL(llvm::Module *M) override;
+
 protected:
   void print(DiagnosticPrinter &Stream) const override;
 };
@@ -124,6 +136,7 @@ public:
   Value *getVal() const;
   static bool classof(const Value *V);
   virtual llvm::Value *toLL(llvm::Module *M) override;
+
 protected:
   void print(DiagnosticPrinter &Stream) const override;
 };
@@ -147,6 +160,7 @@ public:
 
   static bool classof(const Value *V);
   virtual llvm::Value *toLL(llvm::Module *M) override;
+
 protected:
   void print(DiagnosticPrinter &Stream) const override;
 };
@@ -169,6 +183,7 @@ public:
   void setVal(Value *V);
 
   virtual llvm::Value *toLL(llvm::Module *M) override;
+
 protected:
   void print(DiagnosticPrinter &Stream) const override;
 };
@@ -196,6 +211,7 @@ public:
 
   /// Codegen to the contained value directly.
   virtual llvm::Value *toLL(llvm::Module *M) override;
+
 protected:
   void print(DiagnosticPrinter &Stream) const override;
 };
@@ -220,29 +236,40 @@ public:
   /// Codegens until the phi node, and returns the value to optionally use it in
   /// an assignment.
   virtual llvm::Value *toLL(llvm::Module *M) override;
+
 protected:
   void print(DiagnosticPrinter &Stream) const override;
 };
 
 class IndexingInst : public Instruction {
-  /// Tracked outside User TEMPORARILY
-  std::vector<size_t> Indices;
 public:
-  IndexingInst(Value *V, std::vector<size_t> &Idxes);
+  /// NumOps is the number of operands excluding the Value being indexed into
+  IndexingInst(Type *Ty, unsigned NumOps);
+
+  /// Noop
   virtual ~IndexingInst();
 
-  /// Constant 1 operand
-  void *operator new(size_t S);
+  /// N is the total number of operands, including Value being indexed into
+  void *operator new(size_t S, unsigned N);
+
+  /// V must eventually be resolved to a BindInst
   static IndexingInst *get(Value *V, std::vector<size_t> &Idxes);
+
+  /// Eventually, all Idxes must resolve to Integers
   static IndexingInst *get(Value *V, std::vector<Value *> &Idxes);
 
+  /// Just itself
   static bool classof(const Value *V);
 
-  /// Getters for two pieces of information
+  /// Alias for getOperand(0)
   Value *getVal() const;
-  std::vector<size_t> getIndices() const;
 
+  /// Alias for getOperands()
+  std::vector<Value *> getIndices() const;
+
+  /// Somewhat non-trivial
   virtual llvm::Value *toLL(llvm::Module *M) override;
+
 protected:
   void print(DiagnosticPrinter &Stream) const override;
 };

@@ -133,7 +133,9 @@ IndexingInst *Parser::parseIndexingInst(Value *Sym, bool Optional) {
       writeError("Expected ']' to match '[' of indexing expression");
     }
   }
-  return IndexingInst::get(Sym, Idxes);
+  auto Inst = IndexingInst::get(Sym, Idxes);
+  Inst->setSourceLocation(Sym->getSourceLocation());
+  return Inst;
 }
 
 Instruction *Parser::parseRet() {
