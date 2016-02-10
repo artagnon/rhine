@@ -6,6 +6,10 @@
 #include <vector>
 #include <iostream>
 
+#include "rhine/Parse/ParseDriver.hpp"
+#include "rhine/IR/Module.hpp"
+#include "rhine/IR/Context.hpp"
+
 typedef int (*MainFTy)();
 
 namespace llvm {
@@ -15,7 +19,6 @@ class Module;
 
 namespace rhine {
 class ModulePass;
-class Module;
 
 enum class ParseSource { STRING, FILE };
 
@@ -63,7 +66,28 @@ public:
   /// The main worker that takes the program source, parses it into Rhine IR,
   /// runs it through a series of transforms, and returns it, ready for
   /// conversion to LLVM IR.
-  Module *parseToIR(ParseSource SrcE, std::vector<ModulePass *> TransformChain);
+  template<typename ...Ts>
+  Module *parseToIR(ParseSource SrcE) {
+    auto Ctx = std::make_unique<rhine::Context>(ErrStream);
+    auto Root = Module::get(std::move(Ctx));
+    auto Driver = rhine::ParseDriver(Root, Debug);
+    switch (SrcE) {
+    case ParseSource::STRING:
+      if (!Driver.parseString(PrgString)) {
+        std::cerr << "Could not parse string" << std::endl;
+        exit(1);
+      }
+      break;
+    case ParseSource::FILE:
+      if (!Driver.parseFile(PrgString)) {
+        std::cerr << "Could not parse file" << std::endl;
+        exit(1);
+      }
+      break;
+    }
+    [](...){ }((Ts().runOnModule(Root), 0)...);
+    return Root;
+  }
 
   /// Helper that calls parseToIR with all the transforms.
   Module *parseToIR(ParseSource SrcE);

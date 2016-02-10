@@ -43,9 +43,9 @@
  * @brief This is the only file required to use The Lean Mean C++ Option Parser.
  *        Just \#include it and you're set.
  *
- * The Lean Mean C++ Option Parser handles the program's command line arguments 
+ * The Lean Mean C++ Option Parser handles the program's command line arguments
  * (argc, argv).
- * It supports the short and long option formats of getopt(), getopt_long() 
+ * It supports the short and long option formats of getopt(), getopt_long()
  * and getopt_long_only() but has a more convenient interface.
  * The following features set it apart from other option parsers:
  *
@@ -82,7 +82,7 @@
  *     @endcode
  *     </ul>
  * </ul> @n
- * Despite these features the code size remains tiny. 
+ * Despite these features the code size remains tiny.
  * It is smaller than <a href="http://uclibc.org">uClibc</a>'s GNU getopt() and just a
  * couple 100 bytes larger than uClibc's SUSv3 getopt(). @n
  * (This does not include the usage formatter, of course. But you don't have to use that.)
@@ -1353,6 +1353,8 @@ private:
  */
 struct Parser::Action
 {
+  virtual ~Action() {}
+
   /**
    * @brief Called by Parser::workhorse() for each Option that has been successfully
    * parsed (including unknown
@@ -1439,6 +1441,8 @@ public:
     // set parser's optionCount
     parser.op_count = bufidx;
   }
+
+  virtual ~StoreOptionAction() {}
 
   bool perform(Option& option)
   {
@@ -1696,6 +1700,7 @@ struct PrintUsageImplementation
     virtual void operator()(const char*, int)
     {
     }
+    virtual ~IStringWriter() {}
   };
 
   /**
@@ -1738,6 +1743,7 @@ struct PrintUsageImplementation
         ostream(o)
     {
     }
+    virtual ~OStreamWriter() {}
   };
 
   /**
@@ -1922,8 +1928,8 @@ struct PrintUsageImplementation
     int target_line_in_block; //!< Line index of the parts we should return to the user on this iteration.
     bool hit_target_line; //!< Flag whether we encountered a part with line index target_line_in_block in the current cell.
 
-    /** 
-     * @brief Determines the byte and character lengths of the part at @ref ptr and 
+    /**
+     * @brief Determines the byte and character lengths of the part at @ref ptr and
      * stores them in @ref len and @ref screenlen respectively.
      */
     void update_length()
