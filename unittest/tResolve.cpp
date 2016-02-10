@@ -27,8 +27,7 @@ TEST(Resolve, UnresolvedReplacement) {
                    "  Moo + 2;\n"
                    "end";
   ParseFacade Pf(SourcePrg);
-  Resolve ResolveL;
-  auto Module = Pf.parseToIR(ParseSource::STRING, {&ResolveL});
+  auto Module = Pf.parseToIR<Resolve>(ParseSource::STRING);
   auto MainF = Module->front();
   rhine::Value *Decl = nullptr, *FirstInstance = nullptr,
                *SecondInstance = nullptr;
@@ -59,8 +58,7 @@ TEST(Resolve, ArgumentSymbolReplacement) {
                    "  ret var\n"
                    "end";
   ParseFacade Pf(SourcePrg);
-  Resolve ResolveL;
-  auto Module = Pf.parseToIR(ParseSource::STRING, {&ResolveL});
+  auto Module = Pf.parseToIR<Resolve>(ParseSource::STRING);
   auto Expected = "def main [var ~Int] ~Fn(Int -> UnType) {\n"
                   "ret var ~Int\n"
                   "}";

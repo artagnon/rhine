@@ -15,7 +15,7 @@ TEST(BasicBlock, SetInstructionParent)
     "  print 4;\n"
     "end";
   ParseFacade Pf(SourcePrg);
-  auto Module = Pf.parseToIR(ParseSource::STRING, { });
+  auto Module = Pf.parseToIR<>(ParseSource::STRING);
   for (auto BB : *Module->front())
     for (auto Inst : *BB)
       ASSERT_EQ(cast<rhine::Instruction>(Inst)->getParent(), BB);
@@ -28,7 +28,7 @@ TEST(BasicBlock, SetNestedInstructionParent)
     "  print $ 2 + 4;\n"
     "end";
   ParseFacade Pf(SourcePrg);
-  auto Module = Pf.parseToIR(ParseSource::STRING, { });
+  auto Module = Pf.parseToIR<>(ParseSource::STRING);
   for (auto BB : *Module->front())
     for (auto Inst : *BB)
       if (auto OuterInst = dyn_cast<rhine::Instruction>(Inst))

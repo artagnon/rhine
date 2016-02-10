@@ -42,38 +42,9 @@ template <typename T> std::string ParseFacade::llToPP(T *Obj) {
   return OutputStream.str();
 }
 
-Module *ParseFacade::parseToIR(ParseSource SrcE,
-                               std::vector<ModulePass *> TransformChain) {
-  auto Ctx = std::make_unique<rhine::Context>(ErrStream);
-  auto Root = Module::get(std::move(Ctx));
-  auto Driver = rhine::ParseDriver(Root, Debug);
-  switch (SrcE) {
-  case ParseSource::STRING:
-    if (!Driver.parseString(PrgString)) {
-      std::cerr << "Could not parse string" << std::endl;
-      exit(1);
-    }
-    break;
-  case ParseSource::FILE:
-    if (!Driver.parseFile(PrgString)) {
-      std::cerr << "Could not parse file" << std::endl;
-      exit(1);
-    }
-    break;
-  }
-  for (auto Transform : TransformChain)
-    Transform->runOnModule(Root);
-  return Root;
-}
-
 Module *ParseFacade::parseToIR(ParseSource SrcE) {
-  Resolve ResolveL;
-  LambdaLifting LambLift;
-  Scope2Block Flatten;
-  TypeInfer TyInfer;
-  TypeCoercion TyCoercion;
-  return parseToIR(SrcE,
-                   {&Flatten, &LambLift, &ResolveL, &TyInfer, &TyCoercion});
+  return parseToIR<Scope2Block, LambdaLifting, Resolve, TypeInfer,
+                   TypeCoercion>(SrcE);
 }
 
 void ParseFacade::writeBitcodeToFile() {

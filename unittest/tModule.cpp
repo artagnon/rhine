@@ -19,7 +19,7 @@ TEST(Module, CountObjects)
     "  ret print;\n"
     "end";
   ParseFacade Pf(SourcePrg);
-  auto Module = Pf.parseToIR(ParseSource::STRING, {});
+  auto Module = Pf.parseToIR<>(ParseSource::STRING);
   EXPECT_EQ(std::distance(Module->begin(), Module->end()), 3);
 }
 
@@ -30,7 +30,7 @@ TEST(Module, SetFunctionParent)
     "  print 4;\n"
     "end";
   ParseFacade Pf(SourcePrg);
-  auto Module = Pf.parseToIR(ParseSource::STRING, {});
+  auto Module = Pf.parseToIR<>(ParseSource::STRING);
   for (auto F : *Module)
     EXPECT_EQ(F->getParent(), Module);
 }

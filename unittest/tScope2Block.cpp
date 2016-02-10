@@ -14,8 +14,7 @@ TEST(Scope2Block, NumberOfBBs) {
                    "  if false do X = 3; else Y = 4; end\n"
                    "end";
   ParseFacade Pf(SourcePrg);
-  Scope2Block Flatten;
-  auto Mod = Pf.parseToIR(ParseSource::STRING, {&Flatten});
+  auto Mod = Pf.parseToIR<Scope2Block>(ParseSource::STRING);
   auto MainF = Mod->front();
   auto NumberOfBBs = std::distance(MainF->begin(), MainF->end());
   ASSERT_EQ(NumberOfBBs, 4);
@@ -26,8 +25,7 @@ TEST(Scope2Block, PredSucc) {
                    "  if false do X = 3; else Y = 4; end\n"
                    "end";
   ParseFacade Pf(SourcePrg);
-  Scope2Block Flatten;
-  auto Mod = Pf.parseToIR(ParseSource::STRING, {&Flatten});
+  auto Mod = Pf.parseToIR<Scope2Block>(ParseSource::STRING);
   auto MainF = Mod->front();
   std::vector<unsigned> NumPreds = {0, 1, 1, 2}, NumSuccs = {2, 1, 1, 0};
   auto NumPredsIt = NumPreds.begin();
@@ -43,8 +41,7 @@ TEST(Scope2Block, SetParent) {
                    "  ret 4;\n"
                    "end";
   ParseFacade Pf(SourcePrg);
-  Scope2Block Flatten;
-  auto Mod = Pf.parseToIR(ParseSource::STRING, {&Flatten});
+  auto Mod = Pf.parseToIR<Scope2Block>(ParseSource::STRING);
   auto MainF = Mod->front();
   auto EntryBlock = MainF->getEntryBlock();
   ASSERT_EQ(EntryBlock->getParent(), MainF);
@@ -55,8 +52,7 @@ TEST(Scope2Block, SetIfParent) {
                    "  if false do X = 3; else Y = 4; end\n"
                    "end";
   ParseFacade Pf(SourcePrg);
-  Scope2Block Flatten;
-  auto Mod = Pf.parseToIR(ParseSource::STRING, {&Flatten});
+  auto Mod = Pf.parseToIR<Scope2Block>(ParseSource::STRING);
   auto MainF = Mod->front();
   for (auto BB : *MainF) {
     ASSERT_EQ(BB->getParent(), MainF);
@@ -68,8 +64,7 @@ TEST(Scope2Block, Lambda) {
                    "  Bfunc = fn x ~Int -> ret x; end\n"
                    "end";
   ParseFacade Pf(SourcePrg);
-  Scope2Block Flatten;
-  auto Mod = Pf.parseToIR(ParseSource::STRING, {&Flatten});
+  auto Mod = Pf.parseToIR<Scope2Block>(ParseSource::STRING);
   for (auto F : *Mod)
     for (auto BB : *F)
       ASSERT_EQ(BB->getParent(), F);
@@ -82,8 +77,7 @@ TEST(Scope2Block, LambdaInsideIf) {
                    "  end\n"
                    "end";
   ParseFacade Pf(SourcePrg);
-  Scope2Block Flatten;
-  auto Mod = Pf.parseToIR(ParseSource::STRING, {&Flatten});
+  auto Mod = Pf.parseToIR<Scope2Block>(ParseSource::STRING);
   for (auto F : *Mod)
     for (auto BB : *F)
       ASSERT_EQ(BB->getParent(), F);
@@ -103,8 +97,7 @@ TEST(Scope2Block, NestedIf) {
                    "  end\n"
                    "end";
   ParseFacade Pf(SourcePrg);
-  Scope2Block Flatten;
-  auto Mod = Pf.parseToIR(ParseSource::STRING, {&Flatten});
+  auto Mod = Pf.parseToIR<Scope2Block>(ParseSource::STRING);
   auto MainF = Mod->front();
   auto NumberOfBBs = std::distance(MainF->begin(), MainF->end());
   ASSERT_EQ(NumberOfBBs, 7);
@@ -130,8 +123,7 @@ TEST(Scope2Block, MergeInBranch) {
                    "  end\n"
                    "end";
   ParseFacade Pf(SourcePrg);
-  Scope2Block Flatten;
-  auto Mod = Pf.parseToIR(ParseSource::STRING, {&Flatten});
+  auto Mod = Pf.parseToIR<Scope2Block>(ParseSource::STRING);
   auto MainF = Mod->front();
   auto EntryBlock = MainF->getEntryBlock();
   auto &InstList = EntryBlock->getInstList();
