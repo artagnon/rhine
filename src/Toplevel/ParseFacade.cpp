@@ -44,7 +44,7 @@ template <typename T> std::string ParseFacade::llToPP(T *Obj) {
 
 Module *ParseFacade::parseToIR(ParseSource SrcE,
                                std::vector<ModulePass *> TransformChain) {
-  auto Ctx = make_unique<rhine::Context>(ErrStream);
+  auto Ctx = std::make_unique<rhine::Context>(ErrStream);
   auto Root = Module::get(std::move(Ctx));
   auto Driver = rhine::ParseDriver(Root, Debug);
   switch (SrcE) {

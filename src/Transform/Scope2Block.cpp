@@ -13,6 +13,19 @@ Scope2Block::Scope2Block() : K(nullptr) {}
 
 Scope2Block::~Scope2Block() {}
 
+using SetFcn = std::function<void(std::vector<BasicBlock>)>;
+
+static auto setPredParentSucc(BasicBlock *Block,
+                              std::vector<BasicBlock *> PredList,
+                              Function *Parent,
+                              std::vector<BasicBlock *> SuccList) {
+  Block->setPredecessors(PredList);
+  Block->setParent(Parent);
+  if (SuccList.size() && SuccList[0]) {
+    Block->setSuccessors(SuccList);
+  }
+}
+
 void Scope2Block::cleaveBlockAtBranches(BasicBlock *Cleavee,
                                         BasicBlock *ReturnTo) {
   auto Parent = Cleavee->getParent();
@@ -33,18 +46,9 @@ void Scope2Block::cleaveBlockAtBranches(BasicBlock *Cleavee,
   /// Set up predecessors and successors.
   Cleavee->setSuccessors({TrueBlock, FalseBlock});
 
-  TrueBlock->setPredecessors({Cleavee});
-  TrueBlock->setParent(Parent);
-  TrueBlock->setSuccessors({MergeBlock});
-
-  FalseBlock->setPredecessors({Cleavee});
-  FalseBlock->setParent(Parent);
-  FalseBlock->setSuccessors({MergeBlock});
-
-  MergeBlock->setPredecessors({TrueBlock, FalseBlock});
-  MergeBlock->setParent(Parent);
-  if (ReturnTo)
-    MergeBlock->setSuccessors({ReturnTo});
+  setPredParentSucc(TrueBlock, {Cleavee}, Parent, {MergeBlock});
+  setPredParentSucc(FalseBlock, {Cleavee}, Parent, {MergeBlock});
+  setPredParentSucc(MergeBlock, {TrueBlock, FalseBlock}, Parent, {ReturnTo});
 
   /// Create three new blocks in the function, inserting and cleaving them as we
   /// go. Program correctness isn't dependent on insertion order, but
