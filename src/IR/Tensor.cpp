@@ -43,8 +43,12 @@ bool Tensor::classof(const Value *V) {
 
 void Tensor::print(DiagnosticPrinter &Stream) const {
   Stream << "{ ";
-  for (auto Elt : Elements) {
-    Stream << Elt;
+  if (Elements.size()) {
+    Stream << *Elements[0];
+    for (auto It = Elements.begin(); std::next(It) != Elements.end(); It++) {
+      Value *Elt = *It;
+      Stream << ", " << *Elt;
+    }
   }
   Stream << " } ~" << *getType() << std::endl;
 }

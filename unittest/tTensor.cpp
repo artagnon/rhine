@@ -17,10 +17,18 @@ TEST(Tensor, SingleElement) {
   EXPECT_SUCCESSFUL_PARSE(SourcePrg);
 }
 
-TEST(Tensor, Indexing) {
+TEST(Tensor, Indexing_SingleElement) {
   auto SourcePrg = "def main do\n"
                    "A = {42}\n"
                    "print A[0]\n"
                    "end";
   EXPECT_OUTPUT(SourcePrg, "42");
+}
+
+TEST(Tensor, Indexing) {
+  auto SourcePrg = "def main do\n"
+                   "A = {42, 56, 91, 23}\n"
+                   "print A[2]\n"
+                   "end";
+  EXPECT_OUTPUT(SourcePrg, "91");
 }
