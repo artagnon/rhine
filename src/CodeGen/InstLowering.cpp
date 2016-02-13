@@ -119,15 +119,15 @@ llvm::Value *IndexingInst::toLL(llvm::Module *M) {
   auto BoundValue = cast<BindInst>(getVal());
   auto Op0 = BoundValue->getVal();
   auto Indices = getIndices();
-  llvm::Value *SumIdx = ConstantInt::get(0, 32, K)->toLL(M);
   if (auto IndexingInto = K->Map.getl(BoundValue)) {
-    auto IdxIt = Indices.begin()++;
-    for (auto Dim : cast<TensorType>(Op0->getType())->getDims()) {
-      auto LLDim = ConstantInt::get(Dim, 32, K)->toLL(M);
-      auto ToAdd = K->Builder->CreateMul((*IdxIt++)->toLL(M), LLDim);
-      SumIdx = K->Builder->CreateAdd(SumIdx, ToAdd);
-      if (IdxIt == Indices.end())
-        break;
+    llvm::Value *SumIdx = ConstantInt::get(0, 32, K)->toLL(M);
+    auto Dims = cast<TensorType>(Op0->getType())->getDims();
+    std::vector<int> ToMul = {1};
+    ToMul.insert(ToMul.end(), Dims.begin() + 1, Dims.end());
+    for (size_t i = 0; i < ToMul.size(); i++) {
+      auto Muller = ConstantInt::get(ToMul[i], 32, K)->toLL(M);
+      auto Adder = K->Builder->CreateMul(Indices[i]->toLL(M), Muller);
+      SumIdx = K->Builder->CreateAdd(SumIdx, Adder);
     }
     auto ToLoad = K->Builder->CreateInBoundsGEP(IndexingInto, SumIdx);
     return K->Builder->CreateLoad(ToLoad, BoundValue->getName() + "Load");

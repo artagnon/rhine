@@ -325,7 +325,7 @@ std::vector<Value *> IndexingInst::getIndices() const {
 void IndexingInst::print(DiagnosticPrinter &Stream) const {
   Stream << *getVal();
   for (auto Idx : getIndices())
-    Stream << "[" << Idx << "]";
+    Stream << "[" << *Idx << "]";
   Stream << std::endl;
 }
 }
