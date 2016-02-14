@@ -114,6 +114,14 @@ llvm::Value *IfInst::toLL(llvm::Module *M) {
   return getParent()->getPhiValueFromBranchBlock(M);
 }
 
+static size_t multiplyDown(std::vector<size_t> &Dims, size_t Top) {
+  size_t Mul = 1;
+  for (; Top != 0; --Top) {
+    Mul *= Dims[Top];
+  }
+  return Mul;
+}
+
 llvm::Value *IndexingInst::toLL(llvm::Module *M) {
   auto K = getContext();
   auto BoundValue = cast<BindInst>(getVal());
@@ -122,10 +130,11 @@ llvm::Value *IndexingInst::toLL(llvm::Module *M) {
   if (auto IndexingInto = K->Map.getl(BoundValue)) {
     llvm::Value *SumIdx = ConstantInt::get(0, 32, K)->toLL(M);
     auto Dims = cast<TensorType>(Op0->getType())->getDims();
-    std::vector<int> ToMul = {1};
-    ToMul.insert(ToMul.end(), Dims.begin() + 1, Dims.end());
-    for (size_t i = 0; i < ToMul.size(); i++) {
-      auto Muller = ConstantInt::get(ToMul[i], 32, K)->toLL(M);
+    Dims.erase(Dims.begin());
+    Dims.push_back(1);
+    for (size_t i = 0; i < Dims.size(); i++) {
+      auto ToMul = multiplyDown(Dims, i);
+      auto Muller = ConstantInt::get(ToMul, 32, K)->toLL(M);
       auto Adder = K->Builder->CreateMul(Indices[i]->toLL(M), Muller);
       SumIdx = K->Builder->CreateAdd(SumIdx, Adder);
     }
