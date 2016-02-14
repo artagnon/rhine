@@ -18,8 +18,11 @@ class BinaryArithInst;
 class BasicBlock;
 class Function;
 class Argument;
+class Tensor;
 class Value;
 class Type;
+
+typedef std::vector<Value *> ValueVector;
 
 class Parser {
 public:
@@ -131,8 +134,18 @@ public:
   /// Quick helper for parsing ConstantInt, ConstantBool, GlobalString.
   template <typename T> T *parseConstant();
 
+  /// Parses a 1D tensor whose '{' has already been parsed; expects Value * list
+  std::pair<ValueVector, bool> parseTensor1D();
+
+  /// Parses an N-dimensional tensor piecewise and returns the elements
+  /// flattened, as well as the shape.
+  std::pair<ValueVector, std::vector<size_t>> parseTensorND(size_t Dim);
+
+  /// Parse a generalized tensor.
+  Tensor *parseTensor(bool Optional = false);
+
   /// Single token that can appear on the rhs of '='
-  Value *parseRtoken(bool Optional = false);
+  Value *parseRtoken(bool Optional = false, bool ParsingTensor = false);
 
   /// Parse a lambda expression of the form "fn x -> x"
   Function *parseLambda(bool Optional = false);

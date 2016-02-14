@@ -1,25 +1,81 @@
 #include "rhine/Parse/ParseDriver.hpp"
 #include "rhine/Parse/Parser.hpp"
 
-#include "rhine/IR/Instruction.hpp"
-#include "rhine/IR/GlobalValue.hpp"
-#include "rhine/IR/Function.hpp"
 #include "rhine/IR/Context.hpp"
+#include "rhine/IR/Function.hpp"
+#include "rhine/IR/GlobalValue.hpp"
+#include "rhine/IR/Instruction.hpp"
 #include "rhine/IR/Tensor.hpp"
 #include "rhine/IR/Value.hpp"
 
 #define K Driver->Ctx
 
 namespace rhine {
-template <typename T>
-T *Parser::parseConstant() {
+template <typename T> T *Parser::parseConstant() {
   auto Const = *(T **)&CurSema;
   Const->setSourceLocation(CurLoc);
   getTok();
   return Const;
 }
 
-Value *Parser::parseRtoken(bool Optional) {
+std::pair<ValueVector, bool> Parser::parseTensor1D() {
+  /// '{' has already been parsed, we are just looking at Value *
+  ValueVector Elts;
+  if (getTok('}')) {
+    return std::make_pair(Elts, true);
+  }
+  if (auto Tok = parseRtoken(true, true)) {
+    Elts.push_back(Tok);
+  } else {
+    return {};
+  }
+  while (getTok(',')) {
+    Elts.push_back(parseRtoken(false, true));
+  }
+  if (!getTok('}')) {
+    writeError("expecting '}' to end Tensor dimension");
+    return {};
+  }
+  return std::make_pair(Elts, true);
+}
+
+std::pair<ValueVector, std::vector<size_t>> Parser::parseTensorND(size_t Dim) {
+  /// We can see one of two things:
+  /// Value *: which means that we're at the end, parseTensor1D
+  /// '{': which means there's another dimension; recursive call
+  ValueVector ValVec;
+  std::vector<size_t> Shape;
+  auto NElts = 0;
+  while (getTok('{')) {
+    auto Vec1D = parseTensor1D();
+    if (std::get<bool>(Vec1D)) {
+      ValVec = std::get<0>(Vec1D);
+      Shape.push_back(ValVec.size());
+      return std::make_pair(ValVec, Shape);
+    }
+    ValueVector ThisValVec;
+    std::vector<size_t> ThisShape;
+    std::tie(ThisValVec, ThisShape) = parseTensorND(Dim + 1);
+    NElts++;
+    ValVec.insert(ValVec.end(), ThisValVec.begin(), ThisValVec.end());
+    if (getTok(',')) { continue; }
+    if (!getTok('}')) {
+      writeError("Expected '}' to end Tensor dimension");
+      return {};
+    }
+  }
+  Shape.push_back(NElts);
+  return std::make_pair(ValVec, Shape);
+}
+
+Tensor *Parser::parseTensor(bool Optional) {
+  ValueVector TensorValues;
+  std::vector<size_t> Shape;
+  std::tie(TensorValues, Shape) = parseTensorND(1);
+  return Tensor::get(Shape, TensorValues, K);
+}
+
+Value *Parser::parseRtoken(bool Optional, bool ParsingTensor) {
   switch (CurTok) {
   case INTEGER:
     return parseConstant<ConstantInt>();
@@ -27,22 +83,11 @@ Value *Parser::parseRtoken(bool Optional) {
     return parseConstant<ConstantBool>();
   case STRING:
     return parseConstant<GlobalString>();
-  case '{': {
-    getTok();
-    if (getTok('}')) {
-      return Tensor::get({0}, {}, K);
-    }
-    std::vector<Value *> TensorValues;
-    TensorValues.push_back(parseRtoken());
-    while (getTok(',')) {
-      TensorValues.push_back(parseRtoken());
-    }
-    if (!getTok('}')) {
-      writeError("expecting '}' to end Tensor");
+  case '{':
+    if (ParsingTensor) {
       return nullptr;
     }
-    return Tensor::get({TensorValues.size()}, TensorValues);
-  }
+    return parseTensor();
   case LITERALNAME: {
     auto LitName = *CurSema.LiteralName;
     auto LitLoc = CurLoc;

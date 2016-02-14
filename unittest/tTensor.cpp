@@ -32,3 +32,11 @@ TEST(Tensor, Indexing) {
                    "end";
   EXPECT_OUTPUT(SourcePrg, "91");
 }
+
+TEST(Tensor, DISABLED_Multidimensional) {
+  auto SourcePrg = "def main do\n"
+                   "A = {{42, 56}, {91, 23}}\n"
+                   "print A[0][1]\n"
+                   "end";
+  EXPECT_OUTPUT(SourcePrg, "56");
+}
