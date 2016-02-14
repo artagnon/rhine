@@ -35,8 +35,8 @@ TEST(Tensor, Indexing) {
 
 TEST(Tensor, Multidimensional) {
   auto SourcePrg = "def main do\n"
-                   "A = {{42, 56}, {91, 23}}\n"
-                   "print A[0][1]\n"
+                   "A = {{{3, 41, 42}, {5, 2, 62}}, {{7, 1, 84}, {4, 8, 9}}}\n"
+                   "print A[1][1][2]\n"
                    "end";
-  EXPECT_OUTPUT(SourcePrg, "56");
+  EXPECT_OUTPUT(SourcePrg, "9");
 }
