@@ -7,8 +7,6 @@
 #include "rhine/Transform/Scope2Block.hpp"
 
 namespace rhine {
-class Value;
-
 Scope2Block::Scope2Block() : K(nullptr) {}
 
 Scope2Block::~Scope2Block() {}
