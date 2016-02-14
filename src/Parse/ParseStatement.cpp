@@ -18,47 +18,24 @@ template <typename T> T *Parser::parseConstant() {
   return Const;
 }
 
-std::pair<ValueVector, bool> Parser::parseTensor1D() {
-  /// '{' has already been parsed, we are just looking at Value *
-  ValueVector Elts;
-  if (getTok('}')) {
-    return std::make_pair(Elts, true);
-  }
-  if (auto Tok = parseRtoken(true, true)) {
-    Elts.push_back(Tok);
-  } else {
-    return {};
-  }
-  while (getTok(',')) {
-    Elts.push_back(parseRtoken(false, true));
-  }
-  if (!getTok('}')) {
-    writeError("expecting '}' to end Tensor dimension");
-    return {};
-  }
-  return std::make_pair(Elts, true);
-}
-
-std::pair<ValueVector, std::vector<size_t>> Parser::parseTensorND(size_t Dim) {
+std::pair<ValueVector, std::vector<size_t>> Parser::parseTensorND() {
   /// We can see one of two things:
   /// Value *: which means that we're at the end, parseTensor1D
   /// '{': which means there's another dimension; recursive call
   ValueVector ValVec;
   std::vector<size_t> Shape;
   auto NElts = 0;
-  while (getTok('{')) {
-    auto Vec1D = parseTensor1D();
-    if (std::get<bool>(Vec1D)) {
-      ValVec = std::get<0>(Vec1D);
-      Shape.push_back(ValVec.size());
-      return std::make_pair(ValVec, Shape);
-    }
-    ValueVector ThisValVec;
-    std::vector<size_t> ThisShape;
-    std::tie(ThisValVec, ThisShape) = parseTensorND(Dim + 1);
-    NElts++;
-    ValVec.insert(ValVec.end(), ThisValVec.begin(), ThisValVec.end());
-    if (getTok(',')) { continue; }
+  if (getTok('{')) {
+    do {
+      NElts++;
+      if (auto Tok = parseRtoken(true, true)) {
+        ValVec.push_back(Tok);
+      } else {
+        ValueVector ThisValVec;
+        std::tie(ThisValVec, Shape) = parseTensorND();
+        ValVec.insert(ValVec.end(), ThisValVec.begin(), ThisValVec.end());
+      }
+    } while (getTok(','));
     if (!getTok('}')) {
       writeError("Expected '}' to end Tensor dimension");
       return {};
@@ -71,7 +48,8 @@ std::pair<ValueVector, std::vector<size_t>> Parser::parseTensorND(size_t Dim) {
 Tensor *Parser::parseTensor(bool Optional) {
   ValueVector TensorValues;
   std::vector<size_t> Shape;
-  std::tie(TensorValues, Shape) = parseTensorND(1);
+  std::tie(TensorValues, Shape) = parseTensorND();
+  std::reverse(Shape.begin(), Shape.end());
   return Tensor::get(Shape, TensorValues, K);
 }
 

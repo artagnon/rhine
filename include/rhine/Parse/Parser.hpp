@@ -134,12 +134,9 @@ public:
   /// Quick helper for parsing ConstantInt, ConstantBool, GlobalString.
   template <typename T> T *parseConstant();
 
-  /// Parses a 1D tensor whose '{' has already been parsed; expects Value * list
-  std::pair<ValueVector, bool> parseTensor1D();
-
   /// Parses an N-dimensional tensor piecewise and returns the elements
   /// flattened, as well as the shape.
-  std::pair<ValueVector, std::vector<size_t>> parseTensorND(size_t Dim);
+  std::pair<ValueVector, std::vector<size_t>> parseTensorND();
 
   /// Parse a generalized tensor.
   Tensor *parseTensor(bool Optional = false);
