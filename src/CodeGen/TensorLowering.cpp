@@ -10,9 +10,9 @@ llvm::Value *Tensor::toLL(llvm::Module *M) {
   auto ElTy = getType()->getCTy()->toLL(M);
   auto PElTy = llvm::PointerType::get(ElTy, 0);
   auto Dims = getType()->getDims();
-  auto NElements = 0;
+  auto NElements = 1;
   for (auto Dim : Dims)
-    NElements += Dim;
+    NElements *= Dim;
   auto ConstElts = ConstantInt::get(NElements, 64, K)->toLL(M);
   auto ConstPtrSize = ConstantInt::get(8, 64, K)->toLL(M);
   auto TensorLen = K->Builder->CreateMul(ConstElts, ConstPtrSize);

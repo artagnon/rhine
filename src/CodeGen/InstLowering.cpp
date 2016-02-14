@@ -116,8 +116,8 @@ llvm::Value *IfInst::toLL(llvm::Module *M) {
 
 static size_t multiplyDown(std::vector<size_t> &Dims, size_t Top) {
   size_t Mul = 1;
-  for (; Top != 0; --Top) {
-    Mul *= Dims[Top];
+  for (size_t i = Top; i < Dims.size(); ++i) {
+    Mul *= Dims[i];
   }
   return Mul;
 }
