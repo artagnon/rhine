@@ -1,7 +1,8 @@
-# rhine: An optionally-typed Elixir
+# rhine: A typed Elixir-inspired language on LLVM
 
 rhine is designed to be a fast language utilizing the LLVM JIT featuring N-d
-tensors, first-class functions, lambdas, and optional typing.
+tensors, first-class functions, and type inference; specifying argument
+types is enough. It has a full blown AST into which it embeds a UseDef graph.
 
 rhine started off as [rhine-ml](https://github.com/artagnon/rhine-ml), and
 rhine-ml was called rhine earlier.
