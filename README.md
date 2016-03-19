@@ -61,7 +61,8 @@ inherit from `Type`, most of the others inherit from `Value`. A `BasicBlock` is
 a `Value`, and so is `ConstantInt`.
 
 A `BasicBlock` is a vector of `Instruction`, and this is how the AST is an SSA:
-assignments are handled as a `StoreInst`; there is no LHS.
+assignments are handled as a `StoreInst`; there is no real LHS, just RHS
+references.
 
 ```cpp
 StoreInst::StoreInst(Value *MallocedValue, Value *NewValue);
@@ -152,16 +153,27 @@ Type *TypeInfer::visit(MallocInst *V) {
 }
 ```
 
-I didn't even make the effort of ordering the calls correctly. The language
-isn't complex enough.
+## Building
+
+```sh
+$ git submodule update --init
+$ mkdir llvm-build
+$ cd llvm-build
+$ cmake -GNinja ../rhine/llvm
+$ ninja
+$ mkdir ../rhine-build
+$ cd ../rhine-build
+$ cmake -GNinja ../rhine
+$ ninja
+```
 
 ## Commentary
 
-- An inefficient untyped language is easy to implement. `println` taking 23 and
-  "twenty three" as arguments is a simple matter of switching on
-  type-when-unboxed. There's no need to rewrite the value in IR, and certainly
-  no need to come up with an overloading scheme.
+An inefficient untyped language is easy to implement. `println` taking 23 and
+"twenty three" as arguments is a simple matter of switching on
+type-when-unboxed. There's no need to rewrite the value in IR, and certainly no
+need to come up with an overloading scheme.
 
-  [Crystal](http://crystal-lang.org/) made a good decision to start with Ruby.
-  If your idea is to self-host, then the original language's efficiency does not
-  matter. All you need is good generated assembly (which LLVM makes easy).
+[Crystal](http://crystal-lang.org/) made a good decision to start with Ruby. If
+your idea is to self-host, then the original language's efficiency does not
+matter. All you need is good generated assembly (which LLVM makes easy).
