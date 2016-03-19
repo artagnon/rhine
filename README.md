@@ -1,45 +1,48 @@
-# Rhine: An optionally-typed Elixir
+# rhine: An optionally-typed Elixir
 
-Rhine is designed to be a fast language utilizing the LLVM JIT featuring N-d
-tensors, first-class functions, optional typing.
+rhine is designed to be a fast language utilizing the LLVM JIT featuring N-d
+tensors, first-class functions, lambdas, and optional typing.
 
-Rhine started off as [rhine-ml](https://github.com/artagnon/rhine-ml), and
-rhine-ml was called Rhine earlier.
+rhine started off as [rhine-ml](https://github.com/artagnon/rhine-ml), and
+rhine-ml was called rhine earlier.
 
 Effort put into rhine-ml: 2 months
-Effort put into Rhine: 1 year, 5 months
+Effort put into rhine: 1 year, 5 months
 
 ## Language Features
 
 ```elixir
-def fptrTest do
-  return println
+def bar(arithFn ~Function(Int -> Int -> Int)) do
+  println $ arithFn 2 4
 end
-def mathTest(Input ~Int, Finput ~Float) do
-  PhiAssignment = if true do
-    println $ 3 + Input
-    2
+def addCandidate(A ~Int, B ~Int) do
+  ret $ A + B
+end
+def subCandidate(C ~Int, D ~Int) do
+  ret $ C - D
+end
+def main() do
+  if false do
+    bar addCandidate
   else
-    A = {{2}, {3}}
-    println A[0][1]
-    Lam = fn Arg -> Arg * 2 end
-    fptrTest (Lam 4)
-    3
+    bar subCandidate
   end
-  ret PhiAssignment
+  A = {{2}, {3}}
+  println A[1][0]
 end
 ```
 
 rhine-ml has arrays, first-class functions, closures, variadic arguments,
-macros. Rhine has N-d tensors, first-class functions, more syntactic sugar, and
+macros. rhine has N-d tensors, first-class functions, more syntactic sugar, and
 reports better errors.
 
-Rhine is typed while rhine-ml is not. As a result, Rhine does full type
-inference, and rhine-ml gets away with boxing-unboxing.
+rhine is typed while rhine-ml is not. As a result, rhine does full type
+inference, and rhine-ml gets away with boxing-unboxing. rhine-ml is also much
+less buggy than rhine.
 
 ## The recursive-descent parser
 
-Rhine uses a handwritten recursive-descent parser, which is faster and reports
+rhine uses a handwritten recursive-descent parser, which is faster and reports
 better errors, than the former Bison one. You will need to use a one-token
 lookahead atleast, if you want to keep the code simple. This gives you one level
 of:
@@ -62,34 +65,48 @@ inherit from `Type`, most of the others inherit from `Value`. A `BasicBlock` is
 a `Value`, and so is `ConstantInt`.
 
 A `BasicBlock` is a vector of `Instruction`, and this is how the AST is an SSA:
-assignments are handled as a `StoreInst` which takes an `UnresolvedValue` and
-the `Value` as arguments.
+assignments are handled as a `StoreInst`; there is no LHS.
+
+```cpp
+StoreInst::StoreInst(Value *MallocedValue, Value *NewValue);
+```
 
 ## UseDef in AST
+
+`Value` is uniquified using LLVM's `FoldingSet`, and `Use` wraps it, so we can
+replace one `Value` with another.
 
 ```cpp
 /// A Use is basically a linked list of Value wrappers
 class Use {
-  Value \*Val;
-  Use \*Prev;
-  Use \*Next;
+  Value *Val;
+  Use *Prev;
+  Use *Next;
    // Laid out in memory as [User] - [Use1] - [Use2]. Use2 has DistToUser 2
   unsigned DistToUser;
 };
+```
 
-/// A User is an Instruction. Instruction inherits from User
+An `Instruction` is a `User`. `User` and its `Use` values are laid out
+sequentially in memory, so it's possible to reach all the `Use` values from the
+`User`. It's also possible to reach the `User` from any `Use`, using
+`DistToUser`.
+
+```cpp
 class User : public Value {
 protected:
-  /// In the case of CallInst, the Callee itself is operand 0, which
-  /// NumAllocatedOps accounts for, and NumOperands omits. See corresponding
-  /// iterators uses() and operands().
   unsigned NumOperands;
-  unsigned NumAllocatedOps;
-public:
-  /// Allocate memory for Us uses too.
-  void \*operator new(size_t Size, unsigned Us) {
-    void \*Storage = ::operator new (Us \* sizeof(Use) + Size);
-    auto Start = static_cast<Use \*>(Storage);
+};
+class Instruction : User;
+```
+
+The `User` has a custom `new` to allocate memory for the `Use` instances
+as well.
+
+```cpp
+  void *User::operator new(size_t Size, unsigned Us) {
+    void *Storage = ::operator new (Us * sizeof(Use) + Size);
+    auto Start = static_cast<Use *>(Storage);
     auto End = Start + Us;
     for (unsigned Iter = 0; Iter < Us; Iter++) {
       new (Start + Iter) Use(Us - Iter);
@@ -97,9 +114,7 @@ public:
     auto Obj = reinterpret_cast<User *>(End);
     return Obj;
   }
-
 };
-class Instruction : User;
 ```
 
 ## Symbol resolution
@@ -116,14 +131,34 @@ which takes the string "B" and `AddInst` as operands.
 
 The transform basically goes over all the `Instruction` in the `BasicBlock`,
 resolves `UnresolvedValue` instances, and sets the `Use` to the resolved value.
-It hence replaces every `Value` instance corresponding to a `Use` in one stroke.
+It hence replaces the `Value` underneath the `Use`, and since the `Instruction`
+is referencing `Use` instances, there are no dangling references.
 
-## Lessons learnt
+## Type Inference
 
-- C++ is suitable only for teams with a lot of manpower.
+Type Inference is too simple. One `visit` function is overloaded for all
+possible `Value` classes.
 
-- [Crystal](http://crystal-lang.org/) made a good decision to start with Ruby.
+```cpp
+Type *TypeInfer::visit(MallocInst *V) {
+  V->setType(visit(V->getVal()));
+  assert(!V->isUnTyped() && "unable to type infer MallocInst");
+  return VoidType::get(K);
+}
+```
+
+I didn't even make the effort of ordering the calls correctly. The language
+isn't complex enough.
+
+## Commentary
+
+- An inefficient untyped language is easy to implement. `println` taking 23 and
+  "twenty three" as arguments is a simple matter of switching on
+  type-when-unboxed. There's no need to rewrite the value in IR, and certainly
+  no need to come up with an overloading scheme.
+
+  C++ is suitable only for teams with a lot of manpower.
+
+  [Crystal](http://crystal-lang.org/) made a good decision to start with Ruby.
   If your idea is to self-host, then the original language's efficiency does not
   matter. All you need is good generated assembly (which LLVM makes easy).
-
--
