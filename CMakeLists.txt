@@ -7,6 +7,8 @@ set(CMAKE_CXX_FLAGS "-std=c++14")
 set(LLVM_ROOT_DIR "${PROJECT_SOURCE_DIR}/llvm")
 set(CLANG_ROOT_DIR "${PROJECT_SOURCE_DIR}/clang")
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/Modules")
+set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(UNITTEST_EXE "${PROJECT_BINARY_DIR}/unittest/UnitTest")
 set(VALGRIND_EXE "/usr/local/bin/valgrind")
 
