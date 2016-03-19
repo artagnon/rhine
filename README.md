@@ -33,13 +33,8 @@ def main() do
 end
 ```
 
-rhine-ml has arrays, first-class functions, closures, variadic arguments,
-macros. rhine has N-d tensors, first-class functions, more syntactic sugar, and
-reports better errors.
-
-rhine is typed while rhine-ml is not. As a result, rhine does full type
-inference, and rhine-ml gets away with boxing-unboxing. rhine-ml is also much
-less buggy than rhine.
+rhine-ml, in contrast, has arrays, first-class functions, closures, variadic
+arguments, macros. It's also much less buggy.
 
 ## The recursive-descent parser
 
@@ -118,6 +113,15 @@ as well.
 };
 ```
 
+## Context
+
+The Context is a somewhat large object that keeps the uniqified `Type` and
+`Value` instances. It also keeps track of `Externals`, the external C functions
+that are provided as part of a "standard library". Unique `llvm::Builder` and
+`llvm::Context` objects, as well as the `DiagnosticPrinter` are exposed member
+variables. Finally, it is necessary for symbol resolution, and keeps the
+`ResolutionMap`.
+
 ## Symbol resolution
 
 Transform/Resolve is an example of something that utilizes the UseDef embedded
@@ -157,8 +161,6 @@ isn't complex enough.
   "twenty three" as arguments is a simple matter of switching on
   type-when-unboxed. There's no need to rewrite the value in IR, and certainly
   no need to come up with an overloading scheme.
-
-  C++ is suitable only for teams with a lot of manpower.
 
   [Crystal](http://crystal-lang.org/) made a good decision to start with Ruby.
   If your idea is to self-host, then the original language's efficiency does not
