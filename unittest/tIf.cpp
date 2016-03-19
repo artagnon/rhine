@@ -1,6 +1,6 @@
-#include "rhine/Util/TestUtil.hpp"
 #include "rhine/IR/Instruction.hpp"
 #include "rhine/IR/Module.hpp"
+#include "rhine/Util/TestUtil.hpp"
 #include "gtest/gtest.h"
 
 using namespace rhine;
@@ -121,6 +121,25 @@ TEST(If, PhiAssignment) {
                    "    if false do 2\n"
                    "    else 3\n"
                    "    end\n"
+                   "  print x\n"
+                   "end";
+  auto ExpectedOut = "3";
+  EXPECT_OUTPUT(SourcePrg, ExpectedOut);
+}
+
+TEST(If, DISABLED_PhiAssignment_FunctionPointer) {
+  auto SourcePrg = "def addCandidate(A ~Int, B ~Int) do"
+                   "  ret $ A + B\n"
+                   "end\n"
+                   "def subCandidate(C ~Int, D ~Int) do\n"
+                   "  ret $ C - D\n"
+                   "end\n"
+                   "def main do\n"
+                   "  x = if false do\n"
+                   "    addCandidate\n"
+                   "  else\n"
+                   "    subCandidate\n"
+                   "  end\n"
                    "  print x\n"
                    "end";
   auto ExpectedOut = "3";
