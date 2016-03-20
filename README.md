@@ -7,8 +7,8 @@ types is enough. It has a full blown AST into which it embeds a UseDef graph.
 rhine started off as [rhine-ml](https://github.com/artagnon/rhine-ml), and
 rhine-ml was called rhine earlier.
 
-Effort put into rhine-ml: 2 months
-Effort put into rhine: 1 year, 5 months
+- Effort put into rhine-ml: 2 months
+- Effort put into rhine: 1 year, 5 months
 
 ## Language Features
 
@@ -114,7 +114,7 @@ as well.
 };
 ```
 
-## Context
+## The Context
 
 The Context is a somewhat large object that keeps the uniqified `Type` and
 `Value` instances. It also keeps track of `Externals`, the external C functions
@@ -125,7 +125,7 @@ variables. Finally, it is necessary for symbol resolution, and keeps the
 
 ## Symbol resolution
 
-Transform/Resolve is an example of something that utilizes the UseDef embedded
+src/Transform/Resolve is an example of something that utilizes the UseDef embedded
 in the AST.
 
 ```elixir
@@ -139,6 +139,22 @@ The transform basically goes over all the `Instruction` in the `BasicBlock`,
 resolves `UnresolvedValue` instances, and sets the `Use` to the resolved value.
 It hence replaces the `Value` underneath the `Use`, and since the `Instruction`
 is referencing `Use` instances, there are no dangling references.
+
+```cpp
+if (auto S = K->Map.get(V, Block)) {
+  /// %S = 2;
+  ///  ^
+  /// Came from here (MallocInst, Argument, or Prototype)
+  ///
+  /// Foo(%S);
+  ///      ^
+  ///  UnresolvedValue; replace with %Replacement
+  if (auto M = dyn_cast<MallocInst>(S)) {
+    if (dyn_cast<StoreInst>(U->getUser()))
+      U.set(M);
+  }
+}
+```
 
 ## Type Inference
 
