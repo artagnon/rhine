@@ -8,7 +8,7 @@ rhine started off as [rhine-ml](https://github.com/artagnon/rhine-ml), and
 rhine-ml was called rhine earlier.
 
 - Effort put into rhine-ml: 2 months
-- Effort put into rhine: 1 year, 5 months
+- Effort put into rhine: 1 year, 1 month
 
 ## Language Features
 
