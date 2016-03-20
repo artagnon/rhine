@@ -33,6 +33,11 @@ def main() do
 end
 ```
 
+`~Int` is a type annotation, and only argument types need to be annotated,
+return type is inferred. `~Function(Int -> Int -> Int)` is a function that takes
+two integers and returns one integer, mixing in some Haskell syntax. `$` is
+again from Haskell, which is basically like putting the RHS in parens.
+
 rhine-ml, in contrast, has arrays, first-class functions, closures, variadic
 arguments, macros. It's also much less buggy.
 
