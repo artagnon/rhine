@@ -195,7 +195,7 @@ Type *TypeInfer::visit(MallocInst *V) {
 $ git submodule update --init
 $ mkdir llvm-build
 $ cd llvm-build
-$ cmake -GNinja ../rhine/llvm
+$ cmake -GNinja -DCMAKE_BUILD_TYPE=Debug ../llvm
 $ ninja
 $ mkdir ../rhine-build
 $ cd ../rhine-build
