@@ -2,6 +2,7 @@
 #define RHINE_VALUE_H
 
 #include "llvm/IR/Value.h"
+#include "llvm/IR/Module.h"
 
 #include <string>
 #include <sstream>

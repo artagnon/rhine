@@ -1,3 +1,4 @@
+#include "rhine/IR/Context.hpp"
 #include "rhine/IR/BasicBlock.hpp"
 #include "rhine/IR/Instruction.hpp"
 #include "rhine/IR/Module.hpp"

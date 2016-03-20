@@ -1,4 +1,5 @@
 #include "rhine/IR/Context.hpp"
+#include "rhine/IR/Type.hpp"
 #include "rhine/IR/Value.hpp"
 
 namespace rhine {

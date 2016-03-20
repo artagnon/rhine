@@ -1,5 +1,4 @@
 #include "rhine/IR/Context.hpp"
-#include "rhine/IR/Value.hpp"
 #include "rhine/IR/UnresolvedValue.hpp"
 #include "rhine/IR/GlobalValue.hpp"
 #include "rhine/Externals.hpp"
