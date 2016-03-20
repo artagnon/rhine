@@ -50,6 +50,21 @@ parseSymbol(); // Oops, the lexed token indicates that we're not in the right
 parseInstruction(); // Ask it to use an existing token, not lex a new one
 ```
 
+Another minor consideration is that newlines must be handled explicitly if you
+want to substitute ; with a newline in the language.
+
+```cpp
+void Parser::getTok() {
+  LastTok = CurTok;
+  CurTok = Driver->Lexx->lex(&CurSema, &CurLoc);
+  LastTokWasNewlineTerminated = false;
+  while (CurTok == NEWLINE) {
+    LastTokWasNewlineTerminated = true;
+    CurTok = Driver->Lexx->lex(&CurSema, &CurLoc);
+  }
+}
+```
+
 ## The AST
 
 The AST is heavily inspired by LLVM IR, although it has some higher-level
