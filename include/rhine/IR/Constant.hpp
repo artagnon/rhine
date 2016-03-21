@@ -58,7 +58,7 @@ class ConstantBool : public Constant {
 
 public:
   ConstantBool(bool Val, Context *K);
-  virtual ~ConstantBool() {}
+  virtual ~ConstantBool();
   void *operator new(size_t s);
   static ConstantBool *get(bool Val, Context *K);
   BoolType *getType() const;
@@ -78,7 +78,7 @@ class ConstantFloat : public Constant {
 
 public:
   ConstantFloat(float Val, Context *K);
-  virtual ~ConstantFloat() {}
+  virtual ~ConstantFloat();
   void *operator new(size_t s);
   static ConstantFloat *get(float Val, Context *K);
   FloatType *getType() const;

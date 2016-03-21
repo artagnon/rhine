@@ -145,6 +145,8 @@ LoadInst::LoadInst(MallocInst *M)
   setOperand(0, M);
 }
 
+LoadInst::~LoadInst() {}
+
 void *LoadInst::operator new(size_t S) { return User::operator new(S, 1); }
 
 LoadInst *LoadInst::get(MallocInst *M) { return new LoadInst(M); }

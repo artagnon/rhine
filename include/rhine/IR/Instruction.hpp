@@ -130,7 +130,7 @@ public:
   LoadInst(MallocInst *M);
 
   /// Noop.
-  virtual ~LoadInst() {}
+  virtual ~LoadInst();
   void *operator new(size_t S);
   static LoadInst *get(MallocInst *M);
   Value *getVal() const;

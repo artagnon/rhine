@@ -5,6 +5,8 @@ namespace rhine {
 UnresolvedValue::UnresolvedValue(std::string N, Type *T) :
     User(T, RT_UnresolvedValue, 0, N) {}
 
+UnresolvedValue::~UnresolvedValue() {}
+
 UnresolvedValue *UnresolvedValue::get(std::string N, Type *T) {
   return new UnresolvedValue(N, T);
 }
@@ -19,6 +21,8 @@ void UnresolvedValue::print(DiagnosticPrinter &Stream) const {
 
 Argument::Argument(std::string N, Type *T) :
     User(T, RT_Argument, 0, N) {}
+
+Argument::~Argument() {}
 
 Argument *Argument::get(std::string N, Type *T) {
   return new Argument(N, T);

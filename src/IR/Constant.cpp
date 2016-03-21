@@ -63,6 +63,8 @@ void ConstantInt::print(DiagnosticPrinter &Stream) const {
 ConstantBool::ConstantBool(bool Val, Context *K)
     : Constant(BoolType::get(K), RT_ConstantBool), Val(Val) {}
 
+ConstantBool::~ConstantBool() {}
+
 void *ConstantBool::operator new(size_t s) { return User::operator new(s); }
 
 ConstantBool *ConstantBool::get(bool Val, Context *K) {
@@ -102,6 +104,8 @@ void ConstantBool::print(DiagnosticPrinter &Stream) const {
 
 ConstantFloat::ConstantFloat(float Val, Context *K)
     : Constant(FloatType::get(K), RT_ConstantFloat), Val(Val) {}
+
+ConstantFloat::~ConstantFloat() {}
 
 void *ConstantFloat::operator new(size_t s) { return User::operator new(s); }
 
