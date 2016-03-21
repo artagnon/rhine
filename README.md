@@ -191,16 +191,65 @@ Type *TypeInfer::visit(MallocInst *V) {
 
 ## Building
 
+The desired directory structure is:
+```
+bin/ ; if you downloaded the tarball for this
+    cmake
+    ninja
+    flex
+src/
+    rhine/
+            README.md
+            llvm/ ; git submodule update --init to get the sources
+            llvm-build/
+                        bin/
+                            llvm-config ; you need to call this to build
+    rhine-build/
+            rhine ; the executable
+```
+
+On an OSX where you have everything:
+
 ```sh
 $ git submodule update --init
 $ mkdir llvm-build
 $ cd llvm-build
+# rhine is buggy; without debugging symbols, you can't report a useful bug
 $ cmake -GNinja -DCMAKE_BUILD_TYPE=Debug ../llvm
-$ ninja
+# this will install to /usr/local
+$ ninja install
 $ mkdir ../rhine-build
 $ cd ../rhine-build
 $ cmake -GNinja ../rhine
+# this will run the packages unittests, which should all pass
+$ ninja check
+```
+
+On a Linux where you have nothing (and no root privileges are required):
+
+First, download the tarball containing `cmake`, `ninja`, `flex` from the
+downloads section, and prepend the untarred location to `$PATH`.
+
+Then,
+
+```sh
+$ git submodule update --init
+$ mkdir llvm-build
+$ cd llvm-build
+# rhine is buggy; without debugging symbols, you can't report a useful bug
+$ cmake -GNinja -DCMAKE_BUILD_TYPE=Debug ../llvm
 $ ninja
+```
+
+Add `bin/llvm-config` to ``$PATH`, and then:
+
+```sh
+$ mkdir ../rhine-build
+$ cd ../rhine-build
+# substitute ~/bin/flex to the $PATH of the flex from the tarball
+$ cmake -GNinja -DFLEX_EXECUTABLE=~/bin/flex ../rhine
+# if there are build (usually link) errors, please open an issue
+$ ninja check
 ```
 
 ## Commentary
