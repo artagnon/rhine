@@ -13,7 +13,7 @@ Scope2Block::~Scope2Block() {}
 
 using SetFcn = std::function<void(std::vector<BasicBlock>)>;
 
-static auto setPredParentSucc(BasicBlock *Block,
+static void setPredParentSucc(BasicBlock *Block,
                               std::vector<BasicBlock *> PredList,
                               Function *Parent,
                               std::vector<BasicBlock *> SuccList) {

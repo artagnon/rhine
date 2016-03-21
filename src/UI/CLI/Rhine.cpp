@@ -15,7 +15,7 @@ const option::Descriptor Usage[] = {
     {STDIN, 0, "", "stdin", option::Arg::None,
      " --stdin  \tRead input from stdin"},
     {HELP, 0, "", "help", option::Arg::None, " --help  \tPrint usage and exit"},
-    {}};
+    {0, 0, 0, 0, 0, 0}};
 
 int main(int argc, char *argv[]) {
   argc -= (argc > 0);

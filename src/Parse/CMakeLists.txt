@@ -1,6 +1,7 @@
 find_package(FLEX 2.5.39 REQUIRED)
 find_package(LLVM REQUIRED)
 include_directories("/usr/local/opt/flex/include")
+include_directories("${TOOLS_ROOT}/flex-2.6/include") # for linux, custom tarball
 flex_target(Lexx
   "${CMAKE_CURRENT_SOURCE_DIR}/Lexer.ll"
   "${CMAKE_CURRENT_BINARY_DIR}/Lexer.cpp")

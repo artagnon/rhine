@@ -68,7 +68,7 @@ public:
   /// conversion to LLVM IR.
   template<typename ...Ts>
   Module *parseToIR(ParseSource SrcE) {
-    auto Ctx = std::make_unique<rhine::Context>(ErrStream);
+    auto Ctx = llvm::make_unique<rhine::Context>(ErrStream);
     auto Root = Module::get(std::move(Ctx));
     auto Driver = rhine::ParseDriver(Root, Debug);
     switch (SrcE) {

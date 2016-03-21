@@ -167,7 +167,7 @@ else()
     llvm_set_libs(LIBRARIES libfiles "${LLVM_LIBRARY_DIRS}")
 endif()
 
-string(REPLACE "-std=c++11" "-std=c++14" LLVM_CXXFLAGS "${LLVM_CXXFLAGS}")
+# string(REPLACE "-std=c++11" "-std=c++14" LLVM_CXXFLAGS "${LLVM_CXXFLAGS}")
 
 # On CMake builds of LLVM, the output of llvm-config --cxxflags does not
 # include -fno-rtti, leading to linker errors. Be sure to add it.

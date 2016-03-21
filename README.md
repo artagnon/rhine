@@ -227,8 +227,19 @@ $ ninja check
 
 On a Linux where you have nothing (and no root privileges are required):
 
-First, download the tarball containing `cmake`, `ninja`, `flex` from the
-downloads section, and prepend the untarred location to `$PATH`.
+First, untar cmake-ninja-flex.tar.xz and set up environment variables.
+
+```sh
+$ tar xf cmake-ninja-flex.tar.xz
+$ cd cmake-ninja-flex
+
+# for bash/zsh
+$ export TOOLS_ROOT=`pwd`
+$ export PATH=$TOOLS_ROOT:$PATH
+# for csh
+$ setenv TOOLS_ROOT `pwd`
+$ setenv PATH $TOOLS_ROOT:$PATH
+```
 
 Then,
 
@@ -241,13 +252,13 @@ $ cmake -GNinja -DCMAKE_BUILD_TYPE=Debug ../llvm
 $ ninja
 ```
 
-Add `bin/llvm-config` to ``$PATH`, and then:
+Add a symlink to `bin/llvm-config` in `$TOOLS_ROOT`.
 
 ```sh
 $ mkdir ../rhine-build
 $ cd ../rhine-build
-# substitute ~/bin/flex to the $PATH of the flex from the tarball
-$ cmake -GNinja -DFLEX_EXECUTABLE=~/bin/flex ../rhine
+# flex isn't picked up from $PATH
+$ cmake -GNinja -DTOOLS_ROOT=$TOOLS_ROOT -DFLEX_EXECUTABLE=$TOOLS_ROOT/flex ../rhine
 # if there are build (usually link) errors, please open an issue
 $ ninja check
 ```
