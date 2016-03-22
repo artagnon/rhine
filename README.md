@@ -227,7 +227,13 @@ $ ninja check
 
 On a Linux where you have nothing (and no root privileges are required):
 
-First, untar cmake-ninja-flex.tar.xz and set up environment variables.
+Get [git-lfs](https://git-lfs.github.com/), and fetch cmake-ninja-flex.tar.xz
+
+```sh
+$ git lfs fetch
+```
+
+Untar it and set up environment variables.
 
 ```sh
 $ tar xf cmake-ninja-flex.tar.xz
@@ -260,6 +266,7 @@ $ cd ../rhine-build
 # flex isn't picked up from $PATH
 $ cmake -GNinja -DTOOLS_ROOT=$TOOLS_ROOT -DFLEX_EXECUTABLE=$TOOLS_ROOT/flex ../rhine
 # if there are build (usually link) errors, please open an issue
+# tests are currently failing on Linux, need to look into it
 $ ninja check
 ```
 
