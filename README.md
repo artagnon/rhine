@@ -1,4 +1,6 @@
-# rhine: A typed Elixir-inspired language on LLVM
+# rhine: a C++ compiler middle-end for a typed ruby, using an LLVM backend
+
+![Travis build status](https://travis-ci.org/artagnon/rhine.svg?branch=master)
 
 rhine is designed to be a fast language utilizing the LLVM JIT featuring N-d
 tensors, first-class functions, and type inference; specifying argument
