@@ -4,7 +4,6 @@
 GPATH
 GRTAGS
 GTAGS
-/llvm-build/
 /clang-build/
 Scratch.rh
 compile_commands.json
