@@ -1,4 +1,4 @@
-# rhine: a C++ compiler middle-end for a typed ruby, using an LLVM backend
+# rhine: a C++ compiler middle-end for a typed ruby
 
 ![Travis build status](https://travis-ci.org/artagnon/rhine.svg?branch=master)
 
@@ -206,23 +206,22 @@ src/
             llvm-build/
                         bin/
                             llvm-config ; you need to call this to build
-    rhine-build/
-            rhine ; the executable
+            rhine-build/
+                        rhine ; the executable
 ```
 
 On an OSX where you have everything:
 
 ```sh
+$ brew install flex
+$ brew link --force flex
 $ git submodule update --init
-$ mkdir llvm-build
 $ cd llvm-build
 # rhine is buggy; without debugging symbols, you can't report a useful bug
-$ cmake -GNinja -DCMAKE_BUILD_TYPE=Debug ../llvm
-# this will install to /usr/local
-$ ninja install
-$ mkdir ../rhine-build
+$ cmake -Gninja -DCMAKE_BUILD_TYPE=Debug ../llvm
+$ export PATH=`pwd`/bin:$PATH
 $ cd ../rhine-build
-$ cmake -GNinja ../rhine
+$ cmake -Gninja ..
 # this will run the packages unittests, which should all pass
 $ ninja check
 ```
@@ -253,20 +252,14 @@ Then,
 
 ```sh
 $ git submodule update --init
-$ mkdir llvm-build
 $ cd llvm-build
 # rhine is buggy; without debugging symbols, you can't report a useful bug
-$ cmake -GNinja -DCMAKE_BUILD_TYPE=Debug ../llvm
+$ cmake -Gninja -DCMAKE_BUILD_TYPE=Debug ../llvm
 $ ninja
-```
-
-Add a symlink to `bin/llvm-config` in `$TOOLS_ROOT`.
-
-```sh
-$ mkdir ../rhine-build
+$ export PATH=`pwd`/bin:$PATH
 $ cd ../rhine-build
 # flex isn't picked up from $PATH
-$ cmake -GNinja -DTOOLS_ROOT=$TOOLS_ROOT -DFLEX_EXECUTABLE=$TOOLS_ROOT/flex ../rhine
+$ cmake -Gninja -DTOOLS_ROOT=$TOOLS_ROOT -DFLEX_EXECUTABLE=$TOOLS_ROOT/flex ..
 # if there are build (usually link) errors, please open an issue
 # tests are currently failing on Linux, need to look into it
 $ ninja check

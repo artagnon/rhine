@@ -12,17 +12,17 @@ before_install:
 script:
 - git submodule update --init
 - cd llvm-build
-- cmake -GNinja -DCMAKE_BUILD_TYPE=Debug ../llvm
+- cmake -Gninja -DCMAKE_BUILD_TYPE=Debug ../llvm
 - ninja
-- mkdir ../../rhine-build
-- cd ../../rhine-build
-- cmake -GNinja ../rhine
+- cd ../rhine-build
+- cmake -Gninja ..
 - ninja check
 branches:
   only: master
 cache:
   apt: true
   ccache: true
+  directories: llvm-build
 notifications:
   email: false
   slack:
