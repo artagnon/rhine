@@ -218,10 +218,10 @@ $ brew link --force flex
 $ git submodule update --init
 $ cd llvm-build
 # rhine is buggy; without debugging symbols, you can't report a useful bug
-$ cmake -Gninja -DCMAKE_BUILD_TYPE=Debug ../llvm
+$ cmake -GNinja -DCMAKE_BUILD_TYPE=Debug ../llvm
 $ export PATH=`pwd`/bin:$PATH
 $ cd ../rhine-build
-$ cmake -Gninja ..
+$ cmake -GNinja ..
 # this will run the packages unittests, which should all pass
 $ ninja check
 ```
@@ -254,12 +254,12 @@ Then,
 $ git submodule update --init
 $ cd llvm-build
 # rhine is buggy; without debugging symbols, you can't report a useful bug
-$ cmake -Gninja -DCMAKE_BUILD_TYPE=Debug ../llvm
+$ cmake -GNinja -DCMAKE_BUILD_TYPE=Debug ../llvm
 $ ninja
 $ export PATH=`pwd`/bin:$PATH
 $ cd ../rhine-build
 # flex isn't picked up from $PATH
-$ cmake -Gninja -DTOOLS_ROOT=$TOOLS_ROOT -DFLEX_EXECUTABLE=$TOOLS_ROOT/flex ..
+$ cmake -GNinja -DTOOLS_ROOT=$TOOLS_ROOT -DFLEX_EXECUTABLE=$TOOLS_ROOT/flex ..
 # if there are build (usually link) errors, please open an issue
 # tests are currently failing on Linux, need to look into it
 $ ninja check

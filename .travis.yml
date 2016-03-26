@@ -7,15 +7,16 @@ os:
 - linux
 - osx
 before_install:
+- cmake --version
 - if [ $TRAVIS_OS_NAME == linux ]; then sudo aptitude install ninja-build; fi
 - if [ $TRAVIS_OS_NAME == osx ]; then brew update && brew install flex ninja && brew link --force flex; fi
 script:
 - git submodule update --init
 - cd llvm-build
-- cmake -Gninja -DCMAKE_BUILD_TYPE=Debug ../llvm
+- cmake -GNinja -DCMAKE_BUILD_TYPE=Debug ../llvm
 - ninja
 - cd ../rhine-build
-- cmake -Gninja ..
+- cmake -GNinja ..
 - ninja check
 branches:
   only: master
