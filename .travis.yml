@@ -10,7 +10,7 @@ before_install:
 - if [ $TRAVIS_OS_NAME == linux ]; then sudo aptitude install ninja-build; fi
 - if [ $TRAVIS_OS_NAME == osx ]; then brew update && brew install flex ninja && brew link --force flex; fi
 script:
-- git submodule init --update
+- git submodule update --init
 - cd llvm-build
 - cmake -GNinja -DCMAKE_BUILD_TYPE=Debug ../llvm
 - ninja
