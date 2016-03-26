@@ -1,11 +1,13 @@
 language: cpp
-dist: trusty
+sudo: required
+dist: wily
 compiler:
 - clang
 os:
 - linux
 - osx
 before_install:
+- if [ $TRAVIS_OS_NAME == linux ]; then sudo aptitude install ninja-build; fi
 - if [ $TRAVIS_OS_NAME == osx ]; then brew update && brew install flex ninja && brew link --force flex; fi
 before_script:
 - mkdir llvm-build
