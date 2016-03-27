@@ -1,2 +1,1 @@
-cmake-ninja-flex.tar.xz filter=lfs diff=lfs merge=lfs -text
 cmake-ninja-flex.tar.bz2 filter=lfs diff=lfs merge=lfs -text
