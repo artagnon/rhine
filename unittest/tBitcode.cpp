@@ -26,7 +26,7 @@ TEST(Bitcode, BCWrite)
   EXPECT_TRUE((bool)BCFile);
 }
 
-TEST(Bitcode, LinkExecutable)
+TEST(Bitcode, DISABLED_LinkExecutable)
 {
   auto SourcePrg = "def main do ret 2 end";
   ParseFacade Pf(SourcePrg);
