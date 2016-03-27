@@ -228,7 +228,7 @@ $ ninja check
 
 On a Linux where you have nothing (and no root privileges are required):
 
-Get [git-lfs](https://git-lfs.github.com/), and fetch cmake-ninja-flex.tar.xz
+Get [git-lfs](https://git-lfs.github.com/), and fetch cmake-ninja-flex.tar.bz2
 
 ```sh
 $ git lfs fetch
@@ -237,7 +237,7 @@ $ git lfs fetch
 Untar it and set up environment variables.
 
 ```sh
-$ tar xf cmake-ninja-flex.tar.xz
+$ tar xf cmake-ninja-flex.tar.bz2
 $ cd cmake-ninja-flex
 
 # for bash/zsh
