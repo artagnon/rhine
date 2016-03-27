@@ -10,6 +10,8 @@
 #include "rhine/IR/Module.hpp"
 #include "rhine/IR/Context.hpp"
 
+#include "llvm/Support/raw_ostream.h"
+
 typedef int (*MainFTy)();
 
 namespace llvm {
@@ -53,11 +55,20 @@ public:
 
   /// Quick helper that calls the pretty-print method on an IR object (Value or
   /// Module) and returns it as a string; useful mainly for testing.
-  template <typename T> std::string irToPP(T *Obj);
+  template <typename T> std::string irToPP(T *Obj) {
+    std::ostringstream OutputStream;
+    OutputStream << *Obj;
+    return OutputStream.str();
+  }
 
   /// Quick helper that calls the pretty-print method on an LLVM IR object, and
   /// returns it as a string; mainly for testing.
-  template <typename T> std::string llToPP(T *Obj);
+  template <typename T> std::string llToPP(T *Obj) {
+    std::string Output;
+    llvm::raw_string_ostream OutputStream(Output);
+    Obj->print(OutputStream, nullptr);
+    return OutputStream.str();
+  }
 
   /// A little helper that factors out the job of writing a BitCode stream to a
   /// file on the disk. Used by both BCWrite and LinkExecutable.

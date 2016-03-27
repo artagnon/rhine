@@ -12,7 +12,6 @@
 #include "llvm/ExecutionEngine/ExecutionEngine.h"
 #include "llvm/IR/Module.h"
 #include "llvm/Support/FileSystem.h"
-#include "llvm/Support/raw_ostream.h"
 
 #include <cstdlib>
 #include <iostream>
@@ -28,19 +27,6 @@ ParseFacade::ParseFacade(const char *PrgString, std::ostream &ErrStream,
     : PrgString(std::string(PrgString)), ErrStream(ErrStream), Debug(Debug) {}
 
 ParseFacade::~ParseFacade() {}
-
-template <typename T> std::string ParseFacade::irToPP(T *Obj) {
-  std::ostringstream OutputStream;
-  OutputStream << *Obj;
-  return OutputStream.str();
-}
-
-template <typename T> std::string ParseFacade::llToPP(T *Obj) {
-  std::string Output;
-  llvm::raw_string_ostream OutputStream(Output);
-  Obj->print(OutputStream, nullptr);
-  return OutputStream.str();
-}
 
 Module *ParseFacade::parseToIR(ParseSource SrcE) {
   return parseToIR<Scope2Block, LambdaLifting, Resolve, TypeInfer,
