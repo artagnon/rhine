@@ -7,11 +7,9 @@ os:
 - linux
 - osx
 before_install:
-- if [ $TRAVIS_OS_NAME == linux ]; then wget https://github.com/github/git-lfs/releases/download/v1.1.2/git-lfs-linux-amd64-1.1.2.tar.gz && tar xf git-lfs-linux-amd64-1.1.2.tar.gz; fi
-- if [ $TRAVIS_OS_NAME == osx ]; then brew update && brew install flex ninja && brew link --force flex; fi
+- ./scripts/install-git-lfs.sh # linux-only
+- ./scripts/install-cmake-ninja-flex.sh # .tar.bz2 on linux, brew on mac
 script:
-- if [ $TRAVIS_OS_NAME == linux ]; then export PATH=`pwd`/git-lfs-1.1.2:$PATH && git checkout -f; fi
-- if [ $TRAVIS_OS_NAME == linux ]; then tar xf cmake-ninja-flex.tar.bz2 && export TOOLS_ROOT=`pwd`/cmake-ninja-flex && export PATH=$TOOLS_ROOT:$PATH; fi
 - git submodule update --init
 - cd llvm-build
 - cmake -GNinja -DCMAKE_BUILD_TYPE=Debug ../llvm
