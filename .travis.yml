@@ -16,8 +16,7 @@ script:
 - ninja
 - export PATH=`pwd`/bin:$PATH
 - cd ../rhine-build
-- if [ $TRAVIS_OS_NAME == linux ]; then cmake -GNinja -DFLEX_EXECUTABLE=$TOOLS_ROOT/flex ..; fi
-- if [ $TRAVIS_OS_NAME == osx ]; then cmake -GNinja ..; fi
+- ./scripts/invoke-cmake-for-rhine.sh # -DFLEX_EXECUTABLE= extra on linux
 - ninja check
 branches:
   only: master
