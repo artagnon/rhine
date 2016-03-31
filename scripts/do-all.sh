@@ -8,5 +8,5 @@ cmake -GNinja -DCMAKE_BUILD_TYPE=Debug ../llvm &&
 ninja &&
 export PATH=`pwd`/bin:$PATH &&
 cd ../rhine-build &&
-./scripts/invoke-cmake-for-rhine.sh && # -DFLEX_EXECUTABLE= extra on linux
+../scripts/invoke-cmake-for-rhine.sh && # -DFLEX_EXECUTABLE= extra on linux
 ninja check

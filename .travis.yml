@@ -10,7 +10,6 @@ before_install:
 - ./scripts/install-git-lfs.sh # linux-only
 - ./scripts/install-cmake-ninja-flex.sh # .tar.bz2 on linux, brew on mac
 script:
-- git submodule update --init
 - cd llvm-build
 - cmake -GNinja -DCMAKE_BUILD_TYPE=Debug ../llvm
 - ninja
