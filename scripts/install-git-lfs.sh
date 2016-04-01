@@ -5,6 +5,6 @@ if [ $TRAVIS_OS_NAME == linux ] || [ "$(expr substr $(uname -s) 1 5)" == "Linux"
   tar xf git-lfs-linux-amd64-1.1.2.tar.gz &&
   export PATH=`pwd`/git-lfs-1.1.2:$PATH &&
   rm cmake-ninja-flex.tar.bz2 &&
-  git lfs pull &&
-  git checkout -f HEAD
+  git checkout . &&
+  file cmake-ninja-flex.tar.bz2
 fi
