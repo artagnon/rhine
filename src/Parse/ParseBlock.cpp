@@ -29,8 +29,7 @@ void extractInstructions(Instruction *Top,
   }
 }
 
-void extractInstructions(Value *Stmt,
-                         std::vector<Instruction *> &Accumulate) {
+void extractInstructions(Value *Stmt, std::vector<Instruction *> &Accumulate) {
   if (auto Inst = dyn_cast<Instruction>(Stmt)) {
     std::vector<Instruction *> Pieces;
     extractInstructions(Inst, Pieces);
@@ -41,12 +40,13 @@ void extractInstructions(Value *Stmt,
     Accumulate.push_back(TerminatorInst::get(Stmt));
 }
 
-BasicBlock *Parser::parseBlock(int StartToken, std::string StartTokenStr,
+BasicBlock *Parser::parseBlock(std::pair<int, std::string> StartToken,
                                std::map<int, std::string> EndTokens) {
   std::vector<Instruction *> InstList;
 
-  if (StartToken && !getTok(StartToken)) {
-    writeError("expected '" + StartTokenStr + "' to start block");
+  if (std::get<int>(StartToken) && !getTok(std::get<int>(StartToken))) {
+    writeError("expected '" + std::get<std::string>(StartToken) +
+               "' to start block");
     return nullptr;
   }
 

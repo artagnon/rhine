@@ -1,13 +1,13 @@
-#include "rhine/Parse/Parser.hpp"
-#include "rhine/Parse/ParseDriver.hpp"
-#include "rhine/IR/UnresolvedValue.hpp"
-#include "rhine/IR/GlobalValue.hpp"
-#include "rhine/IR/Instruction.hpp"
 #include "rhine/IR/BasicBlock.hpp"
 #include "rhine/IR/Constant.hpp"
+#include "rhine/IR/GlobalValue.hpp"
+#include "rhine/IR/Instruction.hpp"
 #include "rhine/IR/Tensor.hpp"
-#include "rhine/IR/Value.hpp"
 #include "rhine/IR/Type.hpp"
+#include "rhine/IR/UnresolvedValue.hpp"
+#include "rhine/IR/Value.hpp"
+#include "rhine/Parse/ParseDriver.hpp"
+#include "rhine/Parse/Parser.hpp"
 
 #define K Driver->Ctx
 
@@ -108,12 +108,12 @@ IfInst *Parser::parseIf() {
   }
   auto Conditional = parseRtoken();
   auto TrueBlock =
-    parseBlock(DOBLOCK, "do", {{ELSE, "else"}, {ENDBLOCK, "end"}});
+      parseBlock({DOBLOCK, "do"}, {{ELSE, "else"}, {ENDBLOCK, "end"}});
   if (!TrueBlock)
     return nullptr;
   auto FalseBlock = BasicBlock::get("false", {}, K);
   if (LastTok == ELSE)
-    FalseBlock = parseBlock(0, "", {{ENDBLOCK, "end"}});
+    FalseBlock = parseBlock({0, ""}, {{ENDBLOCK, "end"}});
   auto Inst = IfInst::get(Conditional, TrueBlock, FalseBlock);
   Inst->setSourceLocation(IfLoc);
   return Inst;

@@ -2,8 +2,8 @@
 #ifndef RHINE_PARSER_H
 #define RHINE_PARSER_H
 
-#include <string>
 #include <map>
+#include <string>
 #include <vector>
 
 namespace rhine {
@@ -196,7 +196,7 @@ public:
 
   /// A block (function body, if statemnet, lambda etc) that's delimited by
   /// StartToken and EndToken
-  BasicBlock *parseBlock(int StartToken, std::string StartTokenStr,
+  BasicBlock *parseBlock(std::pair<int, std::string> StartToken,
                          std::map<int, std::string> EndTokens);
 
   /// Function builder-helper; mainly, extracts types from the ArgList, creates

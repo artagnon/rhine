@@ -65,7 +65,7 @@ Function *Parser::parseFcnDecl(bool Optional) {
   auto ReturnTy = parseTypeAnnotation(true);
   auto Fcn = buildFcn(FcnName, ArgList, ReturnTy, FcnLoc);
   delete CurSema.LiteralName;
-  if (auto Block = parseBlock(DOBLOCK, "do", {{ENDBLOCK, "end"}}))
+  if (auto Block = parseBlock({DOBLOCK, "do"}, {{ENDBLOCK, "end"}}))
     Fcn->push_back(Block);
   else {
     writeError("unexpected empty block");

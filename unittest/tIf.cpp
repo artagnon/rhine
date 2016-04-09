@@ -128,7 +128,7 @@ TEST(If, PhiAssignment) {
 }
 
 TEST(If, DISABLED_PhiAssignment_FunctionPointer) {
-  auto SourcePrg = "def addCandidate(A ~Int, B ~Int) do"
+  auto SourcePrg = "def addCandidate(A ~Int, B ~Int) do\n"
                    "  ret $ A + B\n"
                    "end\n"
                    "def subCandidate(C ~Int, D ~Int) do\n"

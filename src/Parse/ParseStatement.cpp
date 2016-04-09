@@ -89,7 +89,7 @@ Function *Parser::parseLambda(bool Optional) {
   if (getTok(LAMBDA)) {
     auto ArgList = parseArgumentList(true, true);
     auto Fcn = buildFcn("lambda", ArgList, UnType::get(K), LambdaLoc);
-    if (auto Block = parseBlock(ARROW, "->", {{ENDBLOCK, "END"}})) {
+    if (auto Block = parseBlock({ARROW, "->"}, {{ENDBLOCK, "END"}})) {
       Fcn->push_back(Block);
       return Fcn;
     }

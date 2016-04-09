@@ -1,5 +1,4 @@
-#ifndef RHINE_UNRESOLVEDVALUE_H
-#define RHINE_UNRESOLVEDVALUE_H
+#pragma once
 
 #include "rhine/IR/User.hpp"
 
@@ -30,5 +29,3 @@ protected:
   virtual void print(DiagnosticPrinter &Stream) const override;
 };
 }
-
-#endif

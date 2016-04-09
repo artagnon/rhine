@@ -4,7 +4,6 @@ dist: trusty
 compiler:
 - clang
 os:
-- linux
 - osx
 before_install:
 - ./scripts/install-git-lfs.sh # linux-only

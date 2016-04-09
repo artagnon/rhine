@@ -265,6 +265,9 @@ $ cmake -GNinja -DTOOLS_ROOT=$TOOLS_ROOT -DFLEX_EXECUTABLE=$TOOLS_ROOT/flex ..
 $ ninja check
 ```
 
+## Todo
+* In parser, extract and _replace_ Instructions.
+
 ## Commentary
 
 An inefficient untyped language is easy to implement. `println` taking 23 and
