@@ -154,7 +154,8 @@ public:
   bool parseDollarOp(bool Optional = false);
 
   /// Parse the stuff following a literal name in a statement
-  Instruction *parsePostLiteralName(Value *Rtok);
+  /// If we failed to match any parse, return Rtok
+  Value *parsePostLiteralName(Value *Rtok);
 
   /// Assuming the lhs has already been parsed (passed in as the first
   /// argument), look at '=' and parse the rhs to build a full MallocInst to

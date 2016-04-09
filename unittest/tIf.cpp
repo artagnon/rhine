@@ -127,7 +127,7 @@ TEST(If, PhiAssignment) {
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
 
-TEST(If, DISABLED_PhiAssignment_FunctionPointer) {
+TEST(If, PhiAssignment_FunctionPointer) {
   auto SourcePrg = "def addCandidate(A ~Int, B ~Int) do\n"
                    "  ret $ A + B\n"
                    "end\n"
@@ -135,13 +135,13 @@ TEST(If, DISABLED_PhiAssignment_FunctionPointer) {
                    "  ret $ C - D\n"
                    "end\n"
                    "def main do\n"
-                   "  x = if false do\n"
+                   "  X = if false do\n"
                    "    addCandidate\n"
                    "  else\n"
                    "    subCandidate\n"
                    "  end\n"
-                   "  print x\n"
+                   "  print $ X 3 4\n"
                    "end";
-  auto ExpectedOut = "3";
+  auto ExpectedOut = "-1";
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }

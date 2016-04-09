@@ -123,7 +123,7 @@ bool Parser::parseDollarOp(bool Optional) {
   return true;
 }
 
-Instruction *Parser::parsePostLiteralName(Value *Rtok) {
+Value *Parser::parsePostLiteralName(Value *Rtok) {
   auto LitLoc = Rtok->getSourceLocation();
   if (auto Bind = parseBind(Rtok, true)) {
     getSemiTerm("bind");
@@ -149,9 +149,9 @@ Instruction *Parser::parsePostLiteralName(Value *Rtok) {
     getSemiTerm("arithmetic op");
     return ArithOp;
   }
-  writeError("expected call, assign, or arithmetic op");
-  getTok();
-  return nullptr;
+  /// All matches failed; it's probably an UnresolvedValue that will later be
+  /// wrapped in a TerminatorInst.
+  return Rtok;
 }
 
 Value *Parser::parseSingleStmt() {
