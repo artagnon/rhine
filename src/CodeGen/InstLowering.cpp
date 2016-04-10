@@ -45,17 +45,18 @@ llvm::Value *BinaryArithInst::toLL(llvm::Module *M) {
 }
 
 llvm::Value *BindInst::toLL(llvm::Module *M) {
-  auto K = getContext();
-  auto LLOp = getOperand(0)->toLL(M);
-  if (!K->Map.add(this, LLOp)) {
-    DiagnosticPrinter(getSourceLocation())
-        << getName() + " lowered to a different value earlier";
-    exit(1);
+  if (LoweredValue) {
+    return LoweredValue;
   }
+  auto LLOp = getOperand(0)->toLL(M);
+  setLoweredValue(LLOp);
   return LLOp;
 }
 
 llvm::Value *MallocInst::toLL(llvm::Module *M) {
+  if (LoweredValue) {
+    return LoweredValue;
+  }
   auto K = getContext();
   auto V = getVal()->toLL(M);
   auto RhTy = getVal()->getType();
@@ -71,18 +72,14 @@ llvm::Value *MallocInst::toLL(llvm::Module *M) {
   auto CastSlot =
       K->Builder->CreateBitCast(Slot, llvm::PointerType::get(Ty, 0));
   K->Builder->CreateStore(V, CastSlot);
-  if (!K->Map.add(this, CastSlot)) {
-    DiagnosticPrinter(getSourceLocation())
-        << getName() + " lowered to a different value earlier";
-    exit(1);
-  }
+  setLoweredValue(CastSlot);
   return nullptr;
 }
 
 llvm::Value *StoreInst::toLL(llvm::Module *M) {
   auto K = getContext();
   auto Op0 = getMallocedValue();
-  if (auto MValue = K->Map.getl(Op0)) {
+  if (auto MValue = Op0->getLoweredValue()) {
     auto NewValue = getNewValue()->toLL(M);
     return K->Builder->CreateStore(NewValue, MValue);
   }
@@ -93,7 +90,7 @@ llvm::Value *StoreInst::toLL(llvm::Module *M) {
 
 llvm::Value *LoadInst::toLL(llvm::Module *M) {
   auto K = getContext();
-  if (auto Result = K->Map.getl(getVal())) {
+  if (auto Result = getVal()->getLoweredValue()) {
     return K->Builder->CreateLoad(Result, Name + "Load");
   } else if (auto Result = Externals::get(K)->getMappingVal(Name, M))
     return Result;
@@ -127,7 +124,7 @@ llvm::Value *IndexingInst::toLL(llvm::Module *M) {
   auto BoundValue = cast<BindInst>(getVal());
   auto Op0 = BoundValue->getVal();
   auto Indices = getIndices();
-  if (auto IndexingInto = K->Map.getl(BoundValue)) {
+  if (auto IndexingInto = BoundValue->getLoweredValue()) {
     llvm::Value *SumIdx = ConstantInt::get(0, 32, K)->toLL(M);
     auto Dims = cast<TensorType>(Op0->getType())->getDims();
     Dims.erase(Dims.begin());

@@ -1,6 +1,6 @@
 #include "rhine/Externals.hpp"
-#include "rhine/IR/Function.hpp"
 #include "rhine/IR/Context.hpp"
+#include "rhine/IR/Function.hpp"
 #include "rhine/IR/Instruction.hpp"
 
 namespace rhine {
@@ -60,7 +60,7 @@ llvm::Value *BasicBlock::toValuesLL(llvm::Module *M) {
 
 llvm::BasicBlock *BasicBlock::toContainerLL(llvm::Module *M) {
   auto K = getContext();
-  auto ParentF = cast<llvm::Function>(K->Map.getl(Parent));
+  auto ParentF = cast<llvm::Function>(Parent->getLoweredValue());
   auto Ret = llvm::BasicBlock::Create(K->LLContext, Name, ParentF);
   K->Builder->SetInsertPoint(Ret);
   return Ret;

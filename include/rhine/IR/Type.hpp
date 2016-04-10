@@ -39,17 +39,37 @@ protected:
   /// Context is an essential part of the Type; it is how every Value indirectly
   /// has access to the Context.
   Context *Kontext;
+
+  /// Every Type has a corresponding literal in the source, whose location is
+  /// SourceLoc.
   Location SourceLoc;
+
+  /// Protected constructor that is only available to Context, to initialize
+  /// without Context, build new Context with Types, Set the Context in the
+  /// Type.
   Type(RTType ID);
 
 public:
+  /// For non-Context users of Type.
   Type(Context *K, RTType ID);
+
+  /// Blank.
   virtual ~Type();
+
+  /// This is necessary to check the class, without casting.
   RTType getTyID() const;
+
+  /// Type cannot be constructed. Only its derived classes can.
   static Type *get() = delete;
+
   Context *getContext();
+
+  /// Setter for SourceLoc.
   void setSourceLocation(Location SrcLoc);
+
+  /// Getter for SourceLoc.
   Location getSourceLocation();
+
   friend ostream &operator<<(ostream &Stream, const Type &T) {
     auto DiagStream = DiagnosticPrinter(Stream);
     T.print(DiagStream);
@@ -60,7 +80,11 @@ public:
     T.print(Stream);
     return Stream;
   }
+
+  /// The debugger's aid.
   void dump();
+
+  /// Lowered to constant uniq'ed types, no need to cache.
   virtual llvm::Type *toLL(llvm::Module *M) = 0;
 
 protected:

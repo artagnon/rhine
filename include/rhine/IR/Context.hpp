@@ -55,22 +55,16 @@ public:
   class ResolutionMap {
     typedef std::map<std::string, Value *> NameResolutionMap;
     std::map<BasicBlock *, NameResolutionMap> BlockResolutionMap;
-    std::map<Value *, llvm::Value *> LoweringMap;
     Value *searchOneBlock(std::string Name, BasicBlock *Block);
 
   public:
-    /// There are two different maps; one mapping Names (extracted from
-    /// UnresolvedValues) to Values, and another mapping Values to LLVM Values.
+    /// Add map from Name (extracted from UnresolvedValues) to Value.
     bool add(Value *Val, BasicBlock *Block = nullptr);
-    bool add(Value *Val, llvm::Value *LLVal);
 
     /// Get the Value corresponding to a Name or UnresolvedValue, in a certain
     /// BasicBlock.
     Value *get(std::string Name, BasicBlock *Block = nullptr);
     Value *get(Value *Val, BasicBlock *Block = nullptr);
-
-    /// Get the LLVM Value corresponding to this Value.
-    llvm::Value *getl(Value *Val);
   };
 
   ResolutionMap Map;

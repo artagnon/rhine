@@ -1,7 +1,7 @@
+#include "rhine/IR/Function.hpp"
 #include "rhine/Diagnostic/Diagnostic.hpp"
 #include "rhine/Externals.hpp"
 #include "rhine/IR/Context.hpp"
-#include "rhine/IR/Function.hpp"
 #include "rhine/IR/Instruction.hpp"
 
 namespace rhine {
@@ -32,6 +32,9 @@ llvm::Function *Prototype::getOrInsert(llvm::Module *M) {
 llvm::Constant *Prototype::toLL(llvm::Module *M) { return getOrInsert(M); }
 
 llvm::Constant *Function::toLL(llvm::Module *M) {
+  if (LoweredValue) {
+    return cast<llvm::Constant>(LoweredValue);
+  }
   auto K = getContext();
   auto CurrentFunction = getOrInsert(M);
 
@@ -40,15 +43,12 @@ llvm::Constant *Function::toLL(llvm::Module *M) {
   auto S = ArgList.begin();
   for (auto &Arg : CurrentFunction->args()) {
     auto SourceLoc = (*S)->getSourceLocation();
-    if (!K->Map.add(*S, &Arg))
-      DiagnosticPrinter(SourceLoc)
-          << "argument " + (*S)->getName() +
-                 " conflicts with existing symbol name";
+    (*S)->setLoweredValue(&Arg);
     ++S;
   }
 
   // Add function symbol to symbol table, global scope
-  K->Map.add(this, CurrentFunction);
+  setLoweredValue(CurrentFunction);
 
   /// Codegens all blocks
   getEntryBlock()->toLL(M);

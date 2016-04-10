@@ -1,6 +1,6 @@
-#include "rhine/IR/Context.hpp"
 #include "rhine/IR/Constant.hpp"
 #include "rhine/Externals.hpp"
+#include "rhine/IR/Context.hpp"
 
 namespace rhine {
 llvm::Constant *ConstantInt::toLL(llvm::Module *M) {
@@ -21,7 +21,7 @@ llvm::Constant *ConstantFloat::toLL(llvm::Module *M) {
 llvm::Constant *Pointer::toLL(llvm::Module *M) {
   auto K = getContext();
   auto Name = getVal()->getName();
-  if (auto Val = K->Map.getl(getVal()))
+  if (auto Val = getVal()->getLoweredValue())
     return cast<llvm::Constant>(Val);
   return Externals::get(K)->getMappingVal(Name, M);
 }

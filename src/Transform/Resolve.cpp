@@ -141,20 +141,6 @@ bool KR::add(Value *Val, BasicBlock *Block) {
   return true;
 }
 
-bool KR::add(Value *Val, llvm::Value *LLVal) {
-  assert(!isa<UnresolvedValue>(Val) &&
-         "Attempting to add an UnresolvedValue to the Map");
-  auto Ret = LoweringMap.insert(std::make_pair(Val, LLVal));
-  bool NewElementInserted = Ret.second;
-  if (!NewElementInserted) {
-    auto IteratorToEquivalentKey = Ret.first;
-    auto &ValueOfEquivalentKey = IteratorToEquivalentKey->second;
-    if (ValueOfEquivalentKey != LLVal)
-      return false;
-  }
-  return true;
-}
-
 Value *KR::searchOneBlock(std::string Name, BasicBlock *Block) {
   auto &ThisResolutionMap = BlockResolutionMap[Block];
   auto IteratorToElement = ThisResolutionMap.find(Name);
@@ -192,11 +178,5 @@ Value *KR::get(std::string Name, BasicBlock *Block) {
 
 Value *KR::get(Value *Val, BasicBlock *Block) {
   return get(Val->getName(), Block);
-}
-
-llvm::Value *KR::getl(Value *Val) {
-  auto IteratorToElement = LoweringMap.find(Val);
-  return IteratorToElement == LoweringMap.end() ? nullptr
-                                                : IteratorToElement->second;
 }
 }
