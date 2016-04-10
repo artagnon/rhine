@@ -29,7 +29,7 @@ TEST(DollarOperator, WithFunction) {
                    "  print $ foo 3;\n"
                    "end";
   EXPECT_LL(SourcePrg, "%foo = call i8* @foo(i32 3)",
-            "call void (i8*, ...) @std_Void_print__String(i8* %foo1)");
+            "call void (i8*, ...) @std_Void_print__String(i8* %foo)");
   EXPECT_OUTPUT(SourcePrg, "2");
 }
 

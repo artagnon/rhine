@@ -3,7 +3,7 @@
 
 using namespace rhine;
 
-TEST(Lowering, DISABLED_DuplicateResolver) {
+TEST(Lowering, LoweredValue_Cache) {
   auto SourcePrg = "def main do\n"
                    "  A = 3 + 2\n"
                    "  B = A + 1\n"

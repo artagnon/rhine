@@ -9,6 +9,7 @@
 
 namespace rhine {
 llvm::Value *CallInst::toLL(llvm::Module *M) {
+  CHECK_LoweredValue;
   auto K = getContext();
   auto RTy = cast<FunctionType>(cast<PointerType>(VTy)->getCTy())->getRTy();
   auto CalleeFn = getCallee()->toLL(M);
@@ -22,22 +23,23 @@ llvm::Value *CallInst::toLL(llvm::Module *M) {
     K->Builder->CreateCall(CalleeFn, LLOps);
     return nullptr;
   }
-  return K->Builder->CreateCall(CalleeFn, LLOps, Name);
+  returni(K->Builder->CreateCall(CalleeFn, LLOps, Name));
 }
 
 llvm::Value *BinaryArithInst::toLL(llvm::Module *M) {
+  CHECK_LoweredValue;
   auto K = getContext();
   auto Op0 = getOperand(0)->toLL(M);
   auto Op1 = getOperand(1)->toLL(M);
   switch (getValID()) {
   case RT_AddInst:
-    return K->Builder->CreateAdd(Op0, Op1);
+    returni(K->Builder->CreateAdd(Op0, Op1));
   case RT_SubInst:
-    return K->Builder->CreateSub(Op0, Op1);
+    returni(K->Builder->CreateSub(Op0, Op1));
   case RT_MulInst:
-    return K->Builder->CreateMul(Op0, Op1);
+    returni(K->Builder->CreateMul(Op0, Op1));
   case RT_DivInst:
-    return K->Builder->CreateSDiv(Op0, Op1);
+    returni(K->Builder->CreateSDiv(Op0, Op1));
   default:
     assert(0 && "Malformed BinaryArithInst; cannot lower");
   }
@@ -45,18 +47,12 @@ llvm::Value *BinaryArithInst::toLL(llvm::Module *M) {
 }
 
 llvm::Value *BindInst::toLL(llvm::Module *M) {
-  if (LoweredValue) {
-    return LoweredValue;
-  }
-  auto LLOp = getOperand(0)->toLL(M);
-  setLoweredValue(LLOp);
-  return LLOp;
+  CHECK_LoweredValue;
+  returni(getOperand(0)->toLL(M));
 }
 
 llvm::Value *MallocInst::toLL(llvm::Module *M) {
-  if (LoweredValue) {
-    return LoweredValue;
-  }
+  CHECK_LoweredValue;
   auto K = getContext();
   auto V = getVal()->toLL(M);
   auto RhTy = getVal()->getType();
@@ -72,16 +68,16 @@ llvm::Value *MallocInst::toLL(llvm::Module *M) {
   auto CastSlot =
       K->Builder->CreateBitCast(Slot, llvm::PointerType::get(Ty, 0));
   K->Builder->CreateStore(V, CastSlot);
-  setLoweredValue(CastSlot);
-  return nullptr;
+  returni(CastSlot);
 }
 
 llvm::Value *StoreInst::toLL(llvm::Module *M) {
+  CHECK_LoweredValue;
   auto K = getContext();
   auto Op0 = getMallocedValue();
   if (auto MValue = Op0->getLoweredValue()) {
     auto NewValue = getNewValue()->toLL(M);
-    return K->Builder->CreateStore(NewValue, MValue);
+    returni(K->Builder->CreateStore(NewValue, MValue));
   }
   DiagnosticPrinter(getSourceLocation())
       << "unable to find symbol " + Op0->getName() + " to store into";
@@ -89,9 +85,10 @@ llvm::Value *StoreInst::toLL(llvm::Module *M) {
 }
 
 llvm::Value *LoadInst::toLL(llvm::Module *M) {
+  CHECK_LoweredValue;
   auto K = getContext();
   if (auto Result = getVal()->getLoweredValue()) {
-    return K->Builder->CreateLoad(Result, Name + "Load");
+    returni(K->Builder->CreateLoad(Result, Name + "Load"));
   } else if (auto Result = Externals::get(K)->getMappingVal(Name, M))
     return Result;
   DiagnosticPrinter(SourceLoc) << "unable to find " + Name + " to load";
@@ -99,16 +96,21 @@ llvm::Value *LoadInst::toLL(llvm::Module *M) {
 }
 
 llvm::Value *ReturnInst::toLL(llvm::Module *M) {
+  CHECK_LoweredValue;
   auto K = getContext();
   if (auto ReturnVal = getVal())
     return K->Builder->CreateRet(ReturnVal->toLL(M));
-  return K->Builder->CreateRet(nullptr);
+  returni(K->Builder->CreateRet(nullptr));
 }
 
-llvm::Value *TerminatorInst::toLL(llvm::Module *M) { return getVal()->toLL(M); }
+llvm::Value *TerminatorInst::toLL(llvm::Module *M) {
+  CHECK_LoweredValue;
+  returni(getVal()->toLL(M));
+}
 
 llvm::Value *IfInst::toLL(llvm::Module *M) {
-  return getParent()->getPhiValueFromBranchBlock(M);
+  CHECK_LoweredValue;
+  returni(getParent()->getPhiValueFromBranchBlock(M));
 }
 
 static size_t multiplyDown(std::vector<size_t> &Dims, size_t Top) {
@@ -120,6 +122,7 @@ static size_t multiplyDown(std::vector<size_t> &Dims, size_t Top) {
 }
 
 llvm::Value *IndexingInst::toLL(llvm::Module *M) {
+  CHECK_LoweredValue;
   auto K = getContext();
   auto BoundValue = cast<BindInst>(getVal());
   auto Op0 = BoundValue->getVal();
@@ -136,7 +139,7 @@ llvm::Value *IndexingInst::toLL(llvm::Module *M) {
       SumIdx = K->Builder->CreateAdd(SumIdx, Adder);
     }
     auto ToLoad = K->Builder->CreateInBoundsGEP(IndexingInto, SumIdx);
-    return K->Builder->CreateLoad(ToLoad, BoundValue->getName() + "Load");
+    returni(K->Builder->CreateLoad(ToLoad, BoundValue->getName() + "Load"));
   }
   DiagnosticPrinter(BoundValue->getSourceLocation())
       << "unable to find symbol " + BoundValue->getName() + " to index into";

@@ -50,6 +50,22 @@ enum RTValue {
   RT_BasicBlock,
 };
 
+/// Used by Lowering instruments to generate a new Value and cache it.
+#define returni(ToCompute)                                                     \
+  {                                                                            \
+    auto Computed = ToCompute;                                                 \
+    setLoweredValue(Computed);                                                 \
+    return Computed;                                                           \
+  }
+
+/// Used by Lowering instruments to check cached Value.
+#define CHECK_LoweredValue                                                     \
+  {                                                                            \
+    if (LoweredValue) {                                                        \
+      return LoweredValue;                                                     \
+    }                                                                          \
+  }
+
 class Value {
 protected:
   Type *VTy;

@@ -43,5 +43,5 @@ TEST(TyInfer, InferCallFromFunction) {
                    "  ret $ cid 2\n"
                    "end";
   EXPECT_LL(SourcePrg, "define i32 @cid(i32)", "define i32 @main",
-            "ret i32 %cid1");
+            "ret i32 %cid");
 }

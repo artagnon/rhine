@@ -31,6 +31,7 @@ llvm::Function *Prototype::getOrInsert(llvm::Module *M) {
 
 llvm::Constant *Prototype::toLL(llvm::Module *M) { return getOrInsert(M); }
 
+/// Codegen function prototype and all blocks.
 llvm::Constant *Function::toLL(llvm::Module *M) {
   if (LoweredValue) {
     return cast<llvm::Constant>(LoweredValue);

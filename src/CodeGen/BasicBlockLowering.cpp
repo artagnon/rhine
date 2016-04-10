@@ -18,8 +18,13 @@ llvm::Value *BasicBlock::getPhiValueFromBranchBlock(llvm::Module *M) {
   assert(succ_size() == 2 && "Only 2 successors allowed for now");
   auto BranchBlock = K->Builder->GetInsertBlock();
   auto BranchContainers = zipSuccContainers(M);
+
+  /// First codegen the container of the MergeBlock, codegen the full true/false
+  /// Blocks, then get back to filling out the Merge Block.
   auto MergeBlockContainer = getMergeBlock()->toContainerLL(M);
   MergeBlockContainer->setName("merge");
+
+  /// The IfInst.
   auto BrInst = cast<IfInst>(back());
   K->Builder->SetInsertPoint(BranchBlock);
   K->Builder->CreateCondBr(BrInst->getConditional()->toLL(M),
@@ -67,7 +72,9 @@ llvm::BasicBlock *BasicBlock::toContainerLL(llvm::Module *M) {
 }
 
 llvm::Value *BasicBlock::toLL(llvm::Module *M) {
+  CHECK_LoweredValue;
   toContainerLL(M);
-  return toValuesLL(M);
+  auto Ret = toValuesLL(M);
+  returni(Ret);
 }
 }
