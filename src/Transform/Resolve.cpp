@@ -1,3 +1,4 @@
+#include "rhine/Transform/Resolve.hpp"
 #include "rhine/Diagnostic/Diagnostic.hpp"
 #include "rhine/Externals.hpp"
 #include "rhine/IR/BasicBlock.hpp"
@@ -5,7 +6,6 @@
 #include "rhine/IR/Instruction.hpp"
 #include "rhine/IR/Module.hpp"
 #include "rhine/IR/UnresolvedValue.hpp"
-#include "rhine/Transform/Resolve.hpp"
 
 #include <list>
 
@@ -26,7 +26,7 @@ void Resolve::lookupReplaceUse(UnresolvedValue *V, Use &U, BasicBlock *Block) {
     ///      ^
     ///  UnresolvedValue; replace with %Replacement
     if (auto M = dyn_cast<MallocInst>(S)) {
-      if (dyn_cast<StoreInst>(U->getUser()))
+      if (isa<StoreInst>(U->getUser()))
         U.set(M);
       else {
         auto Replacement = LoadInst::get(M);
@@ -73,12 +73,12 @@ void Resolve::runOnFunction(Function *F) {
                                             "same name";
     }
 
-  /// For all statements of the form:
-  ///   %V = 7;
-  ///      ^
-  ///   BindInst
-  ///
-  /// Insert into K->Map
+  // For all statements of the form:
+  //   %V = 7;
+  //      ^
+  //   BindInst
+  //
+  // Insert into K->Map
   for (auto &BB : *F)
     for (auto &V : *BB) {
       if (auto B = dyn_cast<BindInst>(V))
@@ -155,8 +155,7 @@ bool KR::add(Value *Val, llvm::Value *LLVal) {
   return true;
 }
 
-Value *KR::searchOneBlock(Value *Val, BasicBlock *Block) {
-  auto Name = Val->getName();
+Value *KR::searchOneBlock(std::string Name, BasicBlock *Block) {
   auto &ThisResolutionMap = BlockResolutionMap[Block];
   auto IteratorToElement = ThisResolutionMap.find(Name);
   if (IteratorToElement == ThisResolutionMap.end())
@@ -180,15 +179,19 @@ void flattenPredecessors(BasicBlock *Block, std::list<BasicBlock *> &AllPreds) {
   }
 }
 
-Value *KR::get(Value *Val, BasicBlock *Block) {
+Value *KR::get(std::string Name, BasicBlock *Block) {
   std::list<BasicBlock *> UniqPreds;
   flattenPredecessors(Block, UniqPreds);
   UniqPreds.unique();
   UniqPreds.push_back(nullptr); // Global
   for (auto BB : UniqPreds)
-    if (auto Result = searchOneBlock(Val, BB))
+    if (auto Result = searchOneBlock(Name, BB))
       return Result;
   return nullptr;
+}
+
+Value *KR::get(Value *Val, BasicBlock *Block) {
+  return get(Val->getName(), Block);
 }
 
 llvm::Value *KR::getl(Value *Val) {

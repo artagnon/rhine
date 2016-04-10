@@ -3,9 +3,9 @@
 #ifndef RHINE_TESTUTIL_H
 #define RHINE_TESTUTIL_H
 
+#include "rhine/Toplevel/ParseFacade.hpp"
 #include "gtest/gtest.h"
 #include "gtest/internal/gtest-port.h"
-#include "rhine/Toplevel/ParseFacade.hpp"
 
 #include <string>
 
@@ -15,6 +15,8 @@
 
 /// Call EXPECT_IR with "" as the second argument.
 #define EXPECT_SUCCESSFUL_PARSE(SourcePrg) EXPECT_IR(SourcePrg, "")
+typedef ::testing::AssertionResult (*AssertionT)(const char *, const char *,
+                                                 const char *, const char *);
 
 namespace rhine {
 /// Test that SourcePrg parses to the given Rhine IR; all transforms are run,
@@ -24,18 +26,21 @@ void EXPECT_IR(const char *SourcePrg, Ts... Matchers) {
   ParseFacade Pf(SourcePrg);
   auto Source = Pf.parseAction(ParseSource::STRING, PostParseAction::IRString);
   for (auto ExpectedIR : {Matchers...})
-    EXPECT_PRED_FORMAT2(::testing::IsSubstring, ExpectedIR,
-                        Source.c_str());
+    EXPECT_PRED_FORMAT2(::testing::IsSubstring, ExpectedIR, Source.c_str());
 }
 
 /// Test the output of Module->dump() for an LLVM IR Module.
 template <typename... Ts>
-void EXPECT_LL(const char *SourcePrg, Ts... Matchers) {
+void EXPECT_LL(AssertionT Assertion, const char *SourcePrg, Ts... Matchers) {
   ParseFacade Pf(SourcePrg);
   auto Source = Pf.parseAction(ParseSource::STRING, PostParseAction::LLString);
   for (auto ExpectedLL : {Matchers...})
-    EXPECT_PRED_FORMAT2(::testing::IsSubstring, ExpectedLL,
-                        Source.c_str());
+    EXPECT_PRED_FORMAT2(Assertion, ExpectedLL, Source.c_str());
+}
+
+template <typename... Ts>
+void EXPECT_LL(const char *SourcePrg, Ts... Matchers) {
+  EXPECT_LL(::testing::IsSubstring, SourcePrg, Matchers...);
 }
 
 /// Run the program and expect an the given string on stdout.
@@ -56,7 +61,7 @@ void EXPECT_COMPILE_DEATH(const char *SourcePrg, Ts... Matchers) {
   ParseFacade Pf(SourcePrg);
   for (auto ExpectedErr : {Matchers...})
     EXPECT_DEATH(Pf.parseAction(ParseSource::STRING, PostParseAction::LLString),
-                ExpectedErr);
+                 ExpectedErr);
 }
 }
 

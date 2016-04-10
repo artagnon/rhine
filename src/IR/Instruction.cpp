@@ -1,5 +1,5 @@
-#include "rhine/IR/Constant.hpp"
 #include "rhine/IR/Instruction.hpp"
+#include "rhine/IR/Constant.hpp"
 
 namespace rhine {
 Instruction::Instruction(Type *Ty, RTValue ID, unsigned NumOps, std::string N)
@@ -99,6 +99,7 @@ void CallInst::print(DiagnosticPrinter &Stream) const {
 BindInst::BindInst(RTValue RTVal, std::string N, Value *V)
     : Instruction(V->getType(), RTVal, 1, N) {
   setOperand(0, V);
+  setSourceLocation(V->getSourceLocation());
 }
 
 BindInst::~BindInst() {}
@@ -320,9 +321,7 @@ bool IndexingInst::classof(const Value *V) {
 
 Value *IndexingInst::getVal() const { return getOperand(-1); }
 
-std::vector<Value *> IndexingInst::getIndices() const {
-  return getOperands();
-}
+std::vector<Value *> IndexingInst::getIndices() const { return getOperands(); }
 
 void IndexingInst::print(DiagnosticPrinter &Stream) const {
   Stream << *getVal();

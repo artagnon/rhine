@@ -44,7 +44,7 @@ BasicBlock *Parser::parseBlock(std::pair<int, std::string> StartToken,
                                std::map<int, std::string> EndTokens) {
   std::vector<Instruction *> InstList;
 
-  if (std::get<int>(StartToken) && !getTok(std::get<int>(StartToken))) {
+  if (StartToken.first && !getTok(StartToken.first)) {
     writeError("expected '" + StartToken.second + "' to start block");
     return nullptr;
   }

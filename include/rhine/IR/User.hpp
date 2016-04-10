@@ -1,8 +1,8 @@
 #ifndef RHINE_USER_H
 #define RHINE_USER_H
 
-#include "rhine/IR/Value.hpp"
 #include "rhine/IR/Use.hpp"
+#include "rhine/IR/Value.hpp"
 #include <vector>
 
 namespace rhine {
@@ -13,6 +13,7 @@ protected:
   /// iterators uses() and operands().
   unsigned NumOperands;
   unsigned NumAllocatedOps;
+
 public:
   User(Type *Ty, RTValue ID, unsigned NumOps = 0, std::string N = "");
 
@@ -53,7 +54,7 @@ public:
   void setOperands(std::vector<Value *> Ops);
 
   /// The iterators for Use and Operand.
-  typedef Use* op_iterator;
+  typedef Use *op_iterator;
   op_iterator use_begin() { return getOperandList(); }
   op_iterator use_end() { return getOperandList() + NumAllocatedOps; }
   op_iterator op_begin() {
