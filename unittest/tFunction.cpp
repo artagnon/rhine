@@ -14,7 +14,7 @@ TEST(Function, MultipleDefun) {
 }
 
 TEST(Function, SimpleCall) {
-  auto SourcePrg = "def printid (var ~String) do\n"
+  auto SourcePrg = "def printid (var String) do\n"
                    "  print var;\n"
                    "end\n"
                    "def main do\n"
@@ -24,7 +24,7 @@ TEST(Function, SimpleCall) {
 }
 
 TEST(Function, MultipleArguments) {
-  auto SourcePrg = "def foo(a ~Int, b ~Int) do\n"
+  auto SourcePrg = "def foo(a Int, b Int) do\n"
                    "  ret $ a + b;\n"
                    "end\n"
                    "def main do\n"
@@ -45,7 +45,7 @@ TEST(Function, VoidArgument) {
 }
 
 TEST(Function, FunctionPointerArgument) {
-  auto SourcePrg = "def boom(addfn ~Function(Int -> Int -> Int)) do\n"
+  auto SourcePrg = "def boom(addfn Function(Int -> Int -> Int)) do\n"
                    "  ret $ addfn 2 4;\n"
                    "end";
   EXPECT_LL(SourcePrg, "define i32 @boom(i32 (i32, i32)*)");

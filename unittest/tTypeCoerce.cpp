@@ -12,7 +12,7 @@ TEST(TypeCoerce, ConstantIntToString) {
 }
 
 TEST(TypeCoerce, StringTyToString) {
-  auto SourcePrg = "def boom(var ~String) do\n"
+  auto SourcePrg = "def boom(var String) do\n"
                    "  print var;\n"
                    "end\n"
                    "def main do\n"
@@ -23,7 +23,7 @@ TEST(TypeCoerce, StringTyToString) {
 }
 
 TEST(TypeCoerce, IntTyToString) {
-  auto SourcePrg = "def boom(var ~Int) do\n"
+  auto SourcePrg = "def boom(var Int) do\n"
                    "  print var;\n"
                    "end\n"
                    "def main do\n"

@@ -120,10 +120,10 @@ public:
   /// well for callers who "parse, but oh no, we don't handle this".
 
   /// Parse a type (recursive in the case of FunctionType)
-  Type *parseType(bool Optional = false);
+  Type *parseTypeImpl(bool Optional = false);
 
-  /// Small wrapper around parseType() to consume '~' additionally
-  Type *parseTypeAnnotation(bool Optional = false);
+  /// Wrapper over parseTypeImpl that catches nullptr and returns UnType.
+  Type *parseType(bool Optional = false);
 
   /// Arguments are parsed along with optional type information; Parenless
   /// dictates whether the arguments can be parsed as-is without parsing '(' or

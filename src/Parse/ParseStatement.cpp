@@ -70,7 +70,7 @@ Value *Parser::parseRtoken(bool Optional, bool ParsingTensor) {
     auto LitName = *CurSema.LiteralName;
     auto LitLoc = CurLoc;
     getTok();
-    auto Ty = parseTypeAnnotation(true);
+    auto Ty = parseType(true);
     auto Sym = UnresolvedValue::get(LitName, Ty);
     Sym->setSourceLocation(LitLoc);
     if (auto Inst = parseIndexingInst(Sym, true)) {

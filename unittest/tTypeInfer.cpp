@@ -6,7 +6,7 @@ using namespace rhine;
 /// Stress the type inference engine.
 
 TEST(TyInfer, TypeAnnotation) {
-  auto SourcePrg = "def id(var ~Int) do\n"
+  auto SourcePrg = "def id(var Int) do\n"
                    "  ret 0;\n"
                    "end";
   EXPECT_LL(SourcePrg, "define i32 @id(i32)", "ret i32 0");
@@ -22,7 +22,7 @@ TEST(TyInfer, CallInst) {
 }
 
 TEST(TyInfer, PropagationFromArgument) {
-  auto SourcePrg = "def id(var ~Int) do\n"
+  auto SourcePrg = "def id(var Int) do\n"
                    "  ret var;\n"
                    "end";
   EXPECT_LL(SourcePrg, "define i32 @id(i32)", "ret i32 %0");
@@ -36,7 +36,7 @@ TEST(TyInfer, DISABLED_InferArgumentFromInstruction) {
 }
 
 TEST(TyInfer, InferCallFromFunction) {
-  auto SourcePrg = "def cid(var ~Int) do\n"
+  auto SourcePrg = "def cid(var Int) do\n"
                    "  ret $ var + 2;\n"
                    "end\n"
                    "def main do\n"

@@ -54,13 +54,13 @@ TEST(Resolve, UnresolvedReplacement) {
 }
 
 TEST(Resolve, ArgumentSymbolReplacement) {
-  auto SourcePrg = "def main(var ~Int) do\n"
+  auto SourcePrg = "def main(var Int) do\n"
                    "  ret var\n"
                    "end";
   ParseFacade Pf(SourcePrg);
   auto Module = Pf.parseToIR<Resolve>(ParseSource::STRING);
-  auto Expected = "def main [var ~Int] ~Fn(Int -> UnType) {\n"
-                  "ret var ~Int\n"
+  auto Expected = "def main [var Int] Fn(Int -> UnType) {\n"
+                  "ret var Int\n"
                   "}";
   EXPECT_PRED_FORMAT2(::testing::IsSubstring, Expected, Pf.irToPP(Module));
   EXPECT_LL(SourcePrg, "define i32 @main(i32)", "ret i32 %0");
@@ -68,13 +68,13 @@ TEST(Resolve, ArgumentSymbolReplacement) {
 
 TEST(Resolve, CrossFunctionNameDisambiguation) {
   auto SourcePrg =
-      "def bar(arithFn ~Function(Int -> Int -> Int)) do\n"
+      "def bar(arithFn Function(Int -> Int -> Int)) do\n"
       "  print $ arithFn 2 4;\n"
       "end\n"
-      "def addCandidate(A ~Int, B ~Int) do\n"
+      "def addCandidate(A Int, B Int) do\n"
       "  ret $ A + B;\n"
       "end\n"
-      "def subCandidate(A ~Int, B ~Int) do\n"
+      "def subCandidate(A Int, B Int) do\n"
       "  ret $ A - B;\n"
       "end\n"
       "def main() do\n"

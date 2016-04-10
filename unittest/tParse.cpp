@@ -28,43 +28,43 @@ TEST(Parse, EOFExpected) {
 }
 
 TEST(Parse, DanglingFunctionType) {
-  auto SourcePrg = "def foo(A ~Function(Void ->";
+  auto SourcePrg = "def foo(A Function(Void ->";
   auto ExpectedErr =
-      "string stream:1:28: error: dangling function type specifier";
+      "string stream:1:27: error: dangling function type specifier";
   EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
 }
 
 TEST(Parse, MalformedFunctionType) {
-  auto SourcePrg = "def foo(A ~Function(Void ->)";
+  auto SourcePrg = "def foo(A Function(Void ->)";
   auto ExpectedErr =
-      "string stream:1:28: error: dangling function type specifier";
+      "string stream:1:27: error: dangling function type specifier";
   EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
 }
 
 TEST(Parse, FunctionTypeMissingOpenParen) {
-  auto SourcePrg = "def foo(A ~Function) 3;";
-  auto ExpectedErr = "string stream:1:20: error: in function type of form "
+  auto SourcePrg = "def foo(A Function) 3;";
+  auto ExpectedErr = "string stream:1:19: error: in function type of form "
                      "'Function\\(...\\)', '\\(' is missing";
   EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
 }
 
 TEST(Parse, FunctionTypeMissingCloseParen) {
-  auto SourcePrg = "def foo(A ~Function(Void -> Void";
-  auto ExpectedErr = "string stream:1:33: error: in function type of form "
+  auto SourcePrg = "def foo(A Function(Void -> Void";
+  auto ExpectedErr = "string stream:1:32: error: in function type of form "
                      "'Function\\(...\\)', '\\)' is missing";
   EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
 }
 
 TEST(Parse, CommaArgList) {
-  auto SourcePrg = "def foo(A ~Int, B ~Int) do\n"
+  auto SourcePrg = "def foo(A Int, B Int) do\n"
                    "end";
   EXPECT_SUCCESSFUL_PARSE(SourcePrg);
 }
 
 TEST(Parse, CommaLessArgList) {
-  auto SourcePrg = "def foo(A ~Int B ~Int) do\n"
+  auto SourcePrg = "def foo(A Int B Int) do\n"
                    "end";
-  auto ExpectedErr = "string stream:1:16: error: expected ')' to end function "
+  auto ExpectedErr = "string stream:1:15: error: expected ')' to end function "
                      "argument list, or ',' to separate arguments";
   EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
 }

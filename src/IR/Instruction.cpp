@@ -38,16 +38,16 @@ bool BinaryArithInst::classof(const Value *V) {
 void BinaryArithInst::print(DiagnosticPrinter &Stream) const {
   switch (getValID()) {
   case RT_AddInst:
-    Stream << "+ ~" << *VTy;
+    Stream << "+ " << *VTy;
     break;
   case RT_SubInst:
-    Stream << "- ~" << *VTy;
+    Stream << "- " << *VTy;
     break;
   case RT_MulInst:
-    Stream << "* ~" << *VTy;
+    Stream << "* " << *VTy;
     break;
   case RT_DivInst:
-    Stream << "/ ~" << *VTy;
+    Stream << "/ " << *VTy;
     break;
   default:
     assert(0 && "Malformed BinaryArithInst; cannot print");
@@ -91,7 +91,7 @@ Type *CallInst::getRTy() const { return getFTy()->getRTy(); }
 Value *CallInst::getCallee() const { return getOperand(-1); }
 
 void CallInst::print(DiagnosticPrinter &Stream) const {
-  Stream << getCallee()->getName() << " ~" << *VTy;
+  Stream << getCallee()->getName() << " " << *VTy;
   for (auto O : getOperands())
     Stream << std::endl << *O;
 }
@@ -157,7 +157,7 @@ bool LoadInst::classof(const Value *V) { return V->getValID() == RT_LoadInst; }
 Value *LoadInst::getVal() const { return getOperand(0); }
 
 void LoadInst::print(DiagnosticPrinter &Stream) const {
-  Stream << Name << " ~" << *VTy;
+  Stream << Name << " " << *VTy;
 }
 
 StoreInst::StoreInst(Value *MallocedValue, Value *NewValue)

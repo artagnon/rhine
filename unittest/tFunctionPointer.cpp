@@ -25,7 +25,7 @@ TEST(FunctionPointer, Externals) {
 }
 
 TEST(FunctionPointer, PassPrint) {
-  auto SourcePrg = "def bar(printfn ~Function(String -> & -> Void)) do\n"
+  auto SourcePrg = "def bar(printfn Function(String -> & -> Void)) do\n"
                    "  printfn '12';\n"
                    "end\n"
                    "def main() do\n"
@@ -38,10 +38,10 @@ TEST(FunctionPointer, PassPrint) {
 }
 
 TEST(FunctionPointer, PassCustomFunction) {
-  auto SourcePrg = "def bar(addfn ~Function(Int -> Int -> Int)) do\n"
+  auto SourcePrg = "def bar(addfn Function(Int -> Int -> Int)) do\n"
                    "  print $ addfn 2 4;\n"
                    "end\n"
-                   "def addCandidate(A ~Int, B ~Int) do\n"
+                   "def addCandidate(A Int, B Int) do\n"
                    "  ret $ A + B;\n"
                    "end\n"
                    "def main() do\n"
@@ -53,13 +53,13 @@ TEST(FunctionPointer, PassCustomFunction) {
 
 TEST(FunctionPointer, CondAssign) {
   auto SourcePrg =
-      "def bar(arithFn ~Function(Int -> Int -> Int)) do\n"
+      "def bar(arithFn Function(Int -> Int -> Int)) do\n"
       "  print $ arithFn 2 4;\n"
       "end\n"
-      "def addCandidate(A ~Int, B ~Int) do\n"
+      "def addCandidate(A Int, B Int) do\n"
       "  ret $ A + B;\n"
       "end\n"
-      "def subCandidate(C ~Int, D ~Int) do\n"
+      "def subCandidate(C Int, D Int) do\n"
       "  ret $ C - D;\n"
       "end\n"
       "def main() do\n"
@@ -93,7 +93,7 @@ TEST(FunctionPointer, DISABLED_VoidArgument_Transparency) {
 
 TEST(FunctionPointer, DISABLED_Chain) {
   auto SourcePrg = "def bar(printfn "
-                   "~Function(Void -> Function(String -> & -> Void))) do\n"
+                   "Function(Void -> Function(String -> & -> Void))) do\n"
                    "  printfn 2\n"
                    "end\n"
                    "def printCandidate() do\n"

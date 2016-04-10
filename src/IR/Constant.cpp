@@ -1,11 +1,11 @@
-#include "rhine/IR/Context.hpp"
 #include "rhine/IR/Constant.hpp"
+#include "rhine/IR/Context.hpp"
 #include "rhine/IR/Instruction.hpp"
 #include "rhine/IR/UnresolvedValue.hpp"
 
 namespace rhine {
-Constant::Constant(Type *Ty, RTValue ID, unsigned NumOps, std::string Name) :
-  User(Ty, ID, NumOps, Name) {}
+Constant::Constant(Type *Ty, RTValue ID, unsigned NumOps, std::string Name)
+    : User(Ty, ID, NumOps, Name) {}
 
 Constant::~Constant() {}
 
@@ -57,7 +57,7 @@ void ConstantInt::Profile(FoldingSetNodeID &ID, const Type *Ty,
 void ConstantInt::Profile(FoldingSetNodeID &ID) const { Profile(ID, VTy, Val); }
 
 void ConstantInt::print(DiagnosticPrinter &Stream) const {
-  Stream << Val << " ~" << *getType();
+  Stream << Val << " " << *getType();
 }
 
 ConstantBool::ConstantBool(bool Val, Context *K)
@@ -99,7 +99,7 @@ void ConstantBool::Profile(FoldingSetNodeID &ID) const {
 }
 
 void ConstantBool::print(DiagnosticPrinter &Stream) const {
-  Stream << Val << " ~" << *getType();
+  Stream << Val << " " << *getType();
 }
 
 ConstantFloat::ConstantFloat(float Val, Context *K)
@@ -141,7 +141,7 @@ void ConstantFloat::Profile(FoldingSetNodeID &ID) const {
 }
 
 void ConstantFloat::print(DiagnosticPrinter &Stream) const {
-  Stream << Val << " ~" << *getType();
+  Stream << Val << " " << *getType();
 }
 
 Pointer::Pointer(Value *V, Type *Ty)

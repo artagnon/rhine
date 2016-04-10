@@ -31,7 +31,7 @@ std::vector<Argument *> Parser::parseArgumentList(bool Optional,
       writeError("expected argument name");
       return {};
     }
-    if (auto Ty = parseTypeAnnotation(true)) {
+    if (auto Ty = parseType(true)) {
       auto Arg = Argument::get(*ArgSema.LiteralName, Ty);
       Arg->setSourceLocation(ArgLoc);
       ArgumentList.push_back(Arg);
@@ -62,7 +62,7 @@ Function *Parser::parseFcnDecl(bool Optional) {
     return nullptr;
   }
   auto ArgList = parseArgumentList(true);
-  auto ReturnTy = parseTypeAnnotation(true);
+  auto ReturnTy = parseType(true);
   auto Fcn = buildFcn(FcnName, ArgList, ReturnTy, FcnLoc);
   delete CurSema.LiteralName;
   if (auto Block = parseBlock({DOBLOCK, "do"}, {{ENDBLOCK, "end"}}))

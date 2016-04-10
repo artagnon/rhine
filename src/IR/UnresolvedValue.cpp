@@ -16,7 +16,7 @@ bool UnresolvedValue::classof(const Value *V) {
 }
 
 void UnresolvedValue::print(DiagnosticPrinter &Stream) const {
-  Stream << Name << " ~" << *getType();
+  Stream << Name << " " << *getType();
 }
 
 Argument::Argument(std::string N, Type *T) :
@@ -37,6 +37,6 @@ void Argument::setParent(Prototype *P) {
 }
 
 void Argument::print(DiagnosticPrinter &Stream) const {
-  Stream << Name << " ~" << *getType();
+  Stream << Name << " " << *getType();
 }
 }

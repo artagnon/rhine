@@ -26,7 +26,7 @@ TEST(Overshadow, Function) {
 }
 
 TEST(Overshadow, Argument) {
-  auto SourcePrg = "def main(main ~Int) do\n"
+  auto SourcePrg = "def main(main Int) do\n"
                    "  ret $ main + 2;\n"
                    "end";
   auto ExpectedErr = "string stream:1:10: error: argument main attempting to "

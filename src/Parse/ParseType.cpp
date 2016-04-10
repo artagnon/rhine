@@ -1,13 +1,13 @@
+#include "rhine/IR/Type.hpp"
 #include "rhine/Parse/ParseDriver.hpp"
 #include "rhine/Parse/Parser.hpp"
-#include "rhine/IR/Type.hpp"
 
 #include <vector>
 
 #define K Driver->Ctx
 
 namespace rhine {
-Type *Parser::parseType(bool Optional) {
+Type *Parser::parseTypeImpl(bool Optional) {
   switch (CurTok) {
   case TINT: {
     auto Ty = IntegerType::get(32, K);
@@ -34,9 +34,8 @@ Type *Parser::parseType(bool Optional) {
       writeError("in function type of form 'Function(...)', '(' is missing");
       return nullptr;
     }
-    auto BuildTFunction = [TFcnLoc] (Type *Ty,
-                                     std::vector<Type *> &TypeList,
-                                     bool VariadicRest) {
+    auto BuildTFunction = [TFcnLoc](Type *Ty, std::vector<Type *> &TypeList,
+                                    bool VariadicRest) {
       auto FTy = FunctionType::get(Ty, TypeList, VariadicRest);
       auto PTy = PointerType::get(FTy);
       FTy->setSourceLocation(TFcnLoc);
@@ -44,10 +43,11 @@ Type *Parser::parseType(bool Optional) {
       return PTy;
     };
     std::vector<Type *> TypeList;
-    while (auto Ty = parseType(true)) {
+    while (auto Ty = parseTypeImpl(true)) {
       if (!getTok(ARROW)) {
         if (!getTok(')')) {
-          writeError("in function type of form 'Function(...)', ')' is missing");
+          writeError(
+              "in function type of form 'Function(...)', ')' is missing");
           return nullptr;
         }
         return BuildTFunction(Ty, TypeList, false);
@@ -56,9 +56,10 @@ Type *Parser::parseType(bool Optional) {
     }
     if (getTok('&'))
       if (getTok(ARROW))
-        if (auto RTy = parseType()) {
+        if (auto RTy = parseTypeImpl()) {
           if (!getTok(')')) {
-            writeError("in function type of form 'Function(...)', ')' is missing");
+            writeError(
+                "in function type of form 'Function(...)', ')' is missing");
             return nullptr;
           }
           return BuildTFunction(RTy, TypeList, true);
@@ -78,10 +79,10 @@ Type *Parser::parseType(bool Optional) {
   return nullptr;
 }
 
-Type *Parser::parseTypeAnnotation(bool Optional) {
-  if (getTok('~'))
-    return parseType();
-  writeError("unable to parse type annotation", Optional);
+Type *Parser::parseType(bool Optional) {
+  if (auto Ty = parseTypeImpl(Optional)) {
+    return Ty;
+  }
   return UnType::get(K);
 }
 }

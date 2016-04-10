@@ -5,7 +5,7 @@ using namespace rhine;
 
 TEST(Lambda, BasicCodeGen) {
   auto SourcePrg = "def foo do\n"
-                   "  Bfunc = fn x ~Int -> ret x; end;\n"
+                   "  Bfunc = fn x Int -> ret x; end;\n"
                    "end";
   auto ExpectedPP = "  %Alloc = call i8* @std_String_malloc__Int(i64 8)\n"
                     "  %0 = bitcast i8* %Alloc to i32 (i32)**\n"
@@ -15,7 +15,7 @@ TEST(Lambda, BasicCodeGen) {
 
 TEST(Lambda, BasicExecution) {
   auto SourcePrg = "def main do\n"
-                   "  Bfunc = fn x ~Int -> ret x; end;\n"
+                   "  Bfunc = fn x Int -> ret x; end;\n"
                    "  print $ Bfunc 3;\n"
                    "end";
   auto ExpectedOut = "3";
@@ -23,11 +23,11 @@ TEST(Lambda, BasicExecution) {
 }
 
 TEST(Lambda, InsideIf) {
-  auto SourcePrg = "def main(Input ~Int) do"
+  auto SourcePrg = "def main(Input Int) do"
                    "  if false do\n"
                    "    print $ 3 + Input\n"
                    "  else\n"
-                   "    Lam = fn Arg ~Int -> ret $ Arg + 2; end\n"
+                   "    Lam = fn Arg Int -> ret $ Arg + 2; end\n"
                    "    print $ Lam 4\n"
                    "  end\n"
                    "  ret 4\n"

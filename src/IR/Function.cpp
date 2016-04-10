@@ -1,5 +1,5 @@
-#include "rhine/IR/Context.hpp"
 #include "rhine/IR/Function.hpp"
+#include "rhine/IR/Context.hpp"
 #include "rhine/IR/Instruction.hpp"
 #include "rhine/IR/UnresolvedValue.hpp"
 
@@ -85,7 +85,7 @@ void Prototype::emitArguments(DiagnosticPrinter &Stream) const {
 void Prototype::print(DiagnosticPrinter &Stream) const {
   Stream << "def " << Name;
   emitArguments(Stream);
-  Stream << " ~" << *getType();
+  Stream << *getType();
 }
 
 Function::Function(std::string Name, FunctionType *FTy)
@@ -129,7 +129,7 @@ Function::iterator Function::end() { return Body.end(); }
 void Function::print(DiagnosticPrinter &Stream) const {
   Stream << "def " << Name;
   emitArguments(Stream);
-  Stream << " ~" << *getType() << " {";
+  Stream << " " << *getType() << " {";
   for (auto &BB : Body)
     Stream << std::endl << *BB;
   Stream << "}";

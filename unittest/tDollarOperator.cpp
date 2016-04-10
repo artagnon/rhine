@@ -22,7 +22,7 @@ TEST(DollarOperator, Redundant) {
 }
 
 TEST(DollarOperator, WithFunction) {
-  auto SourcePrg = "def foo(x ~Int) do\n"
+  auto SourcePrg = "def foo(x Int) do\n"
                    "  ret '2';\n"
                    "end\n"
                    "def main() do\n"
@@ -41,7 +41,7 @@ TEST(DollarOperator, Ret) {
 }
 
 TEST(DollarOperator, NonInstructionRHS) {
-  auto SourcePrg = "def foo(X ~Int) do\n"
+  auto SourcePrg = "def foo(X Int) do\n"
                    "  ret X\n"
                    "end\n"
                    "def main() do\n"
@@ -67,7 +67,7 @@ TEST(DollarOperator, Assignment) {
 }
 
 TEST(DollarOperator, NonInstructionLHS) {
-  auto SourcePrg = "def foo(X ~Int, Y ~Int) do\n"
+  auto SourcePrg = "def foo(X Int, Y Int) do\n"
                    "  ret $ X + Y\n"
                    "end\n"
                    "def main() do\n"
@@ -77,7 +77,7 @@ TEST(DollarOperator, NonInstructionLHS) {
 }
 
 TEST(DollarOperator, DISABLED_PartialApplication) {
-  auto SourcePrg = "def foo(X ~Int, Y ~Int) do\n"
+  auto SourcePrg = "def foo(X Int, Y Int) do\n"
                    "  ret '2';\n"
                    "end\n"
                    "def main() do\n"

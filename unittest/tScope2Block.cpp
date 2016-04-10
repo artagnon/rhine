@@ -61,7 +61,7 @@ TEST(Scope2Block, SetIfParent) {
 
 TEST(Scope2Block, Lambda) {
   auto SourcePrg = "def foo() do\n"
-                   "  Bfunc = fn x ~Int -> ret x; end\n"
+                   "  Bfunc = fn x Int -> ret x; end\n"
                    "end";
   ParseFacade Pf(SourcePrg);
   auto Mod = Pf.parseToIR<Scope2Block>(ParseSource::STRING);
@@ -73,7 +73,7 @@ TEST(Scope2Block, Lambda) {
 TEST(Scope2Block, LambdaInsideIf) {
   auto SourcePrg = "def foo() do\n"
                    "  if true do\n"
-                   "    Bfunc = fn x ~Int -> ret x; end\n"
+                   "    Bfunc = fn x Int -> ret x; end\n"
                    "  end\n"
                    "end";
   ParseFacade Pf(SourcePrg);

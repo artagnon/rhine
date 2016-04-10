@@ -5,7 +5,7 @@ using namespace rhine;
 
 TEST(Unbound, Local) {
   auto SourcePrg = "def unboundVar do\n"
-                   "  ret Var ~Int;\n"
+                   "  ret Var Int;\n"
                    "end";
   auto ExpectedErr = "string stream:2:7: error: unbound symbol Var";
   EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
