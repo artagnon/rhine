@@ -1,10 +1,10 @@
+#include "rhine/IR/Type.hpp"
 #include "rhine/Diagnostic/Diagnostic.hpp"
 #include "rhine/IR/Constant.hpp"
 #include "rhine/IR/Context.hpp"
 #include "rhine/IR/Function.hpp"
 #include "rhine/IR/GlobalValue.hpp"
 #include "rhine/IR/Instruction.hpp"
-#include "rhine/IR/Type.hpp"
 #include "rhine/Transform/TypeCoercion.hpp"
 
 namespace rhine {
@@ -53,21 +53,23 @@ void TypeCoercion::convertOperands(User *U, std::vector<Type *> Tys) {
     auto DestTy = *TyIt++;
     if (auto ConvertedOp = convertValue(V, DestTy)) {
       ThisUse.set(ConvertedOp);
-    } else {
-      std::ostringstream ErrMsg;
-      ErrMsg << "Unable to coerce argument from " << *V->getRTy() << " to "
-             << *DestTy;
-      DiagnosticPrinter(V->getSourceLocation()) << ErrMsg.str();
-      exit(1);
+      continue;
     }
+    std::ostringstream ErrMsg;
+    ErrMsg << "Unable to coerce argument from " << *V->getRTy() << " to "
+           << *DestTy;
+    DiagnosticPrinter(V->getSourceLocation()) << ErrMsg.str();
+    exit(1);
   }
 }
 
 void TypeCoercion::transformInstruction(Instruction *I) {
-  if (auto Inst = dyn_cast<CallInst>(I)) {
-    convertOperands(cast<User>(Inst), Inst->getATys());
-  } else if (auto Inst = dyn_cast<IfInst>(I)) {
-    auto Cond = Inst->getConditional();
+  switch (I->getValID()) {
+  case RT_CallInst:
+    convertOperands(cast<User>(I), cast<CallInst>(I)->getATys());
+    return;
+  case RT_IfInst: {
+    auto Cond = cast<IfInst>(I)->getConditional();
     Use *CondUse = *Cond;
     if (auto ConvertedConditional = convertValue(Cond, BoolType::get(K))) {
       CondUse->set(ConvertedConditional);
@@ -78,8 +80,11 @@ void TypeCoercion::transformInstruction(Instruction *I) {
            << " to Bool";
     DiagnosticPrinter(Cond->getSourceLocation()) << ErrMsg.str();
     exit(1);
-  } else if (auto Inst = dyn_cast<ReturnInst>(I)) {
-    convertOperands(cast<User>(Inst), {I->getRTy()});
+  }
+  case RT_ReturnInst:
+    convertOperands(cast<User>(I), {I->getRTy()});
+  default:
+    return;
   }
 }
 
