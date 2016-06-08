@@ -180,6 +180,9 @@ endif()
 string(REGEX REPLACE "([0-9]+).*" "\\1" LLVM_VERSION_MAJOR "${LLVM_VERSION_STRING}" )
 string(REGEX REPLACE "[0-9]+\\.([0-9]+).*[A-Za-z]*" "\\1" LLVM_VERSION_MINOR "${LLVM_VERSION_STRING}" )
 
+string(STRIP "${LLVM_LIBRARY_DIRS}" LLVM_LIBRARY_DIRS)
+string(STRIP "${LLVM_LIBRARIES}" LLVM_LIBRARIES)
+
 # Use the default CMake facilities for handling QUIET/REQUIRED.
 include(FindPackageHandleStandardArgs)
 
