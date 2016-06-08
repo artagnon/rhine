@@ -1,8 +1,7 @@
-#ifndef RHINE_MODULE_H
-#define RHINE_MODULE_H
+#pragma once
 
-#include <vector>
 #include <sstream>
+#include <vector>
 
 #include "rhine/IR/Function.hpp"
 
@@ -15,6 +14,7 @@ class Context;
 class Module {
   std::unique_ptr<Context> Kontext;
   std::vector<Function *> ContainedFs;
+
 public:
   /// Context is all that is required to initialize
   Module(std::unique_ptr<Context> K);
@@ -56,13 +56,12 @@ public:
 
   /// While in lldb
   void dump();
+
 protected:
   /// std ostream writer, for debugging
   virtual void print(std::ostream &Stream) const {
-    for (auto F: ContainedFs)
+    for (auto F : ContainedFs)
       Stream << *F << std::endl;
   }
 };
 }
-
-#endif

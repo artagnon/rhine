@@ -1,5 +1,4 @@
-#ifndef RHINE_BASICBLOCK_H
-#define RHINE_BASICBLOCK_H
+#pragma once
 
 #include "rhine/IR/Value.hpp"
 #include <vector>
@@ -123,5 +122,3 @@ protected:
   virtual void print(DiagnosticPrinter &Stream) const override;
 };
 }
-
-#endif

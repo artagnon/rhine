@@ -1,5 +1,4 @@
-#ifndef RHINE_TENSOR_H
-#define RHINE_TENSOR_H
+#pragma once
 
 #include <cstdlib>
 #include <vector>
@@ -8,7 +7,7 @@
 
 /// Forward declaration
 namespace llvm {
-  class Value;
+class Value;
 }
 
 namespace rhine {
@@ -44,5 +43,3 @@ public:
   virtual void print(DiagnosticPrinter &Stream) const override;
 };
 }
-
-#endif

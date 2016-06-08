@@ -1,18 +1,17 @@
-#ifndef RHINE_FUNCTION_H
-#define RHINE_FUNCTION_H
+#pragma once
 
-#include "llvm/IR/Constants.h"
 #include "llvm/ADT/iterator_range.h"
+#include "llvm/IR/Constants.h"
 
+#include <sstream>
 #include <string>
 #include <vector>
-#include <sstream>
 
-#include "rhine/IR/Type.hpp"
-#include "rhine/IR/User.hpp"
-#include "rhine/IR/Constant.hpp"
-#include "rhine/IR/UnresolvedValue.hpp"
 #include "rhine/IR/BasicBlock.hpp"
+#include "rhine/IR/Constant.hpp"
+#include "rhine/IR/Type.hpp"
+#include "rhine/IR/UnresolvedValue.hpp"
+#include "rhine/IR/User.hpp"
 
 using namespace llvm;
 
@@ -92,5 +91,3 @@ protected:
   virtual void print(DiagnosticPrinter &Stream) const override;
 };
 }
-
-#endif

@@ -1,6 +1,4 @@
-//-*- C++ -*-
-#ifndef RHINE_LAMBDALIFTING_H
-#define RHINE_LAMBDALIFTING_H
+#pragma once
 
 #include "rhine/Pass/FunctionPass.hpp"
 
@@ -13,5 +11,3 @@ public:
   void runOnFunction(Function *F) override;
 };
 }
-
-#endif

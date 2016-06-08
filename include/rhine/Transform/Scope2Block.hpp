@@ -1,6 +1,4 @@
-// -*- C++ -*-
-#ifndef RHINE_Scope2Block_H
-#define RHINE_Scope2Block_H
+#pragma once
 
 #include "rhine/Pass/FunctionPass.hpp"
 
@@ -31,5 +29,3 @@ public:
   virtual void runOnFunction(Function *F) override;
 };
 }
-
-#endif

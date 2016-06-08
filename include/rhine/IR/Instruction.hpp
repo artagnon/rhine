@@ -1,7 +1,4 @@
-//-*- C++ -*-
-
-#ifndef INSTRUCTION_H
-#define INSTRUCTION_H
+#pragma once
 
 #include "llvm/IR/Value.h"
 
@@ -274,5 +271,3 @@ protected:
   void print(DiagnosticPrinter &Stream) const override;
 };
 }
-
-#endif

@@ -1,7 +1,4 @@
-//-*- C++ -*-
-
-#ifndef RHINE_EXTERNALS_H
-#define RHINE_EXTERNALS_H
+#pragma once
 
 #include "llvm/IR/Module.h"
 
@@ -25,5 +22,3 @@ public:
   llvm::Constant *getMappingVal(std::string S, llvm::Module *M);
 };
 }
-
-#endif

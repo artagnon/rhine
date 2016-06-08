@@ -1,5 +1,4 @@
-#ifndef RHINE_USE_H
-#define RHINE_USE_H
+#pragma once
 
 namespace rhine {
 class Value;
@@ -11,6 +10,7 @@ class Use {
   Use *Prev;
   Use *Next;
   unsigned DistToUser;
+
 public:
   /// Dist is the distance to User; used to walk the Use chain; the User uses it
   /// to reference a particular operand.
@@ -50,4 +50,3 @@ public:
   friend class User;
 };
 }
-#endif

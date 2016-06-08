@@ -1,6 +1,4 @@
-// -*- C++ -*-
-#ifndef RHINE_PARSER_H
-#define RHINE_PARSER_H
+#pragma once
 
 #include <map>
 #include <string>
@@ -216,5 +214,3 @@ public:
   bool parse();
 };
 }
-
-#endif

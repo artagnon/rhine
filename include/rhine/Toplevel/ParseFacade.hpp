@@ -1,14 +1,12 @@
-// -*- C++ -*-
-#ifndef PARSEFACADE_H
-#define PARSEFACADE_H
+#pragma once
 
+#include <iostream>
 #include <string>
 #include <vector>
-#include <iostream>
 
-#include "rhine/Parse/ParseDriver.hpp"
-#include "rhine/IR/Module.hpp"
 #include "rhine/IR/Context.hpp"
+#include "rhine/IR/Module.hpp"
+#include "rhine/Parse/ParseDriver.hpp"
 
 #include "llvm/Support/raw_ostream.h"
 
@@ -25,11 +23,11 @@ class ModulePass;
 enum class ParseSource { STRING, FILE };
 
 enum class PostParseAction {
-  IRString, /// Return, as a string, the pretty-printed Rhine IR
-  LLString, /// Return, as a string, the pretty-printed LLVM IR
-  LLEmit, /// Dump the constructed LLVM Module to stdout
-  BCString, /// Return, as a string, the LLVM module converted to Bitcode
-  BCWrite, /// Write a bitcode file from the LLVM module.
+  IRString,       /// Return, as a string, the pretty-printed Rhine IR
+  LLString,       /// Return, as a string, the pretty-printed LLVM IR
+  LLEmit,         /// Dump the constructed LLVM Module to stdout
+  BCString,       /// Return, as a string, the LLVM module converted to Bitcode
+  BCWrite,        /// Write a bitcode file from the LLVM module.
   LinkExecutable, /// Write bitcode, and call the system linker.
 };
 
@@ -77,8 +75,7 @@ public:
   /// The main worker that takes the program source, parses it into Rhine IR,
   /// runs it through a series of transforms, and returns it, ready for
   /// conversion to LLVM IR.
-  template<typename ...Ts>
-  Module *parseToIR(ParseSource SrcE) {
+  template <typename... Ts> Module *parseToIR(ParseSource SrcE) {
     auto Ctx = llvm::make_unique<rhine::Context>(ErrStream);
     auto Root = Module::get(std::move(Ctx));
     auto Driver = rhine::ParseDriver(Root, Debug);
@@ -96,7 +93,7 @@ public:
       }
       break;
     }
-    [](...){ }((Ts().runOnModule(Root), 0)...);
+    [](...) {}((Ts().runOnModule(Root), 0)...);
     return Root;
   }
 
@@ -110,5 +107,3 @@ public:
   MainFTy jitAction(ParseSource SrcE, PostParseAction ActionE);
 };
 }
-
-#endif

@@ -1,12 +1,10 @@
-//-*- C++ -*-
-#ifndef RHINE_VALUEVISITOR_H
-#define RHINE_VALUEVISITOR_H
+#pragma once
 
-#include "rhine/IR/Value.hpp"
-#include "rhine/IR/Instruction.hpp"
 #include "rhine/IR/Constant.hpp"
-#include "rhine/IR/Tensor.hpp"
 #include "rhine/IR/GlobalValue.hpp"
+#include "rhine/IR/Instruction.hpp"
+#include "rhine/IR/Tensor.hpp"
+#include "rhine/IR/Value.hpp"
 
 namespace rhine {
 class ConstantInt;
@@ -26,37 +24,58 @@ class ReturnInst;
 class TerminatorInst;
 class IndexingInst;
 
-template <typename R>
-class ValueVisitor {
+template <typename R> class ValueVisitor {
 protected:
   virtual ~ValueVisitor() {}
   virtual R visit(Value *V) {
-    switch(V->getValID()) {
-    case RT_ConstantInt: return visit(cast<ConstantInt>(V));
-    case RT_ConstantBool: return visit(cast<ConstantBool>(V));
-    case RT_ConstantFloat: return visit(cast<ConstantFloat>(V));
-    case RT_Tensor: return visit(cast<Tensor>(V));
-    case RT_GlobalString: return visit(cast<GlobalString>(V));
-    case RT_Prototype: return visit(cast<Prototype>(V));
-    case RT_Function: return visit(cast<Function>(V));
-    case RT_Pointer: return visit(cast<Pointer>(V));
+    switch (V->getValID()) {
+    case RT_ConstantInt:
+      return visit(cast<ConstantInt>(V));
+    case RT_ConstantBool:
+      return visit(cast<ConstantBool>(V));
+    case RT_ConstantFloat:
+      return visit(cast<ConstantFloat>(V));
+    case RT_Tensor:
+      return visit(cast<Tensor>(V));
+    case RT_GlobalString:
+      return visit(cast<GlobalString>(V));
+    case RT_Prototype:
+      return visit(cast<Prototype>(V));
+    case RT_Function:
+      return visit(cast<Function>(V));
+    case RT_Pointer:
+      return visit(cast<Pointer>(V));
     case RT_AddInst:
     case RT_SubInst:
     case RT_MulInst:
-    case RT_DivInst: return visit(cast<BinaryArithInst>(V));
-    case RT_IfInst: return visit(cast<IfInst>(V));
-    case RT_Argument: return visit(cast<Argument>(V));
-    case RT_BindInst: return visit(cast<BindInst>(V));
-    case RT_MallocInst: return visit(cast<MallocInst>(V));
-    case RT_LoadInst: return visit(cast<LoadInst>(V));
-    case RT_StoreInst: return visit(cast<StoreInst>(V));
-    case RT_CallInst: return visit(cast<CallInst>(V));
-    case RT_ReturnInst: return visit(cast<ReturnInst>(V));
-    case RT_TerminatorInst: return visit(cast<TerminatorInst>(V));
-    case RT_IndexingInst: return visit(cast<IndexingInst>(V));
-    case RT_BasicBlock: return visit(cast<BasicBlock>(V));
-    case RT_UnresolvedValue: assert(0 && "UnresolvedValue hit");
-    default: assert(0 && "Unknown ValueVisitor dispatch");
+    case RT_DivInst:
+      return visit(cast<BinaryArithInst>(V));
+    case RT_IfInst:
+      return visit(cast<IfInst>(V));
+    case RT_Argument:
+      return visit(cast<Argument>(V));
+    case RT_BindInst:
+      return visit(cast<BindInst>(V));
+    case RT_MallocInst:
+      return visit(cast<MallocInst>(V));
+    case RT_LoadInst:
+      return visit(cast<LoadInst>(V));
+    case RT_StoreInst:
+      return visit(cast<StoreInst>(V));
+    case RT_CallInst:
+      return visit(cast<CallInst>(V));
+    case RT_ReturnInst:
+      return visit(cast<ReturnInst>(V));
+    case RT_TerminatorInst:
+      return visit(cast<TerminatorInst>(V));
+    case RT_IndexingInst:
+      return visit(cast<IndexingInst>(V));
+    case RT_BasicBlock:
+      return visit(cast<BasicBlock>(V));
+    case RT_UnresolvedValue:
+      assert(0 && "UnresolvedValue hit");
+    default:
+      assert(0 && "Unknown ValueVisitor dispatch");
     }
     return nullptr;
   }
@@ -82,5 +101,3 @@ protected:
   virtual R visit(BasicBlock *BB) = 0;
 };
 }
-
-#endif

@@ -1,7 +1,4 @@
-//-*- C++ -*-
-
-#ifndef DIAGNOSTIC_H
-#define DIAGNOSTIC_H
+#pragma once
 
 #include <cassert>
 #include <fstream>
@@ -108,5 +105,3 @@ public:
   }
 };
 }
-
-#endif

@@ -1,6 +1,4 @@
-//-*- C++ -*-
-#ifndef RHINE_RESOLVELOCALS_H
-#define RHINE_RESOLVELOCALS_H
+#pragma once
 
 #include <vector>
 
@@ -30,5 +28,3 @@ private:
   void resolveOperandsOfUser(User *U, BasicBlock *BB);
 };
 }
-
-#endif

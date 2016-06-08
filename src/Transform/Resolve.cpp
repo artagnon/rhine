@@ -40,20 +40,20 @@ void Resolve::lookupReplaceUse(UnresolvedValue *V, Use &U, BasicBlock *Block) {
       Replacement->setSourceLocation(S->getSourceLocation());
       U.set(Replacement);
     }
-  } else {
-    /// %V was not seen earlier (%S not initialized)
-    /// Only one possibility: %V(...)
-    ///                        ^
-    ///                Callee of CallInst
-    auto SourceLoc = U->getSourceLocation();
-    if (auto Inst = dyn_cast<CallInst>(U->getUser()))
-      if (Inst->getCallee() == V) {
-        DiagnosticPrinter(SourceLoc) << "unbound function " + Name;
-        exit(1);
-      }
-    DiagnosticPrinter(SourceLoc) << "unbound symbol " + Name;
-    exit(1);
+    return;
   }
+  /// %V was not seen earlier (%S not initialized)
+  /// Only one possibility: %V(...)
+  ///                        ^
+  ///                Callee of CallInst
+  auto SourceLoc = U->getSourceLocation();
+  if (auto Inst = dyn_cast<CallInst>(U->getUser()))
+    if (Inst->getCallee() == V) {
+      DiagnosticPrinter(SourceLoc) << "unbound function " + Name;
+      exit(1);
+    }
+  DiagnosticPrinter(SourceLoc) << "unbound symbol " + Name;
+  exit(1);
 }
 
 void Resolve::resolveOperandsOfUser(User *U, BasicBlock *BB) {

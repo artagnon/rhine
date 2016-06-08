@@ -1,22 +1,17 @@
-// -*- C++ -*-
-#ifndef RHINE_LEXER_H
-#define RHINE_LEXER_H
+#pragma once
 
 // Flex expects the signature of yylex to be defined in the macro YY_DECL, and
 // the C++ parser expects it to be declared. We can factor both as follows.
 
-#include "rhine/Parse/Parser.hpp"
 #include "rhine/Parse/ParseDriver.hpp"
+#include "rhine/Parse/Parser.hpp"
 
 using P = rhine::Parser;
 using T = P::Token;
 
 #define yyterminate() return T::END
 
-#define	YY_DECL                                   \
-  T rhine::Lexer::lex(                            \
-      P::Semantic *yylval,                        \
-      P::Location *yylloc)
+#define YY_DECL T rhine::Lexer::lex(P::Semantic *yylval, P::Location *yylloc)
 
 #ifndef __FLEX_LEXER_H
 #include <FlexLexer.h>
@@ -30,18 +25,11 @@ using T = P::Token;
 namespace rhine {
 class Lexer : public yyFlexLexer {
 public:
-  Lexer(std::istream &arg_yyin,
-        std::ostream &arg_yyout,
-        ParseDriver *Dri) :
-      yyFlexLexer(arg_yyin, arg_yyout), Driver(Dri) {}
-  void LexerError(const char msg[]) {
-    yyout << msg << std::endl;
-  }
+  Lexer(std::istream &arg_yyin, std::ostream &arg_yyout, ParseDriver *Dri)
+      : yyFlexLexer(arg_yyin, arg_yyout), Driver(Dri) {}
+  void LexerError(const char msg[]) { yyout << msg << std::endl; }
   virtual ~Lexer() {}
-  virtual T lex(P::Semantic* yylval,
-                P::Location* yylloc);
+  virtual T lex(P::Semantic *yylval, P::Location *yylloc);
   ParseDriver *Driver;
 };
 }
-
-#endif

@@ -1,6 +1,4 @@
-//-*- C++ -*-
-#ifndef RHINE_FUNCTIONTRANSFORM_H
-#define RHINE_FUNCTIONTRANSFORM_H
+#pragma once
 
 #include "rhine/Pass/ModulePass.hpp"
 
@@ -14,5 +12,3 @@ public:
   virtual void runOnFunction(Function *F) = 0;
 };
 }
-
-#endif

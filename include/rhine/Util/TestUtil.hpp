@@ -1,7 +1,4 @@
-//-*- C++ -*-
-
-#ifndef RHINE_TESTUTIL_H
-#define RHINE_TESTUTIL_H
+#pragma once
 
 #include "rhine/Toplevel/ParseFacade.hpp"
 #include "gtest/gtest.h"
@@ -64,5 +61,3 @@ void EXPECT_COMPILE_DEATH(const char *SourcePrg, Ts... Matchers) {
                  ExpectedErr);
 }
 }
-
-#endif

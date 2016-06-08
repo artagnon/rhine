@@ -1,5 +1,4 @@
-#ifndef RHINE_VALUE_H
-#define RHINE_VALUE_H
+#pragma once
 
 #include "llvm/IR/Module.h"
 #include "llvm/IR/Value.h"
@@ -140,4 +139,3 @@ private:
   const RTValue ValID;
 };
 }
-#endif

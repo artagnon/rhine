@@ -1,5 +1,4 @@
-#ifndef RHINE_CONTEXT_H
-#define RHINE_CONTEXT_H
+#pragma once
 
 #include "llvm/ADT/FoldingSet.h"
 #include "llvm/IR/IRBuilder.h"
@@ -70,5 +69,3 @@ public:
   ResolutionMap Map;
 };
 }
-
-#endif

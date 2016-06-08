@@ -1,7 +1,4 @@
-//-*- C++ -*-
-
-#ifndef PARSEDRIVER_H
-#define PARSEDRIVER_H
+#pragma once
 
 #include <iostream>
 #include <string>
@@ -12,8 +9,7 @@ class Context;
 class Module;
 class Lexer;
 
-class ParseDriver
-{
+class ParseDriver {
 public:
   /// We fill in the parsetree and hand it back; Tree is initialized with a
   /// Context that we borrow. Debug is useful for getting trace outputs
@@ -50,5 +46,3 @@ public:
   Context *Ctx;
 };
 }
-
-#endif

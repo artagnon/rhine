@@ -1,13 +1,12 @@
-//-*- C++ -*-
-#ifndef RHINE_TYPEINFER_H
-#define RHINE_TYPEINFER_H
+#pragma once
 
-#include "rhine/Transform/ValueVisitor.hpp"
 #include "rhine/Pass/FunctionPass.hpp"
+#include "rhine/Transform/ValueVisitor.hpp"
 
 namespace rhine {
 class TypeInfer : public ValueVisitor<Type *>, public FunctionPass {
   Context *K;
+
 public:
   TypeInfer();
   virtual ~TypeInfer() {}
@@ -33,6 +32,7 @@ public:
   Type *visit(ReturnInst *V) override;
   Type *visit(TerminatorInst *V) override;
   Type *visit(IndexingInst *V) override;
+
 private:
   /// Visit all the instructions in a block possibly containing a branch
   /// instruction (hence visiting the branch blocks also), but not the merge
@@ -56,5 +56,3 @@ private:
   void verifyArity(CallInst *V, FunctionType *Ty);
 };
 }
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef RHINE_TYPE_H
-#define RHINE_TYPE_H
+#pragma once
 
 #include "llvm/ADT/Optional.h"
 #include "llvm/ADT/STLExtras.h"
@@ -252,5 +251,3 @@ protected:
   virtual void print(DiagnosticPrinter &Stream) const override;
 };
 }
-
-#endif

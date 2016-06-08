@@ -1,5 +1,4 @@
-#ifndef RHINE_USER_H
-#define RHINE_USER_H
+#pragma once
 
 #include "rhine/IR/Use.hpp"
 #include "rhine/IR/Value.hpp"
@@ -73,5 +72,3 @@ public:
   }
 };
 }
-
-#endif
