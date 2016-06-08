@@ -46,9 +46,27 @@ public:
   DiagnosticPrinter(std::ostream &ErrStream) : ErrorStream(ErrStream){};
   DiagnosticPrinter(const Parser::Location Loca) : SourceLoc(Loca){};
 
-  template <typename T> DiagnosticPrinter &operator<<(const T &V) {
-    unsigned ColSz = 200;
+  template <typename T> void preDecorate(const T &V) {
+    ErrorStream << ColorCode(ANSI_COLOR_WHITE) << SourceLoc.Filename << ":"
+                << SourceLoc.Begin.Line << ":" << SourceLoc.Begin.Column << ": "
+                << ColorCode(ANSI_COLOR_RED)
+                << "error: " << ColorCode(ANSI_COLOR_WHITE) << V
+                << ColorCode(ANSI_COLOR_RESET) << std::endl;
+  }
 
+  template <typename T> void postDecorate(const T &V) {
+    ErrorStream << std::endl
+                << std::setfill(' ') << std::setw(SourceLoc.Begin.Column)
+                << ColorCode(ANSI_COLOR_GREEN) << '^';
+    unsigned int end_col =
+        SourceLoc.End.Column > 0 ? SourceLoc.End.Column - 1 : 0;
+    if (end_col != SourceLoc.Begin.Column)
+      ErrorStream << std::setfill('~')
+                  << std::setw(end_col - SourceLoc.Begin.Column) << '~';
+    ErrorStream << ColorCode(ANSI_COLOR_RESET) << std::endl;
+  }
+
+  template <typename T> DiagnosticPrinter &operator<<(const T &V) {
     if (SourceLoc.Filename.empty()) {
       ErrorStream << V;
       return *this;
@@ -66,36 +84,15 @@ public:
                     << ColorCode(ANSI_COLOR_RESET) << std::endl;
       }
     }
-    std::ostringstream Oss;
-    Oss << ColorCode(ANSI_COLOR_WHITE) << SourceLoc.Filename << ":"
-        << SourceLoc.Begin.Line << ":" << SourceLoc.Begin.Column << ": "
-        << ColorCode(ANSI_COLOR_RED) << "error: " << ColorCode(ANSI_COLOR_WHITE)
-        << V << ColorCode(ANSI_COLOR_RESET);
-    istringstream WrapStream(Oss.str());
-    std::string Word;
-    unsigned CharsWritten = 0;
-    while (WrapStream >> Word) {
-      if (Word.size() + CharsWritten > ColSz) {
-        ErrorStream << std::endl;
-        CharsWritten = 0;
-      }
-      ErrorStream << Word << " ";
-      CharsWritten += Word.size() + 1;
-    }
+
+    preDecorate(V);
+
     std::string FaultyLine;
     for (unsigned int i = 0; i < SourceLoc.Begin.Line; i++)
       std::getline(*InStream, FaultyLine);
+    ErrorStream << FaultyLine;
 
-    ErrorStream << std::endl
-                << FaultyLine << std::endl
-                << std::setfill(' ') << std::setw(SourceLoc.Begin.Column)
-                << ColorCode(ANSI_COLOR_GREEN) << '^';
-    unsigned int end_col =
-        SourceLoc.End.Column > 0 ? SourceLoc.End.Column - 1 : 0;
-    if (end_col != SourceLoc.Begin.Column)
-      ErrorStream << std::setfill('~')
-                  << std::setw(end_col - SourceLoc.Begin.Column) << '~';
-    ErrorStream << ColorCode(ANSI_COLOR_RESET) << std::endl;
+    postDecorate(V);
     return *this;
   }
 
