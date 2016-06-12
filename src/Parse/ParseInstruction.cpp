@@ -36,12 +36,12 @@ BinaryArithInst *Parser::parseArithOp(Value *Op0, bool Optional) {
   return BinaryArithInst::get(InstructionSelector, Op0, Op1);
 }
 
-BindInst *Parser::parseBind(Value *Op0, bool Optional) {
+AbstractBindInst *Parser::parseBind(Value *Op0, bool Optional) {
   if (!getTok(BIND))
     writeError("expected '='", Optional);
   else {
     if (auto Rhs = parseAssignable(Optional)) {
-      BindInst *Inst;
+      AbstractBindInst *Inst;
       if (isa<Tensor>(Rhs))
         Inst = BindInst::get(Op0->getName(), Rhs);
       else

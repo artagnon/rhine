@@ -59,8 +59,6 @@ void BinaryArithInst::print(DiagnosticPrinter &Stream) const {
 CallInst::CallInst(Type *Ty, unsigned NumOps, std::string N)
     : Instruction(Ty, RT_CallInst, NumOps, N) {}
 
-CallInst::~CallInst() {}
-
 void *CallInst::operator new(size_t S, unsigned N) {
   return User::operator new(S, N);
 }
@@ -96,36 +94,39 @@ void CallInst::print(DiagnosticPrinter &Stream) const {
     Stream << std::endl << *O;
 }
 
-BindInst::BindInst(RTValue RTVal, std::string N, Value *V)
+AbstractBindInst::AbstractBindInst(RTValue RTVal, std::string N, Value *V)
     : Instruction(V->getType(), RTVal, 1, N) {
   setOperand(0, V);
   setSourceLocation(V->getSourceLocation());
 }
 
-BindInst::~BindInst() {}
-
-void *BindInst::operator new(size_t S) { return User::operator new(S, 1); }
-
-BindInst *BindInst::get(std::string N, Value *V) {
-  return new BindInst(RT_BindInst, N, V);
-}
-
-bool BindInst::classof(const Value *V) {
+bool AbstractBindInst::classof(const Value *V) {
   return V->getValID() == RT_BindInst || V->getValID() == RT_MallocInst;
 }
 
-void BindInst::setVal(Value *V) { setOperand(0, V); }
+Value *AbstractBindInst::getVal() { return getOperand(0); }
 
-Value *BindInst::getVal() { return getOperand(0); }
+void AbstractBindInst::setVal(Value *V) { setOperand(0, V); }
+
+BindInst::BindInst(std::string N, Value *V)
+    : AbstractBindInst(RT_BindInst, N, V) {}
+
+void *BindInst::operator new(size_t S) { return User::operator new(S, 1); }
+
+BindInst *BindInst::get(std::string N, Value *V) { return new BindInst(N, V); }
+
+bool BindInst::classof(const Value *V) { return V->getValID() == RT_BindInst; }
+
+Value *BindInst::getVal() { return AbstractBindInst::getVal(); }
+
+void BindInst::setVal(Value *V) { AbstractBindInst::setVal(V); }
 
 void BindInst::print(DiagnosticPrinter &Stream) const {
   Stream << Name << " = " << *getOperand(0);
 }
 
 MallocInst::MallocInst(std::string N, Value *V)
-    : BindInst(RT_MallocInst, N, V) {}
-
-MallocInst::~MallocInst() {}
+    : AbstractBindInst(RT_MallocInst, N, V) {}
 
 void *MallocInst::operator new(size_t S) { return User::operator new(S, 1); }
 
@@ -136,6 +137,10 @@ MallocInst *MallocInst::get(std::string N, Value *V) {
 bool MallocInst::classof(const Value *V) {
   return V->getValID() == RT_MallocInst;
 }
+
+Value *MallocInst::getVal() { return AbstractBindInst::getVal(); }
+
+void MallocInst::setVal(Value *V) { AbstractBindInst::setVal(V); }
 
 void MallocInst::print(DiagnosticPrinter &Stream) const {
   Stream << Name << " = malloc:" << *getOperand(0);

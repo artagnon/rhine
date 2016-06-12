@@ -59,7 +59,7 @@ protected:
 class CallInst : public Instruction {
 public:
   CallInst(Type *Ty, unsigned NumOps, std::string N);
-  virtual ~CallInst();
+  virtual ~CallInst() = default;
 
   /// N operands, including Callee.
   void *operator new(size_t S, unsigned N);
@@ -89,17 +89,29 @@ protected:
   void print(DiagnosticPrinter &Stream) const override;
 };
 
-class BindInst : public Instruction {
+class AbstractBindInst : public Instruction {
 public:
-  BindInst(RTValue RTVal, std::string N, Value *V);
-  virtual ~BindInst();
+  AbstractBindInst(RTValue RTVal, std::string N, Value *V);
+  virtual ~AbstractBindInst() = default;
+  static bool classof(const Value *V);
+
+  /// Operand0 manipulators
+  virtual Value *getVal() = 0;
+  virtual void setVal(Value *V) = 0;
+
+  virtual llvm::Value *toLL(llvm::Module *M) override = 0;
+};
+
+class BindInst : public AbstractBindInst {
+public:
+  BindInst(std::string N, Value *V);
+  virtual ~BindInst() = default;
   void *operator new(size_t S);
   static BindInst *get(std::string N, Value *V);
   static bool classof(const Value *V);
 
-  /// Operand0 manipulators
-  Value *getVal();
-  void setVal(Value *V);
+  virtual Value *getVal() override;
+  virtual void setVal(Value *V) override;
 
   virtual llvm::Value *toLL(llvm::Module *M) override;
 
@@ -107,13 +119,16 @@ protected:
   void print(DiagnosticPrinter &Stream) const override;
 };
 
-class MallocInst : public BindInst {
+class MallocInst : public AbstractBindInst {
 public:
   MallocInst(std::string N, Value *V);
-  virtual ~MallocInst();
+  virtual ~MallocInst() = default;
   void *operator new(size_t S);
   static MallocInst *get(std::string N, Value *V);
   static bool classof(const Value *V);
+
+  virtual Value *getVal() override;
+  virtual void setVal(Value *V) override;
 
   virtual llvm::Value *toLL(llvm::Module *M) override;
 

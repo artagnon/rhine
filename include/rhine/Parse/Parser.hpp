@@ -11,7 +11,7 @@ class Instruction;
 class IndexingInst;
 class IfInst;
 class CallInst;
-class BindInst;
+class AbstractBindInst;
 class BinaryArithInst;
 class BasicBlock;
 class Function;
@@ -158,7 +158,7 @@ public:
   /// Assuming the lhs has already been parsed (passed in as the first
   /// argument), look at '=' and parse the rhs to build a full MallocInst to
   /// return
-  BindInst *parseBind(Value *Op0, bool Optional = false);
+  AbstractBindInst *parseBind(Value *Op0, bool Optional = false);
 
   /// Assuming the lhs has already been parsed (passed in as the first
   /// argument), look at ':=' and parse the rhs to build a

@@ -81,7 +81,7 @@ void Resolve::runOnFunction(Function *F) {
   // Insert into K->Map
   for (auto &BB : *F)
     for (auto &V : *BB) {
-      if (auto B = dyn_cast<BindInst>(V))
+      if (auto B = dyn_cast<AbstractBindInst>(V))
         if (!K->Map.add(B, BB)) {
           DiagnosticPrinter(B->getSourceLocation())
               << "symbol " + B->getName() + " attempting to overshadow "
