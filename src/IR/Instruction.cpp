@@ -26,7 +26,7 @@ void *BinaryArithInst::operator new(size_t S) {
 
 BinaryArithInst *BinaryArithInst::get(RTValue InstSelector, Value *Op0,
                                       Value *Op1) {
-  auto K = Op0->getContext();
+  auto K = Op0->context();
   return new BinaryArithInst(InstSelector, UnType::get(K), Op0, Op1);
 }
 
@@ -97,7 +97,7 @@ void CallInst::print(DiagnosticPrinter &Stream) const {
 AbstractBindInst::AbstractBindInst(RTValue RTVal, std::string N, Value *V)
     : Instruction(V->getType(), RTVal, 1, N) {
   setOperand(0, V);
-  setSourceLocation(V->getSourceLocation());
+  setSourceLocation(V->sourceLocation());
 }
 
 bool AbstractBindInst::classof(const Value *V) {
@@ -262,7 +262,7 @@ void *IfInst::operator new(size_t S) { return User::operator new(S, 3); }
 
 IfInst *IfInst::get(Value *Conditional, BasicBlock *TrueBB,
                     BasicBlock *FalseBB) {
-  auto Obj = new IfInst(UnType::get(Conditional->getContext()));
+  auto Obj = new IfInst(UnType::get(Conditional->context()));
   TrueBB->setName("true");
   FalseBB->setName("false");
   Obj->setOperand(0, Conditional);
@@ -312,7 +312,7 @@ IndexingInst *IndexingInst::get(Value *V, std::vector<Value *> &Idxes) {
 }
 
 IndexingInst *IndexingInst::get(Value *V, std::vector<size_t> &Idxes) {
-  auto K = V->getContext();
+  auto K = V->context();
   std::vector<Value *> IdxValues;
   for (auto Idx : Idxes) {
     IdxValues.push_back(ConstantInt::get(Idx, 32, K));

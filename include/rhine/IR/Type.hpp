@@ -61,13 +61,13 @@ public:
   /// Type cannot be constructed. Only its derived classes can.
   static Type *get() = delete;
 
-  Context *getContext();
+  Context *context();
 
   /// Setter for SourceLoc.
   void setSourceLocation(Location SrcLoc);
 
   /// Getter for SourceLoc.
-  Location getSourceLocation();
+  Location sourceLocation();
 
   friend ostream &operator<<(ostream &Stream, const Type &T) {
     auto DiagStream = DiagnosticPrinter(Stream);

@@ -16,7 +16,7 @@ Resolve::~Resolve() {}
 
 void Resolve::lookupReplaceUse(UnresolvedValue *V, Use &U, BasicBlock *Block) {
   auto Name = V->getName();
-  auto K = V->getContext();
+  auto K = V->context();
   if (auto S = K->Map.get(V, Block)) {
     /// %S = 2;
     ///  ^
@@ -30,14 +30,14 @@ void Resolve::lookupReplaceUse(UnresolvedValue *V, Use &U, BasicBlock *Block) {
         U.set(M);
       else {
         auto Replacement = LoadInst::get(M);
-        Replacement->setSourceLocation(V->getSourceLocation());
+        Replacement->setSourceLocation(V->sourceLocation());
         U.set(Replacement);
       }
     } else if (isa<BindInst>(S) || isa<Argument>(S)) {
       U.set(S);
     } else if (isa<Prototype>(S)) {
       auto Replacement = Pointer::get(S);
-      Replacement->setSourceLocation(S->getSourceLocation());
+      Replacement->setSourceLocation(S->sourceLocation());
       U.set(Replacement);
     }
     return;
@@ -46,7 +46,7 @@ void Resolve::lookupReplaceUse(UnresolvedValue *V, Use &U, BasicBlock *Block) {
   /// Only one possibility: %V(...)
   ///                        ^
   ///                Callee of CallInst
-  auto SourceLoc = U->getSourceLocation();
+  auto SourceLoc = U->sourceLocation();
   if (auto Inst = dyn_cast<CallInst>(U->getUser()))
     if (Inst->getCallee() == V) {
       DiagnosticPrinter(SourceLoc) << "unbound function " + Name;
@@ -67,7 +67,7 @@ void Resolve::resolveOperandsOfUser(User *U, BasicBlock *BB) {
 void Resolve::runOnFunction(Function *F) {
   for (auto &Arg : F->args())
     if (!K->Map.add(Arg, F->getEntryBlock())) {
-      DiagnosticPrinter(Arg->getSourceLocation())
+      DiagnosticPrinter(Arg->sourceLocation())
           << "argument " + Arg->getName() + " attempting to overshadow "
                                             "previously bound symbol with "
                                             "same name";
@@ -83,7 +83,7 @@ void Resolve::runOnFunction(Function *F) {
     for (auto &V : *BB) {
       if (auto B = dyn_cast<AbstractBindInst>(V))
         if (!K->Map.add(B, BB)) {
-          DiagnosticPrinter(B->getSourceLocation())
+          DiagnosticPrinter(B->sourceLocation())
               << "symbol " + B->getName() + " attempting to overshadow "
                                             "previously bound symbol with same "
                                             "name";
@@ -101,18 +101,18 @@ void Resolve::runOnFunction(Function *F) {
 }
 
 void Resolve::runOnModule(Module *M) {
-  K = M->getContext();
+  K = M->context();
   for (auto P : Externals::get(K)->getProtos())
     if (!K->Map.add(P)) {
       auto ErrMsg =
           "prototype " + P->getName() +
           " attempting to overshadow previously bound symbol with same name";
-      DiagnosticPrinter(P->getSourceLocation()) << ErrMsg;
+      DiagnosticPrinter(P->sourceLocation()) << ErrMsg;
       exit(1);
     }
   for (auto &F : *M)
     if (!K->Map.add(F)) {
-      DiagnosticPrinter(F->getSourceLocation())
+      DiagnosticPrinter(F->sourceLocation())
           << "function " + F->getName() + " attempting to overshadow "
                                           "previously bound symbol with same "
                                           "name";

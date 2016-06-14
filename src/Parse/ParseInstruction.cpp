@@ -46,7 +46,7 @@ AbstractBindInst *Parser::parseBind(Value *Op0, bool Optional) {
         Inst = BindInst::get(Op0->getName(), Rhs);
       else
         Inst = MallocInst::get(Op0->getName(), Rhs);
-      Inst->setSourceLocation(Op0->getSourceLocation());
+      Inst->setSourceLocation(Op0->sourceLocation());
       return Inst;
     }
     writeError("rhs of bind unparseable", Optional);
@@ -61,7 +61,7 @@ Instruction *Parser::parseMutate(Value *Op0, bool Optional) {
     if (auto Rhs = parseAssignable(Optional)) {
       auto UnRes = UnresolvedValue::get(Op0->getName(), Rhs->getType());
       auto Inst = StoreInst::get(UnRes, Rhs);
-      Inst->setSourceLocation(Op0->getSourceLocation());
+      Inst->setSourceLocation(Op0->sourceLocation());
       return Inst;
     }
     writeError("rhs of mutate unparseable", Optional);
@@ -89,7 +89,7 @@ bool Parser::parseCallArgs(std::vector<Value *> &CallArgs) {
 }
 
 CallInst *Parser::parseCall(Value *Callee, bool Optional) {
-  auto CallLoc = Callee->getSourceLocation();
+  auto CallLoc = Callee->sourceLocation();
   std::vector<Value *> CallArgs;
   if (parseCallArgs(CallArgs)) {
     auto Inst = CallInst::get(Callee, CallArgs);
@@ -134,7 +134,7 @@ IndexingInst *Parser::parseIndexingInst(Value *Sym, bool Optional) {
     }
   }
   auto Inst = IndexingInst::get(Sym, Idxes);
-  Inst->setSourceLocation(Sym->getSourceLocation());
+  Inst->setSourceLocation(Sym->sourceLocation());
   return Inst;
 }
 

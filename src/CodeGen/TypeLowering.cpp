@@ -9,15 +9,15 @@ llvm::Type *UnType::toLL(llvm::Module *M) {
 }
 
 llvm::Type *VoidType::toLL(llvm::Module *M) {
-  return getContext()->Builder->getVoidTy();
+  return context()->Builder->getVoidTy();
 }
 
 llvm::Type *IntegerType::toLL(llvm::Module *M) {
   switch (Bitwidth) {
   case 32:
-    return getContext()->Builder->getInt32Ty();
+    return context()->Builder->getInt32Ty();
   case 64:
-    return getContext()->Builder->getInt64Ty();
+    return context()->Builder->getInt64Ty();
   default:
     assert (0 && "int bitwidths other than 32 and 64 are unimplemented");
   }
@@ -25,15 +25,15 @@ llvm::Type *IntegerType::toLL(llvm::Module *M) {
 }
 
 llvm::Type *BoolType::toLL(llvm::Module *M) {
-  return getContext()->Builder->getInt1Ty();
+  return context()->Builder->getInt1Ty();
 }
 
 llvm::Type *FloatType::toLL(llvm::Module *M) {
-  return getContext()->Builder->getFloatTy();
+  return context()->Builder->getFloatTy();
 }
 
 llvm::Type *StringType::toLL(llvm::Module *M) {
-  return getContext()->Builder->getInt8PtrTy();
+  return context()->Builder->getInt8PtrTy();
 }
 
 llvm::Type *FunctionType::toLL(llvm::Module *M) {

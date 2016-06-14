@@ -19,10 +19,10 @@ llvm::Constant *ConstantFloat::toLL(llvm::Module *M) {
 }
 
 llvm::Constant *Pointer::toLL(llvm::Module *M) {
-  auto K = getContext();
+  auto K = context();
   auto Name = val()->getName();
   if (auto Val = val()->getLoweredValue())
     return cast<llvm::Constant>(Val);
-  return Externals::get(K)->getMappingVal(Name, M);
+  return Externals::get(K)->mappingVal(Name, M);
 }
 }

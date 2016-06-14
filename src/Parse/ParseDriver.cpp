@@ -13,7 +13,7 @@ namespace rhine {
 class Module;
 
 ParseDriver::ParseDriver(Module *Tree, bool Debug) :
-    TraceScanning(Debug), Root(Tree), Ctx(Tree->getContext())
+    TraceScanning(Debug), Root(Tree), Ctx(Tree->context())
 {}
 
 bool ParseDriver::parseStream(std::istream &In,

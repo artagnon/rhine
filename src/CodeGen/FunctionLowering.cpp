@@ -36,14 +36,14 @@ llvm::Constant *Function::toLL(llvm::Module *M) {
   if (LoweredValue) {
     return cast<llvm::Constant>(LoweredValue);
   }
-  auto K = getContext();
+  auto K = context();
   auto CurrentFunction = getOrInsert(M);
 
   /// Bind argument symbols to function argument values in symbol table
   auto ArgList = getArguments();
   auto S = ArgList.begin();
   for (auto &Arg : CurrentFunction->args()) {
-    auto SourceLoc = (*S)->getSourceLocation();
+    auto SourceLoc = (*S)->sourceLocation();
     (*S)->setLoweredValue(&Arg);
     ++S;
   }

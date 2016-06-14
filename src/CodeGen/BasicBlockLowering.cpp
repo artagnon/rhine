@@ -14,7 +14,7 @@ BasicBlock::zipSuccContainers(llvm::Module *M) {
 }
 
 llvm::Value *BasicBlock::getPhiValueFromBranchBlock(llvm::Module *M) {
-  auto K = getContext();
+  auto K = context();
   assert(succ_size() == 2 && "Only 2 successors allowed for now");
   auto BranchBlock = K->Builder->GetInsertBlock();
   auto BranchContainers = zipSuccContainers(M);
@@ -64,7 +64,7 @@ llvm::Value *BasicBlock::toValuesLL(llvm::Module *M) {
 }
 
 llvm::BasicBlock *BasicBlock::toContainerLL(llvm::Module *M) {
-  auto K = getContext();
+  auto K = context();
   auto ParentF = cast<llvm::Function>(Parent->getLoweredValue());
   auto Ret = llvm::BasicBlock::Create(K->LLContext, Name, ParentF);
   K->Builder->SetInsertPoint(Ret);

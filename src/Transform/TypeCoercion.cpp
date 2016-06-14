@@ -58,7 +58,7 @@ void TypeCoercion::convertOperands(User *U, std::vector<Type *> Tys) {
     std::ostringstream ErrMsg;
     ErrMsg << "Unable to coerce argument from " << *V->getRTy() << " to "
            << *DestTy;
-    DiagnosticPrinter(V->getSourceLocation()) << ErrMsg.str();
+    DiagnosticPrinter(V->sourceLocation()) << ErrMsg.str();
     exit(1);
   }
 }
@@ -78,7 +78,7 @@ void TypeCoercion::transformInstruction(Instruction *I) {
     std::ostringstream ErrMsg;
     ErrMsg << "Unable to coerce conditional from type " << *Cond->getType()
            << " to Bool";
-    DiagnosticPrinter(Cond->getSourceLocation()) << ErrMsg.str();
+    DiagnosticPrinter(Cond->sourceLocation()) << ErrMsg.str();
     exit(1);
   }
   case RT_ReturnInst:
@@ -89,7 +89,7 @@ void TypeCoercion::transformInstruction(Instruction *I) {
 }
 
 void TypeCoercion::runOnFunction(Function *F) {
-  K = F->getContext();
+  K = F->context();
   for (auto &BB : *F)
     for (auto &I : *BB)
       transformInstruction(I);

@@ -11,13 +11,13 @@ Type::Type(Context *K, RTType ID) : Kontext(K), TyID(ID) {}
 
 Type::~Type() {}
 
-Context *Type::getContext() { return Kontext; }
+Context *Type::context() { return Kontext; }
 
 RTType Type::getTyID() const { return TyID; }
 
 void Type::setSourceLocation(Location SrcLoc) { SourceLoc = SrcLoc; }
 
-Location Type::getSourceLocation() { return SourceLoc; }
+Location Type::sourceLocation() { return SourceLoc; }
 
 __attribute__((used, noinline)) void Type::dump() {
   std::cout << *this << std::endl;
@@ -136,7 +136,7 @@ FunctionType *FunctionType::get(Type *RTy, std::vector<Type *> ATys, bool IsV) {
   FoldingSetNodeID ID;
   void *IP;
   FunctionType::Profile(ID, RTy, ATys, IsV);
-  auto K = RTy->getContext();
+  auto K = RTy->context();
   if (auto FTy = K->FTyCache.FindNodeOrInsertPos(ID, IP))
     return FTy;
   FunctionType *FTy = new FunctionType(K, RTy, ATys, IsV);
@@ -194,7 +194,7 @@ void FunctionType::print(DiagnosticPrinter &Stream) const {
 }
 
 PointerType::PointerType(RTType RTy, Type *CTy)
-    : Type(CTy->getContext(), RTy), ContainedType(CTy) {}
+    : Type(CTy->context(), RTy), ContainedType(CTy) {}
 
 PointerType::~PointerType() {}
 
@@ -202,7 +202,7 @@ PointerType *PointerType::get(Type *CTy) {
   FoldingSetNodeID ID;
   void *IP;
   PointerType::Profile(ID, CTy);
-  auto K = CTy->getContext();
+  auto K = CTy->context();
   if (auto PTy = K->PTyCache.FindNodeOrInsertPos(ID, IP))
     return PTy;
   PointerType *PTy = new PointerType(RT_PointerType, CTy);
@@ -239,7 +239,7 @@ TensorType *TensorType::get(Type *CTy, std::vector<size_t> &Dims) {
   FoldingSetNodeID ID;
   void *IP;
   TensorType::Profile(ID, CTy, Dims);
-  auto K = CTy->getContext();
+  auto K = CTy->context();
   if (auto TTy = K->TTyCache.FindNodeOrInsertPos(ID, IP))
     return TTy;
   auto TTy = new TensorType(CTy, Dims);

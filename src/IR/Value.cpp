@@ -15,11 +15,11 @@ bool Value::classof(const Value *V) {
   return V->op() >= RT_UnresolvedValue && V->op() <= RT_BasicBlock;
 }
 
-Context *Value::getContext() { return VTy->getContext(); }
+Context *Value::context() { return VTy->context(); }
 
 void Value::setSourceLocation(Location SrcLoc) { SourceLoc = SrcLoc; }
 
-Location Value::getSourceLocation() { return SourceLoc; }
+Location Value::sourceLocation() { return SourceLoc; }
 
 RTValue Value::op() const { return ValID; }
 

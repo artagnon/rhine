@@ -20,7 +20,7 @@ Module *Module::get(std::unique_ptr<Context> K) {
   return new Module(std::move(K));
 }
 
-Context *Module::getContext() { return Kontext.get(); }
+Context *Module::context() { return Kontext.get(); }
 
 void Module::appendFunction(Function *F) {
   F->setParent(this);

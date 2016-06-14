@@ -72,7 +72,7 @@ Type *TypeInfer::visit(IfInst *V) {
     ErrMsg << "mismatched types: true block is inferred to be of type "
            << *TrueTy << " and false block is inferred to be of type "
            << *FalseTy;
-    DiagnosticPrinter(V->getSourceLocation()) << ErrMsg.str();
+    DiagnosticPrinter(V->sourceLocation()) << ErrMsg.str();
     exit(1);
   }
   V->setType(TrueTy);
@@ -84,7 +84,7 @@ Type *TypeInfer::visit(LoadInst *V) {
   if (!V->isUnTyped())
     return V->getType();
   auto Name = V->val()->getName();
-  DiagnosticPrinter(V->getSourceLocation()) << "untyped symbol " + Name;
+  DiagnosticPrinter(V->sourceLocation()) << "untyped symbol " + Name;
   exit(1);
 }
 
@@ -98,7 +98,7 @@ Type *TypeInfer::visit(StoreInst *V) {
 Type *TypeInfer::visit(Argument *V) {
   if (!V->isUnTyped())
     return V->getType();
-  DiagnosticPrinter(V->getSourceLocation())
+  DiagnosticPrinter(V->sourceLocation())
       << "untyped argument " + V->getName();
   exit(1);
 }
@@ -134,7 +134,7 @@ void TypeInfer::verifyArity(CallInst *V, FunctionType *Ty) {
     ErrMsg << "Call expected " << Arity
            << " number of arguments, but has been supplied " << OpSize
            << " arguments";
-    DiagnosticPrinter(V->getSourceLocation()) << ErrMsg.str();
+    DiagnosticPrinter(V->sourceLocation()) << ErrMsg.str();
     exit(1);
   }
 }
@@ -150,7 +150,7 @@ void TypeInfer::visitCalleeAndOperands(CallInst *V) {
 Type *TypeInfer::visit(CallInst *V) {
   visitCalleeAndOperands(V);
   auto Callee = V->getCallee();
-  FunctionType *Ty = followFcnPointers(Callee, V->getSourceLocation());
+  FunctionType *Ty = followFcnPointers(Callee, V->sourceLocation());
   verifyArity(V, Ty);
   V->setType(PointerType::get(Ty));
   return Ty->getRTy();
@@ -163,7 +163,7 @@ Type *TypeInfer::visit(ReturnInst *V) {
   auto Ty = visit(Val);
   if (isa<VoidType>(Ty)) {
     auto CannotReturnVoid = "cannot return expression of Void type";
-    DiagnosticPrinter(Val->getSourceLocation()) << CannotReturnVoid;
+    DiagnosticPrinter(Val->sourceLocation()) << CannotReturnVoid;
     exit(1);
   }
   V->setType(Ty);
@@ -196,7 +196,7 @@ Type *TypeInfer::visit(MallocInst *V) {
 }
 
 void TypeInfer::runOnFunction(Function *F) {
-  K = F->getContext();
+  K = F->context();
   visit(F);
 }
 }

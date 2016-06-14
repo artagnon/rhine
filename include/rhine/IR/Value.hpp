@@ -78,11 +78,11 @@ public:
   virtual ~Value();
   Value *get() = delete;
   static bool classof(const Value *V);
-  Context *getContext();
+  Context *context();
   void setSourceLocation(Location SrcLoc);
 
   /// Every node has some location in the original source literal.
-  Location getSourceLocation();
+  Location sourceLocation();
 
   /// Required to check class without casting.
   RTValue op() const;

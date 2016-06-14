@@ -19,6 +19,6 @@ public:
   static Externals *get(Context *K);
   std::vector<Prototype *> getProtos() const;
   Prototype *getMappingProto(std::string S);
-  llvm::Constant *getMappingVal(std::string S, llvm::Module *M);
+  llvm::Constant *mappingVal(std::string S, llvm::Module *M);
 };
 }

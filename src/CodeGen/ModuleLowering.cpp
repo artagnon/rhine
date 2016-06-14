@@ -1,10 +1,9 @@
-#include "rhine/IR/Context.hpp"
 #include "rhine/IR/Module.hpp"
-#include "rhine/Externals.hpp"
+#include "rhine/IR/Context.hpp"
 
 namespace rhine {
 void Module::toLL(llvm::Module *M) {
-  for (auto F: val())
+  for (auto F : val())
     F->toLL(M);
 }
 }

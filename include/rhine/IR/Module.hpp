@@ -26,7 +26,7 @@ public:
   void dropAllReferences();
 
   static Module *get(std::unique_ptr<Context> K);
-  Context *getContext();
+  Context *context();
 
   /// Append, or insert given an iterator
   void appendFunction(Function *F);

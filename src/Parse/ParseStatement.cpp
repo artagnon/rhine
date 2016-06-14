@@ -124,7 +124,7 @@ bool Parser::parseDollarOp(bool Optional) {
 }
 
 Value *Parser::parsePostLiteralName(Value *Rtok) {
-  auto LitLoc = Rtok->getSourceLocation();
+  auto LitLoc = Rtok->sourceLocation();
   if (auto Bind = parseBind(Rtok, true)) {
     getSemiTerm("bind");
     return Bind;

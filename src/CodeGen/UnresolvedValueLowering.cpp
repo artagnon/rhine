@@ -13,9 +13,9 @@ llvm::Value *Argument::toLL(llvm::Module *M) {
   if (LoweredValue) {
     return LoweredValue;
   }
-  auto K = getContext();
+  auto K = context();
   auto Name = getName();
-  if (auto Result = Externals::get(K)->getMappingVal(Name, M)) {
+  if (auto Result = Externals::get(K)->mappingVal(Name, M)) {
     LoweredValue = Result;
     return Result;
   }

@@ -6,7 +6,7 @@
 
 namespace rhine {
 llvm::Value *Tensor::toLL(llvm::Module *M) {
-  auto K = getContext();
+  auto K = context();
   auto ElTy = getType()->getCTy()->toLL(M);
   auto PElTy = llvm::PointerType::get(ElTy, 0);
   auto Dims = getType()->getDims();
@@ -16,7 +16,7 @@ llvm::Value *Tensor::toLL(llvm::Module *M) {
   auto ConstElts = ConstantInt::get(NElements, 64, K)->toLL(M);
   auto ConstPtrSize = ConstantInt::get(8, 64, K)->toLL(M);
   auto TensorLen = K->Builder->CreateMul(ConstElts, ConstPtrSize);
-  auto MallocF = Externals::get(K)->getMappingVal("malloc", M);
+  auto MallocF = Externals::get(K)->mappingVal("malloc", M);
   auto Slot = K->Builder->CreateCall(MallocF, {TensorLen}, "TensorAlloc");
   auto CastSlot = K->Builder->CreateBitCast(Slot, PElTy);
   auto PtrN = [K, M, CastSlot](size_t N) {

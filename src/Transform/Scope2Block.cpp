@@ -65,14 +65,14 @@ void Scope2Block::validateBlockForm(BasicBlock *BB) {
   std::vector<Instruction *>::iterator It;
   for (It = BB->begin(); std::next(It) != BB->end(); ++It)
     if (dyn_cast<TerminatorInst>(*It) || dyn_cast<ReturnInst>(*It)) {
-      DiagnosticPrinter((*It)->getSourceLocation())
+      DiagnosticPrinter((*It)->sourceLocation())
           << "unexpected block terminator";
       exit(1);
     }
 }
 
 void Scope2Block::runOnFunction(Function *F) {
-  K = F->getContext();
+  K = F->context();
   auto EntryBlock = F->getEntryBlock();
   EntryBlock->setParent(F);
   cleaveBlockAtBranches(EntryBlock);

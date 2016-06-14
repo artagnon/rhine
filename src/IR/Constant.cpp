@@ -156,7 +156,7 @@ Pointer *Pointer::get(Value *V) {
   void *IP;
   auto Ty = PointerType::get(V->getType());
   Pointer::Profile(ID, Ty, V);
-  auto K = V->getContext();
+  auto K = V->context();
   if (auto Ptr = K->PtrCache.FindNodeOrInsertPos(ID, IP))
     return Ptr;
   auto Ptr = new Pointer(V, Ty);

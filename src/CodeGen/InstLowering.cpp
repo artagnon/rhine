@@ -10,7 +10,7 @@
 namespace rhine {
 llvm::Value *CallInst::toLL(llvm::Module *M) {
   CHECK_LoweredValue;
-  auto K = getContext();
+  auto K = context();
   auto RTy = cast<FunctionType>(cast<PointerType>(VTy)->getCTy())->getRTy();
   auto CalleeFn = getCallee()->toLL(M);
 
@@ -28,7 +28,7 @@ llvm::Value *CallInst::toLL(llvm::Module *M) {
 
 llvm::Value *BinaryArithInst::toLL(llvm::Module *M) {
   CHECK_LoweredValue;
-  auto K = getContext();
+  auto K = context();
   auto Op0 = getOperand(0)->toLL(M);
   auto Op1 = getOperand(1)->toLL(M);
   switch (op()) {
@@ -53,7 +53,7 @@ llvm::Value *BindInst::toLL(llvm::Module *M) {
 
 llvm::Value *MallocInst::toLL(llvm::Module *M) {
   CHECK_LoweredValue;
-  auto K = getContext();
+  auto K = context();
   auto V = val()->toLL(M);
   auto RhTy = val()->getType();
   auto Ty = RhTy->toLL(M);
@@ -63,7 +63,7 @@ llvm::Value *MallocInst::toLL(llvm::Module *M) {
     Sz = 1;
   auto ITy = IntegerType::get(64, K)->toLL(M);
   auto CallArg = llvm::ConstantInt::get(ITy, Sz);
-  auto MallocF = Externals::get(K)->getMappingVal("malloc", M);
+  auto MallocF = Externals::get(K)->mappingVal("malloc", M);
   auto Slot = K->Builder->CreateCall(MallocF, {CallArg}, "Alloc");
   auto CastSlot =
       K->Builder->CreateBitCast(Slot, llvm::PointerType::get(Ty, 0));
@@ -73,23 +73,23 @@ llvm::Value *MallocInst::toLL(llvm::Module *M) {
 
 llvm::Value *StoreInst::toLL(llvm::Module *M) {
   CHECK_LoweredValue;
-  auto K = getContext();
+  auto K = context();
   auto Op0 = getMallocedValue();
   if (auto MValue = Op0->getLoweredValue()) {
     auto NewValue = getNewValue()->toLL(M);
     returni(K->Builder->CreateStore(NewValue, MValue));
   }
-  DiagnosticPrinter(getSourceLocation())
+  DiagnosticPrinter(sourceLocation())
       << "unable to find symbol " + Op0->getName() + " to store into";
   exit(1);
 }
 
 llvm::Value *LoadInst::toLL(llvm::Module *M) {
   CHECK_LoweredValue;
-  auto K = getContext();
+  auto K = context();
   if (auto Result = val()->getLoweredValue()) {
     returni(K->Builder->CreateLoad(Result, Name + "Load"));
-  } else if (auto Result = Externals::get(K)->getMappingVal(Name, M))
+  } else if (auto Result = Externals::get(K)->mappingVal(Name, M))
     return Result;
   DiagnosticPrinter(SourceLoc) << "unable to find " + Name + " to load";
   exit(1);
@@ -97,7 +97,7 @@ llvm::Value *LoadInst::toLL(llvm::Module *M) {
 
 llvm::Value *ReturnInst::toLL(llvm::Module *M) {
   CHECK_LoweredValue;
-  auto K = getContext();
+  auto K = context();
   if (auto ReturnVal = val())
     return K->Builder->CreateRet(ReturnVal->toLL(M));
   returni(K->Builder->CreateRet(nullptr));
@@ -123,7 +123,7 @@ static size_t multiplyDown(std::vector<size_t> &Dims, size_t Top) {
 
 llvm::Value *IndexingInst::toLL(llvm::Module *M) {
   CHECK_LoweredValue;
-  auto K = getContext();
+  auto K = context();
   auto BoundValue = cast<BindInst>(val());
   auto Op0 = BoundValue->val();
   auto Indices = getIndices();
@@ -141,7 +141,7 @@ llvm::Value *IndexingInst::toLL(llvm::Module *M) {
     auto ToLoad = K->Builder->CreateInBoundsGEP(IndexingInto, SumIdx);
     returni(K->Builder->CreateLoad(ToLoad, BoundValue->getName() + "Load"));
   }
-  DiagnosticPrinter(BoundValue->getSourceLocation())
+  DiagnosticPrinter(BoundValue->sourceLocation())
       << "unable to find symbol " + BoundValue->getName() + " to index into";
   exit(1);
 }

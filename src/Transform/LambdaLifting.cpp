@@ -15,7 +15,7 @@ void LambdaLifting::runOnFunction(Function *F) {
           auto It = std::find(M->begin(), M->end(), F);
           assert(It != M->end() && "Function parent not set");
           M->insertFunction(It, Fn);
-          auto K = F->getContext();
+          auto K = F->context();
           auto Sym = UnresolvedValue::get(Fn->getName(), UnType::get(K));
           B->setVal(Sym);
         }
