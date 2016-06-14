@@ -12,7 +12,7 @@ UnresolvedValue *UnresolvedValue::get(std::string N, Type *T) {
 }
 
 bool UnresolvedValue::classof(const Value *V) {
-  return V->getValID() == RT_UnresolvedValue;
+  return V->op() == RT_UnresolvedValue;
 }
 
 void UnresolvedValue::print(DiagnosticPrinter &Stream) const {
@@ -29,7 +29,7 @@ Argument *Argument::get(std::string N, Type *T) {
 }
 
 bool Argument::classof(const Value *V) {
-  return V->getValID() == RT_Argument;
+  return V->op() == RT_Argument;
 }
 
 void Argument::setParent(Prototype *P) {

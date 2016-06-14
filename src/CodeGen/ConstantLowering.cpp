@@ -5,23 +5,23 @@
 namespace rhine {
 llvm::Constant *ConstantInt::toLL(llvm::Module *M) {
   auto LLTy = getType()->toLL(M);
-  return llvm::ConstantInt::get(LLTy, getVal());
+  return llvm::ConstantInt::get(LLTy, val());
 }
 
 llvm::Constant *ConstantBool::toLL(llvm::Module *M) {
   auto LLTy = getType()->toLL(M);
-  return llvm::ConstantInt::get(LLTy, getVal());
+  return llvm::ConstantInt::get(LLTy, val());
 }
 
 llvm::Constant *ConstantFloat::toLL(llvm::Module *M) {
   auto LLTy = getType()->toLL(M);
-  return llvm::ConstantFP::get(LLTy, getVal());
+  return llvm::ConstantFP::get(LLTy, val());
 }
 
 llvm::Constant *Pointer::toLL(llvm::Module *M) {
   auto K = getContext();
-  auto Name = getVal()->getName();
-  if (auto Val = getVal()->getLoweredValue())
+  auto Name = val()->getName();
+  if (auto Val = val()->getLoweredValue())
     return cast<llvm::Constant>(Val);
   return Externals::get(K)->getMappingVal(Name, M);
 }

@@ -39,7 +39,7 @@ public:
   static ConstantInt *get(int Val, unsigned Bitwidth, Context *K);
   IntegerType *getType() const;
   static bool classof(const Value *V);
-  int getVal() const;
+  int val() const;
   unsigned getBitwidth() const;
   static inline void Profile(FoldingSetNodeID &ID, const Type *Ty,
                              const int &Val);
@@ -60,7 +60,7 @@ public:
   static ConstantBool *get(bool Val, Context *K);
   BoolType *getType() const;
   static bool classof(const Value *V);
-  float getVal() const;
+  float val() const;
   static inline void Profile(FoldingSetNodeID &ID, const Type *Ty,
                              const bool &Val);
   void Profile(FoldingSetNodeID &ID) const;
@@ -80,7 +80,7 @@ public:
   static ConstantFloat *get(float Val, Context *K);
   FloatType *getType() const;
   static bool classof(const Value *V);
-  float getVal() const;
+  float val() const;
   static inline void Profile(FoldingSetNodeID &ID, const Type *Ty,
                              const float &Val);
   void Profile(FoldingSetNodeID &ID) const;
@@ -101,7 +101,7 @@ public:
   PointerType *getType() const;
   static bool classof(const Value *V);
   void setVal(Value *V);
-  Value *getVal() const;
+  Value *val() const;
   static inline void Profile(FoldingSetNodeID &ID, const Type *Ty,
                              const Value *Val);
   void Profile(FoldingSetNodeID &ID) const;

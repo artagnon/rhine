@@ -28,7 +28,7 @@ template <typename R> class ValueVisitor {
 protected:
   virtual ~ValueVisitor() {}
   virtual R visit(Value *V) {
-    switch (V->getValID()) {
+    switch (V->op()) {
     case RT_ConstantInt:
       return visit(cast<ConstantInt>(V));
     case RT_ConstantBool:

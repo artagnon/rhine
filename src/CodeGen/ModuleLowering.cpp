@@ -4,7 +4,7 @@
 
 namespace rhine {
 void Module::toLL(llvm::Module *M) {
-  for (auto F: getVal())
+  for (auto F: val())
     F->toLL(M);
 }
 }

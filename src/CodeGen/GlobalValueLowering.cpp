@@ -8,6 +8,6 @@ llvm::Value *GlobalString::toLL(llvm::Module *M) {
   // Returns GEP to GlobalStringPtr, which is a Value; data itself is in
   // constant storage.
   auto K = getContext();
-  return K->Builder->CreateGlobalStringPtr(llvm::StringRef(getVal()));
+  return K->Builder->CreateGlobalStringPtr(llvm::StringRef(val()));
 }
 }

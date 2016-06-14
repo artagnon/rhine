@@ -6,7 +6,7 @@ Instruction::Instruction(Type *Ty, RTValue ID, unsigned NumOps, std::string N)
     : User(Ty, ID, NumOps, N) {}
 
 bool Instruction::classof(const Value *V) {
-  return V->getValID() >= RT_AddInst && V->getValID() <= RT_IndexingInst;
+  return V->op() >= RT_AddInst && V->op() <= RT_IndexingInst;
 }
 
 BasicBlock *Instruction::getParent() const { return Parent; }
@@ -31,12 +31,12 @@ BinaryArithInst *BinaryArithInst::get(RTValue InstSelector, Value *Op0,
 }
 
 bool BinaryArithInst::classof(const Value *V) {
-  return V->getValID() == RT_MulInst || V->getValID() == RT_DivInst ||
-         V->getValID() == RT_AddInst || V->getValID() == RT_SubInst;
+  return V->op() == RT_MulInst || V->op() == RT_DivInst ||
+         V->op() == RT_AddInst || V->op() == RT_SubInst;
 }
 
 void BinaryArithInst::print(DiagnosticPrinter &Stream) const {
-  switch (getValID()) {
+  switch (op()) {
   case RT_AddInst:
     Stream << "+ " << *VTy;
     break;
@@ -74,7 +74,7 @@ CallInst *CallInst::get(Value *Callee, std::vector<Value *> Ops) {
   return Obj;
 }
 
-bool CallInst::classof(const Value *V) { return V->getValID() == RT_CallInst; }
+bool CallInst::classof(const Value *V) { return V->op() == RT_CallInst; }
 
 FunctionType *CallInst::getFTy() const {
   auto PTy = cast<PointerType>(getType());
@@ -101,10 +101,10 @@ AbstractBindInst::AbstractBindInst(RTValue RTVal, std::string N, Value *V)
 }
 
 bool AbstractBindInst::classof(const Value *V) {
-  return V->getValID() == RT_BindInst || V->getValID() == RT_MallocInst;
+  return V->op() == RT_BindInst || V->op() == RT_MallocInst;
 }
 
-Value *AbstractBindInst::getVal() { return getOperand(0); }
+Value *AbstractBindInst::val() { return getOperand(0); }
 
 void AbstractBindInst::setVal(Value *V) { setOperand(0, V); }
 
@@ -115,9 +115,9 @@ void *BindInst::operator new(size_t S) { return User::operator new(S, 1); }
 
 BindInst *BindInst::get(std::string N, Value *V) { return new BindInst(N, V); }
 
-bool BindInst::classof(const Value *V) { return V->getValID() == RT_BindInst; }
+bool BindInst::classof(const Value *V) { return V->op() == RT_BindInst; }
 
-Value *BindInst::getVal() { return AbstractBindInst::getVal(); }
+Value *BindInst::val() { return AbstractBindInst::val(); }
 
 void BindInst::setVal(Value *V) { AbstractBindInst::setVal(V); }
 
@@ -135,10 +135,10 @@ MallocInst *MallocInst::get(std::string N, Value *V) {
 }
 
 bool MallocInst::classof(const Value *V) {
-  return V->getValID() == RT_MallocInst;
+  return V->op() == RT_MallocInst;
 }
 
-Value *MallocInst::getVal() { return AbstractBindInst::getVal(); }
+Value *MallocInst::val() { return AbstractBindInst::val(); }
 
 void MallocInst::setVal(Value *V) { AbstractBindInst::setVal(V); }
 
@@ -157,9 +157,9 @@ void *LoadInst::operator new(size_t S) { return User::operator new(S, 1); }
 
 LoadInst *LoadInst::get(MallocInst *M) { return new LoadInst(M); }
 
-bool LoadInst::classof(const Value *V) { return V->getValID() == RT_LoadInst; }
+bool LoadInst::classof(const Value *V) { return V->op() == RT_LoadInst; }
 
-Value *LoadInst::getVal() const { return getOperand(0); }
+Value *LoadInst::val() const { return getOperand(0); }
 
 void LoadInst::print(DiagnosticPrinter &Stream) const {
   Stream << Name << " " << *VTy;
@@ -182,7 +182,7 @@ StoreInst *StoreInst::get(Value *MallocedValue, Value *NewValue) {
 }
 
 bool StoreInst::classof(const Value *V) {
-  return V->getValID() == RT_StoreInst;
+  return V->op() == RT_StoreInst;
 }
 
 Value *StoreInst::getMallocedValue() const { return getOperand(0); }
@@ -211,12 +211,12 @@ ReturnInst *ReturnInst::get(Value *V, Context *K) {
 }
 
 bool ReturnInst::classof(const Value *V) {
-  return V->getValID() == RT_ReturnInst;
+  return V->op() == RT_ReturnInst;
 }
 
 void ReturnInst::setVal(Value *V) { setOperand(0, V); }
 
-Value *ReturnInst::getVal() {
+Value *ReturnInst::val() {
   auto Operands = getOperands();
   if (Operands.size())
     return Operands[0];
@@ -243,12 +243,12 @@ TerminatorInst *TerminatorInst::get(Value *V) {
 }
 
 bool TerminatorInst::classof(const Value *V) {
-  return V->getValID() == RT_TerminatorInst;
+  return V->op() == RT_TerminatorInst;
 }
 
 void TerminatorInst::setVal(Value *V) { setOperand(0, V); }
 
-Value *TerminatorInst::getVal() { return getOperand(0); }
+Value *TerminatorInst::val() { return getOperand(0); }
 
 void TerminatorInst::print(DiagnosticPrinter &Stream) const {
   Stream << "term " << *getOperand(0);
@@ -271,7 +271,7 @@ IfInst *IfInst::get(Value *Conditional, BasicBlock *TrueBB,
   return Obj;
 }
 
-bool IfInst::classof(const Value *V) { return V->getValID() == RT_IfInst; }
+bool IfInst::classof(const Value *V) { return V->op() == RT_IfInst; }
 
 Value *IfInst::getConditional() const { return getOperand(0); }
 
@@ -321,15 +321,15 @@ IndexingInst *IndexingInst::get(Value *V, std::vector<size_t> &Idxes) {
 }
 
 bool IndexingInst::classof(const Value *V) {
-  return V->getValID() == RT_IndexingInst;
+  return V->op() == RT_IndexingInst;
 }
 
-Value *IndexingInst::getVal() const { return getOperand(-1); }
+Value *IndexingInst::val() const { return getOperand(-1); }
 
 std::vector<Value *> IndexingInst::getIndices() const { return getOperands(); }
 
 void IndexingInst::print(DiagnosticPrinter &Stream) const {
-  Stream << *getVal();
+  Stream << *val();
   for (auto Idx : getIndices())
     Stream << "[" << *Idx << "]";
   Stream << std::endl;

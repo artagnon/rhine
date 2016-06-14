@@ -10,7 +10,7 @@ Constant::Constant(Type *Ty, RTValue ID, unsigned NumOps, std::string Name)
 Constant::~Constant() {}
 
 bool Constant::classof(const Value *V) {
-  return V->getValID() >= RT_ConstantInt && V->getValID() <= RT_ConstantFloat;
+  return V->op() >= RT_ConstantInt && V->op() <= RT_ConstantFloat;
 }
 
 ConstantInt::ConstantInt(int Val, unsigned Bitwidth, Context *K)
@@ -36,10 +36,10 @@ IntegerType *ConstantInt::getType() const {
 }
 
 bool ConstantInt::classof(const Value *V) {
-  return V->getValID() == RT_ConstantInt;
+  return V->op() == RT_ConstantInt;
 }
 
-int ConstantInt::getVal() const { return Val; }
+int ConstantInt::val() const { return Val; }
 
 unsigned ConstantInt::getBitwidth() const {
   if (auto ITy = dyn_cast<IntegerType>(VTy))
@@ -83,10 +83,10 @@ BoolType *ConstantBool::getType() const {
 }
 
 bool ConstantBool::classof(const Value *V) {
-  return V->getValID() == RT_ConstantBool;
+  return V->op() == RT_ConstantBool;
 }
 
-float ConstantBool::getVal() const { return Val; }
+float ConstantBool::val() const { return Val; }
 
 void ConstantBool::Profile(FoldingSetNodeID &ID, const Type *Ty,
                            const bool &Val) {
@@ -125,10 +125,10 @@ FloatType *ConstantFloat::getType() const {
 }
 
 bool ConstantFloat::classof(const Value *V) {
-  return V->getValID() == RT_ConstantFloat;
+  return V->op() == RT_ConstantFloat;
 }
 
-float ConstantFloat::getVal() const { return Val; }
+float ConstantFloat::val() const { return Val; }
 
 void ConstantFloat::Profile(FoldingSetNodeID &ID, const Type *Ty,
                             const float &Val) {
@@ -168,11 +168,11 @@ PointerType *Pointer::getType() const {
   return cast<PointerType>(Value::getType());
 }
 
-bool Pointer::classof(const Value *V) { return V->getValID() == RT_Pointer; }
+bool Pointer::classof(const Value *V) { return V->op() == RT_Pointer; }
 
 void Pointer::setVal(Value *V) { Val = V; }
 
-Value *Pointer::getVal() const { return Val; }
+Value *Pointer::val() const { return Val; }
 
 void Pointer::Profile(FoldingSetNodeID &ID, const Type *Ty, const Value *Val) {
   ID.Add(Ty);

@@ -38,7 +38,7 @@ std::vector<Value *> Tensor::getElts() const {
 }
 
 bool Tensor::classof(const Value *V) {
-  return V->getValID() == RT_Tensor;
+  return V->op() == RT_Tensor;
 }
 
 void Tensor::print(DiagnosticPrinter &Stream) const {

@@ -32,7 +32,7 @@ void Module::insertFunction(std::vector<Function *>::iterator It, Function *F) {
   ContainedFs.insert(It, F);
 }
 
-std::vector<Function *> Module::getVal() const {
+std::vector<Function *> Module::val() const {
   return ContainedFs;
 }
 

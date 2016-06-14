@@ -25,7 +25,7 @@ class User *Use::getUser() {
   return reinterpret_cast<User *>(this + DistToUser);
 }
 
-Value *Use::getVal() const {
+Value *Use::val() const {
   return Val;
 }
 

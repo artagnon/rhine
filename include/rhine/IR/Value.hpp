@@ -85,7 +85,7 @@ public:
   Location getSourceLocation();
 
   /// Required to check class without casting.
-  RTValue getValID() const;
+  RTValue op() const;
   Type *getType() const;
   llvm::Value *getLoweredValue() const;
   void setLoweredValue(llvm::Value *V);

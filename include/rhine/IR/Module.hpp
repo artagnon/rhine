@@ -33,7 +33,7 @@ public:
   void insertFunction(std::vector<Function *>::iterator It, Function *F);
 
   /// Get or set ContainedFs
-  std::vector<Function *> getVal() const;
+  std::vector<Function *> val() const;
   void setVal(std::vector<Function *> Fs);
 
   /// Implemented by print

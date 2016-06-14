@@ -14,10 +14,10 @@ GlobalString *GlobalString::get(std::string Val, Context *K) {
 }
 
 bool GlobalString::classof(const Value *V) {
-  return V->getValID() == RT_GlobalString;
+  return V->op() == RT_GlobalString;
 }
 
-std::string GlobalString::getVal() { return Val; }
+std::string GlobalString::val() { return Val; }
 
 void GlobalString::print(DiagnosticPrinter &Stream) const {
   Stream << "'" << Val << "' " << *getType();

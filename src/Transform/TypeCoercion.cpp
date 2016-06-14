@@ -21,7 +21,7 @@ Value *TypeCoercion::convertValue(ConstantInt *I, IntegerType *DestTy) {
 
 Value *TypeCoercion::convertValue(Value *V, StringType *) {
   if (auto I = dyn_cast<ConstantInt>(V))
-    return GlobalString::get(std::to_string(I->getVal()), K);
+    return GlobalString::get(std::to_string(I->val()), K);
   if (!isa<IntegerType>(V->getRTy()))
     return nullptr;
   auto ToStringTy =
@@ -64,7 +64,7 @@ void TypeCoercion::convertOperands(User *U, std::vector<Type *> Tys) {
 }
 
 void TypeCoercion::transformInstruction(Instruction *I) {
-  switch (I->getValID()) {
+  switch (I->op()) {
   case RT_CallInst:
     convertOperands(cast<User>(I), cast<CallInst>(I)->getATys());
     return;

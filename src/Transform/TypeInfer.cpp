@@ -49,7 +49,7 @@ Type *TypeInfer::visit(Function *V) {
 }
 
 Type *TypeInfer::visit(Pointer *V) {
-  auto Ty = PointerType::get(visit(V->getVal()));
+  auto Ty = PointerType::get(visit(V->val()));
   V->setType(Ty);
   return Ty;
 }
@@ -80,10 +80,10 @@ Type *TypeInfer::visit(IfInst *V) {
 }
 
 Type *TypeInfer::visit(LoadInst *V) {
-  V->setType(V->getVal()->getType());
+  V->setType(V->val()->getType());
   if (!V->isUnTyped())
     return V->getType();
-  auto Name = V->getVal()->getName();
+  auto Name = V->val()->getName();
   DiagnosticPrinter(V->getSourceLocation()) << "untyped symbol " + Name;
   exit(1);
 }
@@ -157,9 +157,9 @@ Type *TypeInfer::visit(CallInst *V) {
 }
 
 Type *TypeInfer::visit(ReturnInst *V) {
-  if (!V->getVal())
+  if (!V->val())
     return VoidType::get(K);
-  auto Val = V->getVal();
+  auto Val = V->val();
   auto Ty = visit(Val);
   if (isa<VoidType>(Ty)) {
     auto CannotReturnVoid = "cannot return expression of Void type";
@@ -171,26 +171,26 @@ Type *TypeInfer::visit(ReturnInst *V) {
 }
 
 Type *TypeInfer::visit(TerminatorInst *V) {
-  auto Ty = visit(V->getVal());
+  auto Ty = visit(V->val());
   V->setType(Ty);
   return Ty;
 }
 
 Type *TypeInfer::visit(IndexingInst *V) {
-  auto Ty = cast<TensorType>(visit(V->getVal()));
+  auto Ty = cast<TensorType>(visit(V->val()));
   assert(!isa<UnType>(Ty) && "unable to infer type of Tensor");
   V->setType(Ty->getCTy());
   return Ty->getCTy();
 }
 
 Type *TypeInfer::visit(BindInst *V) {
-  V->setType(visit(V->getVal()));
+  V->setType(visit(V->val()));
   assert(!V->isUnTyped() && "unable to type infer BindInst");
   return V->getType();
 }
 
 Type *TypeInfer::visit(MallocInst *V) {
-  V->setType(visit(V->getVal()));
+  V->setType(visit(V->val()));
   assert(!V->isUnTyped() && "unable to type infer MallocInst");
   return VoidType::get(K);
 }

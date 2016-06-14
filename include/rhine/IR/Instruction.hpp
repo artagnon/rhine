@@ -96,7 +96,7 @@ public:
   static bool classof(const Value *V);
 
   /// Operand0 manipulators
-  virtual Value *getVal() = 0;
+  virtual Value *val() = 0;
   virtual void setVal(Value *V) = 0;
 
   virtual llvm::Value *toLL(llvm::Module *M) override = 0;
@@ -110,7 +110,7 @@ public:
   static BindInst *get(std::string N, Value *V);
   static bool classof(const Value *V);
 
-  virtual Value *getVal() override;
+  virtual Value *val() override;
   virtual void setVal(Value *V) override;
 
   virtual llvm::Value *toLL(llvm::Module *M) override;
@@ -127,7 +127,7 @@ public:
   static MallocInst *get(std::string N, Value *V);
   static bool classof(const Value *V);
 
-  virtual Value *getVal() override;
+  virtual Value *val() override;
   virtual void setVal(Value *V) override;
 
   virtual llvm::Value *toLL(llvm::Module *M) override;
@@ -145,7 +145,7 @@ public:
   virtual ~LoadInst();
   void *operator new(size_t S);
   static LoadInst *get(MallocInst *M);
-  Value *getVal() const;
+  Value *val() const;
   static bool classof(const Value *V);
   virtual llvm::Value *toLL(llvm::Module *M) override;
 
@@ -191,7 +191,7 @@ public:
   static bool classof(const Value *V);
 
   /// For single operand functions, {get,set}Val serves an obvious purpose
-  Value *getVal();
+  Value *val();
   void setVal(Value *V);
 
   virtual llvm::Value *toLL(llvm::Module *M) override;
@@ -218,7 +218,7 @@ public:
   static bool classof(const Value *V);
 
   /// For single operand functions, {get,set}Val serves an obvious purpose
-  Value *getVal();
+  Value *val();
   void setVal(Value *V);
 
   /// Codegen to the contained value directly.
@@ -274,7 +274,7 @@ public:
   static bool classof(const Value *V);
 
   /// Alias for getOperand(0)
-  Value *getVal() const;
+  Value *val() const;
 
   /// Alias for getOperands()
   std::vector<Value *> getIndices() const;

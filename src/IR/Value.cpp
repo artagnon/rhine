@@ -12,7 +12,7 @@ Value::Value(Type *VTy, RTValue ID, std::string N)
 Value::~Value() {}
 
 bool Value::classof(const Value *V) {
-  return V->getValID() >= RT_UnresolvedValue && V->getValID() <= RT_BasicBlock;
+  return V->op() >= RT_UnresolvedValue && V->op() <= RT_BasicBlock;
 }
 
 Context *Value::getContext() { return VTy->getContext(); }
@@ -21,7 +21,7 @@ void Value::setSourceLocation(Location SrcLoc) { SourceLoc = SrcLoc; }
 
 Location Value::getSourceLocation() { return SourceLoc; }
 
-RTValue Value::getValID() const { return ValID; }
+RTValue Value::op() const { return ValID; }
 
 Type *Value::getType() const { return VTy; }
 

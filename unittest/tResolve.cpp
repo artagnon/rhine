@@ -40,7 +40,7 @@ TEST(Resolve, UnresolvedReplacement) {
       auto Op1 = A->getOperand(1);
       if (auto U = dyn_cast<rhine::LoadInst>(Op0))
         if (auto C = dyn_cast<rhine::ConstantInt>(Op1)) {
-          if (C->getVal() == 3)
+          if (C->val() == 3)
             FirstInstance = U;
           else
             SecondInstance = U;

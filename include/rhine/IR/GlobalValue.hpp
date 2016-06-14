@@ -13,7 +13,7 @@ public:
   void *operator new(size_t s);
   static GlobalString *get(std::string Val, Context *K);
   static bool classof(const Value *V);
-  std::string getVal();
+  std::string val();
   virtual llvm::Value *toLL(llvm::Module *M) override;
 
 protected:

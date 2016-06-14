@@ -35,8 +35,8 @@ void User::dropAllReferences() {
 }
 
 bool User::classof(const Value *V) {
-  return V->getValID() >= RT_User &&
-    V->getValID() <= RT_IfInst;
+  return V->op() >= RT_User &&
+    V->op() <= RT_IfInst;
 }
 
 Use *User::getOperandList() {

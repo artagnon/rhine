@@ -31,7 +31,7 @@ llvm::Value *BinaryArithInst::toLL(llvm::Module *M) {
   auto K = getContext();
   auto Op0 = getOperand(0)->toLL(M);
   auto Op1 = getOperand(1)->toLL(M);
-  switch (getValID()) {
+  switch (op()) {
   case RT_AddInst:
     returni(K->Builder->CreateAdd(Op0, Op1));
   case RT_SubInst:
@@ -54,8 +54,8 @@ llvm::Value *BindInst::toLL(llvm::Module *M) {
 llvm::Value *MallocInst::toLL(llvm::Module *M) {
   CHECK_LoweredValue;
   auto K = getContext();
-  auto V = getVal()->toLL(M);
-  auto RhTy = getVal()->getType();
+  auto V = val()->toLL(M);
+  auto RhTy = val()->getType();
   auto Ty = RhTy->toLL(M);
   auto DL = DataLayout(M);
   auto Sz = DL.getTypeSizeInBits(Ty) / 8;
@@ -87,7 +87,7 @@ llvm::Value *StoreInst::toLL(llvm::Module *M) {
 llvm::Value *LoadInst::toLL(llvm::Module *M) {
   CHECK_LoweredValue;
   auto K = getContext();
-  if (auto Result = getVal()->getLoweredValue()) {
+  if (auto Result = val()->getLoweredValue()) {
     returni(K->Builder->CreateLoad(Result, Name + "Load"));
   } else if (auto Result = Externals::get(K)->getMappingVal(Name, M))
     return Result;
@@ -98,14 +98,14 @@ llvm::Value *LoadInst::toLL(llvm::Module *M) {
 llvm::Value *ReturnInst::toLL(llvm::Module *M) {
   CHECK_LoweredValue;
   auto K = getContext();
-  if (auto ReturnVal = getVal())
+  if (auto ReturnVal = val())
     return K->Builder->CreateRet(ReturnVal->toLL(M));
   returni(K->Builder->CreateRet(nullptr));
 }
 
 llvm::Value *TerminatorInst::toLL(llvm::Module *M) {
   CHECK_LoweredValue;
-  returni(getVal()->toLL(M));
+  returni(val()->toLL(M));
 }
 
 llvm::Value *IfInst::toLL(llvm::Module *M) {
@@ -124,8 +124,8 @@ static size_t multiplyDown(std::vector<size_t> &Dims, size_t Top) {
 llvm::Value *IndexingInst::toLL(llvm::Module *M) {
   CHECK_LoweredValue;
   auto K = getContext();
-  auto BoundValue = cast<BindInst>(getVal());
-  auto Op0 = BoundValue->getVal();
+  auto BoundValue = cast<BindInst>(val());
+  auto Op0 = BoundValue->val();
   auto Indices = getIndices();
   if (auto IndexingInto = BoundValue->getLoweredValue()) {
     llvm::Value *SumIdx = ConstantInt::get(0, 32, K)->toLL(M);

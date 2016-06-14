@@ -28,7 +28,7 @@ BasicBlock *BasicBlock::get(std::string Name, std::vector<Instruction *> V,
 }
 
 bool BasicBlock::classof(const Value *V) {
-  return V->getValID() == RT_BasicBlock;
+  return V->op() == RT_BasicBlock;
 }
 
 std::vector<Instruction *> &BasicBlock::getInstList() {

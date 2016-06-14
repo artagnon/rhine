@@ -24,7 +24,7 @@ public:
   void setOperandNumber(unsigned Num);
   void setVal(Value *Val_);
   User *getUser();
-  Value *getVal() const;
+  Value *val() const;
   Value *operator=(Value *RHS);
   Value *operator->();
   operator Value *() const;

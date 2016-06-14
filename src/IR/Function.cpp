@@ -21,7 +21,7 @@ Prototype *Prototype::get(std::string Name, FunctionType *FTy) {
 }
 
 bool Prototype::classof(const Value *V) {
-  return V->getValID() >= RT_Prototype && V->getValID() <= RT_Function;
+  return V->op() >= RT_Prototype && V->op() <= RT_Function;
 }
 
 void Prototype::setParent(Module *Parent) { ParentModule = Parent; }
@@ -109,7 +109,7 @@ Function *Function::get(std::string Name, FunctionType *FTy) {
   return new Function(Name, FTy);
 }
 
-bool Function::classof(const Value *V) { return V->getValID() == RT_Function; }
+bool Function::classof(const Value *V) { return V->op() == RT_Function; }
 
 std::string Function::getMangledName() const { return Name; }
 

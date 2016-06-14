@@ -10,7 +10,7 @@ void LambdaLifting::runOnFunction(Function *F) {
   for (auto &BB : *F) {
     for (auto &V : *BB) {
       if (auto B = dyn_cast<MallocInst>(V)) {
-        if (auto Fn = dyn_cast<Function>(B->getVal())) {
+        if (auto Fn = dyn_cast<Function>(B->val())) {
           Fn->setName("lambda");
           auto It = std::find(M->begin(), M->end(), F);
           assert(It != M->end() && "Function parent not set");
