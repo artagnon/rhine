@@ -3,40 +3,33 @@
 #include "rhine/IR/Value.hpp"
 
 namespace rhine {
-Use::Use(unsigned Dist) :
-    Val(nullptr), Prev(nullptr),
-    Next(nullptr), DistToUser(Dist) {}
+Use::Use(unsigned Dist)
+    : Val(nullptr), Prev(nullptr), Next(nullptr), DistToUser(Dist) {}
 
 Use::~Use() {}
 
-unsigned Use::getOperandNumber() {
-  return DistToUser;
-}
+unsigned Use::getOperandNumber() { return DistToUser; }
 
-void Use::setOperandNumber(unsigned Num) {
-  DistToUser = Num;
-}
+void Use::setOperandNumber(unsigned Num) { DistToUser = Num; }
 
-void Use::setVal(Value *V) {
-  Val = V;
-}
+void Use::setVal(Value *V) { Val = V; }
 
 class User *Use::getUser() {
   return reinterpret_cast<User *>(this + DistToUser);
 }
 
-Value *Use::val() const {
-  return Val;
-}
+Value *Use::val() const { return Val; }
 
 Value *Use::operator=(Value *RHS) {
   setVal(RHS);
   return RHS;
 }
 
-Value *Use::operator->() { return Val; }
+Value *Use::operator->() const { return Val; }
 
 Use::operator Value *() const { return Val; }
+
+Use::operator Value &() const { return *Val; }
 
 void Use::swap(Use &RHS) {
   if (Val == RHS.Val)
@@ -82,9 +75,11 @@ void Use::removeFromList() {
 }
 
 void Use::set(Value *V) {
-  if (Val) removeFromList();
+  if (Val)
+    removeFromList();
   Val = V;
-  if (V) V->addUse(*this);
+  if (V)
+    V->addUse(*this);
 }
 
 void Use::zap(Use *Start, const Use *Stop, bool Del) {

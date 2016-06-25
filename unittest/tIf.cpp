@@ -88,13 +88,13 @@ TEST(If, Nested) {
   ParseFacade Pf(SourcePrg);
   auto Mod = Pf.parseToIR(ParseSource::STRING);
   auto EntryBlock = Mod->front()->getEntryBlock();
-  auto &InstList = EntryBlock->getInstList();
-  EXPECT_EQ(InstList.size(), 1u);
-  auto IfStmt = cast<IfInst>(InstList[0]);
-  auto &TrueInstList = IfStmt->getTrueBB()->getInstList();
+  auto InstList = EntryBlock->getInstList();
+  assert(InstList.size() == 1u);
+  auto IfStmt = cast<IfInst>(InstList.front());
+  auto TrueInstList = IfStmt->getTrueBB()->getInstList();
   EXPECT_EQ(TrueInstList.size(), 1u);
   EXPECT_EQ(IfStmt->getFalseBB()->getInstList().size(), 1u);
-  auto NestedIfStmt = cast<IfInst>(TrueInstList[0]);
+  auto NestedIfStmt = cast<IfInst>(TrueInstList.front());
   EXPECT_EQ(NestedIfStmt->getTrueBB()->getInstList().size(), 1u);
   EXPECT_EQ(NestedIfStmt->getFalseBB()->getInstList().size(), 1u);
   EXPECT_OUTPUT(SourcePrg, "25");

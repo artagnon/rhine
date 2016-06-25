@@ -7,8 +7,8 @@
 namespace rhine {
 void LambdaLifting::runOnFunction(Function *F) {
   auto M = F->getParent();
-  for (auto &BB : *F) {
-    for (auto &V : *BB) {
+  for (auto BB : *F) {
+    for (auto V : *BB) {
       if (auto B = dyn_cast<MallocInst>(V)) {
         if (auto Fn = dyn_cast<Function>(B->val())) {
           Fn->setName("lambda");

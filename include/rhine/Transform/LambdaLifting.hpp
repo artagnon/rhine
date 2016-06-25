@@ -7,7 +7,7 @@ class Function;
 
 class LambdaLifting : public FunctionPass {
 public:
-  virtual ~LambdaLifting() {}
+  virtual ~LambdaLifting() = default;
   void runOnFunction(Function *F) override;
 };
 }

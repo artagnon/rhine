@@ -1,3 +1,4 @@
+#include "rhine/ADT/iterator_range.hpp"
 #include "rhine/IR/BasicBlock.hpp"
 #include "rhine/IR/Constant.hpp"
 #include "rhine/IR/Function.hpp"

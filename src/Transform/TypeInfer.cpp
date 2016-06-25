@@ -1,3 +1,4 @@
+#include "rhine/Transform/TypeInfer.hpp"
 #include "rhine/Diagnostic/Diagnostic.hpp"
 #include "rhine/IR/BasicBlock.hpp"
 #include "rhine/IR/Constant.hpp"
@@ -5,7 +6,6 @@
 #include "rhine/IR/Function.hpp"
 #include "rhine/IR/GlobalValue.hpp"
 #include "rhine/IR/Instruction.hpp"
-#include "rhine/Transform/TypeInfer.hpp"
 
 namespace rhine {
 TypeInfer::TypeInfer() : K(nullptr) {}
@@ -23,7 +23,7 @@ Type *TypeInfer::visit(GlobalString *V) { return V->getType(); }
 Type *TypeInfer::visitHeaderBlock(BasicBlock *BB) {
   if (BB->begin() == BB->end())
     return VoidType::get(K);
-  std::vector<Instruction *>::iterator It;
+  InstListType::iterator It;
   for (It = BB->begin(); std::next(It) != BB->end(); ++It)
     visit(*It);
   return visit(*It);
@@ -98,8 +98,7 @@ Type *TypeInfer::visit(StoreInst *V) {
 Type *TypeInfer::visit(Argument *V) {
   if (!V->isUnTyped())
     return V->getType();
-  DiagnosticPrinter(V->sourceLocation())
-      << "untyped argument " + V->getName();
+  DiagnosticPrinter(V->sourceLocation()) << "untyped argument " + V->getName();
   exit(1);
 }
 

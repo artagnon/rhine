@@ -51,11 +51,11 @@ llvm::Value *BasicBlock::getPhiValueFromBranchBlock(llvm::Module *M) {
 }
 
 llvm::Value *BasicBlock::toValuesLL(llvm::Module *M) {
-  if (InstList.begin() == InstList.end())
+  if (begin() == end())
     return nullptr;
-  std::vector<Instruction *>::iterator It;
-  for (It = InstList.begin(); std::next(It) != InstList.end(); ++It)
-    (*It)->toLL(M);
+  InstListType::iterator It;
+  for (It = begin(); std::next(It) != end(); ++It)
+    It->toLL(M);
   auto PossibleBrInst = *It;
   auto Ret = PossibleBrInst->toLL(M);
   if (auto MergeBlock = getMergeBlock())

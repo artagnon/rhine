@@ -26,8 +26,9 @@ public:
   User *getUser();
   Value *val() const;
   Value *operator=(Value *RHS);
-  Value *operator->();
+  Value *operator->() const;
   operator Value *() const;
+  operator Value &() const;
 
   /// Swap out the values in this and RHS.
   void swap(Use &RHS);

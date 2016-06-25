@@ -1,3 +1,4 @@
+#include "rhine/ADT/iterator_range.hpp"
 #include "rhine/IR/BasicBlock.hpp"
 #include "rhine/IR/Constant.hpp"
 #include "rhine/IR/GlobalValue.hpp"
@@ -111,7 +112,7 @@ IfInst *Parser::parseIf() {
       parseBlock({DOBLOCK, "do"}, {{ELSE, "else"}, {ENDBLOCK, "end"}});
   if (!TrueBlock)
     return nullptr;
-  auto FalseBlock = BasicBlock::get("false", {}, K);
+  auto FalseBlock = BasicBlock::get("false", std::vector<Instruction *>(), K);
   if (LastTok == ELSE)
     FalseBlock = parseBlock({0, ""}, {{ENDBLOCK, "end"}});
   auto Inst = IfInst::get(Conditional, TrueBlock, FalseBlock);

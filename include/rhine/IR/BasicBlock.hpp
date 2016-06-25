@@ -1,5 +1,8 @@
 #pragma once
 
+#include "rhine/ADT/IList.hpp"
+#include "rhine/ADT/iterator_range.hpp"
+#include "rhine/IR/Instruction.hpp"
 #include "rhine/IR/Value.hpp"
 #include <vector>
 
@@ -9,15 +12,12 @@ class Module;
 
 /// A BasicBlock is a container of instructions, and there are many BasicBlocks
 /// in a function. FlattenBB transforms the nested mess into a flat structure.
-class BasicBlock : public Value {
-  Function *Parent;
-  std::vector<BasicBlock *> Predecessors;
-  std::vector<BasicBlock *> Successors;
-  std::vector<Instruction *> InstList;
-
+class BasicBlock : public Value, public IListNode<BasicBlock> {
 public:
   /// The name is just a hint: we don't actually uniquify names; llvm does.
-  BasicBlock(Type *Ty, std::string Name, std::vector<Instruction *> V);
+  BasicBlock(Type *Ty, std::string Name,
+             iterator_range<inst_iterator> InstRange);
+  BasicBlock(Type *Ty, std::string Name, std::vector<Instruction *> InstRange);
 
   /// Delete all the instructions, after dropping references to all its uses. In
   /// the case of a branch instruction, the _references_ to the TrueBB and
@@ -28,13 +28,13 @@ public:
   /// Pass through to each Instruction's dropAllReferences().
   void dropAllReferences();
 
-  static BasicBlock *get(std::string Name, std::vector<Instruction *> V,
-                         Context *K);
+  template <typename Iterable>
+  static BasicBlock *get(std::string Name, Iterable InstRange, Context *K);
   static bool classof(const Value *V);
 
   /// Just take out the instruction list as a reference, and do whatever with
   /// it; we don't provide functions to manipulate it.
-  std::vector<Instruction *> &getInstList();
+  InstListType getInstList();
 
   /// A block with a terminator instruction (i.e. every block) will codegen
   /// other blocks referenced by the terminator. So, an IfInst codegens the
@@ -60,9 +60,13 @@ public:
   llvm::Value *toValuesLL(llvm::Module *M);
 
   /// Iterator over all the instructions in this BB
-  typedef std::vector<Instruction *>::iterator value_iterator;
-  value_iterator begin();
-  value_iterator end();
+  inst_iterator begin() const { return InstList.begin(); }
+  inst_iterator end() const { return InstList.end(); }
+
+  /// Although this looks like O(N), it's really O(1)
+  void erase(inst_iterator Start, inst_iterator End) {
+    InstList.erase(Start, End);
+  }
 
   /// Iterate over Predecessors and Successors of this BB
   typedef std::vector<BasicBlock *>::iterator bb_iterator;
@@ -114,6 +118,11 @@ public:
   llvm::Value *getPhiValueFromBranchBlock(llvm::Module *M);
 
 private:
+  Function *Parent;
+  std::vector<BasicBlock *> Predecessors;
+  std::vector<BasicBlock *> Successors;
+  InstListType InstList;
+
   std::vector<std::pair<BasicBlock *, llvm::BasicBlock *>>
   zipSuccContainers(llvm::Module *M);
 

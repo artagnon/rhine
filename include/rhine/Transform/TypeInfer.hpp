@@ -9,8 +9,12 @@ class TypeInfer : public ValueVisitor<Type *>, public FunctionPass {
 
 public:
   TypeInfer();
-  virtual ~TypeInfer() {}
+  virtual ~TypeInfer() = default;
+
+  /// Runs the visit function on each Value in the Function.
   void runOnFunction(Function *F) override;
+
+private:
   using ValueVisitor<Type *>::visit;
   Type *visit(ConstantInt *V) override;
   Type *visit(ConstantBool *V) override;

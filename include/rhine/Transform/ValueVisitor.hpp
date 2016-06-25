@@ -26,7 +26,7 @@ class IndexingInst;
 
 template <typename R> class ValueVisitor {
 protected:
-  virtual ~ValueVisitor() {}
+  virtual ~ValueVisitor() = default;
   virtual R visit(Value *V) {
     switch (V->op()) {
     case RT_ConstantInt:

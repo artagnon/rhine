@@ -12,7 +12,7 @@ class Scope2Block : public FunctionPass {
 
 public:
   Scope2Block();
-  virtual ~Scope2Block();
+  virtual ~Scope2Block() = default;
 
   /// Look for branch instructions in the BasicBlock (actually a scope before
   /// transformation), and use them to truncate the Cleavee, and generate three

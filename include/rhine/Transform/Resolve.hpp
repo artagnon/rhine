@@ -25,6 +25,6 @@ private:
   void lookupReplaceUse(UnresolvedValue *V, Use &U, BasicBlock *Block);
 
   /// Dig through the Uses of a User and replace the UnresolvedValues.
-  void resolveOperandsOfUser(User *U, BasicBlock *BB);
+  template <typename T> void resolveOperandsOfUser(T &&U, BasicBlock *BB);
 };
 }

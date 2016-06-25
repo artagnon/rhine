@@ -90,8 +90,8 @@ void TypeCoercion::transformInstruction(Instruction *I) {
 
 void TypeCoercion::runOnFunction(Function *F) {
   K = F->context();
-  for (auto &BB : *F)
-    for (auto &I : *BB)
+  for (auto BB : *F)
+    for (auto I : *BB)
       transformInstruction(I);
 }
 }

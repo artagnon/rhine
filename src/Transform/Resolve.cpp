@@ -56,7 +56,9 @@ void Resolve::lookupReplaceUse(UnresolvedValue *V, Use &U, BasicBlock *Block) {
   exit(1);
 }
 
-void Resolve::resolveOperandsOfUser(User *U, BasicBlock *BB) {
+// T is Use *
+template <typename T>
+void Resolve::resolveOperandsOfUser(T &&U, BasicBlock *BB) {
   for (Use &ThisUse : U->uses()) {
     Value *V = ThisUse;
     if (auto R = dyn_cast<UnresolvedValue>(V))
@@ -80,11 +82,11 @@ void Resolve::runOnFunction(Function *F) {
   //
   // Insert into K->Map
   for (auto &BB : *F)
-    for (auto &V : *BB) {
-      if (auto B = dyn_cast<AbstractBindInst>(V))
-        if (!K->Map.add(B, BB)) {
-          DiagnosticPrinter(B->sourceLocation())
-              << "symbol " + B->getName() + " attempting to overshadow "
+    for (auto I : *BB) {
+      if (isa<AbstractBindInst>(I))
+        if (!K->Map.add(I, BB)) {
+          DiagnosticPrinter(I->sourceLocation())
+              << "symbol " + I->getName() + " attempting to overshadow "
                                             "previously bound symbol with same "
                                             "name";
           exit(1);
@@ -96,7 +98,7 @@ void Resolve::runOnFunction(Function *F) {
   ///    ^  ^---- Operands
   ///   User
   for (auto &BB : *F)
-    for (auto &V : *BB)
+    for (auto V : *BB)
       resolveOperandsOfUser(cast<User>(V), BB);
 }
 

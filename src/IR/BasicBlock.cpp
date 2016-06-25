@@ -1,43 +1,55 @@
-#include "rhine/IR/Context.hpp"
 #include "rhine/IR/BasicBlock.hpp"
+#include "rhine/ADT/iterator_range.hpp"
+#include "rhine/IR/Context.hpp"
 #include "rhine/IR/Instruction.hpp"
 #include "rhine/IR/Module.hpp"
 
 namespace rhine {
-BasicBlock::BasicBlock(Type *Ty, std::string N, std::vector<Instruction *> V)
-    : Value(Ty, RT_BasicBlock, N), Parent(nullptr), InstList(V) {
-  for (auto Stm : InstList)
-    Stm->setParent(this);
+
+BasicBlock::BasicBlock(Type *Ty, std::string N,
+                       iterator_range<inst_iterator> InstRange)
+    : Value(Ty, RT_BasicBlock, N), Parent(nullptr) {
+  for (auto I : InstRange) {
+    I->setParent(this);
+    InstList.append(I);
+  }
+}
+
+BasicBlock::BasicBlock(Type *Ty, std::string N,
+                       std::vector<Instruction *> InstRange)
+    : Value(Ty, RT_BasicBlock, N), Parent(nullptr) {
+  for (auto I : InstRange) {
+    I->setParent(this);
+    InstList.append(I);
+  }
 }
 
 BasicBlock::~BasicBlock() {
   dropAllReferences();
-  for (auto &V : InstList)
+  for (auto V : *this)
     delete V;
   InstList.clear();
 }
 
 void BasicBlock::dropAllReferences() {
-  for (auto &V : *this)
+  for (auto V : *this)
     V->dropAllReferences();
 }
 
-BasicBlock *BasicBlock::get(std::string Name, std::vector<Instruction *> V,
-                            Context *K) {
-  return new BasicBlock(UnType::get(K), Name, V);
+template <typename Iterable>
+BasicBlock *BasicBlock::get(std::string Name, Iterable InstRange, Context *K) {
+  return new BasicBlock(UnType::get(K), Name, InstRange);
 }
 
-bool BasicBlock::classof(const Value *V) {
-  return V->op() == RT_BasicBlock;
-}
+/// Two instantiations
+template BasicBlock *BasicBlock::get(std::string, iterator_range<inst_iterator>,
+                                     Context *);
+template BasicBlock *BasicBlock::get(std::string, std::vector<Instruction *>,
+                                     Context *);
 
-std::vector<Instruction *> &BasicBlock::getInstList() {
-  return InstList;
-}
+bool BasicBlock::classof(const Value *V) { return V->op() == RT_BasicBlock; }
 
-BasicBlock::value_iterator BasicBlock::begin() { return InstList.begin(); }
-
-BasicBlock::value_iterator BasicBlock::end() { return InstList.end(); }
+InstListType BasicBlock::getInstList() { return InstList; }
 
 BasicBlock::bb_iterator BasicBlock::pred_begin() {
   return Predecessors.begin();
@@ -140,7 +152,7 @@ BasicBlock *BasicBlock::getMergeBlock() {
 }
 
 void BasicBlock::print(DiagnosticPrinter &Stream) const {
-  for (auto &V : InstList)
+  for (auto V : *this)
     Stream << *V << std::endl;
 }
 }

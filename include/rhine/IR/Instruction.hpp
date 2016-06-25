@@ -6,16 +6,18 @@
 #include <string>
 #include <vector>
 
-#include "rhine/IR/BasicBlock.hpp"
-#include "rhine/IR/Type.hpp"
+#include "rhine/ADT/IList.hpp"
 #include "rhine/IR/User.hpp"
 #include "rhine/IR/Value.hpp"
 
 namespace rhine {
-class Context;
 class Use;
+class Type;
+class Context;
+class BasicBlock;
+class FunctionType;
 
-class Instruction : public User {
+class Instruction : public User, public IListNode<Instruction> {
   BasicBlock *Parent;
 
 public:
@@ -285,4 +287,7 @@ public:
 protected:
   void print(DiagnosticPrinter &Stream) const override;
 };
+
+typedef IPList<Instruction> InstListType;
+typedef InstListType::iterator inst_iterator;
 }

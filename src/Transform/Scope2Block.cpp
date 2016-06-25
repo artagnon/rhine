@@ -1,15 +1,13 @@
+#include "rhine/Transform/Scope2Block.hpp"
 #include "rhine/Diagnostic/Diagnostic.hpp"
 #include "rhine/IR/BasicBlock.hpp"
 #include "rhine/IR/Constant.hpp"
 #include "rhine/IR/Context.hpp"
 #include "rhine/IR/Function.hpp"
 #include "rhine/IR/Instruction.hpp"
-#include "rhine/Transform/Scope2Block.hpp"
 
 namespace rhine {
 Scope2Block::Scope2Block() : K(nullptr) {}
-
-Scope2Block::~Scope2Block() {}
 
 using SetFcn = std::function<void(std::vector<BasicBlock>)>;
 
@@ -35,11 +33,11 @@ void Scope2Block::cleaveBlockAtBranches(BasicBlock *Cleavee,
   auto TrueBlock = BranchInst->getTrueBB();
   auto FalseBlock = BranchInst->getFalseBB();
   auto StartInst = std::next(It);
-  auto MergeBlock = BasicBlock::get(
-      "exit", std::vector<Instruction *>(StartInst, Cleavee->end()), K);
+  auto MergeBlock =
+      BasicBlock::get("exit", make_range(StartInst, Cleavee->end()), K);
 
   /// Remove everything from the branch to the end of the Block.
-  Cleavee->getInstList().erase(StartInst, Cleavee->end());
+  Cleavee->erase(StartInst, Cleavee->end());
 
   /// Set up predecessors and successors.
   Cleavee->setSuccessors({TrueBlock, FalseBlock});
@@ -62,11 +60,10 @@ void Scope2Block::cleaveBlockAtBranches(BasicBlock *Cleavee,
 void Scope2Block::validateBlockForm(BasicBlock *BB) {
   if (BB->begin() == BB->end())
     return;
-  std::vector<Instruction *>::iterator It;
+  InstListType::iterator It;
   for (It = BB->begin(); std::next(It) != BB->end(); ++It)
-    if (dyn_cast<TerminatorInst>(*It) || dyn_cast<ReturnInst>(*It)) {
-      DiagnosticPrinter((*It)->sourceLocation())
-          << "unexpected block terminator";
+    if (isa<TerminatorInst>(*It) || isa<ReturnInst>(*It)) {
+      DiagnosticPrinter(It->sourceLocation()) << "unexpected block terminator";
       exit(1);
     }
 }

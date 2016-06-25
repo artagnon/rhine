@@ -126,8 +126,8 @@ TEST(Scope2Block, MergeInBranch) {
   auto Mod = Pf.parseToIR<Scope2Block>(ParseSource::STRING);
   auto MainF = Mod->front();
   auto EntryBlock = MainF->getEntryBlock();
-  auto &InstList = EntryBlock->getInstList();
-  auto IfStmt = cast<IfInst>(InstList[0]);
+  auto InstList = EntryBlock->getInstList();
+  auto IfStmt = cast<IfInst>(InstList.front());
   auto TrueIt = std::find(MainF->begin(), MainF->end(), IfStmt->getTrueBB());
   auto FalseIt = std::find(MainF->begin(), MainF->end(), IfStmt->getFalseBB());
   EXPECT_EQ(std::distance(TrueIt, FalseIt), 4);

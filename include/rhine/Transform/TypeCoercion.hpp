@@ -17,9 +17,10 @@ class Type;
 
 class TypeCoercion : public FunctionPass {
   Context *K;
+
 public:
   TypeCoercion();
-  virtual ~TypeCoercion() {}
+  virtual ~TypeCoercion() = default;
 
   /// These overloadeded instances convert the source value to the destination
   /// type, via coercion.
@@ -33,9 +34,6 @@ public:
 
   /// Match CallInst, IfInst etc. for coercion
   void transformInstruction(Instruction *I);
-
-  /// Only Users need to be transformed
-  void transformUser(User *U);
 
   /// This is a FunctionPass
   void runOnFunction(Function *F) override;
