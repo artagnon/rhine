@@ -22,7 +22,9 @@ Module *Module::get(std::unique_ptr<Context> K) {
 
 Context *Module::context() { return Kontext.get(); }
 
-void Module::appendFunction(Function *F) {
+LLVMContext &Module::llvmContext() { return Kontext->llvmContext(); }
+
+ void Module::appendFunction(Function *F) {
   F->setParent(this);
   ContainedFs.push_back(F);
 }

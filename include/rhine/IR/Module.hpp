@@ -26,7 +26,12 @@ public:
   void dropAllReferences();
 
   static Module *get(std::unique_ptr<Context> K);
+
+  /// The rhine::Context
   Context *context();
+
+  /// Calls llvmContext() inside context()
+  LLVMContext &llvmContext();
 
   /// Append, or insert given an iterator
   void appendFunction(Function *F);

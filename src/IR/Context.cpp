@@ -5,10 +5,14 @@
 
 namespace rhine {
 Context::Context(std::ostream &ErrStream):
-    LLContext(llvm::getGlobalContext()),
-    Builder(new llvm::IRBuilder<>(LLContext)),
+    LLContext(new llvm::LLVMContext()),
+    Builder(new llvm::IRBuilder<>(*LLContext)),
     DiagPrinter(new DiagnosticPrinter(ErrStream)),
     ExternalsCache(nullptr) {}
+
+LLVMContext &Context::llvmContext() {
+  return *LLContext;
+}
 
 Context::~Context() {
   /// Cannot delete in-place, because we rely on the "next" pointer embedded in

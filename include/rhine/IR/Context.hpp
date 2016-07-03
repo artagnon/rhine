@@ -40,7 +40,7 @@ public:
   /// (initalized to a new IRBuilder instance), DiagnosticPrinter (initialized
   /// to a new DiagPrinter instance), and ExternalsCache (initialized to
   /// nullptr).
-  llvm::LLVMContext &LLContext;
+  llvm::LLVMContext *LLContext;
   std::unique_ptr<llvm::IRBuilder<>> Builder;
   std::unique_ptr<DiagnosticPrinter> DiagPrinter;
   std::unique_ptr<Externals> ExternalsCache;
@@ -48,6 +48,7 @@ public:
   /// Creates a new Builder and DiagPrinter. There should only be one Context
   /// per thread.
   Context(std::ostream &ErrStream = std::cerr);
+  LLVMContext &llvmContext();
   virtual ~Context();
 
   /// Symbol resolution map; should probably be per-Module?

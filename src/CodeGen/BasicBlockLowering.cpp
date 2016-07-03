@@ -66,7 +66,7 @@ llvm::Value *BasicBlock::toValuesLL(llvm::Module *M) {
 llvm::BasicBlock *BasicBlock::toContainerLL(llvm::Module *M) {
   auto K = context();
   auto ParentF = cast<llvm::Function>(Parent->getLoweredValue());
-  auto Ret = llvm::BasicBlock::Create(K->LLContext, Name, ParentF);
+  auto Ret = llvm::BasicBlock::Create(K->llvmContext(), Name, ParentF);
   K->Builder->SetInsertPoint(Ret);
   return Ret;
 }

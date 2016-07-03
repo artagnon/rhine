@@ -46,7 +46,7 @@ void ParseFacade::writeBitcodeToFile() {
 std::string ParseFacade::parseAction(ParseSource SrcE,
                                      PostParseAction ActionE) {
   auto TransformedIR = std::unique_ptr<Module>(parseToIR(SrcE));
-  UniqueModule.reset(new llvm::Module("main", llvm::getGlobalContext()));
+  UniqueModule.reset(new llvm::Module("main", TransformedIR->llvmContext()));
   auto RawModule = UniqueModule.get();
   if (ActionE != PostParseAction::IRString)
     TransformedIR->toLL(RawModule);
