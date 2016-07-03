@@ -35,9 +35,8 @@ void Scope2Block::cleaveBlockAtBranches(BasicBlock *Cleavee,
   auto StartInst = std::next(It);
   auto MergeBlock =
       BasicBlock::get("exit", make_range(StartInst, Cleavee->end()), K);
-
-  /// Remove everything from the branch to the end of the Block.
-  Cleavee->erase(StartInst, Cleavee->end());
+  BranchInst->setNext(*Cleavee->end());
+  Cleavee->end()->setPrev(BranchInst);
 
   /// Set up predecessors and successors.
   Cleavee->setSuccessors({TrueBlock, FalseBlock});

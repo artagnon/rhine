@@ -109,7 +109,7 @@ TEST(Valgrind, Instruction_MultiBB) {
   EXPECT_OUTPUT(SourcePrg, "14");
 }
 
-TEST(Valgrind, PhiAssignment) {
+TEST(Valgrind, DISABLED_PhiAssignment) {
   auto SourcePrg = "def main do\n"
                    "  X =\n"
                    "    if false do 2\n"

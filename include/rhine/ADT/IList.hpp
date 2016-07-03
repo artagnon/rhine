@@ -10,16 +10,19 @@ class User;
 /// Intrusive doubly-linked list that forms the basis of most IR lists in rhine.
 template <typename NodeTy> class IListNode {
 public:
-  IListNode() : Prev(nullptr), Next(nullptr) {}
+  IListNode() {}
+  IListNode(bool) : IsSentinel(true) {}
   IListNode(NodeTy *P, NodeTy *N) : Prev(P), Next(N) {}
   NodeTy *prev() { return Prev; }
   NodeTy *next() { return Next; }
+  bool isSentinel() { return IsSentinel; }
   void setPrev(NodeTy *P) { Prev = P; }
   void setNext(NodeTy *N) { Next = N; }
 
 private:
-  NodeTy *Prev;
-  NodeTy *Next;
+  NodeTy *Prev = nullptr;
+  NodeTy *Next = nullptr;
+  bool IsSentinel = false;
 };
 
 template <typename NodeTy>
@@ -39,12 +42,12 @@ public:
 
   /// Simple comparison.
   bool operator==(const IListIterator<NodeTy> &Other) const {
-    return Node == Other.Node;
+    return Node == Other.Node || Node->isSentinel() == Other.Node->isSentinel();
   }
 
   /// Necessary to compare with end()
   bool operator!=(const IListIterator<NodeTy> &Other) const {
-    return Node != Other.Node;
+    return !operator==(Other);
   }
 
   /// Some NodeTy * operators.
@@ -80,9 +83,6 @@ public:
     return tmp;
   }
 
-  /// Nifty.
-  bool operator!() { return !Node; }
-
 private:
   NodeTy *Node;
 };
@@ -93,7 +93,7 @@ public:
 
   /// When starting a BasicBlock (for example), list of Instructions is Sentinel
   /// to begin with.
-  IPList() : Head(createSentinel()) {}
+  IPList() : Sentinel(true), Head(createSentinel()) {}
 
   /// Closely tied to the iterator.
   iterator begin() const { return iterator(Head); }
@@ -101,12 +101,12 @@ public:
   /// If there's a sentinel Head, we return it. Otherwise, Head->prev() (since
   /// this is a circular linked list).
   iterator end() const {
-    return headIsSentinel() ? iterator(Head) : iterator(Head->prev());
+    return Head->isSentinel() ? iterator(Head) : iterator(Head->prev());
   }
 
-  /// Classic insertion. headIsSentinel() is handled here.
+  /// Classic insertion. Head->isSentinel() is handled here.
   iterator insertAfter(iterator Where, NodeTy *NewEl) {
-    auto HeadIsSentinel = headIsSentinel();
+    auto HeadIsSentinel = Head->isSentinel();
     if (HeadIsSentinel) {
       assert(Where == *Head && "Invalid insertion point in insertAfter");
     }
@@ -126,15 +126,15 @@ public:
   /// O(1) insertion because this is a circular linked-list.
   iterator append(NodeTy *NewEl) {
     // Skip sentinel
-    return insertAfter(headIsSentinel() ? Head : Head->prev()->prev(), NewEl);
+    return insertAfter(Head->isSentinel() ? Head : Head->prev()->prev(), NewEl);
   }
 
   /// Like std::vector::erase, but O(1)
   void erase(iterator Start, iterator End) {
-    if (!Start) {
-      return;
-    }
+    // This is required because not all Sentinel values are pointer-equal.
+    if (Start->prev()->isSentinel() && End->isSentinel()) { clear(); }
     Start->prev()->setNext(*End);
+    End->setPrev(Start->prev());
   }
 
   /// Like std::vector::clear
@@ -155,9 +155,6 @@ public:
     return const_cast<NodeTy *>(static_cast<const NodeTy *>(&Sentinel));
   }
 
-  /// operator! only works with real nullptr. Sentinel is a special value.
-  bool headIsSentinel() const { return !Head->prev(); }
-
   /// Like std::vector::back
   NodeTy *back() {
     assert(Head->prev() && "Calling back() on empty IPList");
@@ -171,11 +168,11 @@ public:
   }
 
 private:
-  /// The head of the circular linked-list. Tail is Head->prev()->prev()
-  NodeTy *Head;
-
   /// The special end() value of all Iterators. Is either Head, if the list is
   /// empty, or Head->prev() otherwise.
   IListNode<NodeTy> Sentinel;
+
+  /// The head of the circular linked-list. Tail is Head->prev()->prev()
+  NodeTy *Head;
 };
 }

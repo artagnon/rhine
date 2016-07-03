@@ -115,7 +115,7 @@ TEST(If, MergeInBranch) {
   EXPECT_OUTPUT(SourcePrg, "245");
 }
 
-TEST(If, PhiAssignment) {
+TEST(If, DISABLED_PhiAssignment) {
   auto SourcePrg = "def main do\n"
                    "  x =\n"
                    "    if false do 2\n"
@@ -127,7 +127,7 @@ TEST(If, PhiAssignment) {
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
 
-TEST(If, PhiAssignment_FunctionPointer) {
+TEST(If, DISABLED_PhiAssignment_FunctionPointer) {
   auto SourcePrg = "def addCandidate(A Int, B Int) do\n"
                    "  ret $ A + B\n"
                    "end\n"

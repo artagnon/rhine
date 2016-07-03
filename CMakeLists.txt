@@ -3,7 +3,7 @@ project(Rhine)
 
 # set(CMAKE_CXX_COMPILER "/usr/bin/clang++")
 # set(CMAKE_CXX_FLAGS "-fsanitize=address")
-set(CMAKE_CXX_FLAGS "-std=c++14 -fprofile-instr-generate -fcoverage-mapping")
+set(CMAKE_CXX_FLAGS "-Werror -std=c++14 -fprofile-instr-generate -fcoverage-mapping")
 set(LLVM_ROOT_DIR "${PROJECT_SOURCE_DIR}/llvm")
 set(CLANG_ROOT_DIR "${PROJECT_SOURCE_DIR}/clang")
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/Modules")

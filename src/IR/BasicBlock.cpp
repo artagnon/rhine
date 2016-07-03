@@ -13,6 +13,10 @@ BasicBlock::BasicBlock(Type *Ty, std::string N,
     I->setParent(this);
     InstList.append(I);
   }
+  if (InstRange.begin() != InstRange.end()) {
+    InstRange.end()->setNext(*InstRange.begin());
+    InstRange.begin()->setPrev(*InstRange.end());
+  }
 }
 
 BasicBlock::BasicBlock(Type *Ty, std::string N,
