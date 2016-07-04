@@ -5,7 +5,7 @@ add_executable(CLI
 
 add_custom_command(TARGET CLI
   PRE_BUILD COMMAND "find" "${PROJECT_BINARY_DIR}" "-name"
-  "*.gcda" "-exec" "rm" "{}" "\;")
+  "\\*.gcda" "-exec" "rm" "{}" "\\;")
 
 set_target_properties(CLI PROPERTIES
   OUTPUT_NAME "rhine"

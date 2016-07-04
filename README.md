@@ -1,6 +1,9 @@
 # rhine: a C++ compiler middle-end for a typed ruby
 
-![Travis build status](https://travis-ci.org/artagnon/rhine.svg?branch=master)
+[![Build Status](https://travis-ci.org/artagnon/rhine.svg?branch=master)]
+(https://travis-ci.org/artagnon/rhine)
+[![codecov](https://codecov.io/gh/artagnon/rhine/branch/master/graph/badge.svg)]
+(https://codecov.io/gh/artagnon/rhine)
 
 rhine is designed to be a fast language utilizing the LLVM JIT featuring N-d
 tensors, first-class functions, and type inference; specifying argument
@@ -15,14 +18,14 @@ rhine-ml was called rhine earlier.
 ## Language Features
 
 ```elixir
-def bar(arithFn ~Function(Int -> Int -> Int)) do
+def bar(arithFn Function(Int -> Int -> Int)) do
   println $ arithFn 2 4
 end
-def addCandidate(A ~Int, B ~Int) do
-  ret $ A + B
+def addCandidate(alpha Int, beta Int) do
+  ret $ alpha + beta
 end
-def subCandidate(C ~Int, D ~Int) do
-  ret $ C - D
+def subCandidate(gamma Int, delta Int) do
+  ret $ gamma - delta
 end
 def main() do
   if false do
@@ -30,13 +33,13 @@ def main() do
   else
     bar subCandidate
   end
-  A = {{2}, {3}}
-  println A[1][0]
+  mu = {{2}, {3}}
+  println mu[1][0]
 end
 ```
 
-`~Int` is a type annotation, and only argument types need to be annotated,
-return type is inferred. `~Function(Int -> Int -> Int)` is a function that takes
+`Int` is a type annotation, and only argument types need to be annotated,
+return type is inferred. `Function(Int -> Int -> Int)` is a function that takes
 two integers and returns one integer, mixing in some Haskell syntax. `$` is
 again from Haskell, which is basically like putting the RHS in parens.
 

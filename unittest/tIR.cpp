@@ -7,9 +7,12 @@ TEST(IR, ConstantInt) {
   auto SourcePrg = "def foo do\n"
                    "  ret 3\n"
                    "end";
-  auto ExpectedIR = "def foo [] Fn(Void -> Int) {\n"
-                    "ret 3 Int\n"
-                    "}";
+  auto ExpectedIR =
+      R"rh(
+        def foo [] Fn(Void -> Int) {
+          ret 3 Int
+        }
+      )rh";
   EXPECT_IR(SourcePrg, ExpectedIR);
 }
 

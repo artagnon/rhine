@@ -8,6 +8,5 @@ TEST(Lowering, LoweredValue_Cache) {
                    "  A = 3 + 2\n"
                    "  B = A + 1\n"
                    "end";
-  EXPECT_LL(::testing::IsNotSubstring, SourcePrg,
-            "%ALoad1 = load i32, i32* %0");
+  EXPECT_LL<true>(SourcePrg, "%ALoad1 = load i32, i32* %0");
 }
