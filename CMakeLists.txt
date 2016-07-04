@@ -1,12 +1,8 @@
 cmake_minimum_required(VERSION 2.6)
 project(Rhine)
 
-set(CMAKE_CXX_COMPILER "clang++-3.8")
-# -fsanitize=address
-set(CMAKE_CXX_FLAGS "-Werror -stdlib=libc++ -std=c++14 \
-  -fprofile-instr-generate -fcoverage-mapping \
-  -I/usr/local/opt/llvm38/lib/llvm-3.8/include/c++/v1")
-set(CMAKE_LDFLAGS "-L/usr/local/opt/llvm38/lib/llvm-3.8/lib")
+set(CMAKE_CXX_FLAGS "-Werror -std=c++14 \
+-fprofile-instr-generate -fcoverage-mapping")
 set(LLVM_ROOT_DIR "${PROJECT_SOURCE_DIR}/llvm")
 set(CLANG_ROOT_DIR "${PROJECT_SOURCE_DIR}/clang")
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/Modules")
@@ -26,11 +22,14 @@ add_subdirectory(src/UI)
 add_subdirectory(gtest)
 add_subdirectory(unittest)
 
-add_custom_target(check
-  COMMAND "${UNITTEST_EXE}"
+add_custom_target(check "${UNITTEST_EXE}"
+  COMMAND "xcrun" "llvm-profdata" "merge"
+  "-o" "${PROJECT_BINARY_DIR}/Coverage.profdata"
+  "${PROJECT_BINARY_DIR}/default.profraw"
   COMMENT "Running unittests ..."
   DEPENDS CLI
-  DEPENDS UnitTest)
+  DEPENDS UnitTest
+  USES_TERMINAL)
 
 add_custom_target(valgrind
   COMMAND "${VALGRIND_EXE}" "--" "${UNITTEST_EXE}" "--gtest_filter=Valgrind.*"

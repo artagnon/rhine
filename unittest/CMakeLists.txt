@@ -33,9 +33,12 @@ add_executable(UnitTest
   "${CMAKE_CURRENT_SOURCE_DIR}/tLowering.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/tBitcode.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/tValgrind.cpp")
+
 set_target_properties(UnitTest PROPERTIES
+  OUTPUT_NAME "unittest"
   LINKER_LANGUAGE CXX
   COMPILE_FLAGS "${LLVM_CXXFLAGS}")
+
 target_link_libraries(UnitTest
   gtest_main
   Toplevel)
