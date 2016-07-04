@@ -6,6 +6,8 @@ if [ $TRAVIS_OS_NAME == linux ] || [ "$(expr substr $(uname -s) 1 5)" == "Linux"
   export PATH=$TOOLS_ROOT:$PATH
 elif [ $TRAVIS_OS_NAME == osx ] || [ "$(uname)" == "Darwin" ]; then
   brew update &&
+  brew tap homebrew/versions &&
+  brew install llvm38 --with-asan &&
   brew unlink cmake &&
   brew install cmake ninja flex &&
   brew link --force flex

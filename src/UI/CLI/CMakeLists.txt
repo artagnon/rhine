@@ -4,7 +4,7 @@ add_executable(CLI
 "${CMAKE_CURRENT_SOURCE_DIR}/Rhine.cpp")
 
 add_custom_command(TARGET CLI
-POST_BUILD COMMAND "xcrun" "llvm-profdata" "merge"
+POST_BUILD COMMAND "llvm-profdata-3.8" "merge"
 "-o" "${PROJECT_BINARY_DIR}/Coverage.profdata"
 "${PROJECT_BINARY_DIR}/default.profraw")
 

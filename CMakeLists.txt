@@ -1,9 +1,12 @@
 cmake_minimum_required(VERSION 2.6)
 project(Rhine)
 
-# set(CMAKE_CXX_COMPILER "/usr/bin/clang++")
-# set(CMAKE_CXX_FLAGS "-fsanitize=address")
-set(CMAKE_CXX_FLAGS "-Werror -std=c++14 -fprofile-instr-generate -fcoverage-mapping")
+set(CMAKE_CXX_COMPILER "clang++-3.8")
+# -fsanitize=address
+set(CMAKE_CXX_FLAGS "-Werror -stdlib=libc++ -std=c++14 \
+  -fprofile-instr-generate -fcoverage-mapping \
+  -I/usr/local/opt/llvm38/lib/llvm-3.8/include/c++/v1")
+set(CMAKE_LDFLAGS "-L/usr/local/opt/llvm38/lib/llvm-3.8/lib")
 set(LLVM_ROOT_DIR "${PROJECT_SOURCE_DIR}/llvm")
 set(CLANG_ROOT_DIR "${PROJECT_SOURCE_DIR}/clang")
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/Modules")
