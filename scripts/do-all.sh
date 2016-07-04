@@ -4,7 +4,7 @@
 ./scripts/install-cmake-ninja-flex.sh && # .tar.bz2 on linux, brew on mac
 git submodule update --init &&
 cd llvm-build &&
-cmake -GNinja -DCMAKE_BUILD_TYPE=Debug ../llvm &&
+cmake -GNinja -DCMAKE_BUILD_TYPE=Debug -DLLVM_TARGETS_TO_BUILD=X86 ../llvm &&
 ninja &&
 export PATH=`pwd`/bin:$PATH &&
 cd ../rhine-build &&
