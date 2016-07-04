@@ -21,8 +21,7 @@ script:
 branches:
   only: master
 cache:
-  ccache: true
-  directories: llvm-build
+  directories: $HOME/rhine/llvm-build
 notifications:
   email: false
   slack:
