@@ -73,6 +73,7 @@ void Resolve::runOnFunction(Function *F) {
           << "argument " + Arg->getName() + " attempting to overshadow "
                                             "previously bound symbol with "
                                             "same name";
+      exit(1);
     }
 
   // For all statements of the form:

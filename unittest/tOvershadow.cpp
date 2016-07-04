@@ -4,32 +4,41 @@
 using namespace rhine;
 
 TEST(Overshadow, Local) {
-  auto SourcePrg = "def main do\n"
-                   "  Handle = 0;\n"
-                   "  Handle = 2;\n"
-                   "end";
-  auto ExpectedErr = "string stream:3:3: error: symbol Handle attempting to "
+  auto SourcePrg =
+      R"rh(
+        def main do
+          Handle = 0;
+          Handle = 2;
+        end
+      )rh";
+  auto ExpectedErr = "string stream:4:11: error: symbol Handle attempting to "
                      "overshadow previously bound symbol with same name";
   EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
 }
 
 TEST(Overshadow, Function) {
-  auto SourcePrg = "def main do\n"
-                   "  ret 3\n"
-                   "end\n"
-                   "def main do\n"
-                   "  ret 2\n"
-                   "end";
-  auto ExpectedErr = "string stream:4:5: error: function main attempting to "
+  auto SourcePrg =
+      R"rh(
+        def main do
+          ret 3
+        end
+        def main do
+          ret 2
+        end
+      )rh";
+  auto ExpectedErr = "string stream:5:13: error: function main attempting to "
                      "overshadow previously bound symbol with same name";
   EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
 }
 
 TEST(Overshadow, Argument) {
-  auto SourcePrg = "def main(main Int) do\n"
-                   "  ret $ main + 2;\n"
-                   "end";
-  auto ExpectedErr = "string stream:1:10: error: argument main attempting to "
+  auto SourcePrg =
+      R"rh(
+        def main(main Int) do
+          ret $ main + 2;
+        end
+      )rh";
+  auto ExpectedErr = "string stream:2:18: error: argument main attempting to "
                      "overshadow previously bound symbol with same name";
   EXPECT_COMPILE_DEATH(SourcePrg, ExpectedErr);
 }
