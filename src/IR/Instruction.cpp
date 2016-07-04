@@ -84,7 +84,7 @@ FunctionType *CallInst::getFTy() const {
 
 std::vector<Type *> CallInst::getATys() const { return getFTy()->getATys(); }
 
-Type *CallInst::getRTy() const { return getFTy()->getRTy(); }
+Type *CallInst::returnType() const { return getFTy()->returnType(); }
 
 Value *CallInst::getCallee() const { return getOperand(-1); }
 

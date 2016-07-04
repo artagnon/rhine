@@ -11,7 +11,7 @@ namespace rhine {
 TypeCoercion::TypeCoercion() : K(nullptr) {}
 
 Value *TypeCoercion::convertValue(ConstantInt *I, IntegerType *DestTy) {
-  auto SourceTy = cast<IntegerType>(I->getRTy());
+  auto SourceTy = cast<IntegerType>(I->returnType());
   auto SourceBitwidth = SourceTy->getBitwidth();
   auto TargetBitwidth = DestTy->getBitwidth();
   if (SourceBitwidth != TargetBitwidth)
@@ -22,7 +22,7 @@ Value *TypeCoercion::convertValue(ConstantInt *I, IntegerType *DestTy) {
 Value *TypeCoercion::convertValue(Value *V, StringType *) {
   if (auto I = dyn_cast<ConstantInt>(V))
     return GlobalString::get(std::to_string(I->val()), K);
-  if (!isa<IntegerType>(V->getRTy()))
+  if (!isa<IntegerType>(V->returnType()))
     return nullptr;
   auto ToStringTy =
       FunctionType::get(StringType::get(K), {IntegerType::get(32, K)}, false);
@@ -35,7 +35,7 @@ Value *TypeCoercion::convertValue(Value *V, StringType *) {
 Value *TypeCoercion::convertValue(Value *V, BoolType *) { return V; }
 
 Value *TypeCoercion::convertValue(Value *V, Type *Ty) {
-  if (V->getRTy() == Ty)
+  if (V->returnType() == Ty)
     return V;
   if (auto STy = dyn_cast<StringType>(Ty))
     return convertValue(V, STy);
@@ -56,7 +56,7 @@ void TypeCoercion::convertOperands(User *U, std::vector<Type *> Tys) {
       continue;
     }
     std::ostringstream ErrMsg;
-    ErrMsg << "Unable to coerce argument from " << *V->getRTy() << " to "
+    ErrMsg << "Unable to coerce argument from " << *V->returnType() << " to "
            << *DestTy;
     DiagnosticPrinter(V->sourceLocation()) << ErrMsg.str();
     exit(1);
@@ -82,7 +82,7 @@ void TypeCoercion::transformInstruction(Instruction *I) {
     exit(1);
   }
   case RT_ReturnInst:
-    convertOperands(cast<User>(I), {I->getRTy()});
+    convertOperands(cast<User>(I), {I->returnType()});
   default:
     return;
   }

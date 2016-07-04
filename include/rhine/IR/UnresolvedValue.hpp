@@ -10,7 +10,8 @@ class Prototype;
 class UnresolvedValue : public User {
 public:
   UnresolvedValue(std::string N, Type *T);
-  virtual ~UnresolvedValue();
+  virtual ~UnresolvedValue() = default;
+
   /// Requires a Name
   static UnresolvedValue *get(std::string N, Type *T);
   static bool classof(const Value *V);

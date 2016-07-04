@@ -53,7 +53,7 @@ public:
   Type(Context *K, RTType ID);
 
   /// Blank.
-  virtual ~Type();
+  virtual ~Type() = default;
 
   /// This is necessary to check the class, without casting.
   RTType getTyID() const;
@@ -101,7 +101,7 @@ class UnType : public Type {
   UnType(Context *K);
 
 public:
-  virtual ~UnType();
+  virtual ~UnType() = default;
   static UnType *get(Context *K);
   static bool classof(const Type *T);
   virtual llvm::Type *toLL(llvm::Module *M) override;
@@ -115,7 +115,7 @@ class VoidType : public Type {
   VoidType();
 
 public:
-  virtual ~VoidType();
+  virtual ~VoidType() = default;
   static VoidType *get(Context *K);
   static bool classof(const Type *T);
   virtual llvm::Type *toLL(llvm::Module *M) override;
@@ -129,7 +129,7 @@ class IntegerType : public Type {
   IntegerType(Context *K, unsigned Width);
 
 public:
-  virtual ~IntegerType();
+  virtual ~IntegerType() = default;
   static IntegerType *get(unsigned Bitwidth, Context *K);
   unsigned getBitwidth();
   static bool classof(const Type *T);
@@ -147,7 +147,7 @@ class BoolType : public Type {
   BoolType();
 
 public:
-  virtual ~BoolType();
+  virtual ~BoolType() = default;
   static BoolType *get(Context *K);
   static bool classof(const Type *T);
   virtual llvm::Type *toLL(llvm::Module *M) override;
@@ -162,7 +162,7 @@ class FloatType : public Type {
   FloatType();
 
 public:
-  virtual ~FloatType();
+  virtual ~FloatType() = default;
   static FloatType *get(Context *K);
   static bool classof(const Type *T);
   virtual llvm::Type *toLL(llvm::Module *M) override;
@@ -177,7 +177,7 @@ class StringType : public Type {
   StringType();
 
 public:
-  virtual ~StringType();
+  virtual ~StringType() = default;
   static StringType *get(Context *K);
   static bool classof(const Type *T);
   virtual llvm::Type *toLL(llvm::Module *M) override;
@@ -196,7 +196,7 @@ class FunctionType : public Type {
   FunctionType(Context *K, Type *RTy, std::vector<Type *> ATys, bool IsV);
 
 public:
-  virtual ~FunctionType();
+  virtual ~FunctionType() = default;
   static FunctionType *get(Type *RTy, std::vector<Type *> ATys, bool IsV);
   static FunctionType *get(Type *RTy);
   static bool classof(const Type *T);
@@ -205,7 +205,7 @@ public:
   void Profile(FoldingSetNodeID &ID) const;
   Type *getATy(unsigned i);
   std::vector<Type *> getATys();
-  Type *getRTy();
+  Type *returnType();
   bool isVariadic() const;
   virtual llvm::Type *toLL(llvm::Module *M) override;
 
@@ -219,7 +219,7 @@ protected:
   PointerType(RTType RTy, Type *CTy);
 
 public:
-  virtual ~PointerType();
+  virtual ~PointerType() = default;
   static PointerType *get(Type *CTy);
   static bool classof(const Type *T);
   static inline void Profile(FoldingSetNodeID &ID, const Type *CTy);
@@ -239,7 +239,7 @@ class TensorType : public PointerType {
   TensorType(Type *CTy, std::vector<size_t> &Dims);
 
 public:
-  virtual ~TensorType();
+  virtual ~TensorType() = default;
   static TensorType *get(Type *CTy, std::vector<size_t> &Dims);
   static bool classof(const Type *T);
   static inline void Profile(FoldingSetNodeID &ID, const Type *CTy,

@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <vector>
 
+#include "rhine/IR/Type.hpp"
 #include "rhine/IR/Value.hpp"
 
 /// Forward declaration
@@ -22,7 +23,7 @@ public:
   Tensor(Type *Ty, std::vector<Value *> Elts);
 
   /// Destructor is a no-op
-  virtual ~Tensor();
+  virtual ~Tensor() = default;
 
   /// Invokes sanity checks on Dims and Elts before calling constructor. Context
   /// is required to construct empty tensor.

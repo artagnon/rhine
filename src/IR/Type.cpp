@@ -1,5 +1,5 @@
-#include "rhine/IR/Context.hpp"
 #include "rhine/IR/Type.hpp"
+#include "rhine/IR/Context.hpp"
 #include <iostream>
 
 using Location = rhine::Parser::Location;
@@ -8,8 +8,6 @@ namespace rhine {
 Type::Type(RTType ID) : TyID(ID) {}
 
 Type::Type(Context *K, RTType ID) : Kontext(K), TyID(ID) {}
-
-Type::~Type() {}
 
 Context *Type::context() { return Kontext; }
 
@@ -25,8 +23,6 @@ __attribute__((used, noinline)) void Type::dump() {
 
 UnType::UnType(Context *K) : Type(K, RT_UnType) {}
 
-UnType::~UnType() {}
-
 UnType *UnType::get(Context *K) {
   auto N = new UnType(K);
   K->UTyCache.push_back(N);
@@ -38,8 +34,6 @@ bool UnType::classof(const Type *T) { return T->getTyID() == RT_UnType; }
 void UnType::print(DiagnosticPrinter &Stream) const { Stream << "UnType"; }
 
 VoidType::VoidType() : Type(RT_VoidType) {}
-
-VoidType::~VoidType() {}
 
 VoidType *VoidType::get(Context *K) {
   auto Uniq = &K->UniqueVoidType;
@@ -53,8 +47,6 @@ void VoidType::print(DiagnosticPrinter &Stream) const { Stream << "Void"; }
 
 IntegerType::IntegerType(Context *K, unsigned Width)
     : Type(K, RT_IntegerType), Bitwidth(Width) {}
-
-IntegerType::~IntegerType() {}
 
 IntegerType *IntegerType::get(unsigned Bitwidth, Context *K) {
   FoldingSetNodeID ID;
@@ -83,8 +75,6 @@ void IntegerType::print(DiagnosticPrinter &Stream) const { Stream << "Int"; }
 
 BoolType::BoolType() : Type(RT_BoolType) {}
 
-BoolType::~BoolType() {}
-
 BoolType *BoolType::get(Context *K) {
   auto Uniq = &K->UniqueBoolType;
   Uniq->Kontext = K;
@@ -97,8 +87,6 @@ void BoolType::print(DiagnosticPrinter &Stream) const { Stream << "Bool"; }
 
 FloatType::FloatType() : Type(RT_FloatType) {}
 
-FloatType::~FloatType() {}
-
 FloatType *FloatType::get(Context *K) {
   auto Uniq = &K->UniqueFloatType;
   Uniq->Kontext = K;
@@ -110,8 +98,6 @@ bool FloatType::classof(const Type *T) { return T->getTyID() == RT_FloatType; }
 void FloatType::print(DiagnosticPrinter &Stream) const { Stream << "Float"; }
 
 StringType::StringType() : Type(RT_StringType) {}
-
-StringType::~StringType() {}
 
 StringType *StringType::get(Context *K) {
   auto Uniq = &K->UniqueStringType;
@@ -129,8 +115,6 @@ FunctionType::FunctionType(Context *K, Type *RTy, std::vector<Type *> ATys,
                            bool IsV)
     : Type(K, RT_FunctionType), ReturnType(RTy), VariadicFlag(IsV),
       ArgumentTypes(ATys) {}
-
-FunctionType::~FunctionType() { ArgumentTypes.clear(); }
 
 FunctionType *FunctionType::get(Type *RTy, std::vector<Type *> ATys, bool IsV) {
   FoldingSetNodeID ID;
@@ -171,7 +155,7 @@ Type *FunctionType::getATy(unsigned i) {
 
 std::vector<Type *> FunctionType::getATys() { return ArgumentTypes; }
 
-Type *FunctionType::getRTy() { return ReturnType; }
+Type *FunctionType::returnType() { return ReturnType; }
 
 bool FunctionType::isVariadic() const { return VariadicFlag; }
 
@@ -195,8 +179,6 @@ void FunctionType::print(DiagnosticPrinter &Stream) const {
 
 PointerType::PointerType(RTType RTy, Type *CTy)
     : Type(CTy->context(), RTy), ContainedType(CTy) {}
-
-PointerType::~PointerType() {}
 
 PointerType *PointerType::get(Type *CTy) {
   FoldingSetNodeID ID;
@@ -233,8 +215,6 @@ void PointerType::print(DiagnosticPrinter &Stream) const {
 TensorType::TensorType(Type *CTy, std::vector<size_t> &Dims)
     : PointerType(RT_TensorType, CTy), Dimensions(Dims) {}
 
-TensorType::~TensorType() {}
-
 TensorType *TensorType::get(Type *CTy, std::vector<size_t> &Dims) {
   FoldingSetNodeID ID;
   void *IP;
@@ -263,9 +243,7 @@ void TensorType::Profile(FoldingSetNodeID &ID) const {
   Profile(ID, ContainedType, Dimensions);
 }
 
-std::vector<size_t> TensorType::getDims() {
-  return Dimensions;
-}
+std::vector<size_t> TensorType::getDims() { return Dimensions; }
 
 void TensorType::print(DiagnosticPrinter &Stream) const {
   Stream << "[" << Dimensions[0];

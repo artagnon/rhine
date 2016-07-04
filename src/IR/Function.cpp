@@ -31,7 +31,7 @@ Module *Prototype::getParent() const { return ParentModule; }
 std::string Prototype::getMangledName() const {
   std::ostringstream Scratch;
   auto FTy = cast<FunctionType>(VTy);
-  Scratch << "std_" << *FTy->getRTy() << "_" << Name << "__";
+  Scratch << "std_" << *FTy->returnType() << "_" << Name << "__";
   auto ATys = FTy->getATys();
   Scratch << *ATys.front();
   ATys.erase(ATys.begin());

@@ -75,7 +75,7 @@ protected:
 
 public:
   Value(Type *VTy, RTValue ID, std::string N = "");
-  virtual ~Value();
+  virtual ~Value() = default;
   Value *get() = delete;
   static bool classof(const Value *V);
   Context *context();
@@ -93,7 +93,7 @@ public:
   /// Get the return type of the Value. For most Values, this is just the type.
   /// CallInst, Function are notable exceptions. Useful in places that just need
   /// to reason about chained expressions.
-  virtual Type *getRTy() const;
+  virtual Type *returnType() const;
 
   /// Setting VTy is necessary in some early Transforms (type inference, type
   /// coercion).

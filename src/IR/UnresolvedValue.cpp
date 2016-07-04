@@ -2,10 +2,8 @@
 #include "rhine/IR/Type.hpp"
 
 namespace rhine {
-UnresolvedValue::UnresolvedValue(std::string N, Type *T) :
-    User(T, RT_UnresolvedValue, 0, N) {}
-
-UnresolvedValue::~UnresolvedValue() {}
+UnresolvedValue::UnresolvedValue(std::string N, Type *T)
+    : User(T, RT_UnresolvedValue, 0, N) {}
 
 UnresolvedValue *UnresolvedValue::get(std::string N, Type *T) {
   return new UnresolvedValue(N, T);
@@ -19,22 +17,15 @@ void UnresolvedValue::print(DiagnosticPrinter &Stream) const {
   Stream << Name << " " << *type();
 }
 
-Argument::Argument(std::string N, Type *T) :
-    User(T, RT_Argument, 0, N) {}
+Argument::Argument(std::string N, Type *T) : User(T, RT_Argument, 0, N) {}
 
 Argument::~Argument() {}
 
-Argument *Argument::get(std::string N, Type *T) {
-  return new Argument(N, T);
-}
+Argument *Argument::get(std::string N, Type *T) { return new Argument(N, T); }
 
-bool Argument::classof(const Value *V) {
-  return V->op() == RT_Argument;
-}
+bool Argument::classof(const Value *V) { return V->op() == RT_Argument; }
 
-void Argument::setParent(Prototype *P) {
-  Parent = P;
-}
+void Argument::setParent(Prototype *P) { Parent = P; }
 
 void Argument::print(DiagnosticPrinter &Stream) const {
   Stream << Name << " " << *type();

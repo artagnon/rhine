@@ -1,15 +1,13 @@
 #include <cstdlib>
 #include <vector>
 
+#include "rhine/IR/Tensor.hpp"
 #include "rhine/IR/Type.hpp"
 #include "rhine/IR/Value.hpp"
-#include "rhine/IR/Tensor.hpp"
 
 namespace rhine {
 Tensor::Tensor(Type *Ty, std::vector<Value *> Elts)
     : Value(Ty, RT_Tensor), Elements(Elts) {}
-
-Tensor::~Tensor() {}
 
 Tensor *Tensor::get(std::vector<size_t> Dims, std::vector<Value *> Elts,
                     Context *K) {
@@ -23,23 +21,17 @@ Tensor *Tensor::get(std::vector<size_t> Dims, std::vector<Value *> Elts,
   auto Ty = Elts.size() ? Elts[0]->type() : IntegerType::get(32, K);
   for (auto Elt : Elts) {
     if (Elt->type() != Ty) {
-      assert (0 && "Inconsistent tensor type");
+      assert(0 && "Inconsistent tensor type");
     }
   }
   return new Tensor(TensorType::get(Ty, Dims), Elts);
 }
 
-TensorType *Tensor::type() const {
-  return cast<TensorType>(Value::type());
-}
+TensorType *Tensor::type() const { return cast<TensorType>(Value::type()); }
 
-std::vector<Value *> Tensor::getElts() const {
-  return Elements;
-}
+std::vector<Value *> Tensor::getElts() const { return Elements; }
 
-bool Tensor::classof(const Value *V) {
-  return V->op() == RT_Tensor;
-}
+bool Tensor::classof(const Value *V) { return V->op() == RT_Tensor; }
 
 void Tensor::print(DiagnosticPrinter &Stream) const {
   Stream << "{ ";

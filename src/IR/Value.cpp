@@ -9,8 +9,6 @@ namespace rhine {
 Value::Value(Type *VTy, RTValue ID, std::string N)
     : VTy(VTy), UseList(nullptr), Name(N), LoweredValue(nullptr), ValID(ID) {}
 
-Value::~Value() {}
-
 bool Value::classof(const Value *V) {
   return V->op() >= RT_UnresolvedValue && V->op() <= RT_BasicBlock;
 }
@@ -25,7 +23,7 @@ RTValue Value::op() const { return ValID; }
 
 Type *Value::type() const { return VTy; }
 
-Type *Value::getRTy() const { return VTy; }
+Type *Value::returnType() const { return VTy; }
 
 llvm::Value *Value::getLoweredValue() const { return LoweredValue; }
 

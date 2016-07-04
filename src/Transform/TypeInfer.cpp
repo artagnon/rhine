@@ -41,7 +41,7 @@ Type *TypeInfer::visit(Prototype *V) { return V->type(); }
 Type *TypeInfer::visit(Function *V) {
   auto FTy = cast<FunctionType>(V->type());
   auto Ty = visit(V->getEntryBlock());
-  if (isa<UnType>(FTy->getRTy())) {
+  if (isa<UnType>(FTy->returnType())) {
     FTy = FunctionType::get(Ty, FTy->getATys(), false);
     V->setType(FTy);
   }
@@ -110,7 +110,7 @@ FunctionType *TypeInfer::followFcnPointer(Type *CalleeTy) {
 
 FunctionType *TypeInfer::followFcnPointers(Value *Callee, Location Loc) {
   if (auto FcnTy = followFcnPointer(Callee->type())) {
-    while (auto DeeperFcn = followFcnPointer(FcnTy->getRTy()))
+    while (auto DeeperFcn = followFcnPointer(FcnTy->returnType()))
       FcnTy = DeeperFcn;
     return FcnTy;
   }
@@ -152,7 +152,7 @@ Type *TypeInfer::visit(CallInst *V) {
   FunctionType *Ty = followFcnPointers(Callee, V->sourceLocation());
   verifyArity(V, Ty);
   V->setType(PointerType::get(Ty));
-  return Ty->getRTy();
+  return Ty->returnType();
 }
 
 Type *TypeInfer::visit(ReturnInst *V) {

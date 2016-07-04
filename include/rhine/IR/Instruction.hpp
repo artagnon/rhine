@@ -79,7 +79,7 @@ public:
   std::vector<Type *> getATys() const;
 
   /// Get the return type of the whole instruction (the underlying function)
-  virtual Type *getRTy() const override;
+  virtual Type *returnType() const override;
 
   /// Get the underlying function that is called
   Value *getCallee() const;

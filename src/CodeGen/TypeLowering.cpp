@@ -42,7 +42,7 @@ llvm::Type *FunctionType::toLL(llvm::Module *M) {
   if (ATys.size() != 1 || !isa<VoidType>(ATys[0]))
     for (auto Ty: getATys())
       ATyAr.push_back(Ty->toLL(M));
-  return llvm::FunctionType::get(getRTy()->toLL(M), ATyAr, isVariadic());
+  return llvm::FunctionType::get(returnType()->toLL(M), ATyAr, isVariadic());
 }
 
 llvm::Type *PointerType::toLL(llvm::Module *M) {

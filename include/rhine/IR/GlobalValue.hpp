@@ -9,7 +9,7 @@ class GlobalString : public User {
 
 public:
   GlobalString(std::string Val, Context *K);
-  virtual ~GlobalString();
+  virtual ~GlobalString() = default;
   void *operator new(size_t s);
   static GlobalString *get(std::string Val, Context *K);
   static bool classof(const Value *V);
