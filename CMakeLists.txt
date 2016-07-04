@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.6)
 project(Rhine)
 
-set(CMAKE_CXX_FLAGS "-Werror -std=c++14")
+set(CMAKE_CXX_FLAGS "-Werror -g -O0 -std=c++11 --coverage")
 # "-fprofile-instr-generate -fcoverage-mapping")
 set(LLVM_ROOT_DIR "${PROJECT_SOURCE_DIR}/llvm")
 set(CLANG_ROOT_DIR "${PROJECT_SOURCE_DIR}/clang")
