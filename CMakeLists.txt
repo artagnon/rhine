@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 2.6)
 project(Rhine)
 
-set(CMAKE_CXX_FLAGS "-Werror -std=c++14 \
--fprofile-instr-generate -fcoverage-mapping")
+set(CMAKE_CXX_FLAGS "-Werror -std=c++14")
+# "-fprofile-instr-generate -fcoverage-mapping")
 set(LLVM_ROOT_DIR "${PROJECT_SOURCE_DIR}/llvm")
 set(CLANG_ROOT_DIR "${PROJECT_SOURCE_DIR}/clang")
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/Modules")
@@ -23,9 +23,9 @@ add_subdirectory(gtest)
 add_subdirectory(unittest)
 
 add_custom_target(check "${UNITTEST_EXE}"
-  COMMAND "xcrun" "llvm-profdata" "merge"
-  "-o" "${PROJECT_BINARY_DIR}/Coverage.profdata"
-  "${PROJECT_BINARY_DIR}/default.profraw"
+#  COMMAND "xcrun" "llvm-profdata" "merge"
+#  "-o" "${PROJECT_BINARY_DIR}/default.profdata"
+#  "${PROJECT_BINARY_DIR}/default.profraw"
   COMMENT "Running unittests ..."
   DEPENDS CLI
   DEPENDS UnitTest
