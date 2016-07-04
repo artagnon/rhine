@@ -1,7 +1,7 @@
+#include "rhine/Toplevel/ParseFacade.hpp"
 #include "rhine/IR/Context.hpp"
 #include "rhine/IR/Module.hpp"
 #include "rhine/Parse/ParseDriver.hpp"
-#include "rhine/Toplevel/ParseFacade.hpp"
 #include "rhine/Transform/LambdaLifting.hpp"
 #include "rhine/Transform/Resolve.hpp"
 #include "rhine/Transform/Scope2Block.hpp"
@@ -18,13 +18,9 @@
 #include <string>
 
 namespace rhine {
-ParseFacade::ParseFacade(std::string PrgString, std::ostream &ErrStream,
-                         bool Debug)
-    : PrgString(PrgString), ErrStream(ErrStream), Debug(Debug) {}
-
 ParseFacade::ParseFacade(const char *PrgString, std::ostream &ErrStream,
                          bool Debug)
-    : PrgString(std::string(PrgString)), ErrStream(ErrStream), Debug(Debug) {}
+    : PrgString(PrgString), ErrStream(ErrStream), Debug(Debug) {}
 
 ParseFacade::~ParseFacade() {}
 
