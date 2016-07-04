@@ -6,7 +6,7 @@
 
 namespace rhine {
 llvm::Function *Prototype::getOrInsert(llvm::Module *M) {
-  auto FnTy = cast<llvm::FunctionType>(getType()->toLL(M));
+  auto FnTy = cast<llvm::FunctionType>(type()->toLL(M));
   auto MangledName = getMangledName();
 
   /// getOrInsertFunction::

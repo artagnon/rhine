@@ -4,17 +4,17 @@
 
 namespace rhine {
 llvm::Constant *ConstantInt::toLL(llvm::Module *M) {
-  auto LLTy = getType()->toLL(M);
+  auto LLTy = type()->toLL(M);
   return llvm::ConstantInt::get(LLTy, val());
 }
 
 llvm::Constant *ConstantBool::toLL(llvm::Module *M) {
-  auto LLTy = getType()->toLL(M);
+  auto LLTy = type()->toLL(M);
   return llvm::ConstantInt::get(LLTy, val());
 }
 
 llvm::Constant *ConstantFloat::toLL(llvm::Module *M) {
-  auto LLTy = getType()->toLL(M);
+  auto LLTy = type()->toLL(M);
   return llvm::ConstantFP::get(LLTy, val());
 }
 

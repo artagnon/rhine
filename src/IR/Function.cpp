@@ -85,7 +85,7 @@ void Prototype::emitArguments(DiagnosticPrinter &Stream) const {
 void Prototype::print(DiagnosticPrinter &Stream) const {
   Stream << "def " << Name;
   emitArguments(Stream);
-  Stream << *getType();
+  Stream << *type();
 }
 
 Function::Function(std::string Name, FunctionType *FTy)
@@ -129,7 +129,7 @@ Function::iterator Function::end() { return Body.end(); }
 void Function::print(DiagnosticPrinter &Stream) const {
   Stream << "def " << Name;
   emitArguments(Stream);
-  Stream << " " << *getType() << " {";
+  Stream << " " << *type() << " {";
   for (auto &BB : Body)
     Stream << std::endl << *BB;
   Stream << "}";

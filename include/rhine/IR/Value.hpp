@@ -86,7 +86,7 @@ public:
 
   /// Required to check class without casting.
   RTValue op() const;
-  Type *getType() const;
+  Type *type() const;
   llvm::Value *getLoweredValue() const;
   void setLoweredValue(llvm::Value *V);
 

@@ -7,9 +7,9 @@
 namespace rhine {
 llvm::Value *Tensor::toLL(llvm::Module *M) {
   auto K = context();
-  auto ElTy = getType()->getCTy()->toLL(M);
+  auto ElTy = type()->getCTy()->toLL(M);
   auto PElTy = llvm::PointerType::get(ElTy, 0);
-  auto Dims = getType()->getDims();
+  auto Dims = type()->getDims();
   auto NElements = 1;
   for (auto Dim : Dims)
     NElements *= Dim;

@@ -10,15 +10,15 @@
 namespace rhine {
 TypeInfer::TypeInfer() : K(nullptr) {}
 
-Type *TypeInfer::visit(ConstantInt *V) { return V->getType(); }
+Type *TypeInfer::visit(ConstantInt *V) { return V->type(); }
 
-Type *TypeInfer::visit(ConstantBool *V) { return V->getType(); }
+Type *TypeInfer::visit(ConstantBool *V) { return V->type(); }
 
-Type *TypeInfer::visit(ConstantFloat *V) { return V->getType(); }
+Type *TypeInfer::visit(ConstantFloat *V) { return V->type(); }
 
-Type *TypeInfer::visit(Tensor *V) { return V->getType(); }
+Type *TypeInfer::visit(Tensor *V) { return V->type(); }
 
-Type *TypeInfer::visit(GlobalString *V) { return V->getType(); }
+Type *TypeInfer::visit(GlobalString *V) { return V->type(); }
 
 Type *TypeInfer::visitHeaderBlock(BasicBlock *BB) {
   if (BB->begin() == BB->end())
@@ -36,10 +36,10 @@ Type *TypeInfer::visit(BasicBlock *BB) {
   return Ret;
 }
 
-Type *TypeInfer::visit(Prototype *V) { return V->getType(); }
+Type *TypeInfer::visit(Prototype *V) { return V->type(); }
 
 Type *TypeInfer::visit(Function *V) {
-  auto FTy = cast<FunctionType>(V->getType());
+  auto FTy = cast<FunctionType>(V->type());
   auto Ty = visit(V->getEntryBlock());
   if (isa<UnType>(FTy->getRTy())) {
     FTy = FunctionType::get(Ty, FTy->getATys(), false);
@@ -57,8 +57,8 @@ Type *TypeInfer::visit(Pointer *V) {
 Type *TypeInfer::visit(BinaryArithInst *V) {
   for (auto Op : V->operands())
     visit(Op);
-  auto LType = V->getOperand(0)->getType();
-  assert(LType == V->getOperand(1)->getType() &&
+  auto LType = V->getOperand(0)->type();
+  assert(LType == V->getOperand(1)->type() &&
          "BinaryArithInst with operands of different types");
   V->setType(LType);
   return LType;
@@ -80,9 +80,9 @@ Type *TypeInfer::visit(IfInst *V) {
 }
 
 Type *TypeInfer::visit(LoadInst *V) {
-  V->setType(V->val()->getType());
+  V->setType(V->val()->type());
   if (!V->isUnTyped())
-    return V->getType();
+    return V->type();
   auto Name = V->val()->getName();
   DiagnosticPrinter(V->sourceLocation()) << "untyped symbol " + Name;
   exit(1);
@@ -97,7 +97,7 @@ Type *TypeInfer::visit(StoreInst *V) {
 
 Type *TypeInfer::visit(Argument *V) {
   if (!V->isUnTyped())
-    return V->getType();
+    return V->type();
   DiagnosticPrinter(V->sourceLocation()) << "untyped argument " + V->getName();
   exit(1);
 }
@@ -109,14 +109,14 @@ FunctionType *TypeInfer::followFcnPointer(Type *CalleeTy) {
 }
 
 FunctionType *TypeInfer::followFcnPointers(Value *Callee, Location Loc) {
-  if (auto FcnTy = followFcnPointer(Callee->getType())) {
+  if (auto FcnTy = followFcnPointer(Callee->type())) {
     while (auto DeeperFcn = followFcnPointer(FcnTy->getRTy()))
       FcnTy = DeeperFcn;
     return FcnTy;
   }
   std::ostringstream ErrMsg;
   ErrMsg << Callee->getName() << " was expected to be a pointer to a function"
-         << " but was instead found to be of type " << *Callee->getType();
+         << " but was instead found to be of type " << *Callee->type();
   DiagnosticPrinter(Loc) << ErrMsg.str();
   exit(1);
 }
@@ -124,7 +124,7 @@ FunctionType *TypeInfer::followFcnPointers(Value *Callee, Location Loc) {
 void TypeInfer::verifyArity(CallInst *V, FunctionType *Ty) {
   std::vector<Type *> OpTys;
   for (auto Op : V->operands())
-    OpTys.push_back(Op->getType());
+    OpTys.push_back(Op->type());
   auto ATys = Ty->getATys();
   unsigned OpSize = OpTys.size();
   unsigned Arity = ATys.size();
@@ -185,7 +185,7 @@ Type *TypeInfer::visit(IndexingInst *V) {
 Type *TypeInfer::visit(BindInst *V) {
   V->setType(visit(V->val()));
   assert(!V->isUnTyped() && "unable to type infer BindInst");
-  return V->getType();
+  return V->type();
 }
 
 Type *TypeInfer::visit(MallocInst *V) {

@@ -75,7 +75,7 @@ Function *Parser::buildFcn(std::string FcnName,
                            Location &FcnLoc) {
   std::vector<Type *> ATys;
   for (auto Sym : ArgList)
-    ATys.push_back(Sym->getType());
+    ATys.push_back(Sym->type());
   auto FTy = FunctionType::get(ReturnType, ATys, false);
   auto Fcn = Function::get(FcnName, FTy);
   Fcn->setArguments(ArgList);

@@ -60,7 +60,7 @@ Instruction *Parser::parseMutate(Value *Op0, bool Optional) {
     writeError("expected ':='", Optional);
   else {
     if (auto Rhs = parseAssignable(Optional)) {
-      auto UnRes = UnresolvedValue::get(Op0->getName(), Rhs->getType());
+      auto UnRes = UnresolvedValue::get(Op0->getName(), Rhs->type());
       auto Inst = StoreInst::get(UnRes, Rhs);
       Inst->setSourceLocation(Op0->sourceLocation());
       return Inst;

@@ -66,7 +66,7 @@ void *CallInst::operator new(size_t S, unsigned N) {
 CallInst *CallInst::get(Value *Callee, std::vector<Value *> Ops) {
   auto NumOps = Ops.size();
   auto Name = Callee->getName();
-  auto Obj = new (NumOps + 1) CallInst(Callee->getType(), NumOps, Name);
+  auto Obj = new (NumOps + 1) CallInst(Callee->type(), NumOps, Name);
   Obj->NumAllocatedOps = NumOps + 1;
   Obj->setOperand(-1, Callee);
   for (unsigned OpN = 0; OpN < NumOps; OpN++)
@@ -77,7 +77,7 @@ CallInst *CallInst::get(Value *Callee, std::vector<Value *> Ops) {
 bool CallInst::classof(const Value *V) { return V->op() == RT_CallInst; }
 
 FunctionType *CallInst::getFTy() const {
-  auto PTy = cast<PointerType>(getType());
+  auto PTy = cast<PointerType>(type());
   assert(PTy && "Illegal call to getFTy() before type inference");
   return cast<FunctionType>(PTy->getCTy());
 }
@@ -95,7 +95,7 @@ void CallInst::print(DiagnosticPrinter &Stream) const {
 }
 
 AbstractBindInst::AbstractBindInst(RTValue RTVal, std::string N, Value *V)
-    : Instruction(V->getType(), RTVal, 1, N) {
+    : Instruction(V->type(), RTVal, 1, N) {
   setOperand(0, V);
   setSourceLocation(V->sourceLocation());
 }
@@ -134,9 +134,7 @@ MallocInst *MallocInst::get(std::string N, Value *V) {
   return new MallocInst(N, V);
 }
 
-bool MallocInst::classof(const Value *V) {
-  return V->op() == RT_MallocInst;
-}
+bool MallocInst::classof(const Value *V) { return V->op() == RT_MallocInst; }
 
 Value *MallocInst::val() { return AbstractBindInst::val(); }
 
@@ -147,7 +145,7 @@ void MallocInst::print(DiagnosticPrinter &Stream) const {
 }
 
 LoadInst::LoadInst(MallocInst *M)
-    : Instruction(M->getType(), RT_LoadInst, 1, M->getName()) {
+    : Instruction(M->type(), RT_LoadInst, 1, M->getName()) {
   setOperand(0, M);
 }
 
@@ -166,9 +164,8 @@ void LoadInst::print(DiagnosticPrinter &Stream) const {
 }
 
 StoreInst::StoreInst(Value *MallocedValue, Value *NewValue)
-    : Instruction(MallocedValue->getType(), RT_StoreInst, 2) {
-  assert(MallocedValue->getType() == NewValue->getType() &&
-         "Type mismatch in store");
+    : Instruction(MallocedValue->type(), RT_StoreInst, 2) {
+  assert(MallocedValue->type() == NewValue->type() && "Type mismatch in store");
   setOperand(0, MallocedValue);
   setOperand(1, NewValue);
 }
@@ -181,9 +178,7 @@ StoreInst *StoreInst::get(Value *MallocedValue, Value *NewValue) {
   return new StoreInst(MallocedValue, NewValue);
 }
 
-bool StoreInst::classof(const Value *V) {
-  return V->op() == RT_StoreInst;
-}
+bool StoreInst::classof(const Value *V) { return V->op() == RT_StoreInst; }
 
 Value *StoreInst::getMallocedValue() const { return getOperand(0); }
 
@@ -205,14 +200,12 @@ void *ReturnInst::operator new(size_t S, unsigned N) {
 ReturnInst *ReturnInst::get(Value *V, Context *K) {
   if (!V)
     return new (0) ReturnInst(VoidType::get(K), true);
-  auto Obj = new (1) ReturnInst(V->getType(), false);
+  auto Obj = new (1) ReturnInst(V->type(), false);
   Obj->setOperand(0, V);
   return Obj;
 }
 
-bool ReturnInst::classof(const Value *V) {
-  return V->op() == RT_ReturnInst;
-}
+bool ReturnInst::classof(const Value *V) { return V->op() == RT_ReturnInst; }
 
 void ReturnInst::setVal(Value *V) { setOperand(0, V); }
 
@@ -237,7 +230,7 @@ void *TerminatorInst::operator new(size_t S) {
 }
 
 TerminatorInst *TerminatorInst::get(Value *V) {
-  auto Obj = new TerminatorInst(V->getType());
+  auto Obj = new TerminatorInst(V->type());
   Obj->setOperand(0, V);
   return Obj;
 }
@@ -303,7 +296,7 @@ void *IndexingInst::operator new(size_t S, unsigned N) {
 
 IndexingInst *IndexingInst::get(Value *V, std::vector<Value *> &Idxes) {
   auto NumOps = Idxes.size();
-  auto Inst = new (NumOps + 1) IndexingInst(V->getType(), NumOps);
+  auto Inst = new (NumOps + 1) IndexingInst(V->type(), NumOps);
   Inst->NumAllocatedOps = NumOps + 1;
   Inst->setOperand(-1, V);
   for (unsigned OpN = 0; OpN < NumOps; OpN++)

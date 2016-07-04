@@ -39,7 +39,7 @@ llvm::Value *BasicBlock::getPhiValueFromBranchBlock(llvm::Module *M) {
         std::make_pair(K->Builder->GetInsertBlock(), BlockValue));
   }
   K->Builder->SetInsertPoint(MergeBlockContainer);
-  auto VTy = back()->getType();
+  auto VTy = back()->type();
   if (!isa<VoidType>(VTy)) {
     auto PN = K->Builder->CreatePHI(VTy->toLL(M), 2, "iftmp");
     for (auto In : PhiIncoming) {

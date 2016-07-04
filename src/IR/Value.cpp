@@ -23,7 +23,7 @@ Location Value::sourceLocation() { return SourceLoc; }
 
 RTValue Value::op() const { return ValID; }
 
-Type *Value::getType() const { return VTy; }
+Type *Value::type() const { return VTy; }
 
 Type *Value::getRTy() const { return VTy; }
 

@@ -55,7 +55,7 @@ llvm::Value *MallocInst::toLL(llvm::Module *M) {
   CHECK_LoweredValue;
   auto K = context();
   auto V = val()->toLL(M);
-  auto RhTy = val()->getType();
+  auto RhTy = val()->type();
   auto Ty = RhTy->toLL(M);
   auto DL = DataLayout(M);
   auto Sz = DL.getTypeSizeInBits(Ty) / 8;
@@ -129,7 +129,7 @@ llvm::Value *IndexingInst::toLL(llvm::Module *M) {
   auto Indices = getIndices();
   if (auto IndexingInto = BoundValue->getLoweredValue()) {
     llvm::Value *SumIdx = ConstantInt::get(0, 32, K)->toLL(M);
-    auto Dims = cast<TensorType>(Op0->getType())->getDims();
+    auto Dims = cast<TensorType>(Op0->type())->getDims();
     Dims.erase(Dims.begin());
     Dims.push_back(1);
     for (size_t i = 0; i < Dims.size(); i++) {

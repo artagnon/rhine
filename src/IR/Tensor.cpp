@@ -20,17 +20,17 @@ Tensor *Tensor::get(std::vector<size_t> Dims, std::vector<Value *> Elts,
   assert(Elts.size() == DimAccumulator &&
          "Mismatched dimensions and number of elements in tensor");
   assert(Elts.size() || K && "Context not supplied for empty tensor");
-  auto Ty = Elts.size() ? Elts[0]->getType() : IntegerType::get(32, K);
+  auto Ty = Elts.size() ? Elts[0]->type() : IntegerType::get(32, K);
   for (auto Elt : Elts) {
-    if (Elt->getType() != Ty) {
+    if (Elt->type() != Ty) {
       assert (0 && "Inconsistent tensor type");
     }
   }
   return new Tensor(TensorType::get(Ty, Dims), Elts);
 }
 
-TensorType *Tensor::getType() const {
-  return cast<TensorType>(Value::getType());
+TensorType *Tensor::type() const {
+  return cast<TensorType>(Value::type());
 }
 
 std::vector<Value *> Tensor::getElts() const {
@@ -50,6 +50,6 @@ void Tensor::print(DiagnosticPrinter &Stream) const {
       Stream << ", " << *Elt;
     }
   }
-  Stream << " } ~" << *getType() << std::endl;
+  Stream << " } ~" << *type() << std::endl;
 }
 }

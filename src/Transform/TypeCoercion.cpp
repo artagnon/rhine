@@ -76,7 +76,7 @@ void TypeCoercion::transformInstruction(Instruction *I) {
       return;
     }
     std::ostringstream ErrMsg;
-    ErrMsg << "Unable to coerce conditional from type " << *Cond->getType()
+    ErrMsg << "Unable to coerce conditional from type " << *Cond->type()
            << " to Bool";
     DiagnosticPrinter(Cond->sourceLocation()) << ErrMsg.str();
     exit(1);

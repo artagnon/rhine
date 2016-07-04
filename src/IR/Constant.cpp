@@ -7,16 +7,12 @@ namespace rhine {
 Constant::Constant(Type *Ty, RTValue ID, unsigned NumOps, std::string Name)
     : User(Ty, ID, NumOps, Name) {}
 
-Constant::~Constant() {}
-
 bool Constant::classof(const Value *V) {
   return V->op() >= RT_ConstantInt && V->op() <= RT_ConstantFloat;
 }
 
 ConstantInt::ConstantInt(int Val, unsigned Bitwidth, Context *K)
     : Constant(IntegerType::get(Bitwidth, K), RT_ConstantInt), Val(Val) {}
-
-ConstantInt::~ConstantInt() {}
 
 void *ConstantInt::operator new(size_t s) { return User::operator new(s); }
 
@@ -31,13 +27,11 @@ ConstantInt *ConstantInt::get(int Val, unsigned Bitwidth, Context *K) {
   return CInt;
 }
 
-IntegerType *ConstantInt::getType() const {
-  return cast<IntegerType>(Value::getType());
+IntegerType *ConstantInt::type() const {
+  return cast<IntegerType>(Value::type());
 }
 
-bool ConstantInt::classof(const Value *V) {
-  return V->op() == RT_ConstantInt;
-}
+bool ConstantInt::classof(const Value *V) { return V->op() == RT_ConstantInt; }
 
 int ConstantInt::val() const { return Val; }
 
@@ -57,13 +51,11 @@ void ConstantInt::Profile(FoldingSetNodeID &ID, const Type *Ty,
 void ConstantInt::Profile(FoldingSetNodeID &ID) const { Profile(ID, VTy, Val); }
 
 void ConstantInt::print(DiagnosticPrinter &Stream) const {
-  Stream << Val << " " << *getType();
+  Stream << Val << " " << *type();
 }
 
 ConstantBool::ConstantBool(bool Val, Context *K)
     : Constant(BoolType::get(K), RT_ConstantBool), Val(Val) {}
-
-ConstantBool::~ConstantBool() {}
 
 void *ConstantBool::operator new(size_t s) { return User::operator new(s); }
 
@@ -78,8 +70,8 @@ ConstantBool *ConstantBool::get(bool Val, Context *K) {
   return CBool;
 }
 
-BoolType *ConstantBool::getType() const {
-  return cast<BoolType>(Value::getType());
+BoolType *ConstantBool::type() const {
+  return cast<BoolType>(Value::type());
 }
 
 bool ConstantBool::classof(const Value *V) {
@@ -99,13 +91,11 @@ void ConstantBool::Profile(FoldingSetNodeID &ID) const {
 }
 
 void ConstantBool::print(DiagnosticPrinter &Stream) const {
-  Stream << Val << " " << *getType();
+  Stream << Val << " " << *type();
 }
 
 ConstantFloat::ConstantFloat(float Val, Context *K)
     : Constant(FloatType::get(K), RT_ConstantFloat), Val(Val) {}
-
-ConstantFloat::~ConstantFloat() {}
 
 void *ConstantFloat::operator new(size_t s) { return User::operator new(s); }
 
@@ -120,8 +110,8 @@ ConstantFloat *ConstantFloat::get(float Val, Context *K) {
   return CFlt;
 }
 
-FloatType *ConstantFloat::getType() const {
-  return cast<FloatType>(Value::getType());
+FloatType *ConstantFloat::type() const {
+  return cast<FloatType>(Value::type());
 }
 
 bool ConstantFloat::classof(const Value *V) {
@@ -141,20 +131,18 @@ void ConstantFloat::Profile(FoldingSetNodeID &ID) const {
 }
 
 void ConstantFloat::print(DiagnosticPrinter &Stream) const {
-  Stream << Val << " " << *getType();
+  Stream << Val << " " << *type();
 }
 
 Pointer::Pointer(Value *V, Type *Ty)
     : Constant(Ty, RT_Pointer, 0, V->getName()), Val(V) {}
-
-Pointer::~Pointer() {}
 
 void *Pointer::operator new(size_t s) { return User::operator new(s); }
 
 Pointer *Pointer::get(Value *V) {
   FoldingSetNodeID ID;
   void *IP;
-  auto Ty = PointerType::get(V->getType());
+  auto Ty = PointerType::get(V->type());
   Pointer::Profile(ID, Ty, V);
   auto K = V->context();
   if (auto Ptr = K->PtrCache.FindNodeOrInsertPos(ID, IP))
@@ -164,8 +152,8 @@ Pointer *Pointer::get(Value *V) {
   return Ptr;
 }
 
-PointerType *Pointer::getType() const {
-  return cast<PointerType>(Value::getType());
+PointerType *Pointer::type() const {
+  return cast<PointerType>(Value::type());
 }
 
 bool Pointer::classof(const Value *V) { return V->op() == RT_Pointer; }

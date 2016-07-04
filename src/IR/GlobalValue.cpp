@@ -20,6 +20,6 @@ bool GlobalString::classof(const Value *V) {
 std::string GlobalString::val() { return Val; }
 
 void GlobalString::print(DiagnosticPrinter &Stream) const {
-  Stream << "'" << Val << "' " << *getType();
+  Stream << "'" << Val << "' " << *type();
 }
 }
