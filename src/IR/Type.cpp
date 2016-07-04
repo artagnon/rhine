@@ -204,7 +204,7 @@ void PointerType::Profile(FoldingSetNodeID &ID) const {
   Profile(ID, ContainedType);
 }
 
-Type *PointerType::getCTy() { return ContainedType; }
+Type *PointerType::containedType() { return ContainedType; }
 
 size_t PointerType::getSize() { return 8; }
 

@@ -11,7 +11,7 @@ namespace rhine {
 llvm::Value *CallInst::toLL(llvm::Module *M) {
   CHECK_LoweredValue;
   auto K = context();
-  auto RTy = cast<FunctionType>(cast<PointerType>(VTy)->getCTy())->returnType();
+  auto RTy = cast<FunctionType>(cast<PointerType>(VTy)->containedType())->returnType();
   auto CalleeFn = getCallee()->toLL(M);
 
   // Prepare arguments to call

@@ -33,8 +33,7 @@ add_custom_target(valgrind
   DEPENDS CLI
   DEPENDS UnitTest)
 
-add_custom_target(valgrind-all
-  COMMAND "${VALGRIND_EXE}" "${UNITTEST_EXE}"
+add_custom_target(valgrind-all "${VALGRIND_EXE}" "${UNITTEST_EXE}"
   COMMENT "Running valgrind comprehensive tests ..."
   DEPENDS CLI
   DEPENDS UnitTest)

@@ -46,6 +46,6 @@ llvm::Type *FunctionType::toLL(llvm::Module *M) {
 }
 
 llvm::Type *PointerType::toLL(llvm::Module *M) {
-  return llvm::PointerType::get(getCTy()->toLL(M), 0);
+  return llvm::PointerType::get(containedType()->toLL(M), 0);
 }
 }

@@ -224,7 +224,7 @@ public:
   static bool classof(const Type *T);
   static inline void Profile(FoldingSetNodeID &ID, const Type *CTy);
   void Profile(FoldingSetNodeID &ID) const;
-  Type *getCTy();
+  Type *containedType();
   size_t getSize();
   virtual llvm::Type *toLL(llvm::Module *M) override;
 

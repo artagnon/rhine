@@ -104,7 +104,7 @@ Type *TypeInfer::visit(Argument *V) {
 
 FunctionType *TypeInfer::followFcnPointer(Type *CalleeTy) {
   if (auto PointerTy = dyn_cast<PointerType>(CalleeTy))
-    return dyn_cast<FunctionType>(PointerTy->getCTy());
+    return dyn_cast<FunctionType>(PointerTy->containedType());
   return nullptr;
 }
 
@@ -178,8 +178,8 @@ Type *TypeInfer::visit(TerminatorInst *V) {
 Type *TypeInfer::visit(IndexingInst *V) {
   auto Ty = cast<TensorType>(visit(V->val()));
   assert(!isa<UnType>(Ty) && "unable to infer type of Tensor");
-  V->setType(Ty->getCTy());
-  return Ty->getCTy();
+  V->setType(Ty->containedType());
+  return Ty->containedType();
 }
 
 Type *TypeInfer::visit(BindInst *V) {
