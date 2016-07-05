@@ -21,6 +21,8 @@ CmpHelperEQ(bool InvertMatch, const char *NeedleExpr, const char *HaystackExpr,
             std::string Needle, std::string Haystack) {
   using namespace ::testing::internal;
 
+  auto OriginalNeedle = Needle;
+  auto OriginalHaystack = Haystack;
   auto isWS = [](char Candidate) {
     return Candidate == '\n' || Candidate == ' ';
   };
@@ -34,9 +36,9 @@ CmpHelperEQ(bool InvertMatch, const char *NeedleExpr, const char *HaystackExpr,
   }
   return ::testing::AssertionFailure()
          << "Expected (" << NeedleExpr << ") is:" << std::endl
-         << "\"" << Needle << "\"" << std::endl
+         << "\"" << OriginalNeedle << "\"" << std::endl
          << "Actual (" << HaystackExpr << ") is:" << std::endl
-         << "\"" << Haystack << "\"";
+         << "\"" << OriginalHaystack << "\"";
 }
 
 /// Strip whitespace and tell if expected is a substring of actual.

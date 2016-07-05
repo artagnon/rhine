@@ -32,6 +32,7 @@ add_executable(UnitTest
   "${CMAKE_CURRENT_SOURCE_DIR}/tTensor.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/tLowering.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/tBitcode.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/tCLI.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/tValgrind.cpp")
 
 set_target_properties(UnitTest PROPERTIES
