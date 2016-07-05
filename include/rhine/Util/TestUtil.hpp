@@ -83,9 +83,9 @@ void EXPECT_LL(const char *SourcePrg, Ts... Matchers) {
 template <typename... Ts>
 void EXPECT_OUTPUT(const char *SourcePrg, Ts... Matchers) {
   ParseFacade Pf(SourcePrg);
-  auto Handle = Pf.jitAction(ParseSource::STRING, PostParseAction::LLString);
+  auto FHandle = Pf.jitAction(ParseSource::STRING, PostParseAction::LLString);
   testing::internal::CaptureStdout();
-  Handle();
+  FHandle();
   std::string ActualOut = testing::internal::GetCapturedStdout();
   for (auto ExpectedOut : {Matchers...})
     EXPECT_STREQ(ExpectedOut, ActualOut.c_str());

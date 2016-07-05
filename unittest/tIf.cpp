@@ -115,19 +115,25 @@ TEST(If, MergeInBranch) {
   EXPECT_OUTPUT(SourcePrg, "245");
 }
 
-TEST(If, DISABLED_PhiAssignment) {
-  auto SourcePrg = "def main do\n"
-                   "  x =\n"
-                   "    if false do 2\n"
-                   "    else 3\n"
-                   "    end\n"
-                   "  print x\n"
-                   "end";
+TEST(If, PhiAssignment) {
+  auto SourcePrg =
+      R"rh(
+          def main do
+            x =
+              if false do 2
+              else 3
+              end
+            print x
+          end
+        )rh";
+  auto ExpectedLL =
+      "call void (i8*, ...) @std_Void_print__String(i8* %toString)";
   auto ExpectedOut = "3";
+  EXPECT_LL(SourcePrg, ExpectedLL);
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
 
-TEST(If, DISABLED_PhiAssignment_FunctionPointer) {
+TEST(If, PhiAssignment_FunctionPointer) {
   auto SourcePrg = "def addCandidate(A Int, B Int) do\n"
                    "  ret $ A + B\n"
                    "end\n"

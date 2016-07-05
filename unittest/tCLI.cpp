@@ -54,5 +54,5 @@ TEST(CLI, Stdin) {
         }
       )ll";
   EXPECT_PRED_FORMAT2(StripWSisSubstring<>, ExpectedErr, ActualErr);
-  EXPECT_PRED_FORMAT2(StripWSisSubstring<>, "2173", ActualOut);
+  EXPECT_STREQ("2173\n", ActualOut.c_str());
 }

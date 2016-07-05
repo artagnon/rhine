@@ -26,8 +26,7 @@ private:
 };
 
 template <typename NodeTy>
-class IListIterator
-    : public std::iterator<std::bidirectional_iterator_tag, NodeTy> {
+class IListIterator : public std::iterator<std::forward_iterator_tag, NodeTy> {
 public:
   /// Iterator requires a IListNode for initialization.
   IListIterator(NodeTy *N) : Node(N) {}
@@ -132,7 +131,9 @@ public:
   /// Like std::vector::erase, but O(1)
   void erase(iterator Start, iterator End) {
     // This is required because not all Sentinel values are pointer-equal.
-    if (Start->prev()->isSentinel() && End->isSentinel()) { clear(); }
+    if (Start->prev()->isSentinel() && End->isSentinel()) {
+      clear();
+    }
     Start->prev()->setNext(*End);
     End->setPrev(Start->prev());
   }

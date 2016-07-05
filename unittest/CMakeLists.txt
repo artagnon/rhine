@@ -35,6 +35,10 @@ add_executable(UnitTest
   "${CMAKE_CURRENT_SOURCE_DIR}/tCLI.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/tValgrind.cpp")
 
+add_custom_command(TARGET UnitTest
+  PRE_BUILD COMMAND "find" "${PROJECT_BINARY_DIR}" "-name"
+  "\\*.gcda" "-exec" "rm" "{}" "\\;")
+
 set_target_properties(UnitTest PROPERTIES
   OUTPUT_NAME "unittest"
   LINKER_LANGUAGE CXX

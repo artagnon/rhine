@@ -22,7 +22,7 @@ TEST(Lambda, BasicExecution) {
   EXPECT_OUTPUT(SourcePrg, ExpectedOut);
 }
 
-TEST(Lambda, DISABLED_InsideIf) {
+TEST(Lambda, InsideIf) {
   auto SourcePrg = "def main(Input Int) do"
                    "  if false do\n"
                    "    print $ 3 + Input\n"

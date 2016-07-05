@@ -9,13 +9,14 @@ namespace rhine {
 BasicBlock::BasicBlock(Type *Ty, std::string N,
                        iterator_range<inst_iterator> InstRange)
     : Value(Ty, RT_BasicBlock, N), Parent(nullptr) {
+  // While appending, we change the next() of the member we're inserting.
+  std::vector<Instruction *> TheList;
   for (auto I : InstRange) {
     I->setParent(this);
-    InstList.append(I);
+    TheList.push_back(I);
   }
-  if (InstRange.begin() != InstRange.end()) {
-    InstRange.end()->setNext(*InstRange.begin());
-    InstRange.begin()->setPrev(*InstRange.end());
+  for (auto I : TheList) {
+    InstList.append(I);
   }
 }
 
