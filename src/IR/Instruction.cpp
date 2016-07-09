@@ -9,7 +9,7 @@ bool Instruction::classof(const Value *V) {
   return V->op() >= RT_AddInst && V->op() <= RT_IndexingInst;
 }
 
-BasicBlock *Instruction::getParent() const { return Parent; }
+BasicBlock *Instruction::parent() const { return Parent; }
 
 void Instruction::setParent(BasicBlock *P) { Parent = P; }
 
@@ -86,10 +86,10 @@ std::vector<Type *> CallInst::getATys() const { return getFTy()->getATys(); }
 
 Type *CallInst::returnType() const { return getFTy()->returnType(); }
 
-Value *CallInst::getCallee() const { return getOperand(-1); }
+Value *CallInst::callee() const { return getOperand(-1); }
 
 void CallInst::print(DiagnosticPrinter &Stream) const {
-  Stream << getCallee()->getName() << " " << *VTy;
+  Stream << callee()->getName() << " " << *VTy;
   for (auto O : getOperands())
     Stream << std::endl << *O;
 }

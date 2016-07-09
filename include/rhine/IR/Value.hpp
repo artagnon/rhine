@@ -109,7 +109,7 @@ public:
   void setName(std::string Str);
 
   /// Type cannot be lowered in itself.
-  virtual llvm::Value *toLL(llvm::Module *M) = 0;
+  virtual llvm::Value *generate(llvm::Module *M) = 0;
 
   /// Stuff coming in from a DiagnosticPrinter object.
   friend DiagnosticPrinter &operator<<(DiagnosticPrinter &Stream,

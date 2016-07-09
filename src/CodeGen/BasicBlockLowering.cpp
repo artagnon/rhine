@@ -27,7 +27,7 @@ llvm::Value *BasicBlock::getPhiValueFromBranchBlock(llvm::Module *M) {
   /// The IfInst.
   auto BrInst = cast<IfInst>(back());
   K->Builder->SetInsertPoint(BranchBlock);
-  K->Builder->CreateCondBr(BrInst->getConditional()->toLL(M),
+  K->Builder->CreateCondBr(BrInst->getConditional()->generate(M),
                            BranchContainers[0].second,
                            BranchContainers[1].second);
   std::vector<std::pair<llvm::BasicBlock *, llvm::Value *>> PhiIncoming;
@@ -41,7 +41,7 @@ llvm::Value *BasicBlock::getPhiValueFromBranchBlock(llvm::Module *M) {
   K->Builder->SetInsertPoint(MergeBlockContainer);
   auto VTy = back()->type();
   if (!isa<VoidType>(VTy)) {
-    auto PN = K->Builder->CreatePHI(VTy->toLL(M), 2, "iftmp");
+    auto PN = K->Builder->CreatePHI(VTy->generate(M), 2, "iftmp");
     for (auto In : PhiIncoming) {
       PN->addIncoming(In.second, In.first);
     }
@@ -55,9 +55,9 @@ llvm::Value *BasicBlock::toValuesLL(llvm::Module *M) {
     return nullptr;
   InstListType::iterator It;
   for (It = begin(); std::next(It) != end(); ++It)
-    It->toLL(M);
+    It->generate(M);
   auto PossibleBrInst = *It;
-  auto Ret = PossibleBrInst->toLL(M);
+  auto Ret = PossibleBrInst->generate(M);
   if (auto MergeBlock = getMergeBlock())
     return MergeBlock->toValuesLL(M);
   return Ret;
@@ -71,7 +71,7 @@ llvm::BasicBlock *BasicBlock::toContainerLL(llvm::Module *M) {
   return Ret;
 }
 
-llvm::Value *BasicBlock::toLL(llvm::Module *M) {
+llvm::Value *BasicBlock::generate(llvm::Module *M) {
   CHECK_LoweredValue;
   toContainerLL(M);
   auto Ret = toValuesLL(M);

@@ -4,7 +4,7 @@
 #include "rhine/IR/Context.hpp"
 
 namespace rhine {
-llvm::Value *GlobalString::toLL(llvm::Module *M) {
+llvm::Value *GlobalString::generate(llvm::Module *M) {
   // Returns GEP to GlobalStringPtr, which is a Value; data itself is in
   // constant storage.
   auto K = context();

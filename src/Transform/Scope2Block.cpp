@@ -24,7 +24,7 @@ static void setPredParentSucc(BasicBlock *Block,
 
 void Scope2Block::cleaveBlockAtBranches(BasicBlock *Cleavee,
                                         BasicBlock *ReturnTo) {
-  auto Parent = Cleavee->getParent();
+  auto Parent = Cleavee->parent();
   auto It = std::find_if(Cleavee->begin(), Cleavee->end(),
                          [](Instruction *Arg) { return isa<IfInst>(Arg); });
   if (It == Cleavee->end())

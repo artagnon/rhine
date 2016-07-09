@@ -16,8 +16,8 @@ public:
   static UnresolvedValue *get(std::string N, Type *T);
   static bool classof(const Value *V);
 
-  /// toLL
-  virtual llvm::Value *toLL(llvm::Module *M) override;
+  /// generate
+  virtual llvm::Value *generate(llvm::Module *M) override;
 
 protected:
   virtual void print(DiagnosticPrinter &Stream) const override;
@@ -31,7 +31,7 @@ public:
   virtual ~Argument();
   static Argument *get(std::string N, Type *T);
   static bool classof(const Value *V);
-  virtual llvm::Value *toLL(llvm::Module *M) override;
+  virtual llvm::Value *generate(llvm::Module *M) override;
   void setParent(Prototype *P);
 
 protected:

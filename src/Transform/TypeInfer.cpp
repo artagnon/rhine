@@ -141,14 +141,14 @@ void TypeInfer::verifyArity(CallInst *V, FunctionType *Ty) {
 void TypeInfer::visitCalleeAndOperands(CallInst *V) {
   for (auto Op : V->operands())
     visit(Op);
-  auto Callee = V->getCallee();
+  auto Callee = V->callee();
   visit(Callee);
   assert(!isa<UnresolvedValue>(Callee));
 }
 
 Type *TypeInfer::visit(CallInst *V) {
   visitCalleeAndOperands(V);
-  auto Callee = V->getCallee();
+  auto Callee = V->callee();
   FunctionType *Ty = followFcnPointers(Callee, V->sourceLocation());
   verifyArity(V, Ty);
   V->setType(PointerType::get(Ty));

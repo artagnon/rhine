@@ -29,10 +29,10 @@ public:
   static bool classof(const Value *V);
 
   /// Back pointer to parent isn't present in Value, just Instruction
-  BasicBlock *getParent() const;
+  BasicBlock *parent() const;
   void setParent(BasicBlock *P);
 
-  virtual llvm::Value *toLL(llvm::Module *M) = 0;
+  virtual llvm::Value *generate(llvm::Module *M) = 0;
 
 protected:
   virtual void print(DiagnosticPrinter &Stream) const = 0;
@@ -52,7 +52,7 @@ public:
   /// Context inferred from Op0
   static BinaryArithInst *get(RTValue InstSelector, Value *Op0, Value *Op1);
   static bool classof(const Value *V);
-  virtual llvm::Value *toLL(llvm::Module *M) override;
+  virtual llvm::Value *generate(llvm::Module *M) override;
 
 protected:
   void print(DiagnosticPrinter &Stream) const override;
@@ -82,10 +82,10 @@ public:
   virtual Type *returnType() const override;
 
   /// Get the underlying function that is called
-  Value *getCallee() const;
+  Value *callee() const;
 
   /// There should be little cleverness in lowering
-  virtual llvm::Value *toLL(llvm::Module *M) override;
+  virtual llvm::Value *generate(llvm::Module *M) override;
 
 protected:
   void print(DiagnosticPrinter &Stream) const override;
@@ -101,7 +101,7 @@ public:
   virtual Value *val() = 0;
   virtual void setVal(Value *V) = 0;
 
-  virtual llvm::Value *toLL(llvm::Module *M) override = 0;
+  virtual llvm::Value *generate(llvm::Module *M) override = 0;
 };
 
 class BindInst : public AbstractBindInst {
@@ -115,7 +115,7 @@ public:
   virtual Value *val() override;
   virtual void setVal(Value *V) override;
 
-  virtual llvm::Value *toLL(llvm::Module *M) override;
+  virtual llvm::Value *generate(llvm::Module *M) override;
 
 protected:
   void print(DiagnosticPrinter &Stream) const override;
@@ -132,7 +132,7 @@ public:
   virtual Value *val() override;
   virtual void setVal(Value *V) override;
 
-  virtual llvm::Value *toLL(llvm::Module *M) override;
+  virtual llvm::Value *generate(llvm::Module *M) override;
 
 protected:
   void print(DiagnosticPrinter &Stream) const override;
@@ -149,7 +149,7 @@ public:
   static LoadInst *get(MallocInst *M);
   Value *val() const;
   static bool classof(const Value *V);
-  virtual llvm::Value *toLL(llvm::Module *M) override;
+  virtual llvm::Value *generate(llvm::Module *M) override;
 
 protected:
   void print(DiagnosticPrinter &Stream) const override;
@@ -173,7 +173,7 @@ public:
   Value *getNewValue() const;
 
   static bool classof(const Value *V);
-  virtual llvm::Value *toLL(llvm::Module *M) override;
+  virtual llvm::Value *generate(llvm::Module *M) override;
 
 protected:
   void print(DiagnosticPrinter &Stream) const override;
@@ -196,7 +196,7 @@ public:
   Value *val();
   void setVal(Value *V);
 
-  virtual llvm::Value *toLL(llvm::Module *M) override;
+  virtual llvm::Value *generate(llvm::Module *M) override;
 
 protected:
   void print(DiagnosticPrinter &Stream) const override;
@@ -224,7 +224,7 @@ public:
   void setVal(Value *V);
 
   /// Codegen to the contained value directly.
-  virtual llvm::Value *toLL(llvm::Module *M) override;
+  virtual llvm::Value *generate(llvm::Module *M) override;
 
 protected:
   void print(DiagnosticPrinter &Stream) const override;
@@ -249,7 +249,7 @@ public:
 
   /// Codegens until the phi node, and returns the value to optionally use it in
   /// an assignment.
-  virtual llvm::Value *toLL(llvm::Module *M) override;
+  virtual llvm::Value *generate(llvm::Module *M) override;
 
 protected:
   void print(DiagnosticPrinter &Stream) const override;
@@ -282,7 +282,7 @@ public:
   std::vector<Value *> getIndices() const;
 
   /// Somewhat non-trivial
-  virtual llvm::Value *toLL(llvm::Module *M) override;
+  virtual llvm::Value *generate(llvm::Module *M) override;
 
 protected:
   void print(DiagnosticPrinter &Stream) const override;

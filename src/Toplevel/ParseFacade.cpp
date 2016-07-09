@@ -49,7 +49,7 @@ std::string ParseFacade::parseAction(ParseSource SrcE,
   UniqueModule.reset(new llvm::Module("main", TransformedIR->llvmContext()));
   auto RawModule = UniqueModule.get();
   if (ActionE != PostParseAction::IRString)
-    TransformedIR->toLL(RawModule);
+    TransformedIR->generate(RawModule);
   switch (ActionE) {
   case PostParseAction::IRString:
     return irToPP(TransformedIR.get());

@@ -4,12 +4,12 @@
 #include "rhine/IR/Context.hpp"
 
 namespace rhine {
-llvm::Value *UnresolvedValue::toLL(llvm::Module *M) {
+llvm::Value *UnresolvedValue::generate(llvm::Module *M) {
   DiagnosticPrinter(SourceLoc) << "ResolveValues not run properly" + Name;
   exit(1);
 }
 
-llvm::Value *Argument::toLL(llvm::Module *M) {
+llvm::Value *Argument::generate(llvm::Module *M) {
   if (LoweredValue) {
     return LoweredValue;
   }

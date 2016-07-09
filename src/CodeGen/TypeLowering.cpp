@@ -3,16 +3,16 @@
 #include "rhine/IR/Value.hpp"
 
 namespace rhine {
-llvm::Type *UnType::toLL(llvm::Module *M) {
-  assert(0 && "Cannot toLL() without inferring type");
+llvm::Type *UnType::generate(llvm::Module *M) {
+  assert(0 && "Cannot generate() without inferring type");
   return nullptr;
 }
 
-llvm::Type *VoidType::toLL(llvm::Module *M) {
+llvm::Type *VoidType::generate(llvm::Module *M) {
   return context()->Builder->getVoidTy();
 }
 
-llvm::Type *IntegerType::toLL(llvm::Module *M) {
+llvm::Type *IntegerType::generate(llvm::Module *M) {
   switch (Bitwidth) {
   case 32:
     return context()->Builder->getInt32Ty();
@@ -24,28 +24,28 @@ llvm::Type *IntegerType::toLL(llvm::Module *M) {
   return nullptr;
 }
 
-llvm::Type *BoolType::toLL(llvm::Module *M) {
+llvm::Type *BoolType::generate(llvm::Module *M) {
   return context()->Builder->getInt1Ty();
 }
 
-llvm::Type *FloatType::toLL(llvm::Module *M) {
+llvm::Type *FloatType::generate(llvm::Module *M) {
   return context()->Builder->getFloatTy();
 }
 
-llvm::Type *StringType::toLL(llvm::Module *M) {
+llvm::Type *StringType::generate(llvm::Module *M) {
   return context()->Builder->getInt8PtrTy();
 }
 
-llvm::Type *FunctionType::toLL(llvm::Module *M) {
+llvm::Type *FunctionType::generate(llvm::Module *M) {
   auto ATys = getATys();
   std::vector<llvm::Type *> ATyAr;
   if (ATys.size() != 1 || !isa<VoidType>(ATys[0]))
     for (auto Ty: getATys())
-      ATyAr.push_back(Ty->toLL(M));
-  return llvm::FunctionType::get(returnType()->toLL(M), ATyAr, isVariadic());
+      ATyAr.push_back(Ty->generate(M));
+  return llvm::FunctionType::get(returnType()->generate(M), ATyAr, isVariadic());
 }
 
-llvm::Type *PointerType::toLL(llvm::Module *M) {
-  return llvm::PointerType::get(containedType()->toLL(M), 0);
+llvm::Type *PointerType::generate(llvm::Module *M) {
+  return llvm::PointerType::get(containedType()->generate(M), 0);
 }
 }

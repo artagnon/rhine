@@ -3,22 +3,22 @@
 #include "rhine/IR/Context.hpp"
 
 namespace rhine {
-llvm::Constant *ConstantInt::toLL(llvm::Module *M) {
-  auto LLTy = type()->toLL(M);
+llvm::Constant *ConstantInt::generate(llvm::Module *M) {
+  auto LLTy = type()->generate(M);
   return llvm::ConstantInt::get(LLTy, val());
 }
 
-llvm::Constant *ConstantBool::toLL(llvm::Module *M) {
-  auto LLTy = type()->toLL(M);
+llvm::Constant *ConstantBool::generate(llvm::Module *M) {
+  auto LLTy = type()->generate(M);
   return llvm::ConstantInt::get(LLTy, val());
 }
 
-llvm::Constant *ConstantFloat::toLL(llvm::Module *M) {
-  auto LLTy = type()->toLL(M);
+llvm::Constant *ConstantFloat::generate(llvm::Module *M) {
+  auto LLTy = type()->generate(M);
   return llvm::ConstantFP::get(LLTy, val());
 }
 
-llvm::Constant *Pointer::toLL(llvm::Module *M) {
+llvm::Constant *Pointer::generate(llvm::Module *M) {
   auto K = context();
   auto Name = val()->getName();
   if (auto Val = val()->getLoweredValue())

@@ -18,7 +18,7 @@ TEST(BasicBlock, SetInstructionParent)
   auto Module = Pf.parseToIR<>(ParseSource::STRING);
   for (auto BB : *Module->front())
     for (auto Inst : *BB)
-      ASSERT_EQ(cast<rhine::Instruction>(Inst)->getParent(), BB);
+      ASSERT_EQ(cast<rhine::Instruction>(Inst)->parent(), BB);
 }
 
 TEST(BasicBlock, SetNestedInstructionParent)
@@ -33,7 +33,7 @@ TEST(BasicBlock, SetNestedInstructionParent)
     for (auto Inst : *BB)
       if (auto OuterInst = dyn_cast<rhine::Instruction>(Inst))
         if (auto NestedInst = dyn_cast<rhine::Instruction>(OuterInst->getOperand(0)))
-          ASSERT_EQ(cast<rhine::Instruction>(NestedInst)->getParent(), BB);
+          ASSERT_EQ(cast<rhine::Instruction>(NestedInst)->parent(), BB);
 }
 
 TEST(BasicBlock, NonInstruction)

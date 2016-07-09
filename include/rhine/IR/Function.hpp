@@ -32,7 +32,7 @@ public:
   static Prototype *get(std::string Name, FunctionType *FTy);
   static bool classof(const Value *V);
   void setParent(Module *Parent);
-  Module *getParent() const;
+  Module *parent() const;
   virtual std::string getMangledName() const;
   llvm::Function *getOrInsert(llvm::Module *M);
   void setArguments(std::vector<Argument *> &L);
@@ -42,7 +42,7 @@ public:
   arg_iterator arg_begin();
   arg_iterator arg_end();
   iterator_range<arg_iterator> args();
-  virtual llvm::Constant *toLL(llvm::Module *M) override;
+  virtual llvm::Constant *generate(llvm::Module *M) override;
 
 protected:
   virtual void print(DiagnosticPrinter &Stream) const override;
@@ -85,7 +85,7 @@ public:
   /// the arguments, and then calls codegenAllBlocks(). Finally, extracts the
   /// (ReturnInst from the ExitBlock | nullptr), and returns the LLVM IR of the
   /// corresponding function, codegened in module M.
-  virtual llvm::Constant *toLL(llvm::Module *M) override;
+  virtual llvm::Constant *generate(llvm::Module *M) override;
 
 protected:
   virtual void print(DiagnosticPrinter &Stream) const override;

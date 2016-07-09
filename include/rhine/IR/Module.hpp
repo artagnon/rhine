@@ -46,7 +46,7 @@ public:
     M.print(Stream);
     return Stream;
   }
-  virtual void toLL(llvm::Module *M);
+  virtual void generate(llvm::Module *M);
   typedef std::vector<Function *>::iterator iterator;
 
   /// std methods that pass through to the underlying ContainedFs

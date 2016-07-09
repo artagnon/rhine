@@ -2,8 +2,8 @@
 #include "rhine/IR/Context.hpp"
 
 namespace rhine {
-void Module::toLL(llvm::Module *M) {
+void Module::generate(llvm::Module *M) {
   for (auto F : val())
-    F->toLL(M);
+    F->generate(M);
 }
 }

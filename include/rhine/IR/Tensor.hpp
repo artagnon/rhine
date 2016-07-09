@@ -38,7 +38,7 @@ public:
   static bool classof(const Value *V);
 
   /// Intricate malloc + gep operations
-  virtual llvm::Value *toLL(llvm::Module *M) override;
+  virtual llvm::Value *generate(llvm::Module *M) override;
 
   /// Printed like Lua tables, { ... }
   virtual void print(DiagnosticPrinter &Stream) const override;

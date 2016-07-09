@@ -32,5 +32,5 @@ TEST(Module, SetFunctionParent)
   ParseFacade Pf(SourcePrg);
   auto Module = Pf.parseToIR<>(ParseSource::STRING);
   for (auto F : *Module)
-    EXPECT_EQ(F->getParent(), Module);
+    EXPECT_EQ(F->parent(), Module);
 }

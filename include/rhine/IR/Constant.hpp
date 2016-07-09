@@ -23,7 +23,7 @@ public:
   Constant(Type *Ty, RTValue ID, unsigned NumOps = 0, std::string N = "");
   virtual ~Constant() = default;
   static bool classof(const Value *V);
-  virtual llvm::Constant *toLL(llvm::Module *M) = 0;
+  virtual llvm::Constant *generate(llvm::Module *M) = 0;
 
 protected:
   virtual void print(DiagnosticPrinter &Stream) const = 0;
@@ -44,7 +44,7 @@ public:
   static inline void Profile(FoldingSetNodeID &ID, const Type *Ty,
                              const int &Val);
   void Profile(FoldingSetNodeID &ID) const;
-  virtual llvm::Constant *toLL(llvm::Module *M) override;
+  virtual llvm::Constant *generate(llvm::Module *M) override;
 
 protected:
   virtual void print(DiagnosticPrinter &Stream) const override;
@@ -64,7 +64,7 @@ public:
   static inline void Profile(FoldingSetNodeID &ID, const Type *Ty,
                              const bool &Val);
   void Profile(FoldingSetNodeID &ID) const;
-  virtual llvm::Constant *toLL(llvm::Module *M) override;
+  virtual llvm::Constant *generate(llvm::Module *M) override;
 
 protected:
   virtual void print(DiagnosticPrinter &Stream) const override;
@@ -84,7 +84,7 @@ public:
   static inline void Profile(FoldingSetNodeID &ID, const Type *Ty,
                              const float &Val);
   void Profile(FoldingSetNodeID &ID) const;
-  virtual llvm::Constant *toLL(llvm::Module *M) override;
+  virtual llvm::Constant *generate(llvm::Module *M) override;
 
 protected:
   virtual void print(DiagnosticPrinter &Stream) const override;
@@ -105,7 +105,7 @@ public:
   static inline void Profile(FoldingSetNodeID &ID, const Type *Ty,
                              const Value *Val);
   void Profile(FoldingSetNodeID &ID) const;
-  virtual llvm::Constant *toLL(llvm::Module *M) override;
+  virtual llvm::Constant *generate(llvm::Module *M) override;
 
 protected:
   virtual void print(DiagnosticPrinter &Stream) const override;

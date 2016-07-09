@@ -6,7 +6,7 @@
 
 namespace rhine {
 llvm::Function *Prototype::getOrInsert(llvm::Module *M) {
-  auto FnTy = cast<llvm::FunctionType>(type()->toLL(M));
+  auto FnTy = cast<llvm::FunctionType>(type()->generate(M));
   auto MangledName = getMangledName();
 
   /// getOrInsertFunction::
@@ -29,10 +29,10 @@ llvm::Function *Prototype::getOrInsert(llvm::Module *M) {
   exit(1);
 }
 
-llvm::Constant *Prototype::toLL(llvm::Module *M) { return getOrInsert(M); }
+llvm::Constant *Prototype::generate(llvm::Module *M) { return getOrInsert(M); }
 
 /// Codegen function prototype and all blocks.
-llvm::Constant *Function::toLL(llvm::Module *M) {
+llvm::Constant *Function::generate(llvm::Module *M) {
   if (LoweredValue) {
     return cast<llvm::Constant>(LoweredValue);
   }
@@ -52,7 +52,7 @@ llvm::Constant *Function::toLL(llvm::Module *M) {
   setLoweredValue(CurrentFunction);
 
   /// Codegens all blocks
-  getEntryBlock()->toLL(M);
+  getEntryBlock()->generate(M);
 
   auto ExitBlock = getExitBlock();
   if (!ExitBlock->size() || !isa<ReturnInst>(ExitBlock->back()))

@@ -14,7 +14,7 @@ public:
   static GlobalString *get(std::string Val, Context *K);
   static bool classof(const Value *V);
   std::string val();
-  virtual llvm::Value *toLL(llvm::Module *M) override;
+  virtual llvm::Value *generate(llvm::Module *M) override;
 
 protected:
   virtual void print(DiagnosticPrinter &Stream) const override;

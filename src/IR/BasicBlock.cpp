@@ -114,7 +114,7 @@ Instruction *BasicBlock::back() {
 
 void BasicBlock::setParent(Function *F) { Parent = F; }
 
-Function *BasicBlock::getParent() const { return Parent; }
+Function *BasicBlock::parent() const { return Parent; }
 
 bool BasicBlock::hasNoPredecessors() const { return !Predecessors.size(); }
 

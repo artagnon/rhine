@@ -48,7 +48,7 @@ void Resolve::lookupReplaceUse(UnresolvedValue *V, Use &U, BasicBlock *Block) {
   ///                Callee of CallInst
   auto SourceLoc = U->sourceLocation();
   if (auto Inst = dyn_cast<CallInst>(U->getUser()))
-    if (Inst->getCallee() == V) {
+    if (Inst->callee() == V) {
       DiagnosticPrinter(SourceLoc) << "unbound function " + Name;
       exit(1);
     }

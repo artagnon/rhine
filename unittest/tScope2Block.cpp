@@ -44,7 +44,7 @@ TEST(Scope2Block, SetParent) {
   auto Mod = Pf.parseToIR<Scope2Block>(ParseSource::STRING);
   auto MainF = Mod->front();
   auto EntryBlock = MainF->getEntryBlock();
-  ASSERT_EQ(EntryBlock->getParent(), MainF);
+  ASSERT_EQ(EntryBlock->parent(), MainF);
 }
 
 TEST(Scope2Block, SetIfParent) {
@@ -55,7 +55,7 @@ TEST(Scope2Block, SetIfParent) {
   auto Mod = Pf.parseToIR<Scope2Block>(ParseSource::STRING);
   auto MainF = Mod->front();
   for (auto BB : *MainF) {
-    ASSERT_EQ(BB->getParent(), MainF);
+    ASSERT_EQ(BB->parent(), MainF);
   }
 }
 
@@ -67,7 +67,7 @@ TEST(Scope2Block, Lambda) {
   auto Mod = Pf.parseToIR<Scope2Block>(ParseSource::STRING);
   for (auto F : *Mod)
     for (auto BB : *F)
-      ASSERT_EQ(BB->getParent(), F);
+      ASSERT_EQ(BB->parent(), F);
 }
 
 TEST(Scope2Block, LambdaInsideIf) {
@@ -80,7 +80,7 @@ TEST(Scope2Block, LambdaInsideIf) {
   auto Mod = Pf.parseToIR<Scope2Block>(ParseSource::STRING);
   for (auto F : *Mod)
     for (auto BB : *F)
-      ASSERT_EQ(BB->getParent(), F);
+      ASSERT_EQ(BB->parent(), F);
 }
 
 TEST(Scope2Block, NestedIf) {

@@ -52,7 +52,7 @@ public:
   /// end
   ///
   /// The instructions marked with asterisks are codegened directly by us.
-  virtual llvm::Value *toLL(llvm::Module *M) override;
+  virtual llvm::Value *generate(llvm::Module *M) override;
 
   /// Special methods to generate just the BasicBlock, and lower just the
   /// ValueList (choosing last value after evaluating all values)
@@ -94,7 +94,7 @@ public:
 
   /// Acessors to Parent function
   void setParent(Function *F);
-  Function *getParent() const;
+  Function *parent() const;
 
   /// Quick method to check if Predecessors/Successors is empty
   bool hasNoPredecessors() const;

@@ -52,7 +52,7 @@ Prototype *Externals::getMappingProto(std::string S) {
 
 llvm::Constant *Externals::mappingVal(std::string S, llvm::Module *M) {
   if (auto Proto = getMappingProto(S)) {
-    auto FTy = cast<llvm::FunctionType>(Proto->type()->toLL(M));
+    auto FTy = cast<llvm::FunctionType>(Proto->type()->generate(M));
     return M->getOrInsertFunction(Proto->getMangledName(), FTy);
   }
   return nullptr;

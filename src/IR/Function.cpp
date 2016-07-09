@@ -26,7 +26,7 @@ bool Prototype::classof(const Value *V) {
 
 void Prototype::setParent(Module *Parent) { ParentModule = Parent; }
 
-Module *Prototype::getParent() const { return ParentModule; }
+Module *Prototype::parent() const { return ParentModule; }
 
 std::string Prototype::getMangledName() const {
   std::ostringstream Scratch;

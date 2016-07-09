@@ -84,7 +84,7 @@ public:
   void dump();
 
   /// Lowered to constant uniq'ed types, no need to cache.
-  virtual llvm::Type *toLL(llvm::Module *M) = 0;
+  virtual llvm::Type *generate(llvm::Module *M) = 0;
 
 protected:
   virtual void print(DiagnosticPrinter &Stream) const = 0;
@@ -104,7 +104,7 @@ public:
   virtual ~UnType() = default;
   static UnType *get(Context *K);
   static bool classof(const Type *T);
-  virtual llvm::Type *toLL(llvm::Module *M) override;
+  virtual llvm::Type *generate(llvm::Module *M) override;
 
 protected:
   virtual void print(DiagnosticPrinter &Stream) const override;
@@ -118,7 +118,7 @@ public:
   virtual ~VoidType() = default;
   static VoidType *get(Context *K);
   static bool classof(const Type *T);
-  virtual llvm::Type *toLL(llvm::Module *M) override;
+  virtual llvm::Type *generate(llvm::Module *M) override;
 
 protected:
   virtual void print(DiagnosticPrinter &Stream) const override;
@@ -135,7 +135,7 @@ public:
   static bool classof(const Type *T);
   static inline void Profile(FoldingSetNodeID &ID, const unsigned &W);
   void Profile(FoldingSetNodeID &ID) const;
-  virtual llvm::Type *toLL(llvm::Module *M) override;
+  virtual llvm::Type *generate(llvm::Module *M) override;
 
 protected:
   unsigned Bitwidth;
@@ -150,7 +150,7 @@ public:
   virtual ~BoolType() = default;
   static BoolType *get(Context *K);
   static bool classof(const Type *T);
-  virtual llvm::Type *toLL(llvm::Module *M) override;
+  virtual llvm::Type *generate(llvm::Module *M) override;
 
 protected:
   virtual void print(DiagnosticPrinter &Stream) const override;
@@ -165,7 +165,7 @@ public:
   virtual ~FloatType() = default;
   static FloatType *get(Context *K);
   static bool classof(const Type *T);
-  virtual llvm::Type *toLL(llvm::Module *M) override;
+  virtual llvm::Type *generate(llvm::Module *M) override;
 
 protected:
   virtual void print(DiagnosticPrinter &Stream) const override;
@@ -180,7 +180,7 @@ public:
   virtual ~StringType() = default;
   static StringType *get(Context *K);
   static bool classof(const Type *T);
-  virtual llvm::Type *toLL(llvm::Module *M) override;
+  virtual llvm::Type *generate(llvm::Module *M) override;
 
 protected:
   virtual void print(DiagnosticPrinter &Stream) const override;
@@ -207,7 +207,7 @@ public:
   std::vector<Type *> getATys();
   Type *returnType();
   bool isVariadic() const;
-  virtual llvm::Type *toLL(llvm::Module *M) override;
+  virtual llvm::Type *generate(llvm::Module *M) override;
 
 protected:
   virtual void print(DiagnosticPrinter &Stream) const override;
@@ -226,7 +226,7 @@ public:
   void Profile(FoldingSetNodeID &ID) const;
   Type *containedType();
   size_t getSize();
-  virtual llvm::Type *toLL(llvm::Module *M) override;
+  virtual llvm::Type *generate(llvm::Module *M) override;
 
 protected:
   virtual void print(DiagnosticPrinter &Stream) const override;

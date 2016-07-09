@@ -8,16 +8,16 @@
 #include <iostream>
 
 namespace rhine {
-llvm::Value *CallInst::toLL(llvm::Module *M) {
+llvm::Value *CallInst::generate(llvm::Module *M) {
   CHECK_LoweredValue;
   auto K = context();
   auto RTy = cast<FunctionType>(cast<PointerType>(VTy)->containedType())->returnType();
-  auto CalleeFn = getCallee()->toLL(M);
+  auto CalleeFn = callee()->generate(M);
 
   // Prepare arguments to call
   std::vector<llvm::Value *> LLOps;
   for (auto Op : getOperands()) {
-    LLOps.push_back(Op->toLL(M));
+    LLOps.push_back(Op->generate(M));
   }
   if (isa<VoidType>(RTy)) {
     K->Builder->CreateCall(CalleeFn, LLOps);
@@ -26,11 +26,11 @@ llvm::Value *CallInst::toLL(llvm::Module *M) {
   returni(K->Builder->CreateCall(CalleeFn, LLOps, Name));
 }
 
-llvm::Value *BinaryArithInst::toLL(llvm::Module *M) {
+llvm::Value *BinaryArithInst::generate(llvm::Module *M) {
   CHECK_LoweredValue;
   auto K = context();
-  auto Op0 = getOperand(0)->toLL(M);
-  auto Op1 = getOperand(1)->toLL(M);
+  auto Op0 = getOperand(0)->generate(M);
+  auto Op1 = getOperand(1)->generate(M);
   switch (op()) {
   case RT_AddInst:
     returni(K->Builder->CreateAdd(Op0, Op1));
@@ -46,22 +46,22 @@ llvm::Value *BinaryArithInst::toLL(llvm::Module *M) {
   return nullptr;
 }
 
-llvm::Value *BindInst::toLL(llvm::Module *M) {
+llvm::Value *BindInst::generate(llvm::Module *M) {
   CHECK_LoweredValue;
-  returni(getOperand(0)->toLL(M));
+  returni(getOperand(0)->generate(M));
 }
 
-llvm::Value *MallocInst::toLL(llvm::Module *M) {
+llvm::Value *MallocInst::generate(llvm::Module *M) {
   CHECK_LoweredValue;
   auto K = context();
-  auto V = val()->toLL(M);
+  auto V = val()->generate(M);
   auto RhTy = val()->type();
-  auto Ty = RhTy->toLL(M);
+  auto Ty = RhTy->generate(M);
   auto DL = DataLayout(M);
   auto Sz = DL.getTypeSizeInBits(Ty) / 8;
   if (!Sz)
     Sz = 1;
-  auto ITy = IntegerType::get(64, K)->toLL(M);
+  auto ITy = IntegerType::get(64, K)->generate(M);
   auto CallArg = llvm::ConstantInt::get(ITy, Sz);
   auto MallocF = Externals::get(K)->mappingVal("malloc", M);
   auto Slot = K->Builder->CreateCall(MallocF, {CallArg}, "Alloc");
@@ -71,12 +71,12 @@ llvm::Value *MallocInst::toLL(llvm::Module *M) {
   returni(CastSlot);
 }
 
-llvm::Value *StoreInst::toLL(llvm::Module *M) {
+llvm::Value *StoreInst::generate(llvm::Module *M) {
   CHECK_LoweredValue;
   auto K = context();
   auto Op0 = getMallocedValue();
   if (auto MValue = Op0->getLoweredValue()) {
-    auto NewValue = getNewValue()->toLL(M);
+    auto NewValue = getNewValue()->generate(M);
     returni(K->Builder->CreateStore(NewValue, MValue));
   }
   DiagnosticPrinter(sourceLocation())
@@ -84,7 +84,7 @@ llvm::Value *StoreInst::toLL(llvm::Module *M) {
   exit(1);
 }
 
-llvm::Value *LoadInst::toLL(llvm::Module *M) {
+llvm::Value *LoadInst::generate(llvm::Module *M) {
   CHECK_LoweredValue;
   auto K = context();
   if (auto Result = val()->getLoweredValue()) {
@@ -95,22 +95,22 @@ llvm::Value *LoadInst::toLL(llvm::Module *M) {
   exit(1);
 }
 
-llvm::Value *ReturnInst::toLL(llvm::Module *M) {
+llvm::Value *ReturnInst::generate(llvm::Module *M) {
   CHECK_LoweredValue;
   auto K = context();
   if (auto ReturnVal = val())
-    return K->Builder->CreateRet(ReturnVal->toLL(M));
+    return K->Builder->CreateRet(ReturnVal->generate(M));
   returni(K->Builder->CreateRet(nullptr));
 }
 
-llvm::Value *TerminatorInst::toLL(llvm::Module *M) {
+llvm::Value *TerminatorInst::generate(llvm::Module *M) {
   CHECK_LoweredValue;
-  returni(val()->toLL(M));
+  returni(val()->generate(M));
 }
 
-llvm::Value *IfInst::toLL(llvm::Module *M) {
+llvm::Value *IfInst::generate(llvm::Module *M) {
   CHECK_LoweredValue;
-  returni(getParent()->getPhiValueFromBranchBlock(M));
+  returni(parent()->getPhiValueFromBranchBlock(M));
 }
 
 static size_t multiplyDown(std::vector<size_t> &Dims, size_t Top) {
@@ -121,21 +121,21 @@ static size_t multiplyDown(std::vector<size_t> &Dims, size_t Top) {
   return Mul;
 }
 
-llvm::Value *IndexingInst::toLL(llvm::Module *M) {
+llvm::Value *IndexingInst::generate(llvm::Module *M) {
   CHECK_LoweredValue;
   auto K = context();
   auto BoundValue = cast<BindInst>(val());
   auto Op0 = BoundValue->val();
   auto Indices = getIndices();
   if (auto IndexingInto = BoundValue->getLoweredValue()) {
-    llvm::Value *SumIdx = ConstantInt::get(0, 32, K)->toLL(M);
+    llvm::Value *SumIdx = ConstantInt::get(0, 32, K)->generate(M);
     auto Dims = cast<TensorType>(Op0->type())->getDims();
     Dims.erase(Dims.begin());
     Dims.push_back(1);
     for (size_t i = 0; i < Dims.size(); i++) {
       auto ToMul = multiplyDown(Dims, i);
-      auto Muller = ConstantInt::get(ToMul, 32, K)->toLL(M);
-      auto Adder = K->Builder->CreateMul(Indices[i]->toLL(M), Muller);
+      auto Muller = ConstantInt::get(ToMul, 32, K)->generate(M);
+      auto Adder = K->Builder->CreateMul(Indices[i]->generate(M), Muller);
       SumIdx = K->Builder->CreateAdd(SumIdx, Adder);
     }
     auto ToLoad = K->Builder->CreateInBoundsGEP(IndexingInto, SumIdx);
