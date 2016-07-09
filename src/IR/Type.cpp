@@ -59,7 +59,7 @@ IntegerType *IntegerType::get(unsigned Bitwidth, Context *K) {
   return T;
 }
 
-unsigned IntegerType::getBitwidth() { return Bitwidth; }
+unsigned IntegerType::bitwidth() { return Bitwidth; }
 
 bool IntegerType::classof(const Type *T) {
   return T->getTyID() == RT_IntegerType;

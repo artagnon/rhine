@@ -16,6 +16,7 @@
 using namespace llvm;
 
 namespace rhine {
+class Bytecode;
 class Context;
 class Module;
 
@@ -42,7 +43,8 @@ public:
   arg_iterator arg_begin();
   arg_iterator arg_end();
   iterator_range<arg_iterator> args();
-  virtual llvm::Constant *generate(llvm::Module *M) override;
+  llvm::Constant *generate(llvm::Module *M) override;
+  void generate(Bytecode *B) override;
 
 protected:
   virtual void print(DiagnosticPrinter &Stream) const override;
@@ -85,7 +87,8 @@ public:
   /// the arguments, and then calls codegenAllBlocks(). Finally, extracts the
   /// (ReturnInst from the ExitBlock | nullptr), and returns the LLVM IR of the
   /// corresponding function, codegened in module M.
-  virtual llvm::Constant *generate(llvm::Module *M) override;
+  llvm::Constant *generate(llvm::Module *M) override;
+  void generate(Bytecode *B) override;
 
 protected:
   virtual void print(DiagnosticPrinter &Stream) const override;

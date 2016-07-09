@@ -131,7 +131,7 @@ class IntegerType : public Type {
 public:
   virtual ~IntegerType() = default;
   static IntegerType *get(unsigned Bitwidth, Context *K);
-  unsigned getBitwidth();
+  unsigned bitwidth();
   static bool classof(const Type *T);
   static inline void Profile(FoldingSetNodeID &ID, const unsigned &W);
   void Profile(FoldingSetNodeID &ID) const;

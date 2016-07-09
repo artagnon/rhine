@@ -12,10 +12,10 @@ TypeCoercion::TypeCoercion() : K(nullptr) {}
 
 Value *TypeCoercion::convertValue(ConstantInt *I, IntegerType *DestTy) {
   auto SourceTy = cast<IntegerType>(I->returnType());
-  auto SourceBitwidth = SourceTy->getBitwidth();
-  auto TargetBitwidth = DestTy->getBitwidth();
-  if (SourceBitwidth != TargetBitwidth)
-    I->setType(IntegerType::get(TargetBitwidth, K));
+  auto SourceBitwidth = SourceTy->bitwidth();
+  auto Tarbitwidth = DestTy->bitwidth();
+  if (SourceBitwidth != Tarbitwidth)
+    I->setType(IntegerType::get(Tarbitwidth, K));
   return I;
 }
 

@@ -14,6 +14,7 @@ namespace rhine {
 class Use;
 class Type;
 class Context;
+class Bytecode;
 class BasicBlock;
 class FunctionType;
 
@@ -25,7 +26,7 @@ public:
   /// NumOperands are initialized to this value
   Instruction(Type *Ty, RTValue ID, unsigned NumOps, std::string Name = "");
 
-  virtual ~Instruction() {}
+  virtual ~Instruction() = default;
   static bool classof(const Value *V);
 
   /// Back pointer to parent isn't present in Value, just Instruction
@@ -33,6 +34,7 @@ public:
   void setParent(BasicBlock *P);
 
   virtual llvm::Value *generate(llvm::Module *M) = 0;
+  virtual void generate(Bytecode *B) = 0;
 
 protected:
   virtual void print(DiagnosticPrinter &Stream) const = 0;
@@ -52,7 +54,10 @@ public:
   /// Context inferred from Op0
   static BinaryArithInst *get(RTValue InstSelector, Value *Op0, Value *Op1);
   static bool classof(const Value *V);
-  virtual llvm::Value *generate(llvm::Module *M) override;
+
+  /// Straightforward
+  llvm::Value *generate(llvm::Module *M) override;
+  void generate(Bytecode *M) override;
 
 protected:
   void print(DiagnosticPrinter &Stream) const override;
@@ -79,13 +84,14 @@ public:
   std::vector<Type *> getATys() const;
 
   /// Get the return type of the whole instruction (the underlying function)
-  virtual Type *returnType() const override;
+  Type *returnType() const override;
 
   /// Get the underlying function that is called
   Value *callee() const;
 
   /// There should be little cleverness in lowering
   virtual llvm::Value *generate(llvm::Module *M) override;
+  virtual void generate(Bytecode *B) override;
 
 protected:
   void print(DiagnosticPrinter &Stream) const override;
@@ -112,10 +118,11 @@ public:
   static BindInst *get(std::string N, Value *V);
   static bool classof(const Value *V);
 
-  virtual Value *val() override;
-  virtual void setVal(Value *V) override;
+  Value *val() override;
+  void setVal(Value *V) override;
 
   virtual llvm::Value *generate(llvm::Module *M) override;
+  virtual void generate(Bytecode *B) override;
 
 protected:
   void print(DiagnosticPrinter &Stream) const override;
@@ -129,10 +136,11 @@ public:
   static MallocInst *get(std::string N, Value *V);
   static bool classof(const Value *V);
 
-  virtual Value *val() override;
-  virtual void setVal(Value *V) override;
+  Value *val() override;
+  void setVal(Value *V) override;
 
   virtual llvm::Value *generate(llvm::Module *M) override;
+  virtual void generate(Bytecode *B) override;
 
 protected:
   void print(DiagnosticPrinter &Stream) const override;
@@ -149,7 +157,8 @@ public:
   static LoadInst *get(MallocInst *M);
   Value *val() const;
   static bool classof(const Value *V);
-  virtual llvm::Value *generate(llvm::Module *M) override;
+  llvm::Value *generate(llvm::Module *M) override;
+  void generate(Bytecode *B) override;
 
 protected:
   void print(DiagnosticPrinter &Stream) const override;
@@ -173,7 +182,8 @@ public:
   Value *getNewValue() const;
 
   static bool classof(const Value *V);
-  virtual llvm::Value *generate(llvm::Module *M) override;
+  llvm::Value *generate(llvm::Module *M) override;
+  void generate(Bytecode *B) override;
 
 protected:
   void print(DiagnosticPrinter &Stream) const override;
@@ -196,7 +206,8 @@ public:
   Value *val();
   void setVal(Value *V);
 
-  virtual llvm::Value *generate(llvm::Module *M) override;
+  llvm::Value *generate(llvm::Module *M) override;
+  void generate(Bytecode *B) override;
 
 protected:
   void print(DiagnosticPrinter &Stream) const override;
@@ -224,7 +235,8 @@ public:
   void setVal(Value *V);
 
   /// Codegen to the contained value directly.
-  virtual llvm::Value *generate(llvm::Module *M) override;
+  llvm::Value *generate(llvm::Module *M) override;
+  void generate(Bytecode *B) override;
 
 protected:
   void print(DiagnosticPrinter &Stream) const override;
@@ -249,7 +261,8 @@ public:
 
   /// Codegens until the phi node, and returns the value to optionally use it in
   /// an assignment.
-  virtual llvm::Value *generate(llvm::Module *M) override;
+  llvm::Value *generate(llvm::Module *M) override;
+  void generate(Bytecode *B) override;
 
 protected:
   void print(DiagnosticPrinter &Stream) const override;
@@ -282,7 +295,8 @@ public:
   std::vector<Value *> getIndices() const;
 
   /// Somewhat non-trivial
-  virtual llvm::Value *generate(llvm::Module *M) override;
+  llvm::Value *generate(llvm::Module *M) override;
+  void generate(Bytecode *B) override;
 
 protected:
   void print(DiagnosticPrinter &Stream) const override;

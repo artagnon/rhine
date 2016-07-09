@@ -4,6 +4,7 @@ include_directories("${PROJECT_SOURCE_DIR}/include")
 include_directories("${PROJECT_BINARY_DIR}/src/Parse")
 link_directories(${LLVM_LIBRARY_DIRS})
 add_library(CodeGen
+  "${CMAKE_CURRENT_SOURCE_DIR}/Bytecode.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/TypeLowering.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/UnresolvedValueLowering.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/GlobalValueLowering.cpp"

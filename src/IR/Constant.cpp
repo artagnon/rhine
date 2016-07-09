@@ -35,9 +35,9 @@ bool ConstantInt::classof(const Value *V) { return V->op() == RT_ConstantInt; }
 
 int ConstantInt::val() const { return Val; }
 
-unsigned ConstantInt::getBitwidth() const {
+unsigned ConstantInt::bitwidth() const {
   if (auto ITy = dyn_cast<IntegerType>(VTy))
-    return ITy->getBitwidth();
+    return ITy->bitwidth();
   assert(0 && "ConstantInt of non IntegerType type");
   return 0;
 }
