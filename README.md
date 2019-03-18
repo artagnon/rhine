@@ -1,9 +1,6 @@
 # rhine: a C++ compiler middle-end for a typed ruby
 
-[![Build Status](https://travis-ci.org/artagnon/rhine.svg?branch=master)]
-(https://travis-ci.org/artagnon/rhine)
-[![codecov](https://codecov.io/gh/artagnon/rhine/branch/master/graph/badge.svg)]
-(https://codecov.io/gh/artagnon/rhine)
+[![Build Status](https://travis-ci.org/artagnon/rhine.svg?branch=master)](https://travis-ci.org/artagnon/rhine)
 
 rhine is designed to be a fast language utilizing the LLVM JIT featuring N-d
 tensors, first-class functions, and type inference; specifying argument
